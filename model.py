@@ -42,16 +42,13 @@ with open('valid_w.p', 'rb') as f:
 def get_batches(x, y, w, batch_num):
 
     n_batches = len(x) // batch_num
-    print(len(x), len(y), len(w))
+
     for ii in range(0, n_batches*batch_num, batch_num):
 
-        print(ii, batch_num, n_batches, (n_batches - 1)*batch_num)
         if ii != (n_batches - 1) * batch_num:
             X, Y, W = x[ii: ii + batch_num], y[ii: ii + batch_num], w[ii: ii + batch_num]
-            print(len(X), len(Y), len(W))
 
         else:
-            print('OMG!!!!!')
             X, Y, W = x[ii:], y[ii:], w[ii:]
 
         yield X, Y, W
@@ -212,9 +209,11 @@ with tf.Session(graph=train_graph) as sess:
 
     for epoch_i in range(epochs):
 
-        for batch_i, (batch_x, batch_y, batch_w) in enumerate(get_batches(train_x, train_y, train_w, batch_size)):
+        for batch_i, (batch_x, batch_y, batch_w) in enumerate(get_batches(train_x,
+                                                                          train_y,
+                                                                          train_w,
+                                                                          batch_size)):
 
-            print(batch_x.shape, batch_y.shape, batch_counter)
             batch_counter += 1
 
             _, cost = sess.run([optimizer, cost_],
@@ -248,8 +247,6 @@ with tf.Session(graph=train_graph) as sess:
                 #        "Train_Loss: {:>.4f} |".format(logloss_train),
                 #        "Valid_Loss: {:.4f}".format(logloss_valid))
 
-                print(batch_x.shape, batch_y.shape, batch_counter)
-
                 summary_train, cost_train = sess.run([merged, cost_],
                                                      {inputs: batch_x,
                                                       labels: batch_y,
@@ -257,12 +254,26 @@ with tf.Session(graph=train_graph) as sess:
                                                       keep_prob: 1.0})
                 train_writer.add_summary(summary_train, batch_counter)
 
-                summary_valid, cost_valid = sess.run([merged, cost_],
-                                                     {inputs: valid_x,
-                                                      labels: valid_y,
-                                                      loss_weights: valid_w,
-                                                      keep_prob: 1.0})
-                valid_writer.add_summary(summary_valid, batch_counter)
+                cost_valid_a = []
+
+                for iii, (valid_batch_x, valid_batch_y, valid_batch_w) in enumerate(get_batches(valid_x,
+                                                                                                valid_y,
+                                                                                                valid_w,
+                                                                                                batch_size)):
+
+                    summary_valid_i, cost_valid_i = sess.run([merged, cost_],
+                                                             {inputs: valid_x,
+                                                             labels: valid_y,
+                                                              loss_weights: valid_w,
+                                                              keep_prob: 1.0})
+
+                    print(summary_valid_i)
+
+                    cost_valid_a.append(cost_valid_i)
+
+                cost_valid = sum(cost_valid_a) / len(cost_valid_a)
+
+                valid_writer.add_summary(summary_valid_i, batch_counter)
 
                 end_time = time.time()
                 total_time = end_time - start_time
