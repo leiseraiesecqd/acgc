@@ -73,4 +73,4 @@ end_time = time.time()
 total_time = end_time - start_time
 
 print('Done!')
-print('Using {:.3}s')
+print('Using {:.3}s'.format(total_time))
