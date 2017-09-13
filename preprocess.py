@@ -10,10 +10,11 @@ start_time = time.time()
 # Load CSV
 
 def load_data():
-    train_f = np.loadtxt("./stock_train_data_20170910.csv", dtype=np.str, delimiter=",")
-    test_f = np.loadtxt("./stock_test_data_20170910.csv", dtype=np.str, delimiter=",")
+    train_f = np.loadtxt("./stock_train_data_20170910.csv", dtype=np.float, skiprows=1, delimiter=",")
+    test_f = np.loadtxt("./stock_test_data_20170910.csv", dtype=np.float32, skiprows=1, delimiter=",")
 
     return train_f, test_f
+
 
 try:
     print('Loding data...')
@@ -22,10 +23,9 @@ except Exception as e:
     print('Unable to read data: ', e)
     raise
 
-train_x = train_f[1:, 1:90]
-train_y = train_f[1:, 91]
-
-test_x = train_f[1:, 1:89]
+train_x = train_f[:, 1:90]
+train_y = train_f[:, 90]
+test_x = train_f[:, 1:89]
 
 
 # Shuffle and split dataset
