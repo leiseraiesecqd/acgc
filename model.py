@@ -58,9 +58,9 @@ def get_batches(x, y, w, batch_num):
 
 def input_tensor(n_feature):
 
-    inputs_ = tf.placeholder(tf.float32, [None, n_feature], name='inputs')
-    labels_ = tf.placeholder(tf.float32, None, name='labels')
-    loss_weights_ = tf.placeholder(tf.float32, None, name='loss_weights')
+    inputs_ = tf.placeholder(tf.float32, [batch_size, n_feature], name='inputs')
+    labels_ = tf.placeholder(tf.float32, batch_size, name='labels')
+    loss_weights_ = tf.placeholder(tf.float32, batch_size, name='loss_weights')
     learning_rate_ = tf.placeholder(tf.float32, name='learning_rate')
     keep_prob_ = tf.placeholder(tf.float32, name='keep_prob')
 
