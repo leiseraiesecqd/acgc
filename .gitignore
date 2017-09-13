@@ -1,12 +1,9 @@
 .DS_Store
 .ropeproject
 .ipynb_checkpoints
-tensorflow_vgg
-data
-checkpoints
 __pycache__
 *.jpg
 *.ipynb
 *.p
-vgg_codes
-labels
+*.csv
+
