@@ -42,13 +42,16 @@ with open('valid_w.p', 'rb') as f:
 def get_batches(x, y, w, batch_num):
 
     n_batches = len(x) // batch_num
-
+    print(len(x), len(y), len(w))
     for ii in range(0, n_batches*batch_num, batch_num):
 
+        print(ii, batch_num, n_batches, (n_batches - 1)*batch_num)
         if ii != (n_batches - 1) * batch_num:
             X, Y, W = x[ii: ii + batch_num], y[ii: ii + batch_num], w[ii: ii + batch_num]
+            print(len(X), len(Y), len(W))
 
         else:
+            print('OMG!!!!!')
             X, Y, W = x[ii:], y[ii:], w[ii:]
 
         yield X, Y, W
@@ -211,6 +214,7 @@ with tf.Session(graph=train_graph) as sess:
 
         for batch_i, (batch_x, batch_y, batch_w) in enumerate(get_batches(train_x, train_y, train_w, batch_size)):
 
+            print(batch_x.shape, batch_y.shape, batch_counter)
             batch_counter += 1
 
             _, cost = sess.run([optimizer, cost_],
@@ -243,6 +247,8 @@ with tf.Session(graph=train_graph) as sess:
                 #        "Time: {:>2.3f}s ||".format(total_time),
                 #        "Train_Loss: {:>.4f} |".format(logloss_train),
                 #        "Valid_Loss: {:.4f}".format(logloss_valid))
+
+                print(batch_x.shape, batch_y.shape, batch_counter)
 
                 summary_train, cost_train = sess.run([merged, cost_],
                                                      {inputs: batch_x,
