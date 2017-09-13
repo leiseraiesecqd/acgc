@@ -9,11 +9,11 @@ import tensorflow as tf
 epochs = 100
 unit_number = [80, 80, 40, 20, 10]
 learning_rate = 0.0001
-keep_probability = 0.75
+keep_probability = 0.7
 batch_size = 256
 display_step = 100
 
-version = 1.0
+version = '1.0'
 save_path = './saver/'
 
 
@@ -46,10 +46,11 @@ def get_batches(x, y, w, batch_num):
     for ii in range(0, n_batches*batch_num, batch_num):
 
         if ii != (n_batches - 1) * batch_num:
-            X, Y = x[ii: ii + batch_num], y[ii: ii + batch_num], w[ii: ii + batch_num]
+            X, Y, W = x[ii: ii + batch_num], y[ii: ii + batch_num], w[ii: ii + batch_num]
 
         else:
             X, Y, W = x[ii:], y[ii:], w[ii:]
+
         yield X, Y, W
 
 
@@ -147,7 +148,7 @@ train_graph = tf.Graph()
 with train_graph.as_default():
 
     # Inputs
-    feature_num = train_x[1]
+    feature_num = list(train_x.shape)[1]
     inputs, labels, loss_weights, lr, keep_prob = input_tensor(feature_num)
 
     # Logits
@@ -160,13 +161,11 @@ with train_graph.as_default():
     tf.summary.scalar('cost', cost_)
 
     # Optimizer
-    with tf.name_scope('optimizer'):
-        optimizer = tf.train.AdamOptimizer(lr).minimize(cost_)
-    tf.summary.scalar('optimizer', optimizer)
+    optimizer = tf.train.AdamOptimizer(lr).minimize(cost_)
 
     # LogLoss
     with tf.name_scope('LogLoss'):
-        logloss_ = log_loss(logits, loss_weights, labels)
+        logloss = log_loss(logits, loss_weights, labels)
 
 
 # Tarining
@@ -200,14 +199,14 @@ with tf.Session(graph=train_graph) as sess:
 
             if batch_counter % display_step == 0 and batch_i > 0:
 
-                summary_train, logloss_train = sess.run([merged, logloss_],
+                summary_train, logloss_train = sess.run([merged, logloss],
                                                         {inputs: batch_x,
                                                          labels: batch_y,
                                                          loss_weights: batch_w,
                                                          keep_prob: 1.0})
                 train_writer.add_summary(summary_train, batch_counter)
 
-                summary_valid, logloss_valid = sess.run([merged, logloss_],
+                summary_valid, logloss_valid = sess.run([merged, logloss],
                                                         {inputs: valid_x,
                                                          labels: valid_y,
                                                          loss_weights: valid_w,
