@@ -82,18 +82,20 @@ def fc_layer(x_tensor, layer_name, num_outputs, keep_prob, training):
 
         with tf.name_scope('fc_layer'):
             fc_layer = tf.add(tf.matmul(x_tensor, weights), biases)
+
+            # Batch Normalization
+            #  fc_layer = tf.layers.batch_normalization(fc_layer, training=training)
+
+            # Activate function
             fc = tf.nn.relu(fc_layer)
-        tf.summary.histogram('fc_layer', fc)
+            #  fc = tf.nn.elu(fc_layer)
 
         #  fc = tf.contrib.layers.fully_connected(x_tensor,
         #                                         num_outputs,
         #                                         weights_initializer=tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
         #                                         biases_initializer=tf.zeros_initializer())
-        #
-        #  tf.summary.histogram('fc_layer', fc)
 
-        # Batch Normalization
-        fc = tf.layers.batch_normalization(fc, training=training)
+        tf.summary.histogram('fc_layer', fc)
 
         fc = tf.nn.dropout(fc, keep_prob)
 
