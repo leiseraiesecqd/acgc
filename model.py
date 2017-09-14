@@ -7,11 +7,12 @@ import tensorflow as tf
 # Hyperparameters
 
 epochs = 100
-unit_number = [64, 32, 16, 8, 4]
+layers_number = 10
+unit_number = [200, 400, 800, 800, 800, 800, 800, 800, 400, 200]
 learning_rate = 0.01
-keep_probability = 0.5
-batch_size = 256
-display_step = 100
+keep_probability = 0.75
+batch_size = 512
+display_step = 10
 
 version = '1.0'
 save_path = './saver/'
@@ -45,7 +46,7 @@ def get_batches(x, y, w, batch_num):
 
     for ii in range(0, n_batches*batch_num, batch_num):
 
-        if ii != (n_batches - 1) * batch_num:
+        if ii != n_batches * batch_num:
             X, Y, W = x[ii: ii + batch_num], y[ii: ii + batch_num], w[ii: ii + batch_num]
 
         else:
@@ -58,9 +59,9 @@ def get_batches(x, y, w, batch_num):
 
 def input_tensor(n_feature):
 
-    inputs_ = tf.placeholder(tf.float32, [batch_size, n_feature], name='inputs')
-    labels_ = tf.placeholder(tf.float32, batch_size, name='labels')
-    loss_weights_ = tf.placeholder(tf.float32, batch_size, name='loss_weights')
+    inputs_ = tf.placeholder(tf.float32, [None, n_feature], name='inputs')
+    labels_ = tf.placeholder(tf.float32, None, name='labels')
+    loss_weights_ = tf.placeholder(tf.float32, None, name='loss_weights')
     learning_rate_ = tf.placeholder(tf.float32, name='learning_rate')
     keep_prob_ = tf.placeholder(tf.float32, name='keep_prob')
 
@@ -74,27 +75,25 @@ def fc_layer(x_tensor, layer_name, num_outputs, keep_prob):
     with tf.name_scope(layer_name):
         x_shape = x_tensor.get_shape().as_list()
 
-        #  weights = tf.Variable(tf.truncated_normal([x_shape[1], num_outputs], stddev=2.0 / math.sqrt(x_shape[1])))
-        #
-        #  biases = tf.Variable(tf.zeros([num_outputs]))
-        #
-        #  with tf.name_scope('Wx_plus_b'):
-        #      fc_layer = tf.add(tf.matmul(x_tensor, weights), biases)
-        #  tf.summary.histogram('fc_layer', fc_layer)
-        #
-        #  logits = tf.nn.relu(fc_layer)
-        #  tf.summary.histogram('logits', logits)
-        #
-        #  logits = tf.nn.dropout(logits, keep_prob)
+        weights = tf.Variable(tf.truncated_normal([x_shape[1], num_outputs], stddev=2.0 / math.sqrt(x_shape[1])))
 
-        fc = tf.contrib.layers.fully_connected(x_tensor,
-                                               num_outputs,
-                                               weights_initializer=tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
-                                               biases_initializer=tf.zeros_initializer())
+        biases = tf.Variable(tf.zeros([num_outputs]))
 
+        with tf.name_scope('fc_layer'):
+            fc_layer = tf.add(tf.matmul(x_tensor, weights), biases)
+            fc = tf.nn.relu(fc_layer)
         tf.summary.histogram('fc_layer', fc)
 
         fc = tf.nn.dropout(fc, keep_prob)
+
+        #  fc = tf.contrib.layers.fully_connected(x_tensor,
+        #                                         num_outputs,
+        #                                         weights_initializer=tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
+        #                                         biases_initializer=tf.zeros_initializer())
+        #
+        #  tf.summary.histogram('fc_layer', fc)
+        #
+        #  fc = tf.nn.dropout(fc, keep_prob)
 
     return fc
 
@@ -124,15 +123,22 @@ def output_layer(x_tensor, layer_name, num_outputs):
 
 # Model
 
-def model(x, n_unit, keep_prob):
+def model(x, n_layers, n_unit, keep_prob):
 
-    fc1 = fc_layer(x, 'fc1', n_unit[0], keep_prob)
-    fc2 = fc_layer(fc1, 'fc2', n_unit[1], keep_prob)
-    fc3 = fc_layer(fc2, 'fc3', n_unit[2], keep_prob)
-    fc4 = fc_layer(fc3, 'fc4', n_unit[3], keep_prob)
-    fc5 = fc_layer(fc4, 'fc5', n_unit[4], keep_prob)
+    #  fc1 = fc_layer(x, 'fc1', n_unit[0], keep_prob)
+    #  fc2 = fc_layer(fc1, 'fc2', n_unit[1], keep_prob)
+    #  fc3 = fc_layer(fc2, 'fc3', n_unit[2], keep_prob)
+    #  fc4 = fc_layer(fc3, 'fc4', n_unit[3], keep_prob)
+    #  fc5 = fc_layer(fc4, 'fc5', n_unit[4], keep_prob)
 
-    logit_ = output_layer(fc5, 'output', 1)
+    #  logit_ = output_layer(fc5, 'output', 1)
+
+    fc = []
+    fc.append(x)
+    for i in range(n_layers):
+        fc.append(fc_layer(fc[i], 'fc{}'.format(i+1), n_unit[i], keep_prob))
+
+    logit_ = output_layer(fc[n_layers], 'output', 1)
 
     return logit_
 
@@ -142,18 +148,14 @@ def model(x, n_unit, keep_prob):
 def log_loss(logit, weight, label):
 
     with tf.name_scope('prob'):
-        print(logit.get_shape().as_list())
-        #  prob = tf.nn.sigmoid(logit) / 2 + 1
-        prob = logits
+        prob = tf.nn.sigmoid(logit) / 2.0 + 1.0
+
+    with tf.name_scope('weight'):
+        weight = weight / tf.reduce_sum(weight)
 
     with tf.name_scope('logloss'):
-        loss = - tf.reduce_sum(weight * (label * tf.log(prob) + (1 - label) * tf.log(1 - prob)))
-
-        #  loss = 0.0
-        #  n = logit.get_shape().as_list()[1]
-        #  for i in range(n):
-        #      print(loss, weight[i])
-        #      loss += weight[i] * (label[i] * tf.log(prob[i]) + (1 - label[i]) * tf.log(1 - prob[i]))
+        #  loss = tf.losses.log_loss(labels=label, predictions=prob, weights=weight)
+        loss = - tf.reduce_sum(weight * (label * tf.log(tf.clip_by_value(prob, 1e-10, 1.0)) + (1 - label) * tf.log(tf.clip_by_value((1 - prob), 1e-10, 1.0))))
 
     tf.summary.scalar('logloss', loss)
 
@@ -173,14 +175,13 @@ with train_graph.as_default():
     inputs, labels, loss_weights, lr, keep_prob = input_tensor(feature_num)
 
     # Logits
-    logits = model(inputs, unit_number, keep_prob)
+    logits = model(inputs, layers_number, unit_number, keep_prob)
     logits = tf.identity(logits, name='logits')
 
     # Loss
     with tf.name_scope('Loss'):
-        #  cost_ = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels))
-        cost_ = log_loss(logits, loss_weights, labels)
-    tf.summary.scalar('cost', cost_)
+        cost_ = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels))
+        #  cost_ = log_loss(logits, loss_weights, labels)
 
     # Optimizer
     optimizer = tf.train.AdamOptimizer(lr).minimize(cost_)
@@ -225,28 +226,6 @@ with tf.Session(graph=train_graph) as sess:
 
             if batch_counter % display_step == 0 and batch_i > 0:
 
-                #  summary_train, logloss_train = sess.run([merged, logloss],
-                #                                          {inputs: batch_x,
-                #                                           labels: batch_y,
-                #                                           loss_weights: batch_w,
-                #                                           keep_prob: 1.0})
-                #  train_writer.add_summary(summary_train, batch_counter)
-                #
-                #  summary_valid, logloss_valid = sess.run([merged, logloss],
-                #                                          {inputs: valid_x,
-                #                                           labels: valid_y,
-                #                                           loss_weights: valid_w,
-                #                                           keep_prob: 1.0})
-                #  valid_writer.add_summary(summary_valid, batch_counter)
-                #
-                #  end_time = time.time()
-                #  total_time = end_time - start_time
-                #
-                #  print("Epoch: {}/{} |".format(epoch_i+1, epochs),
-                #        "Time: {:>2.3f}s ||".format(total_time),
-                #        "Train_Loss: {:>.4f} |".format(logloss_train),
-                #        "Valid_Loss: {:.4f}".format(logloss_valid))
-
                 summary_train, cost_train = sess.run([merged, cost_],
                                                      {inputs: batch_x,
                                                       labels: batch_y,
@@ -262,12 +241,10 @@ with tf.Session(graph=train_graph) as sess:
                                                                                                 batch_size)):
 
                     summary_valid_i, cost_valid_i = sess.run([merged, cost_],
-                                                             {inputs: valid_x,
-                                                             labels: valid_y,
-                                                              loss_weights: valid_w,
+                                                             {inputs: valid_batch_x,
+                                                              labels: valid_batch_y,
+                                                              loss_weights: valid_batch_w,
                                                               keep_prob: 1.0})
-
-                    print(summary_valid_i)
 
                     cost_valid_a.append(cost_valid_i)
 
@@ -279,7 +256,8 @@ with tf.Session(graph=train_graph) as sess:
                 total_time = end_time - start_time
 
                 print("Epoch: {}/{} |".format(epoch_i+1, epochs),
-                      "Time: {:>3.3f}s |".format(total_time),
+                      "Batch: {} |".format(batch_counter),
+                      "Time: {:>3.2f}s |".format(total_time),
                       "Train_Loss: {:>.8f} |".format(cost_train),
                       "Valid_Loss: {:>.8f}".format(cost_valid))
 
