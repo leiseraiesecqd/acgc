@@ -64,13 +64,14 @@ def input_tensor(n_feature):
     loss_weights_ = tf.placeholder(tf.float32, None, name='loss_weights')
     learning_rate_ = tf.placeholder(tf.float32, name='learning_rate')
     keep_prob_ = tf.placeholder(tf.float32, name='keep_prob')
+    is_train_ = tf.placeholder(tf.bool)
 
-    return inputs_, labels_, loss_weights_, learning_rate_, keep_prob_
+    return inputs_, labels_, loss_weights_, learning_rate_, keep_prob_, is_train_
 
 
 # Full Connected Layer
 
-def fc_layer(x_tensor, layer_name, num_outputs, keep_prob):
+def fc_layer(x_tensor, layer_name, num_outputs, keep_prob, training):
 
     with tf.name_scope(layer_name):
         x_shape = x_tensor.get_shape().as_list()
@@ -84,16 +85,17 @@ def fc_layer(x_tensor, layer_name, num_outputs, keep_prob):
             fc = tf.nn.relu(fc_layer)
         tf.summary.histogram('fc_layer', fc)
 
-        fc = tf.nn.dropout(fc, keep_prob)
-
         #  fc = tf.contrib.layers.fully_connected(x_tensor,
         #                                         num_outputs,
         #                                         weights_initializer=tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
         #                                         biases_initializer=tf.zeros_initializer())
         #
         #  tf.summary.histogram('fc_layer', fc)
-        #
-        #  fc = tf.nn.dropout(fc, keep_prob)
+
+        # Batch Normalization
+        fc = tf.layers.batch_normalization(fc, training=training)
+
+        fc = tf.nn.dropout(fc, keep_prob)
 
     return fc
 
@@ -123,7 +125,7 @@ def output_layer(x_tensor, layer_name, num_outputs):
 
 # Model
 
-def model(x, n_layers, n_unit, keep_prob):
+def model(x, n_layers, n_unit, keep_prob, is_training):
 
     #  fc1 = fc_layer(x, 'fc1', n_unit[0], keep_prob)
     #  fc2 = fc_layer(fc1, 'fc2', n_unit[1], keep_prob)
@@ -136,7 +138,7 @@ def model(x, n_layers, n_unit, keep_prob):
     fc = []
     fc.append(x)
     for i in range(n_layers):
-        fc.append(fc_layer(fc[i], 'fc{}'.format(i+1), n_unit[i], keep_prob))
+        fc.append(fc_layer(fc[i], 'fc{}'.format(i+1), n_unit[i], keep_prob, is_training))
 
     logit_ = output_layer(fc[n_layers], 'output', 1)
 
@@ -172,10 +174,10 @@ with train_graph.as_default():
 
     # Inputs
     feature_num = list(train_x.shape)[1]
-    inputs, labels, loss_weights, lr, keep_prob = input_tensor(feature_num)
+    inputs, labels, loss_weights, lr, keep_prob, is_train = input_tensor(feature_num)
 
     # Logits
-    logits = model(inputs, layers_number, unit_number, keep_prob)
+    logits = model(inputs, layers_number, unit_number, keep_prob, is_train)
     logits = tf.identity(logits, name='logits')
 
     # Loss
@@ -222,7 +224,8 @@ with tf.Session(graph=train_graph) as sess:
                                 labels: batch_y,
                                 loss_weights: batch_w,
                                 lr: learning_rate,
-                                keep_prob: keep_probability})
+                                keep_prob: keep_probability,
+                                is_train: True})
 
             if batch_counter % display_step == 0 and batch_i > 0:
 
@@ -230,7 +233,8 @@ with tf.Session(graph=train_graph) as sess:
                                                      {inputs: batch_x,
                                                       labels: batch_y,
                                                       loss_weights: batch_w,
-                                                      keep_prob: 1.0})
+                                                      keep_prob: 1.0,
+                                                      is_train: False})
                 train_writer.add_summary(summary_train, batch_counter)
 
                 cost_valid_a = []
@@ -244,7 +248,8 @@ with tf.Session(graph=train_graph) as sess:
                                                              {inputs: valid_batch_x,
                                                               labels: valid_batch_y,
                                                               loss_weights: valid_batch_w,
-                                                              keep_prob: 1.0})
+                                                              keep_prob: 1.0,
+                                                              is_train: False})
 
                     cost_valid_a.append(cost_valid_i)
 
