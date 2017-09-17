@@ -8,4 +8,4 @@
 *.csv
 /checkpoints/
 /log/
-
+/.idea/

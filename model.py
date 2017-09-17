@@ -4,20 +4,6 @@ import pickle
 import tensorflow as tf
 
 
-# HyperParameters
-
-hyper_parameters = {'version': '1.0',
-                    'epochs': 10,
-                    'layers_number': 10,
-                    'unit_number': [200, 400, 800, 800, 800, 800, 800, 800, 400, 200],
-                    'learning_rate': 0.01,
-                    'keep_probability': 0.75,
-                    'batch_size': 512,
-                    'display_step': 100,
-                    'save_path': './checkpoints/',
-                    'log_path': './log/'}
-
-
 # Load Data
 
 def load_data():
@@ -69,7 +55,6 @@ class DNN:
         self.save_path = hyper_para['save_path']
         self.log_path = hyper_para['log_path']
 
-
     # Input Tensors
     def input_tensor(self, n_feature):
 
@@ -81,7 +66,6 @@ class DNN:
         is_train_ = tf.placeholder(tf.bool, name='is_train')
 
         return inputs_, labels_, loss_weights_, learning_rate_, keep_prob_, is_train_
-
 
     # Full Connected Layer
     def fc_layer(self, x_tensor, layer_name, num_outputs, keep_prob, training):
@@ -114,7 +98,6 @@ class DNN:
 
         return fc
 
-
     # Output Layer
     def output_layer(self, x_tensor, layer_name, num_outputs):
 
@@ -134,7 +117,6 @@ class DNN:
                                                     activation_fn=None)
 
         return out
-
 
     # Model
     def model(self, x, n_layers, n_unit, keep_prob, is_training):
@@ -156,7 +138,6 @@ class DNN:
 
         return logit_
 
-
     # LogLoss
     def log_loss(self, logit, weight, label):
 
@@ -175,7 +156,6 @@ class DNN:
 
         return loss
 
-
     # Get Batches
     def get_batches(self, x, y, w, batch_num):
 
@@ -190,7 +170,6 @@ class DNN:
                 X, Y, W = x[ii:], y[ii:], w[ii:]
 
             yield X, Y, W
-
 
     # Training
     def train(self):
@@ -300,13 +279,21 @@ class DNN:
 
 if __name__ == "__main__":
 
+    # HyperParameters
+    hyper_parameters = {'version': '1.0',
+                        'epochs': 10,
+                        'layers_number': 10,
+                        'unit_number': [200, 400, 800, 800, 800, 800, 800, 800, 400, 200],
+                        'learning_rate': 0.01,
+                        'keep_probability': 0.75,
+                        'batch_size': 512,
+                        'display_step': 100,
+                        'save_path': './checkpoints/',
+                        'log_path': './log/'}
+
     print('Loading data set...')
     tr, tr_y, tr_w, val_x, val_y, val_w = load_data()
 
     dnn = DNN(tr, tr_y, tr_w, val_x, val_y, val_w, hyper_parameters)
     dnn.train()
-
-
-
-
-
+    print('Done!')
