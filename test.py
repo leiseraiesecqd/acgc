@@ -5,6 +5,7 @@ import tensorflow as tf
 version = '1.0'
 
 load_path = './checkpoints/model.' + version + '.ckpt'
+data_path = './preprocessed_data/'
 
 
 def sigmoid(x):
@@ -17,7 +18,7 @@ def sigmoid(x):
 
 print('Loading test codes and labels...')
 
-with open('test_x.p', 'rb') as f:
+with open(data_path + 'test_x.p', 'rb') as f:
     test_f = pickle.load(f)
 
 test_id = test_f[:, 0]
