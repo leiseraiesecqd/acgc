@@ -6,24 +6,24 @@ import tensorflow as tf
 
 # Load Data
 
-def load_data():
+def load_data(data_path):
 
-    with open('train_x.p', 'rb') as f:
+    with open(data_path + 'train_x.p', 'rb') as f:
         train_x = pickle.load(f)
 
-    with open('train_y.p', 'rb') as f:
+    with open(data_path + 'train_y.p', 'rb') as f:
         train_y = pickle.load(f)
 
-    with open('train_w.p', 'rb') as f:
+    with open(data_path + 'train_w.p', 'rb') as f:
         train_w = pickle.load(f)
 
-    with open('valid_x.p', 'rb') as f:
+    with open(data_path + 'valid_x.p', 'rb') as f:
         valid_x = pickle.load(f)
 
-    with open('valid_y.p', 'rb') as f:
+    with open(data_path + 'valid_y.p', 'rb') as f:
         valid_y = pickle.load(f)
 
-    with open('valid_w.p', 'rb') as f:
+    with open(data_path + 'valid_w.p', 'rb') as f:
         valid_w = pickle.load(f)
 
     return train_x, train_y, train_w, valid_x, valid_y, valid_w
@@ -291,8 +291,10 @@ if __name__ == "__main__":
                         'save_path': './checkpoints/',
                         'log_path': './log/'}
 
+    pickled_data_path = './preprocessed_data/'
+
     print('Loading data set...')
-    tr, tr_y, tr_w, val_x, val_y, val_w = load_data()
+    tr, tr_y, tr_w, val_x, val_y, val_w = load_data(pickled_data_path)
 
     dnn = DNN(tr, tr_y, tr_w, val_x, val_y, val_w, hyper_parameters)
     dnn.train()
