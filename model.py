@@ -6,16 +6,16 @@ import tensorflow as tf
 
 # Hyperparameters
 
-epochs = 100
+epochs = 10
 layers_number = 10
 unit_number = [200, 400, 800, 800, 800, 800, 800, 800, 400, 200]
 learning_rate = 0.01
 keep_probability = 0.75
 batch_size = 512
-display_step = 10
+display_step = 100
 
 version = '1.0'
-save_path = './saver/'
+save_path = './checkpoints/'
 
 
 # Load Data
@@ -64,7 +64,7 @@ def input_tensor(n_feature):
     loss_weights_ = tf.placeholder(tf.float32, None, name='loss_weights')
     learning_rate_ = tf.placeholder(tf.float32, name='learning_rate')
     keep_prob_ = tf.placeholder(tf.float32, name='keep_prob')
-    is_train_ = tf.placeholder(tf.bool)
+    is_train_ = tf.placeholder(tf.bool, name='is_train')
 
     return inputs_, labels_, loss_weights_, learning_rate_, keep_prob_, is_train_
 
@@ -152,9 +152,9 @@ def model(x, n_layers, n_unit, keep_prob, is_training):
 def log_loss(logit, weight, label):
 
     with tf.name_scope('prob'):
-        prob = tf.nn.sigmoid(logit) / 2.0 + 1.0
+        prob = tf.nn.sigmoid(logit)
 
-    with tf.name_scope('weight'):
+    #  with tf.name_scope('weight'):
         weight = weight / tf.reduce_sum(weight)
 
     with tf.name_scope('logloss'):
@@ -270,4 +270,4 @@ with tf.Session(graph=train_graph) as sess:
 
     # Save Model
     saver = tf.train.Saver()
-    saver.save(sess, save_path)
+    saver.save(sess, save_path + 'model.' + version + '.ckpt')

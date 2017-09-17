@@ -25,7 +25,7 @@ except Exception as e:
 
 train_x = train_f[:, 1:90]
 train_y = train_f[:, 90]
-test_x = train_f[:, 1:89]
+test_x = train_f
 
 
 # Shuffle and split dataset
