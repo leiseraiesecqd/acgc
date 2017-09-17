@@ -1,11 +1,11 @@
-.DS_Store
-.ropeproject
-.ipynb_checkpoints
-__pycache__
+/.DS_Store/
+/.ropeproject/
+/.ipynb_checkpoints/
+/__pycache__/
 *.jpg
 *.ipynb
 *.p
 *.csv
-saver
-log
+/checkpoints/
+/log/
 
