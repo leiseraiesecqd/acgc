@@ -1,7 +1,27 @@
 import math
 import time
 import pickle
+import numpy as np
+import matplotlib.pyplot as plt
 import tensorflow as tf
+from sklearn.model_selection import cross_val_score
+from sklearn.linear_model import LogisticRegression
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.svm import SVC
+from sklearn.naive_bayes import GaussianNB
+from sklearn.tree import DecisionTreeClassifier
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import ExtraTreesClassifier
+from sklearn.ensemble import AdaBoostClassifier
+from sklearn.ensemble import GradientBoostingClassifier
+from xgboost import XGBClassifier
+# from xgboost import plot_importance
+# from sklearn.ensemble import VotingClassifier
+
+import seaborn as sns
+sns.set(style="whitegrid", color_codes=True)
+sns.set(font_scale=1)
+color = sns.color_palette()
 
 
 # Load Data
@@ -29,16 +49,465 @@ def load_data(data_path):
     return train_x, train_y, train_w, valid_x, valid_y, valid_w
 
 
-# DNN
+# Logistic Regression
 
-class DNN:
+class LogisticRegression:
 
-    def __init__(self, i_x, i_y, i_w, v_x, v_y, v_w, hyper_para):
+    importance = np.array([])
+    indices = np.array([])
+
+    def __init__(self, t_x, t_y, t_w):
+
+        self.train_x = t_x
+        self.train_y = t_y
+        self.train_w = t_w
+
+    def get_importance(self, clf):
+
+        self.importance = np.abs(clf.coef_)[0]
+        indices = np.argsort(self.importance)[::-1]
+
+        feature_num = self.train_x.shape[1]
+
+        for f in range(feature_num):
+            print("%d. feature %d (%f)" % (f + 1, indices[f], self.importance[indices[f]]))
+
+    def show(self):
+
+        feature_num = self.train_x.shape[1]
+
+        plt.figure(figsize=(20, 10))
+        plt.title('Feature Importance in Logistic Regression')
+        plt.bar(range(feature_num), self.importance[self.indices], color=color[0], align="center")
+        plt.xticks(range(feature_num), self.indices)
+        plt.xlim([-1, feature_num])
+        plt.show()
+
+    def train(self):
+
+        clf_lr = LogisticRegression(random_state=1)
+        '''
+        LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
+                           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
+                           penalty='l2', random_state=1, solver='liblinear', tol=0.0001,
+                           verbose=0, warm_start=False)
+        '''
+
+        clf_lr.fit(self.train_x, self.train_y, sample_weight=self.train_w)
+
+        # K-fold cross-validation on Logistic Regression
+        scores = cross_val_score(clf_lr, self.train_x, self.train_y, cv=10)
+        print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+
+        self.get_importance(clf_lr)
+
+
+# k-Nearest Neighbor
+
+class KNearestNeighbor:
+
+    def __init__(self, t_x, t_y, t_w):
+
+        self.train_x = t_x
+        self.train_y = t_y
+        self.train_w = t_w
+
+    def train(self):
+
+        clf_knn = KNeighborsClassifier()
+        '''
+        KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
+                             metric_params=None, n_jobs=1, n_neighbors=5, p=2,
+                             weights='uniform')
+        '''
+
+        clf_knn.fit(self.train_x, self.train_y)  # without parameter sample_weight
+
+        # K-fold cross-validation on Logistic Regression
+        scores = cross_val_score(clf_knn, self.train_x, self.train_y, cv=10)
+        print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+
+
+# SVM-SVC
+
+class SupportVectorClustering:
+
+    def __init__(self, t_x, t_y, t_w):
+
+        self.train_x = t_x
+        self.train_y = t_y
+        self.train_w = t_w
+
+    def train(self):
+
+        clf_svc = SVC(random_state=1)
+
+        clf_svc.fit(self.train_x, self.train_y, sample_weight=self.train_w)
+
+        scores = cross_val_score(clf_svc, self.train_x, self.train_y, cv=10)
+        print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+
+
+# Gaussian NB
+
+class GaussianNB:
+
+    def __init__(self, t_x, t_y, t_w):
+
+        self.train_x = t_x
+        self.train_y = t_y
+        self.train_w = t_w
+
+    def train(self):
+
+        clf_gnb = GaussianNB()
+
+        clf_gnb.fit(self.train_x, self.train_y, sample_weight=self.train_w)
+
+        scores = cross_val_score(clf_gnb, self.train_x, self.train_y, cv=10)
+        print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+
+
+# Decision Tree
+
+class DecisionTree:
+
+    importance = np.array([])
+    indices = np.array([])
+
+    def __init__(self, t_x, t_y, t_w):
+
+        self.train_x = t_x
+        self.train_y = t_y
+        self.train_w = t_w
+
+    def get_importance(self, clf):
+
+        self.importance = clf.feature_importances_
+        self.indices = np.argsort(self.importance)[::-1]
+
+        feature_num = self.train_x.shape[1]
+
+        for f in range(feature_num):
+            print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+
+    def show(self):
+
+        feature_num = self.train_x.shape[1]
+
+        plt.figure(figsize=(20, 10))
+        plt.title('Feature Importance in Decision Tree')
+        plt.bar(range(feature_num), self.importance[self.indices], color=color[1], align="center")
+        plt.xticks(range(feature_num), self.indices)
+        plt.xlim([-1, feature_num])
+        plt.show()
+
+    def train(self):
+
+        clf_dt = DecisionTreeClassifier(random_state=1)
+        '''
+        DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+                               max_features=None, max_leaf_nodes=None,
+                               min_impurity_decrease=0.0, min_impurity_split=None,
+                               min_samples_leaf=1, min_samples_split=2,
+                               min_weight_fraction_leaf=0.0, presort=False, random_state=1,
+                               splitter='best')
+        '''
+
+        clf_dt.fit(self.train_x, self.train_y)
+
+        scores = cross_val_score(clf_dt, self.train_x, self.train_y, cv=10)
+        print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+
+        self.get_importance(clf_dt)
+
+
+# Random Forest
+
+class RandomForest:
+
+    importance = np.array([])
+    indices = np.array([])
+    std = np.array([])
+
+    def __init__(self, t_x, t_y, t_w):
+
+        self.train_x = t_x
+        self.train_y = t_y
+        self.train_w = t_w
+
+    def get_importance(self, clf):
+
+        self.importance = clf.feature_importances_
+        self.indices = np.argsort(self.importance)[::-1]
+        self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
+
+        feature_num = self.train_x.shape[1]
+
+        for f in range(feature_num):
+            print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+
+    def show(self):
+
+        feature_num = self.train_x.shape[1]
+
+        plt.figure(figsize=(20, 10))
+        plt.title('Feature Importance in Random Forest')
+        plt.bar(range(feature_num), self.importance[self.indices],
+                color=color[2], yerr=self.std[self.indices], align="center")
+        plt.xticks(range(feature_num), self.indices)
+        plt.xlim([-1, feature_num])
+        plt.show()
+
+    def train(self):
+
+        clf_rf = RandomForestClassifier(random_state=1)
+        '''
+        RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini',
+                               max_depth=None, max_features='auto', max_leaf_nodes=None,
+                               min_impurity_decrease=0.0, min_impurity_split=None,
+                               min_samples_leaf=1, min_samples_split=2,
+                               min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+                               oob_score=False, random_state=1, verbose=0, warm_start=False)
+        '''
+
+        clf_rf.fit(self.train_x, self.train_y, self.train_w)
+
+        scores = cross_val_score(clf_rf, self.train_x, self.train_y, cv=10)
+        print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+
+        self.get_importance(clf_rf)
+
+
+# Extra Trees
+
+class ExtraTrees:
+
+    importance = np.array([])
+    indices = np.array([])
+    std = np.array([])
+
+    def __init__(self, t_x, t_y, t_w):
+
+        self.train_x = t_x
+        self.train_y = t_y
+        self.train_w = t_w
+
+    def get_importance(self, clf):
+
+        self.importance = clf.feature_importances_
+        self.indices = np.argsort(self.importance)[::-1]
+        self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
+
+        feature_num = self.train_x.shape[1]
+
+        for f in range(feature_num):
+            print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+
+    def show(self):
+
+        feature_num = self.train_x.shape[1]
+
+        plt.figure(figsize=(20, 10))
+        plt.title('Feature Importance in Extra Trees')
+        plt.bar(range(feature_num), self.importance[self.indices],
+                color=color[3], yerr=self.std[self.indices], align="center")
+        plt.xticks(range(feature_num), self.indices)
+        plt.xlim([-1, feature_num])
+        plt.show()
+
+    def train(self):
+
+        clf_et = ExtraTreesClassifier(random_state=1)
+        '''
+        ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
+                             max_depth=None, max_features='auto', max_leaf_nodes=None,
+                             min_impurity_decrease=0.0, min_impurity_split=None,
+                             min_samples_leaf=1, min_samples_split=2,
+                             min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+                             oob_score=False, random_state=1, verbose=0, warm_start=False)
+        '''
+
+        clf_et.fit(self.train_x, self.train_y, self.train_w)
+
+        scores = cross_val_score(clf_et, self.train_x, self.train_y, cv=10)
+        print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+
+        self.get_importance(clf_et)
+
+
+# AdaBoost
+
+class AdaBoost:
+
+    importance = np.array([])
+    indices = np.array([])
+    std = np.array([])
+
+    def __init__(self, t_x, t_y, t_w):
+
+        self.train_x = t_x
+        self.train_y = t_y
+        self.train_w = t_w
+
+    def get_importance(self, clf):
+
+        self.importance = clf.feature_importances_
+        self.indices = np.argsort(self.importance)[::-1]
+        self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
+
+        feature_num = self.train_x.shape[1]
+
+        for f in range(feature_num):
+            print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+
+    def show(self):
+
+        feature_num = self.train_x.shape[1]
+
+        plt.figure(figsize=(20, 10))
+        plt.title('Feature Importance in AdaBoost')
+        plt.bar(range(feature_num), self.importance[self.indices],
+                color=color[4], yerr=self.std[self.indices], align="center")
+        plt.xticks(range(feature_num), self.indices)
+        plt.xlim([-1, feature_num])
+        plt.show()
+
+    def train(self):
+
+        clf_ab = AdaBoostClassifier(random_state=1)
+        '''
+        AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+                           learning_rate=1.0, n_estimators=50, random_state=1)
+        '''
+
+        clf_ab.fit(self.train_x, self.train_y, self.train_w)
+
+        scores = cross_val_score(clf_ab, self.train_x, self.train_y, cv=10)
+        print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+
+        self.get_importance(clf_ab)
+
+
+# GradientBoosting
+
+class GradientBoosting:
+
+    importance = np.array([])
+    indices = np.array([])
+    std = np.array([])
+
+    def __init__(self, t_x, t_y, t_w):
+
+        self.train_x = t_x
+        self.train_y = t_y
+        self.train_w = t_w
+
+    def get_importance(self, clf):
+
+        self.importance = clf.feature_importances_
+        self.indices = np.argsort(self.importance)[::-1]
+        self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
+
+        feature_num = self.train_x.shape[1]
+
+        for f in range(feature_num):
+            print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+
+    def show(self):
+
+        feature_num = self.train_x.shape[1]
+
+        plt.figure(figsize=(20, 10))
+        plt.title('Feature Importance in GradientBoosting')
+        plt.bar(range(feature_num), self.importance[self.indices],
+                color=color[5], yerr=self.std[self.indices], align="center")
+        plt.xticks(range(feature_num), self.indices)
+        plt.xlim([-1, feature_num])
+        plt.show()
+
+    def train(self):
+
+        clf_gb = GradientBoostingClassifier(random_state=1)
+        '''
+        GradientBoostingClassifier(criterion='friedman_mse', init=None,
+                                   learning_rate=0.1, loss='deviance', max_depth=3,
+                                   max_features=None, max_leaf_nodes=None,
+                                   min_impurity_decrease=0.0, min_impurity_split=None,
+                                   min_samples_leaf=1, min_samples_split=2,
+                                   min_weight_fraction_leaf=0.0, n_estimators=100,
+                                   presort='auto', random_state=1, subsample=1.0, verbose=0,
+                                   warm_start=False)
+        '''
+
+        clf_gb.fit(self.train_x, self.train_y, self.train_w)
+
+        scores = cross_val_score(clf_gb, self.train_x, self.train_y, cv=10)
+        print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+
+        self.get_importance(clf_gb)
+
+
+# XGBoost
+
+class XGBoost:
+
+    importance = np.array([])
+    indices = np.array([])
+
+    def __init__(self, t_x, t_y, t_w):
+
+        self.train_x = t_x
+        self.train_y = t_y
+        self.train_w = t_w
+
+    def get_importance(self, clf):
+
+        self.importance = clf.feature_importances_
+        self.indices = np.argsort(self.importance)[::-1]
+
+        feature_num = self.train_x.shape[1]
+
+        for f in range(feature_num):
+            print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+
+    def show(self):
+
+        feature_num = self.train_x.shape[1]
+
+        plt.figure(figsize=(20, 10))
+        plt.title('Feature Importance in XGBoost')
+        plt.bar(range(feature_num), self.importance[self.indices],
+                color=color[6], yerr=self.std[self.indices], align="center")
+        plt.xticks(range(feature_num), self.indices)
+        plt.xlim([-1, feature_num])
+        plt.show()
+
+    def train(self):
+        clf_xgb = XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=0.8,
+                                gamma=2, learning_rate=0.05, max_delta_step=0, max_depth=3,
+                                min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
+                                objective='binary:logistic', reg_alpha=0, reg_lambda=1,
+                                scale_pos_weight=1, seed=0, silent=True, subsample=0.8)
+
+        clf_xgb.fit(self.train_x, self.train_y, self.train_w)
+
+        scores = cross_val_score(clf_xgb, self.train_x, self.train_y, cv=10)
+        print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+
+        self.get_importance(clf_xgb)
+
+
+# Deep Neural Networks
+
+class DeepNeuralNetworks:
+
+    def __init__(self, t_x, t_y, t_w, v_x, v_y, v_w, hyper_para):
 
         # Inputs
-        self.train_x = i_x
-        self.train_y = i_y
-        self.train_w = i_w
+        self.train_x = t_x
+        self.train_y = t_y
+        self.train_w = t_w
         self.valid_x = v_x
         self.valid_y = v_y
         self.valid_w = v_w
