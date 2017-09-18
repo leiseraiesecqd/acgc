@@ -1,23 +1,33 @@
+import preprocess
+import utils
 import model
 
+preprocessed_path = './preprocessed_data/'
+
 # HyperParameters
-hyper_parameters = {'version': '1.0',
-                    'epochs': 10,
-                    'layers_number': 10,
-                    'unit_number': [200, 400, 800, 800, 800, 800, 800, 800, 400, 200],
-                    'learning_rate': 0.01,
-                    'keep_probability': 0.75,
-                    'batch_size': 512,
-                    'display_step': 100,
-                    'save_path': './checkpoints/',
-                    'log_path': './log/'}
+# hyper_parameters = {'version': '1.0',
+#                     'epochs': 10,
+#                     'layers_number': 10,
+#                     'unit_number': [200, 400, 800, 800, 800, 800, 800, 800, 400, 200],
+#                     'learning_rate': 0.01,
+#                     'keep_probability': 0.75,
+#                     'batch_size': 512,
+#                     'display_step': 100,
+#                     'save_path': './checkpoints/',
+#                     'log_path': './log/'}
+#
+# pickled_data_path = './preprocessed_data/'
+#
+# print('Loading data set...')
+# tr, tr_y, tr_w, val_x, val_y, val_w = model.load_data(pickled_data_path)
+#
+# dnn = model.DNN(tr, tr_y, tr_w, val_x, val_y, val_w, hyper_parameters)
+# dnn.train()
+#
+# print('Done!')
 
-pickled_data_path = './preprocessed_data/'
+train_x, train_y, train_w = utils.load_data(preprocessed_path)
 
-print('Loading data set...')
-tr, tr_y, tr_w, val_x, val_y, val_w = model.load_data(pickled_data_path)
+XGB = model.XGBoost()
 
-dnn = model.DNN(tr, tr_y, tr_w, val_x, val_y, val_w, hyper_parameters)
-dnn.train()
-
-print('Done!')
+XGB.train(parameters=None)

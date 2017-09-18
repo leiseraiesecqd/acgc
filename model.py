@@ -17,36 +17,12 @@ from sklearn.ensemble import GradientBoostingClassifier
 from xgboost import XGBClassifier
 # from xgboost import plot_importance
 # from sklearn.ensemble import VotingClassifier
+from sklearn.model_selection import GroupKFold
 
 import seaborn as sns
 sns.set(style="whitegrid", color_codes=True)
 sns.set(font_scale=1)
 color = sns.color_palette()
-
-
-# Load Data
-
-def load_data(data_path):
-
-    with open(data_path + 'train_x.p', 'rb') as f:
-        train_x = pickle.load(f)
-
-    with open(data_path + 'train_y.p', 'rb') as f:
-        train_y = pickle.load(f)
-
-    with open(data_path + 'train_w.p', 'rb') as f:
-        train_w = pickle.load(f)
-
-    with open(data_path + 'valid_x.p', 'rb') as f:
-        valid_x = pickle.load(f)
-
-    with open(data_path + 'valid_y.p', 'rb') as f:
-        valid_y = pickle.load(f)
-
-    with open(data_path + 'valid_w.p', 'rb') as f:
-        valid_w = pickle.load(f)
-
-    return train_x, train_y, train_w, valid_x, valid_y, valid_w
 
 
 # Logistic Regression
@@ -83,7 +59,7 @@ class LogisticRegression:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def train(self):
+    def train(self, parameters):
 
         clf_lr = LogisticRegression(random_state=1)
         '''
@@ -112,7 +88,7 @@ class KNearestNeighbor:
         self.train_y = t_y
         self.train_w = t_w
 
-    def train(self):
+    def train(self, parameters):
 
         clf_knn = KNeighborsClassifier()
         '''
@@ -138,7 +114,7 @@ class SupportVectorClustering:
         self.train_y = t_y
         self.train_w = t_w
 
-    def train(self):
+    def train(self, parameters):
 
         clf_svc = SVC(random_state=1)
 
@@ -158,7 +134,7 @@ class GaussianNB:
         self.train_y = t_y
         self.train_w = t_w
 
-    def train(self):
+    def train(self, parameters):
 
         clf_gnb = GaussianNB()
 
@@ -191,7 +167,7 @@ class DecisionTree:
         for f in range(feature_num):
             print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
-    def show(self):
+    def show(self, parameters):
 
         feature_num = self.train_x.shape[1]
 
@@ -259,7 +235,7 @@ class RandomForest:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def train(self):
+    def train(self, parameters):
 
         clf_rf = RandomForestClassifier(random_state=1)
         '''
@@ -316,7 +292,7 @@ class ExtraTrees:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def train(self):
+    def train(self, parameters):
 
         clf_et = ExtraTreesClassifier(random_state=1)
         '''
@@ -373,7 +349,7 @@ class AdaBoost:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def train(self):
+    def train(self, parameters):
 
         clf_ab = AdaBoostClassifier(random_state=1)
         '''
@@ -426,7 +402,7 @@ class GradientBoosting:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def train(self):
+    def train(self, parameters):
 
         clf_gb = GradientBoostingClassifier(random_state=1)
         '''
@@ -483,17 +459,37 @@ class XGBoost:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def train(self):
+    def train(self, parameters=None):
+
+        '''
+            class xgboost.XGBClassifier(max_depth=3, learning_rate=0.1, n_estimators=100, silent=True,
+                                        objective='binary:logistic', booster='gbtree', n_jobs=1, nthread=None,
+                                        gamma=0, min_child_weight=1, max_delta_step=0, subsample=1,
+                                        colsample_bytree=1, colsample_bylevel=1, reg_alpha=0, reg_lambda=1,
+                                        scale_pos_weight=1, base_score=0.5, random_state=0, seed=None,
+                                        missing=None, **kwargs)
+        '''
         clf_xgb = XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=0.8,
                                 gamma=2, learning_rate=0.05, max_delta_step=0, max_depth=3,
                                 min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
                                 objective='binary:logistic', reg_alpha=0, reg_lambda=1,
                                 scale_pos_weight=1, seed=0, silent=True, subsample=0.8)
 
-        clf_xgb.fit(self.train_x, self.train_y, self.train_w)
+        tatal_train_scores = []
 
-        scores = cross_val_score(clf_xgb, self.train_x, self.train_y, cv=10)
-        print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+        for train_x, train_y, train_w, \
+            valid_x, valid_y, valid_w in group_k_fold(self.train_x, self.train_y, self.train_w):
+
+            clf_xgb.fit(train_x, train_y, sample_weight=train_w,
+                        eval_set=[(train_x, train_y), (valid_x, valid_y)],
+                        eval_metric='logloss', verbose=True)
+
+            # train_scores = cross_val_score(clf_xgb, train_x, train_y, cv=10)
+            # print("Accuracy: %0.6f (+/- %0.6f)" % (train_scores.mean(), train_scores.std() * 2))
+
+            result = clf_xgb.evals_result()
+
+            print(result)
 
         self.get_importance(clf_xgb)
 
@@ -502,27 +498,24 @@ class XGBoost:
 
 class DeepNeuralNetworks:
 
-    def __init__(self, t_x, t_y, t_w, v_x, v_y, v_w, hyper_para):
+    def __init__(self, t_x, t_y, t_w, parameters):
 
         # Inputs
         self.train_x = t_x
         self.train_y = t_y
         self.train_w = t_w
-        self.valid_x = v_x
-        self.valid_y = v_y
-        self.valid_w = v_w
 
         # Hyperparameters
-        self.version = hyper_para['version']
-        self.epochs = hyper_para['epochs']
-        self.layers_number = hyper_para['layers_number']
-        self.unit_number = hyper_para['unit_number']
-        self.learning_rate = hyper_para['learning_rate']
-        self.keep_probability = hyper_para['keep_probability']
-        self.batch_size = hyper_para['batch_size']
-        self.display_step = hyper_para['display_step']
-        self.save_path = hyper_para['save_path']
-        self.log_path = hyper_para['log_path']
+        self.version = parameters['version']
+        self.epochs = parameters['epochs']
+        self.layers_number = parameters['layers_number']
+        self.unit_number = parameters['unit_number']
+        self.learning_rate = parameters['learning_rate']
+        self.keep_probability = parameters['keep_probability']
+        self.batch_size = parameters['batch_size']
+        self.display_step = parameters['display_step']
+        self.save_path = parameters['save_path']
+        self.log_path = parameters['log_path']
 
     # Input Tensors
     def input_tensor(self, n_feature):
@@ -556,10 +549,11 @@ class DeepNeuralNetworks:
                 fc = tf.nn.relu(fc_layer)
                 #  fc = tf.nn.elu(fc_layer)
 
-            #  fc = tf.contrib.layers.fully_connected(x_tensor,
-            #                                         num_outputs,
-            #                                         weights_initializer=tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
-            #                                         biases_initializer=tf.zeros_initializer())
+            fc = tf.contrib.layers.fully_connected(x_tensor,
+                                                   num_outputs,
+                                                   weights_initializer= \
+                                                   tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
+                                                   biases_initializer=tf.zeros_initializer())
 
             tf.summary.histogram('fc_layer', fc)
 
@@ -633,12 +627,12 @@ class DeepNeuralNetworks:
         for ii in range(0, n_batches * batch_num, batch_num):
 
             if ii != n_batches * batch_num:
-                X, Y, W = x[ii: ii + batch_num], y[ii: ii + batch_num], w[ii: ii + batch_num]
+                batch_x, batch_y, batch_w = x[ii: ii + batch_num], y[ii: ii + batch_num], w[ii: ii + batch_num]
 
             else:
-                X, Y, W = x[ii:], y[ii:], w[ii:]
+                batch_x, batch_y, batch_w = x[ii:], y[ii:], w[ii:]
 
-            yield X, Y, W
+            yield batch_x, batch_y, batch_w
 
     # Training
     def train(self):
@@ -746,25 +740,53 @@ class DeepNeuralNetworks:
             saver.save(sess, self.save_path + 'model.' + self.version + '.ckpt')
 
 
+# K-Fold
+
+def group_k_fold(x, y, w):
+
+    era = x[:, -1]
+    np.delete(x, 88, axis=1)
+
+    era_k_fold = GroupKFold(n_splits=20)
+
+    era_k_fold.get_n_splits(x, y, era)
+
+    for train_index, valid_index in era_k_fold.split(x, y, era):
+
+        # Training data
+        train_x = x[train_index]
+        train_y = y[train_index]
+        train_w = w[train_index]
+
+        # Validation data
+        valid_x = x[valid_index]
+        valid_y = y[valid_index]
+        valid_w = w[valid_index]
+
+        yield train_x, train_y, train_w, valid_x, valid_y, valid_w
+
+
 if __name__ == "__main__":
 
-    # HyperParameters
-    hyper_parameters = {'version': '1.0',
-                        'epochs': 10,
-                        'layers_number': 10,
-                        'unit_number': [200, 400, 800, 800, 800, 800, 800, 800, 400, 200],
-                        'learning_rate': 0.01,
-                        'keep_probability': 0.75,
-                        'batch_size': 512,
-                        'display_step': 100,
-                        'save_path': './checkpoints/',
-                        'log_path': './log/'}
+    # # HyperParameters
+    # hyper_parameters = {'version': '1.0',
+    #                     'epochs': 10,
+    #                     'layers_number': 10,
+    #                     'unit_number': [200, 400, 800, 800, 800, 800, 800, 800, 400, 200],
+    #                     'learning_rate': 0.01,
+    #                     'keep_probability': 0.75,
+    #                     'batch_size': 512,
+    #                     'display_step': 100,
+    #                     'save_path': './checkpoints/',
+    #                     'log_path': './log/'}
+    #
+    # pickled_data_path = './preprocessed_data/'
+    #
+    # print('Loading data set...')
+    # tr, tr_y, tr_w, val_x, val_y, val_w = load_data(pickled_data_path)
+    #
+    # dnn = DNN(tr, tr_y, tr_w, val_x, val_y, val_w, hyper_parameters)
+    # dnn.train()
+    # print('Done!')
 
-    pickled_data_path = './preprocessed_data/'
-
-    print('Loading data set...')
-    tr, tr_y, tr_w, val_x, val_y, val_w = load_data(pickled_data_path)
-
-    dnn = DNN(tr, tr_y, tr_w, val_x, val_y, val_w, hyper_parameters)
-    dnn.train()
-    print('Done!')
+    pass
