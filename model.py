@@ -475,21 +475,20 @@ class XGBoost:
                                 objective='binary:logistic', reg_alpha=0, reg_lambda=1,
                                 scale_pos_weight=1, seed=0, silent=True, subsample=0.8)
 
-        tatal_train_scores = []
 
-        for train_x, train_y, train_w, \
-            valid_x, valid_y, valid_w in group_k_fold(self.train_x, self.train_y, self.train_w):
+        train_scores = cross_val_score(clf_xgb, self.train_x, self.train_y, cv=20)
+        print("Accuracy: %0.6f (+/- %0.6f)" % (train_scores.mean(), train_scores.std() * 2))
 
-            clf_xgb.fit(train_x, train_y, sample_weight=train_w,
-                        eval_set=[(train_x, train_y), (valid_x, valid_y)],
-                        eval_metric='logloss', verbose=True)
-
-            # train_scores = cross_val_score(clf_xgb, train_x, train_y, cv=10)
-            # print("Accuracy: %0.6f (+/- %0.6f)" % (train_scores.mean(), train_scores.std() * 2))
-
-            result = clf_xgb.evals_result()
-
-            print(result)
+        # for train_x, train_y, train_w, \
+        #     valid_x, valid_y, valid_w in group_k_fold(self.train_x, self.train_y, self.train_w):
+        #
+        #     clf_xgb.fit(train_x, train_y, sample_weight=train_w,
+        #                 eval_set=[(train_x, train_y), (valid_x, valid_y)],
+        #                 eval_metric='logloss', verbose=True)
+        #
+        #     result = clf_xgb.evals_result()
+        #
+        #     print(result)
 
         self.get_importance(clf_xgb)
 
