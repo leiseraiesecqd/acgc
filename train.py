@@ -28,6 +28,6 @@ preprocessed_path = './preprocessed_data/'
 
 train_x, train_y, train_w = utils.load_data(preprocessed_path)
 
-XGB = model.XGBoost()
+XGB = model.XGBoost(train_x, train_y, train_w)
 
 XGB.train(parameters=None)
