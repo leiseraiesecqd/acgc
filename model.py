@@ -752,58 +752,53 @@ class DeepNeuralNetworks:
 
 
 # K-Fold
-class CrossValidation:
+def group_k_fold(x, y):
 
-    def group_k_fold(self, x, y):
+    era = x[:, -1]
+    np.delete(x, 88, axis=1)
 
-        era = x[:, -1]
-        np.delete(x, 88, axis=1)
+    era_k_fold = GroupKFold(n_splits=20)
 
-        era_k_fold = GroupKFold(n_splits=20)
+    for train_index, valid_index in era_k_fold.split(x, y, era):
 
-        era_k_fold.get_n_splits(x, y, era)
+        # Training data
+        train_x = x[train_index]
+        train_y = y[train_index]
 
-        for train_index, valid_index in era_k_fold.split(x, y, era):
+        # Validation data
+        valid_x = x[valid_index]
+        valid_y = y[valid_index]
 
-            # Training data
-            train_x = x[train_index]
-            train_y = y[train_index]
+        yield train_x, valid_x, train_y, valid_y
 
-            # Validation data
-            valid_x = x[valid_index]
-            valid_y = y[valid_index]
 
-            yield train_x, train_y, valid_x, valid_y
+def group_k_fold_with_weight(x, y, w):
 
-    def group_k_fold_with_weight(self, x, y, w):
+    era = x[:, -1]
+    np.delete(x, 88, axis=1)
 
-        era = x[:, -1]
-        np.delete(x, 88, axis=1)
+    era_k_fold = GroupKFold(n_splits=20)
 
-        era_k_fold = GroupKFold(n_splits=20)
+    for train_index, valid_index in era_k_fold.split(x, y, era):
 
-        era_k_fold.get_n_splits(x, y, era)
+        # Training data
+        train_x = x[train_index]
+        train_y = y[train_index]
+        train_w = w[train_index]
 
-        for train_index, valid_index in era_k_fold.split(x, y, era):
+        # Validation data
+        valid_x = x[valid_index]
+        valid_y = y[valid_index]
+        valid_w = w[valid_index]
 
-            # Training data
-            train_x = x[train_index]
-            train_y = y[train_index]
-            train_w = w[train_index]
-
-            # Validation data
-            valid_x = x[valid_index]
-            valid_y = y[valid_index]
-            valid_w = w[valid_index]
-
-            yield train_x, train_y, train_w, valid_x, valid_y, valid_w
+        yield train_x, train_y, train_w, valid_x, valid_y, valid_w
 
 
 # Grid Search
 
 def grid_search(tr_x, tr_y, clf, params):
 
-    grid_search = GridSearchCV(estimator=clf, param_grid=params, cv=CrossValidation.group_k_fold(tr_x, tr_y))
+    grid_search = GridSearchCV(estimator=clf, param_grid=params, cv=group_k_fold(tr_x, tr_y))
 
     grid_search.fit(tr_x, tr_y)
 
