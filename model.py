@@ -18,6 +18,7 @@ from xgboost import XGBClassifier
 # from xgboost import plot_importance
 # from sklearn.ensemble import VotingClassifier
 from sklearn.model_selection import GroupKFold
+from sklearn.grid_search import GridSearchCV
 
 import seaborn as sns
 sns.set(style="whitegrid", color_codes=True)
@@ -402,9 +403,15 @@ class GradientBoosting:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def train(self, parameters):
+    def clf(self, parameters=None):
 
-        clf_gb = GradientBoostingClassifier(random_state=1)
+        clf = GradientBoostingClassifier(random_state=1)
+
+        return clf
+
+    def train(self):
+
+        clf_gb = self.clf()
         '''
         GradientBoostingClassifier(criterion='friedman_mse', init=None,
                                    learning_rate=0.1, loss='deviance', max_depth=3,
@@ -459,7 +466,7 @@ class XGBoost:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def train(self, parameters=None):
+    def clf(self, parameters=None):
 
         '''
             class xgboost.XGBClassifier(max_depth=3, learning_rate=0.1, n_estimators=100, silent=True,
@@ -469,18 +476,23 @@ class XGBoost:
                                         scale_pos_weight=1, base_score=0.5, random_state=0, seed=None,
                                         missing=None, **kwargs)
         '''
-        clf_xgb = XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=0.8,
-                                gamma=2, learning_rate=0.05, max_delta_step=0, max_depth=3,
-                                min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
-                                objective='binary:logistic', reg_alpha=0, reg_lambda=1,
-                                scale_pos_weight=1, seed=0, silent=True, subsample=0.8)
+        clf = XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=0.8,
+                            gamma=2, learning_rate=0.05, max_delta_step=0, max_depth=3,
+                            min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
+                            objective='binary:logistic', reg_alpha=0, reg_lambda=1,
+                            scale_pos_weight=1, seed=0, silent=True, subsample=0.8)
 
+        return clf
+
+    def train(self):
+
+        clf_xgb = self.clf()
 
         train_scores = cross_val_score(clf_xgb, self.train_x, self.train_y, cv=20)
         print("Accuracy: %0.6f (+/- %0.6f)" % (train_scores.mean(), train_scores.std() * 2))
 
         # for train_x, train_y, train_w, \
-        #     valid_x, valid_y, valid_w in group_k_fold(self.train_x, self.train_y, self.train_w):
+        #     valid_x, valid_y, valid_w in CrossValidation.group_k_fold_with_weight(self.train_x, self.train_y, self.train_w):
         #
         #     clf_xgb.fit(train_x, train_y, sample_weight=train_w,
         #                 eval_set=[(train_x, train_y), (valid_x, valid_y)],
@@ -740,29 +752,68 @@ class DeepNeuralNetworks:
 
 
 # K-Fold
+class CrossValidation:
 
-def group_k_fold(x, y, w):
+    def group_k_fold(self, x, y):
 
-    era = x[:, -1]
-    np.delete(x, 88, axis=1)
+        era = x[:, -1]
+        np.delete(x, 88, axis=1)
 
-    era_k_fold = GroupKFold(n_splits=20)
+        era_k_fold = GroupKFold(n_splits=20)
 
-    era_k_fold.get_n_splits(x, y, era)
+        era_k_fold.get_n_splits(x, y, era)
 
-    for train_index, valid_index in era_k_fold.split(x, y, era):
+        for train_index, valid_index in era_k_fold.split(x, y, era):
 
-        # Training data
-        train_x = x[train_index]
-        train_y = y[train_index]
-        train_w = w[train_index]
+            # Training data
+            train_x = x[train_index]
+            train_y = y[train_index]
 
-        # Validation data
-        valid_x = x[valid_index]
-        valid_y = y[valid_index]
-        valid_w = w[valid_index]
+            # Validation data
+            valid_x = x[valid_index]
+            valid_y = y[valid_index]
 
-        yield train_x, train_y, train_w, valid_x, valid_y, valid_w
+            yield train_x, train_y, valid_x, valid_y
+
+    def group_k_fold_with_weight(self, x, y, w):
+
+        era = x[:, -1]
+        np.delete(x, 88, axis=1)
+
+        era_k_fold = GroupKFold(n_splits=20)
+
+        era_k_fold.get_n_splits(x, y, era)
+
+        for train_index, valid_index in era_k_fold.split(x, y, era):
+
+            # Training data
+            train_x = x[train_index]
+            train_y = y[train_index]
+            train_w = w[train_index]
+
+            # Validation data
+            valid_x = x[valid_index]
+            valid_y = y[valid_index]
+            valid_w = w[valid_index]
+
+            yield train_x, train_y, train_w, valid_x, valid_y, valid_w
+
+
+# Grid Search
+
+def grid_search(tr_x, tr_y, clf, params):
+
+    grid_search = GridSearchCV(estimator=clf, param_grid=params, cv=CrossValidation.group_k_fold(tr_x, tr_y))
+
+    grid_search.fit(tr_x, tr_y)
+
+    best_parameters = grid_search.best_estimator_.get_params()
+
+    print("Best score: %0.3f" % grid_search.best_score_)
+    print("Best parameters set:")
+
+    for param_name in sorted(params.keys()):
+        print("\t%s: %r" % (param_name, best_parameters[param_name]))
 
 
 if __name__ == "__main__":

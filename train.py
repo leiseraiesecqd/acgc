@@ -1,6 +1,7 @@
 import preprocess
 import utils
 import model
+import time
 
 preprocessed_path = './preprocessed_data/'
 
@@ -26,8 +27,40 @@ preprocessed_path = './preprocessed_data/'
 #
 # print('Done!')
 
-train_x, train_y, train_w = utils.load_data(preprocessed_path)
+if __name__ == "__main__":
 
-XGB = model.XGBoost(train_x, train_y, train_w)
+    start_time = time.time()
 
-XGB.train(parameters=None)
+    train_x, train_y, train_w = utils.load_data(preprocessed_path)
+
+    XGB = model.XGBoost(train_x, train_y, train_w)
+
+    clf_xgb = XGB.clf()
+
+    parameters = {'base_score': 0.5,
+                  'colsample_bylevel': 1,
+                  'colsample_bytree': 0.8,
+                  'gamma': 2,
+                  'learning_rate': 0.05,
+                  'max_delta_step': 0,
+                  'max_depth': 3,
+                  'min_child_weight': 1,
+                  'missing': None,
+                  'n_estimators': 100,
+                  'nthread': -1,
+                  'objective': 'binary:logistic',
+                  'reg_alpha': 0,
+                  'reg_lambda': 1,
+                  'scale_pos_weight': 1,
+                  'seed': 0,
+                  'silent': True,
+                  'subsample': 0.8}
+
+    model.grid_search(train_x, train_y, clf_xgb, parameters)
+
+    total_time = time.time() - start_time
+
+    print('Done!')
+    print('Using {:.3}s'.format(total_time))
+
+
