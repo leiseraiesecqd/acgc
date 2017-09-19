@@ -5,6 +5,8 @@ import pickle
 
 def load_data(data_path):
 
+    print('Loading data...')
+
     with open(data_path + 'train_x.p', 'rb') as f:
         train_x = pickle.load(f)
     with open(data_path + 'train_y.p', 'rb') as f:

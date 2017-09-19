@@ -50,14 +50,13 @@ if __name__ == "__main__":
                       'scale_pos_weight': 1,
                       'seed': 0,
                       'silent': 1,
-                      'eval_metric': 'logloss',
                       'subsample': 0.8}
 
     XGB = model.XGBoost(train_x, train_y, train_w)
 
     clf_xgb = XGB.clf(xgb_parameters)
 
-    parameters_grid = {'base_score': (0.5),
+    parameters_grid = {'base_score': (0.4, 0.5, 0.6),
                        # 'colsample_bylevel': 1,
                        'colsample_bytree': (0.5, 0.8, 1.0),
                        # 'gamma': 2,
@@ -74,7 +73,6 @@ if __name__ == "__main__":
                        # 'scale_pos_weight': 1,
                        # 'seed': 1,
                        # 'silent': True,
-                       # 'eval_metric': 'logloss',
                        'subsample': (0.5, 0.8, 1.0)}
 
     model.grid_search(train_x, train_y, clf_xgb, parameters_grid)
@@ -83,5 +81,3 @@ if __name__ == "__main__":
 
     print('Done!')
     print('Using {:.3}s'.format(total_time))
-
-

@@ -1,6 +1,5 @@
 import math
 import time
-import pickle
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -18,7 +17,7 @@ from xgboost import XGBClassifier
 # from xgboost import plot_importance
 # from sklearn.ensemble import VotingClassifier
 from sklearn.model_selection import GroupKFold
-from sklearn.grid_search import GridSearchCV
+from sklearn.model_selection import GridSearchCV
 
 import seaborn as sns
 sns.set(style="whitegrid", color_codes=True)
@@ -28,7 +27,7 @@ color = sns.color_palette()
 
 # Logistic Regression
 
-class LogisticRegression:
+class LRegression:
 
     importance = np.array([])
     indices = np.array([])
@@ -127,7 +126,7 @@ class SupportVectorClustering:
 
 # Gaussian NB
 
-class GaussianNB:
+class Gaussian:
 
     def __init__(self, t_x, t_y, t_w):
 
@@ -482,6 +481,8 @@ class XGBoost:
         #                     objective='binary:logistic', reg_alpha=0, reg_lambda=1,
         #                     scale_pos_weight=1, seed=0, silent=True, subsample=0.8)
 
+        print('Initialize Model...')
+
         clf = XGBClassifier(**parameters)
 
         return clf
@@ -564,8 +565,7 @@ class DeepNeuralNetworks:
 
             fc = tf.contrib.layers.fully_connected(x_tensor,
                                                    num_outputs,
-                                                   weights_initializer= \
-                                                   tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
+                                                   weights_initializer=tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
                                                    biases_initializer=tf.zeros_initializer())
 
             tf.summary.histogram('fc_layer', fc)
@@ -800,9 +800,14 @@ def group_k_fold_with_weight(x, y, w):
 
 def grid_search(tr_x, tr_y, clf, params):
 
-    grid_search = GridSearchCV(estimator=clf, param_grid=params, cv=group_k_fold(tr_x, tr_y))
+    era = tr_x[:, -1]
+    np.delete(tr_x, 88, axis=1)
 
-    grid_search.fit(tr_x, tr_y)
+    #  grid_search = GridSearchCV(estimator=clf, param_grid=params, cv=group_k_fold(tr_x, tr_y))
+    grid_search = GridSearchCV(estimator=clf, param_grid=params, scoring='neg_log_loss')
+
+    # Start Grid Search
+    grid_search.fit(tr_x, tr_y, era)
 
     best_parameters = grid_search.best_estimator_.get_params()
 
@@ -829,7 +834,6 @@ if __name__ == "__main__":
     #
     # pickled_data_path = './preprocessed_data/'
     #
-    # print('Loading data set...')
     # tr, tr_y, tr_w, val_x, val_y, val_w = load_data(pickled_data_path)
     #
     # dnn = DNN(tr, tr_y, tr_w, val_x, val_y, val_w, hyper_parameters)
