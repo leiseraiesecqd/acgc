@@ -33,30 +33,51 @@ if __name__ == "__main__":
 
     train_x, train_y, train_w = utils.load_data(preprocessed_path)
 
+    xgb_parameters = {'base_score': 0.5,
+                      'colsample_bylevel': 1,
+                      'colsample_bytree': 0.8,
+                      'gamma': 2,
+                      'learning_rate': 0.05,
+                      'max_delta_step': 0,
+                      'max_depth': 3,
+                      'min_child_weight': 1,
+                      'missing': None,
+                      'n_estimators': 100,
+                      'nthread': -1,
+                      'objective': 'binary:logistic',
+                      'reg_alpha': 0,
+                      'reg_lambda': 1,
+                      'scale_pos_weight': 1,
+                      'seed': 0,
+                      'silent': 1,
+                      'eval_metric': 'logloss',
+                      'subsample': 0.8}
+
     XGB = model.XGBoost(train_x, train_y, train_w)
 
-    clf_xgb = XGB.clf()
+    clf_xgb = XGB.clf(xgb_parameters)
 
-    parameters = {'base_score': 0.5,
-                  'colsample_bylevel': 1,
-                  'colsample_bytree': 0.8,
-                  'gamma': 2,
-                  'learning_rate': 0.05,
-                  'max_delta_step': 0,
-                  'max_depth': 3,
-                  'min_child_weight': 1,
-                  'missing': None,
-                  'n_estimators': 100,
-                  'nthread': -1,
-                  'objective': 'binary:logistic',
-                  'reg_alpha': 0,
-                  'reg_lambda': 1,
-                  'scale_pos_weight': 1,
-                  'seed': 0,
-                  'silent': True,
-                  'subsample': 0.8}
+    parameters_grid = {'base_score': (0.5),
+                       # 'colsample_bylevel': 1,
+                       'colsample_bytree': (0.5, 0.8, 1.0),
+                       # 'gamma': 2,
+                       'learning_rate': (0.01, 0.05, 0.1, 0.15, 0.2),
+                       # 'max_delta_step': 0,
+                       'max_depth': (4, 6, 8, 10),
+                       'min_child_weight': (0.8, 1.0, 1.2),
+                       # 'missing': None,
+                       # 'n_estimators': 100,
+                       # 'nthread': -1,
+                       # 'objective': 'binary:logistic',
+                       # 'reg_alpha': 0,
+                       # 'reg_lambda': 1,
+                       # 'scale_pos_weight': 1,
+                       # 'seed': 1,
+                       # 'silent': True,
+                       # 'eval_metric': 'logloss',
+                       'subsample': (0.5, 0.8, 1.0)}
 
-    model.grid_search(train_x, train_y, clf_xgb, parameters)
+    model.grid_search(train_x, train_y, clf_xgb, parameters_grid)
 
     total_time = time.time() - start_time
 

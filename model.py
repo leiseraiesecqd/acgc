@@ -476,11 +476,13 @@ class XGBoost:
                                         scale_pos_weight=1, base_score=0.5, random_state=0, seed=None,
                                         missing=None, **kwargs)
         '''
-        clf = XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=0.8,
-                            gamma=2, learning_rate=0.05, max_delta_step=0, max_depth=3,
-                            min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
-                            objective='binary:logistic', reg_alpha=0, reg_lambda=1,
-                            scale_pos_weight=1, seed=0, silent=True, subsample=0.8)
+        # clf = XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=0.8,
+        #                     gamma=2, learning_rate=0.05, max_delta_step=0, max_depth=3,
+        #                     min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
+        #                     objective='binary:logistic', reg_alpha=0, reg_lambda=1,
+        #                     scale_pos_weight=1, seed=0, silent=True, subsample=0.8)
+
+        clf = XGBClassifier(**parameters)
 
         return clf
 
