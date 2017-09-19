@@ -807,6 +807,8 @@ def grid_search(tr_x, tr_y, clf, params):
     grid_search = GridSearchCV(estimator=clf, param_grid=params, scoring='neg_log_loss')
 
     # Start Grid Search
+    print('Grid Seaching...')
+
     grid_search.fit(tr_x, tr_y, era)
 
     best_parameters = grid_search.best_estimator_.get_params()
