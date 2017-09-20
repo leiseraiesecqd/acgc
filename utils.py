@@ -3,7 +3,7 @@ import pickle
 
 # Save Data
 
-def save_data(data, data_path):
+def save_np_to_pkl(data, data_path):
 
     print('Saving ' + data_path + '...')
 
@@ -13,7 +13,7 @@ def save_data(data, data_path):
 
 # Load Data
 
-def load_data(data_path):
+def load_pkl_to_np(data_path):
 
     print('Loading ' + data_path + '...')
 
@@ -25,13 +25,13 @@ def load_data(data_path):
 
 # Load Preprocessed Data
 
-def load_preprocessed_data(data_file_path):
+def load_preprocessed_np_data(data_file_path):
 
     print('Loading preprocessed data...')
 
-    train_x = load_data(data_file_path + 'train_x.p')
-    train_y = load_data(data_file_path + 'train_y.p')
-    train_w = load_data(data_file_path + 'train_w.p')
+    train_x = load_pkl_to_np(data_file_path + 'train_x.p')
+    train_y = load_pkl_to_np(data_file_path + 'train_y.p')
+    train_w = load_pkl_to_np(data_file_path + 'train_w.p')
 
     return train_x, train_y, train_w
 
