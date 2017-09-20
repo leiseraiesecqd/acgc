@@ -34,7 +34,7 @@ def rf_train():
                      'verbose': 1,
                      'warm_start': False}
 
-    RF = model.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+    RF = model.RandomForest(x_train, y_train, w_train, e_train, x_test, id_test)
 
     RF.train(pred_path, parameters=rf_parameters)
 
@@ -193,7 +193,7 @@ if __name__ == "__main__":
 
     start_time = time.time()
 
-    rf_train()
+    #  rf_train()
 
     ab_train()
 
