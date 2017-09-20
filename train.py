@@ -2,6 +2,8 @@
 import utils
 import model
 import time
+import os
+from os.path import isdir
 
 preprocessed_data_path = './preprocessed_data/'
 pred_path = './result/'
@@ -112,11 +114,12 @@ def grid_search():
 
 if __name__ == "__main__":
 
+    if not isdir(pred_path):
+        os.mkdir(pred_path)
+
     start_time = time.time()
 
-
-
-    total_time = time.time() - start_time
+    xgb_train()
 
     print('Done!')
-    print('Using {:.3}s'.format(total_time))
+    print('Using {:.3}s'.format(time.time() - start_time))
