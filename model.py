@@ -789,6 +789,7 @@ class XGBoost:
 
         utils.save_pred_to_csv(pred_path + 'xgb_', self.id_test, prob_mean)
 
+
 # LightGBM
 
 class LightGBM:

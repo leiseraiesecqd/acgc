@@ -10,30 +10,50 @@ preprocessed_data_path = './preprocessed_data/'
 pred_path = './result/'
 
 
-# DNN
+# Random Forest
 
-def dnn_train():
-
-    # HyperParameters
-    hyper_parameters = {'version': '1.0',
-                        'epochs': 10,
-                        'layers_number': 10,
-                        'unit_number': [200, 400, 800, 800, 800, 800, 800, 800, 400, 200],
-                        'learning_rate': 0.01,
-                        'keep_probability': 0.75,
-                        'batch_size': 512,
-                        'display_step': 100,
-                        'save_path': './checkpoints/',
-                        'log_path': './log/'}
-
-    print('Loading data set...')
+def rf_train():
 
     x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-    dnn = model.DeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
-    dnn.train()
+    rf_parameters = {'bootstrap': True,
+                     'class_weight': None,
+                     'criterion': 'gini',
+                     'max_depth': None,
+                     'max_features': 'auto',
+                     'max_leaf_nodes': None,
+                     'min_impurity_decrease': 0.0,
+                     'min_impurity_split': None,
+                     'min_samples_leaf': 1,
+                     'min_samples_split': 2,
+                     'min_weight_fraction_leaf': 0.0,
+                     'n_estimators': 50,
+                     'n_jobs': 1,
+                     'oob_score': False,
+                     'random_state': 1,
+                     'verbose': 1,
+                     'warm_start': False}
 
-    print('Done!')
+    RF = model.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+
+    RF.train(pred_path, parameters=rf_parameters)
+
+
+# AdaBoost
+
+def ab_train():
+
+    x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
+    ab_parameters = {'algorithm': 'SAMME.R',
+                     'base_estimator': None,
+                     'learning_rate': 1.0,
+                     'n_estimators': 50,
+                     'random_state': 1}
+
+    AB = model.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+
+    AB.train(pred_path, parameters=ab_parameters)
 
 
 # GradientBoosting
@@ -54,7 +74,7 @@ def gb_train():
                      'min_samples_leaf': 1,
                      'min_samples_split': 2,
                      'min_weight_fraction_leaf': 0.0,
-                     'n_estimators': 100,
+                     'n_estimators': 50,
                      'presort': 'auto',
                      'random_state': 1,
                      'subsample': 1.0,
@@ -87,6 +107,30 @@ def xgb_train():
     XGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
     XGB.train(pred_path, parameters=xgb_parameters)
+
+
+# DNN
+
+def dnn_train():
+    # HyperParameters
+    hyper_parameters = {'version': '1.0',
+                        'epochs': 10,
+                        'layers_number': 10,
+                        'unit_number': [200, 400, 800, 800, 800, 800, 800, 800, 400, 200],
+                        'learning_rate': 0.01,
+                        'keep_probability': 0.75,
+                        'batch_size': 512,
+                        'display_step': 100,
+                        'save_path': './checkpoints/',
+                        'log_path': './log/'}
+
+    print('Loading data set...')
+
+    x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
+    dnn = model.DeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
+
+    dnn.train()
 
 
 # Grid Search
@@ -149,9 +193,13 @@ if __name__ == "__main__":
 
     start_time = time.time()
 
+    rf_train()
+
+    ab_train()
+
     gb_train()
 
-    # xgb_train()
+    xgb_train()
 
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))
