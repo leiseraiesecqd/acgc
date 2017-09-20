@@ -29,14 +29,13 @@ color = sns.color_palette()
 
 class LRegression:
 
-    importance = np.array([])
-    indices = np.array([])
-
     def __init__(self, t_x, t_y, t_w):
 
         self.train_x = t_x
         self.train_y = t_y
         self.train_w = t_w
+        self.importance = np.array([])
+        self.indices = np.array([])
 
     def get_importance(self, clf):
 
@@ -487,6 +486,12 @@ class XGBoost:
 
         return clf
 
+    def prediction(self):
+
+        # TODO: prediction function
+
+        pass
+
     def train(self):
 
         clf_xgb = self.clf()
@@ -494,16 +499,25 @@ class XGBoost:
         train_scores = cross_val_score(clf_xgb, self.train_x, self.train_y, cv=20)
         print("Accuracy: %0.6f (+/- %0.6f)" % (train_scores.mean(), train_scores.std() * 2))
 
-        # for train_x, train_y, train_w, \
-        #     valid_x, valid_y, valid_w in CrossValidation.group_k_fold_with_weight(self.train_x, self.train_y, self.train_w):
-        #
-        #     clf_xgb.fit(train_x, train_y, sample_weight=train_w,
-        #                 eval_set=[(train_x, train_y), (valid_x, valid_y)],
-        #                 eval_metric='logloss', verbose=True)
-        #
-        #     result = clf_xgb.evals_result()
-        #
-        #     print(result)
+        count = 0
+
+        for train_x, train_y, train_w, \
+            valid_x, valid_y, valid_w in CrossValidation.group_k_fold_with_weight(self.train_x,
+                                                                                  self.train_y,
+                                                                                  self.train_w):
+
+            count += 1
+            print('Training CV: {}'.format(count))
+
+            clf_xgb.fit(train_x, train_y, sample_weight=train_w,
+                        eval_set=[(train_x, train_y), (valid_x, valid_y)],
+                        eval_metric='logloss', verbose=True)
+
+            result = clf_xgb.evals_result()
+
+            print(result)
+
+            self.prediction()
 
         self.get_importance(clf_xgb)
 
@@ -565,6 +579,7 @@ class DeepNeuralNetworks:
 
             fc = tf.contrib.layers.fully_connected(x_tensor,
                                                    num_outputs,
+                                                   activation_fn=tf.nn.sigmoid,
                                                    weights_initializer=tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
                                                    biases_initializer=tf.zeros_initializer())
 
@@ -732,11 +747,11 @@ class DeepNeuralNetworks:
                                                                       keep_prob: 1.0,
                                                                       is_train: False})
 
+                            valid_writer.add_summary(summary_valid_i, batch_counter)
+
                             cost_valid_a.append(cost_valid_i)
 
                         cost_valid = sum(cost_valid_a) / len(cost_valid_a)
-
-                        valid_writer.add_summary(summary_valid_i, batch_counter)
 
                         end_time = time.time()
                         total_time = end_time - start_time
@@ -754,46 +769,45 @@ class DeepNeuralNetworks:
 
 
 # K-Fold
-def group_k_fold(x, y):
 
-    era = x[:, -1]
-    np.delete(x, 88, axis=1)
+class CrossValidation:
 
-    era_k_fold = GroupKFold(n_splits=20)
+    def group_k_fold(self, x, y, e):
 
-    for train_index, valid_index in era_k_fold.split(x, y, era):
+        era_k_fold = GroupKFold(n_splits=20)
 
-        # Training data
-        train_x = x[train_index]
-        train_y = y[train_index]
+        for train_index, valid_index in era_k_fold.split(x, y, e):
 
-        # Validation data
-        valid_x = x[valid_index]
-        valid_y = y[valid_index]
+            # Training data
+            train_x = x[train_index]
+            train_y = y[train_index]
 
-        yield train_x, valid_x, train_y, valid_y
+            # Validation data
+            valid_x = x[valid_index]
+            valid_y = y[valid_index]
 
+            yield train_x, train_y, valid_x, valid_y
 
-def group_k_fold_with_weight(x, y, w):
+    def group_k_fold_with_weight(self, x, y, w):
 
-    era = x[:, -1]
-    np.delete(x, 88, axis=1)
+        era = x[:, -1]
+        np.delete(x, 88, axis=1)
 
-    era_k_fold = GroupKFold(n_splits=20)
+        era_k_fold = GroupKFold(n_splits=20)
 
-    for train_index, valid_index in era_k_fold.split(x, y, era):
+        for train_index, valid_index in era_k_fold.split(x, y, era):
 
-        # Training data
-        train_x = x[train_index]
-        train_y = y[train_index]
-        train_w = w[train_index]
+            # Training data
+            train_x = x[train_index]
+            train_y = y[train_index]
+            train_w = w[train_index]
 
-        # Validation data
-        valid_x = x[valid_index]
-        valid_y = y[valid_index]
-        valid_w = w[valid_index]
+            # Validation data
+            valid_x = x[valid_index]
+            valid_y = y[valid_index]
+            valid_w = w[valid_index]
 
-        yield train_x, train_y, train_w, valid_x, valid_y, valid_w
+            yield train_x, train_y, train_w, valid_x, valid_y, valid_w
 
 
 # Grid Search
