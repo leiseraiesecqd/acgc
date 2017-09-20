@@ -428,7 +428,7 @@ class GradientBoosting:
 
     def clf(self, parameters):
 
-        clf = GradientBoostingClassifier(parameters)
+        clf = GradientBoostingClassifier(**parameters)
 
         return clf
 
