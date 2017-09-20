@@ -31,11 +31,14 @@ color = sns.color_palette()
 
 class LRegression:
 
-    def __init__(self, x_tr, y_tr, w_tr):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
         self.y_train = y_tr
         self.w_train = w_tr
+        self.e_train = e_tr
+        self.x_test = x_te
+        self.id_test = id_te
         self.importance = np.array([])
         self.indices = np.array([])
 
@@ -83,11 +86,14 @@ class LRegression:
 
 class KNearestNeighbor:
 
-    def __init__(self, x_tr, y_tr, w_tr):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
         self.y_train = y_tr
         self.w_train = w_tr
+        self.e_train = e_tr
+        self.x_test = x_te
+        self.id_test = id_te
 
     def train(self, parameters):
 
@@ -109,11 +115,14 @@ class KNearestNeighbor:
 
 class SupportVectorClustering:
 
-    def __init__(self, x_tr, y_tr, w_tr):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
         self.y_train = y_tr
         self.w_train = w_tr
+        self.e_train = e_tr
+        self.x_test = x_te
+        self.id_test = id_te
 
     def train(self, parameters):
 
@@ -129,11 +138,14 @@ class SupportVectorClustering:
 
 class Gaussian:
 
-    def __init__(self, x_tr, y_tr, w_tr):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
         self.y_train = y_tr
         self.w_train = w_tr
+        self.e_train = e_tr
+        self.x_test = x_te
+        self.id_test = id_te
 
     def train(self, parameters):
 
@@ -149,14 +161,16 @@ class Gaussian:
 
 class DecisionTree:
 
-    importance = np.array([])
-    indices = np.array([])
-
-    def __init__(self, x_tr, y_tr, w_tr):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
         self.y_train = y_tr
         self.w_train = w_tr
+        self.e_train = e_tr
+        self.x_test = x_te
+        self.id_test = id_te
+        self.importance = np.array([])
+        self.indices = np.array([])
 
     def get_importance(self, clf):
 
@@ -203,15 +217,17 @@ class DecisionTree:
 
 class RandomForest:
 
-    importance = np.array([])
-    indices = np.array([])
-    std = np.array([])
-
-    def __init__(self, x_tr, y_tr, w_tr):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
         self.y_train = y_tr
         self.w_train = w_tr
+        self.e_train = e_tr
+        self.x_test = x_te
+        self.id_test = id_te
+        self.importance = np.array([])
+        self.indices = np.array([])
+        self.std = np.array([])
 
     def get_importance(self, clf):
 
@@ -260,15 +276,17 @@ class RandomForest:
 
 class ExtraTrees:
 
-    importance = np.array([])
-    indices = np.array([])
-    std = np.array([])
-
-    def __init__(self, x_tr, y_tr, w_tr):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
         self.y_train = y_tr
         self.w_train = w_tr
+        self.e_train = e_tr
+        self.x_test = x_te
+        self.id_test = id_te
+        self.importance = np.array([])
+        self.indices = np.array([])
+        self.std = np.array([])
 
     def get_importance(self, clf):
 
@@ -317,15 +335,17 @@ class ExtraTrees:
 
 class AdaBoost:
 
-    importance = np.array([])
-    indices = np.array([])
-    std = np.array([])
-
-    def __init__(self, x_tr, y_tr, w_tr):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
         self.y_train = y_tr
         self.w_train = w_tr
+        self.e_train = e_tr
+        self.x_test = x_te
+        self.id_test = id_te
+        self.importance = np.array([])
+        self.indices = np.array([])
+        self.std = np.array([])
 
     def get_importance(self, clf):
 
@@ -370,15 +390,17 @@ class AdaBoost:
 
 class GradientBoosting:
 
-    importance = np.array([])
-    indices = np.array([])
-    std = np.array([])
-
-    def __init__(self, x_tr, y_tr, w_tr):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
         self.y_train = y_tr
         self.w_train = w_tr
+        self.e_train = e_tr
+        self.x_test = x_te
+        self.id_test = id_te
+        self.importance = np.array([])
+        self.indices = np.array([])
+        self.std = np.array([])
 
     def get_importance(self, clf):
 
@@ -389,7 +411,8 @@ class GradientBoosting:
         feature_num = self.x_train.shape[1]
 
         for f in range(feature_num):
-            print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+            print('Importance:')
+            print('%d. feature %d (%f)' % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
     def show(self):
 
@@ -403,40 +426,71 @@ class GradientBoosting:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def clf(self, parameters=None):
+    def clf(self, parameters):
 
-        clf = GradientBoostingClassifier(random_state=1)
+        clf = GradientBoostingClassifier(parameters)
 
         return clf
 
-    def train(self):
+    def predict(self, clf, pred_path):
 
-        clf_gb = self.clf()
-        '''
-        GradientBoostingClassifier(criterion='friedman_mse', init=None,
-                                   learning_rate=0.1, loss='deviance', max_depth=3,
-                                   max_features=None, max_leaf_nodes=None,
-                                   min_impurity_decrease=0.0, min_impurity_split=None,
-                                   min_samples_leaf=1, min_samples_split=2,
-                                   min_weight_fraction_leaf=0.0, n_estimators=100,
-                                   presort='auto', random_state=1, subsample=1.0, verbose=0,
-                                   warm_start=False)
-        '''
+        print('Predicting...')
 
-        clf_gb.fit(self.x_train, self.y_train, self.w_train)
+        prob_test = clf.predict(self.x_test)
 
-        scores = cross_val_score(clf_gb, self.x_train, self.y_train, cv=10)
-        print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
-        self.get_importance(clf_gb)
+        return prob_test
+
+    def train(self, pred_path, parameters=None):
+
+        count = 0
+        prob_total = []
+
+        for x_train, y_train, w_train, \
+            x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(x=self.x_train,
+                                                                                     y=self.y_train,
+                                                                                     w=self.w_train,
+                                                                                     e=self.e_train):
+            count += 1
+
+            print('===========================================')
+            print('Training on the Cross Validation Set: {}'.format(count))
+
+            clf_gb = self.clf(**parameters)
+            '''
+            GradientBoostingClassifier(criterion='friedman_mse', init=None,
+                                       learning_rate=0.1, loss='deviance', max_depth=3,
+                                       max_features=None, max_leaf_nodes=None,
+                                       min_impurity_decrease=0.0, min_impurity_split=None,
+                                       min_samples_leaf=1, min_samples_split=2,
+                                       min_weight_fraction_leaf=0.0, n_estimators=100,
+                                       presort='auto', random_state=1, subsample=1.0, verbose=1,
+                                       warm_start=False)
+            '''
+
+            clf_gb.fit(x_train, y_train, sample_weight=w_train)
+
+            scores = clf_gb.score(x_valid, y_valid, sample_weight=w_valid)
+
+            print('mean accuracy on validation set: %0.6f' % scores)
+
+            self.get_importance(clf_gb)
+
+            prob_test = self.predict(clf_gb, pred_path + 'gb_vc_{}_'.format(count))
+            prob_total.append(list(prob_test))
+
+        print('===========================================')
+        print('Calculating final result...')
+
+        prob_mean = np.mean(np.array(prob_total), axis=0)
+
+        utils.save_pred_to_csv(pred_path + 'gb_', self.id_test, prob_mean)
 
 
 # XGBoost
 
 class XGBoost:
-
-    importance = np.array([])
-    indices = np.array([])
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
@@ -446,6 +500,9 @@ class XGBoost:
         self.e_train = e_tr
         self.x_test = x_te
         self.id_test = id_te
+        self.importance = np.array([])
+        self.indices = np.array([])
+        self.std = np.array([])
 
     def get_importance(self, clf):
 
@@ -491,7 +548,7 @@ class XGBoost:
 
         return clf
 
-    def prediction(self, model, pred_path):
+    def predict(self, model, pred_path):
 
         print('Predicting...')
 
@@ -559,7 +616,7 @@ class XGBoost:
             bst = xgb.train(parameters, d_train, num_boost_round=30, evals=eval_list)
 
             # Prediction
-            prob_test = self.prediction(bst, pred_path + 'xgb_vc_{}_'.format(count))
+            prob_test = self.predict(bst, pred_path + 'xgb_vc_{}_'.format(count))
             prob_total.append(list(prob_test))
 
         print('======================================================')

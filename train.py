@@ -5,8 +5,10 @@ import time
 import os
 from os.path import isdir
 
+
 preprocessed_data_path = './preprocessed_data/'
 pred_path = './result/'
+
 
 # DNN
 
@@ -34,11 +36,39 @@ def dnn_train():
     print('Done!')
 
 
+# GradientBoosting
+
+def gb_train():
+
+    x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
+    gb_parameters = {'criterion': 'friedman_mse',
+                     'init': None,
+                     'learning_rate': 0.1,
+                     'loss': 'deviance',
+                     'max_depth': 3,
+                     'max_features': None,
+                     'max_leaf_nodes': None,
+                     'min_impurity_decrease': 0.0,
+                     'min_impurity_split': None,
+                     'min_samples_leaf': 1,
+                     'min_samples_split': 2,
+                     'min_weight_fraction_leaf': 0.0,
+                     'n_estimators': 100,
+                     'presort': 'auto',
+                     'random_state': 1,
+                     'subsample': 1.0,
+                     'verbose': 1,
+                     'warm_start': False}
+
+    GB = model.GradientBoosting(x_train, y_train, w_train, e_train, x_test, id_test)
+
+    GB.train(pred_path, parameters=gb_parameters)
+
+
 # XGBoost
 
 def xgb_train():
-
-    start_time = time.time()
 
     x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
@@ -119,7 +149,9 @@ if __name__ == "__main__":
 
     start_time = time.time()
 
-    xgb_train()
+    gb_train()
+
+    # xgb_train()
 
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))
