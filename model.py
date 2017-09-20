@@ -457,7 +457,7 @@ class GradientBoosting:
             print('===========================================')
             print('Training on the Cross Validation Set: {}'.format(count))
 
-            clf_gb = self.clf(**parameters)
+            clf_gb = self.clf(parameters)
             '''
             GradientBoostingClassifier(criterion='friedman_mse', init=None,
                                        learning_rate=0.1, loss='deviance', max_depth=3,

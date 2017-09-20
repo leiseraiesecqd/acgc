@@ -72,3 +72,8 @@ def save_pred_to_csv(file_path, id, prob):
     df = pd.DataFrame({'id': id, 'proba': prob})
 
     df.to_csv(file_path + 'result.csv', sep=',', index=False, float_format='%.6f')
+
+
+# TODO: Save importance to csv file
+
+# TODO: Save final loss to csv file
