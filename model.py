@@ -16,6 +16,8 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 import xgboost as xgb
 from xgboost import XGBClassifier
+import lightgbm as lgb
+from lightgbm import LGBMClassifier
 # from xgboost import plot_importance
 # from sklearn.ensemble import VotingClassifier
 from sklearn.model_selection import GroupKFold
@@ -193,24 +195,64 @@ class DecisionTree:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def train(self):
+    def clf(self, parameters):
 
-        clf_dt = DecisionTreeClassifier(random_state=1)
-        '''
-        DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
-                               max_features=None, max_leaf_nodes=None,
-                               min_impurity_decrease=0.0, min_impurity_split=None,
-                               min_samples_leaf=1, min_samples_split=2,
-                               min_weight_fraction_leaf=0.0, presort=False, random_state=1,
-                               splitter='best')
-        '''
+        clf = DecisionTreeClassifier(**parameters)
 
-        clf_dt.fit(self.x_train, self.y_train)
+        return clf
 
-        scores = cross_val_score(clf_dt, self.x_train, self.y_train, cv=10)
-        print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+    def predict(self, clf, pred_path):
 
-        self.get_importance(clf_dt)
+        print('Predicting...')
+
+        prob_test = clf.predict(self.x_test)
+
+        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+
+        return prob_test
+
+    def train(self, pred_path, parameters=None):
+
+        count = 0
+        prob_total = []
+
+        for x_train, y_train, w_train, \
+            x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(x=self.x_train,
+                                                                                     y=self.y_train,
+                                                                                     w=self.w_train,
+                                                                                     e=self.e_train):
+            count += 1
+
+            print('===========================================')
+            print('Training on the Cross Validation Set: {}'.format(count))
+
+            clf_dt = self.clf(parameters)
+            '''
+            DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
+                                   max_features=None, max_leaf_nodes=None,
+                                   min_impurity_decrease=0.0, min_impurity_split=None,
+                                   min_samples_leaf=1, min_samples_split=2,
+                                   min_weight_fraction_leaf=0.0, presort=False, random_state=1,
+                                   splitter='best')
+            '''
+
+            clf_dt.fit(x_train, y_train, sample_weight=w_train)
+
+            scores = clf_dt.score(x_valid, y_valid, sample_weight=w_valid)
+
+            print('mean accuracy on validation set: %0.6f' % scores)
+
+            self.get_importance(clf_dt)
+
+            prob_test = self.predict(clf_dt, pred_path + 'dt_vc_{}_'.format(count))
+            prob_total.append(list(prob_test))
+
+        print('===========================================')
+        print('Calculating final result...')
+
+        prob_mean = np.mean(np.array(prob_total), axis=0)
+
+        utils.save_pred_to_csv(pred_path + 'dt_', self.id_test, prob_mean)
 
 
 # Random Forest
@@ -252,24 +294,65 @@ class RandomForest:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def train(self, parameters):
+    def clf(self, parameters):
 
-        clf_rf = RandomForestClassifier(random_state=1)
-        '''
-        RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini',
-                               max_depth=None, max_features='auto', max_leaf_nodes=None,
-                               min_impurity_decrease=0.0, min_impurity_split=None,
-                               min_samples_leaf=1, min_samples_split=2,
-                               min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
-                               oob_score=False, random_state=1, verbose=0, warm_start=False)
-        '''
+        clf = RandomForestClassifier(**parameters)
 
-        clf_rf.fit(self.x_train, self.y_train, self.w_train)
+        return clf
 
-        scores = cross_val_score(clf_rf, self.x_train, self.y_train, cv=10)
-        print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+    def predict(self, clf, pred_path):
 
-        self.get_importance(clf_rf)
+        print('Predicting...')
+
+        prob_test = clf.predict(self.x_test)
+
+        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+
+        return prob_test
+
+    def train(self, pred_path, parameters=None):
+
+        count = 0
+        prob_total = []
+
+        for x_train, y_train, w_train, \
+            x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(x=self.x_train,
+                                                                                     y=self.y_train,
+                                                                                     w=self.w_train,
+                                                                                     e=self.e_train):
+            count += 1
+
+            print('===========================================')
+            print('Training on the Cross Validation Set: {}'.format(count))
+
+            clf_rf = self.clf(parameters)
+            '''
+            RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini',
+                                   max_depth=None, max_features='auto', max_leaf_nodes=None,
+                                   min_impurity_decrease=0.0, min_impurity_split=None,
+                                   min_samples_leaf=1, min_samples_split=2,
+                                   min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+                                   oob_score=False, random_state=1, verbose=1, warm_start=False)
+            '''
+
+            clf_rf.fit(x_train, y_train, sample_weight=w_train)
+
+            scores = clf_rf.score(x_valid, y_valid, sample_weight=w_valid)
+
+            print('mean accuracy on validation set: %0.6f' % scores)
+
+            self.get_importance(clf_rf)
+
+            prob_test = self.predict(clf_rf, pred_path + 'rf_vc_{}_'.format(count))
+            prob_total.append(list(prob_test))
+
+        print('===========================================')
+        print('Calculating final result...')
+
+        prob_mean = np.mean(np.array(prob_total), axis=0)
+
+        utils.save_pred_to_csv(pred_path + 'rf_', self.id_test, prob_mean)
+
 
 
 # Extra Trees
@@ -311,24 +394,64 @@ class ExtraTrees:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def train(self, parameters):
+    def clf(self, parameters):
 
-        clf_et = ExtraTreesClassifier(random_state=1)
-        '''
-        ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
-                             max_depth=None, max_features='auto', max_leaf_nodes=None,
-                             min_impurity_decrease=0.0, min_impurity_split=None,
-                             min_samples_leaf=1, min_samples_split=2,
-                             min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
-                             oob_score=False, random_state=1, verbose=0, warm_start=False)
-        '''
+        clf = ExtraTreesClassifier(**parameters)
 
-        clf_et.fit(self.x_train, self.y_train, self.w_train)
+        return clf
 
-        scores = cross_val_score(clf_et, self.x_train, self.y_train, cv=10)
-        print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+    def predict(self, clf, pred_path):
 
-        self.get_importance(clf_et)
+        print('Predicting...')
+
+        prob_test = clf.predict(self.x_test)
+
+        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+
+        return prob_test
+
+    def train(self, pred_path, parameters=None):
+
+        count = 0
+        prob_total = []
+
+        for x_train, y_train, w_train, \
+            x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(x=self.x_train,
+                                                                                     y=self.y_train,
+                                                                                     w=self.w_train,
+                                                                                     e=self.e_train):
+            count += 1
+
+            print('===========================================')
+            print('Training on the Cross Validation Set: {}'.format(count))
+
+            clf_et = self.clf(parameters)
+            '''
+            ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
+                                 max_depth=None, max_features='auto', max_leaf_nodes=None,
+                                 min_impurity_decrease=0.0, min_impurity_split=None,
+                                 min_samples_leaf=1, min_samples_split=2,
+                                 min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
+                                 oob_score=False, random_state=1, verbose=1, warm_start=False)
+            '''
+
+            clf_et.fit(x_train, y_train, sample_weight=w_train)
+
+            scores = clf_et.score(x_valid, y_valid, sample_weight=w_valid)
+
+            print('mean accuracy on validation set: %0.6f' % scores)
+
+            self.get_importance(clf_et)
+
+            prob_test = self.predict(clf_et, pred_path + 'et_vc_{}_'.format(count))
+            prob_total.append(list(prob_test))
+
+        print('===========================================')
+        print('Calculating final result...')
+
+        prob_mean = np.mean(np.array(prob_total), axis=0)
+
+        utils.save_pred_to_csv(pred_path + 'et_', self.id_test, prob_mean)
 
 
 # AdaBoost
@@ -370,20 +493,60 @@ class AdaBoost:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def train(self, parameters):
+    def clf(self, parameters):
 
-        clf_ab = AdaBoostClassifier(random_state=1)
-        '''
-        AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
-                           learning_rate=1.0, n_estimators=50, random_state=1)
-        '''
+        clf = AdaBoostClassifier(**parameters)
 
-        clf_ab.fit(self.x_train, self.y_train, self.w_train)
+        return clf
 
-        scores = cross_val_score(clf_ab, self.x_train, self.y_train, cv=10)
-        print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+    def predict(self, clf, pred_path):
 
-        self.get_importance(clf_ab)
+        print('Predicting...')
+
+        prob_test = clf.predict(self.x_test)
+
+        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+
+        return prob_test
+
+    def train(self, pred_path, parameters=None):
+
+        count = 0
+        prob_total = []
+
+        for x_train, y_train, w_train, \
+            x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(x=self.x_train,
+                                                                                     y=self.y_train,
+                                                                                     w=self.w_train,
+                                                                                     e=self.e_train):
+            count += 1
+
+            print('===========================================')
+            print('Training on the Cross Validation Set: {}'.format(count))
+
+            clf_ab = self.clf(parameters)
+            '''
+            AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
+                               learning_rate=1.0, n_estimators=50, random_state=1)
+            '''
+
+            clf_ab.fit(x_train, y_train, sample_weight=w_train)
+
+            scores = clf_ab.score(x_valid, y_valid, sample_weight=w_valid)
+
+            print('mean accuracy on validation set: %0.6f' % scores)
+
+            self.get_importance(clf_ab)
+
+            prob_test = self.predict(clf_ab, pred_path + 'ab_vc_{}_'.format(count))
+            prob_total.append(list(prob_test))
+
+        print('===========================================')
+        print('Calculating final result...')
+
+        prob_mean = np.mean(np.array(prob_total), axis=0)
+
+        utils.save_pred_to_csv(pred_path + 'ab_', self.id_test, prob_mean)
 
 
 # GradientBoosting
@@ -625,6 +788,145 @@ class XGBoost:
         prob_mean = np.mean(np.array(prob_total), axis=0)
 
         utils.save_pred_to_csv(pred_path + 'xgb_', self.id_test, prob_mean)
+
+# LightGBM
+
+class LightGBM:
+
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
+
+        self.x_train = x_tr
+        self.y_train = y_tr
+        self.w_train = w_tr
+        self.e_train = e_tr
+        self.x_test = x_te
+        self.id_test = id_te
+        self.importance = np.array([])
+        self.indices = np.array([])
+        self.std = np.array([])
+
+    def get_importance(self, clf):
+
+        self.importance = clf.feature_importances_
+        self.indices = np.argsort(self.importance)[::-1]
+
+        feature_num = self.x_train.shape[1]
+
+        for f in range(feature_num):
+            print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+
+    def show(self):
+
+        feature_num = self.x_train.shape[1]
+
+        plt.figure(figsize=(20, 10))
+        plt.title('Feature Importance in XGBoost')
+        plt.bar(range(feature_num), self.importance[self.indices],
+                color=color[6], yerr=self.std[self.indices], align="center")
+        plt.xticks(range(feature_num), self.indices)
+        plt.xlim([-1, feature_num])
+        plt.show()
+
+    def clf(self, parameters=None):
+
+        '''
+            class xgboost.XGBClassifier(max_depth=3, learning_rate=0.1, n_estimators=100, silent=True,
+                                        objective='binary:logistic', booster='gbtree', n_jobs=1, nthread=None,
+                                        gamma=0, min_child_weight=1, max_delta_step=0, subsample=1,
+                                        colsample_bytree=1, colsample_bylevel=1, reg_alpha=0, reg_lambda=1,
+                                        scale_pos_weight=1, base_score=0.5, random_state=0, seed=None,
+                                        missing=None, **kwargs)
+        '''
+        # clf = XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=0.8,
+        #                     gamma=2, learning_rate=0.05, max_delta_step=0, max_depth=3,
+        #                     min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
+        #                     objective='binary:logistic', reg_alpha=0, reg_lambda=1,
+        #                     scale_pos_weight=1, seed=0, silent=True, subsample=0.8)
+
+        print('Initialize Model...')
+
+        clf = lgb.LGBMClassifier(**parameters)
+
+        return clf
+
+    def predict(self, model, pred_path):
+
+        print('Predicting...')
+
+        prob_test = model.predict(lgb.Dataset(self.x_test))
+
+        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+
+        return prob_test
+
+    def train(self, pred_path, parameters=None):
+
+        # sk-learn module
+
+        # clf_lgb = self.clf()
+        #
+        # train_scores = cross_val_score(clf_lgb, self.x_train, self.y_train, cv=20)
+        # print("Accuracy: %0.6f (+/- %0.6f)" % (train_scores.mean(), train_scores.std() * 2))
+        #
+        # count = 0
+        #
+        # for x_train, y_train, w_train, \
+        #     x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(self.x_train,
+        #                                                                              self.y_train,
+        #                                                                              self.w_train
+        #                                                                              self.e_train):
+        #
+        #     count += 1
+        #     print('Training CV: {}'.format(count))
+        #
+        #     clf_lgb.fit(x_train, y_train, sample_weight=w_train,
+        #                 eval_set=[(x_train, y_train), (x_valid, y_valid)],
+        #                 eval_metric='logloss', verbose=True)
+        #
+        #     result = clf_lgb.evals_result()
+        #
+        #     print(result)
+        #
+        #     self.prediction(clf_lgb)
+        #
+        #     self.get_importance(clf_lgb)
+
+        count = 0
+        prob_total = []
+
+        for x_train, y_train, w_train, \
+            x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(x=self.x_train,
+                                                                                     y=self.y_train,
+                                                                                     w=self.w_train,
+                                                                                     e=self.e_train):
+            count += 1
+
+            print('======================================================')
+            print('Training on the Cross Validation Set: {}'.format(count))
+
+            d_train = lgb.Dataset(x_train, label=y_train, weight=w_train)
+            d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid)
+
+            # parameters = {'learning_rate': 0.05, 'n_estimators': 1000, 'max_depth': 10,
+            #               'min_child_weight': 5, 'gamma': 0, 'silent': 1, 'objective': 'binary:logistic',
+            #               'early_stopping_rounds': 50, 'subsample': 0.8, 'colsample_bytree': 0.8,
+            #               'eval_metric': 'logloss'}
+
+            eval_list = [(d_valid, 'eval'), (d_train, 'train')]
+
+            bst = lgb.train(parameters, d_train, num_boost_round=30,
+                            valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
+
+            # Prediction
+            prob_test = self.predict(bst, pred_path + 'lgb_vc_{}_'.format(count))
+            prob_total.append(list(prob_test))
+
+        print('======================================================')
+        print('Calculating final result...')
+
+        prob_mean = np.mean(np.array(prob_total), axis=0)
+
+        utils.save_pred_to_csv(pred_path + 'lgb_', self.id_test, prob_mean)
 
 
 # Deep Neural Networks
