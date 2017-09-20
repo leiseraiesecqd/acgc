@@ -9,3 +9,6 @@
 /checkpoints/
 /log/
 /.idea/
+/preprocessed_data/
+/result/
+/inputs/

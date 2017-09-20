@@ -2,7 +2,6 @@ import math
 import time
 import utils
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from sklearn.model_selection import cross_val_score
@@ -537,12 +536,15 @@ class XGBoost:
         prob_total = np.array([])
 
         for x_train, y_train, w_train, \
-            x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(self.x_train,
-                                                                                     self.y_train,
-                                                                                     self.w_train,
-                                                                                     self.e_train):
+            x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(x=self.x_train,
+                                                                                     y=self.y_train,
+                                                                                     w=self.w_train,
+                                                                                     e=self.e_train):
 
             count += 1
+
+            print('=======================================================')
+            print('Training on the Cross Validation Set: {}'.format(count))
 
             d_train = xgb.DMatrix(x_train, label=y_train, weight=w_train)
             d_valid = xgb.DMatrix(x_valid, label=y_valid, weight=w_valid)
@@ -824,7 +826,8 @@ class DeepNeuralNetworks:
 
 class CrossValidation:
 
-    def sk_group_k_fold(self, x, y, e):
+    @staticmethod
+    def sk_group_k_fold(x, y, e):
 
         era_k_fold = GroupKFold(n_splits=20)
 
@@ -840,7 +843,8 @@ class CrossValidation:
 
             yield x_train, y_train, x_valid, y_valid
 
-    def sk_group_k_fold_with_weight(self, x, y, w, e):
+    @staticmethod
+    def sk_group_k_fold_with_weight(x, y, w, e):
 
         era_k_fold = GroupKFold(n_splits=20)
 
@@ -857,8 +861,6 @@ class CrossValidation:
             w_valid = w[valid_index]
 
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
-
-
 
 
 # Grid Search
