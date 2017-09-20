@@ -31,33 +31,47 @@ def load_preprocessed_np_data(data_file_path):
 
     print('Loading preprocessed data...')
 
-    train_x = load_pkl_to_np(data_file_path + 'train_x.p')
-    train_y = load_pkl_to_np(data_file_path + 'train_y.p')
-    train_w = load_pkl_to_np(data_file_path + 'train_w.p')
+    x_train = load_pkl_to_np(data_file_path + 'x_train.p')
+    y_train = load_pkl_to_np(data_file_path + 'y_train.p')
+    w_train = load_pkl_to_np(data_file_path + 'w_train.p')
 
-    return train_x, train_y, train_w
+    return x_train, y_train, w_train
 
 
 # Load Preprocessed Data
 
 def load_preprocessed_pd_data(data_file_path):
 
-    train_x_pd = pd.read_pickle(data_file_path + 'train_x.p')
-    train_x = np.array(train_x_pd)
+    x_train_pd = pd.read_pickle(data_file_path + 'x_train.p')
+    x_train = np.array(x_train_pd)
 
-    train_y_pd = pd.read_pickle(data_file_path + 'train_y.p')
-    train_y = np.array(train_y_pd)
+    y_train_pd = pd.read_pickle(data_file_path + 'y_train.p')
+    y_train = np.array(y_train_pd)
 
-    train_w_pd = pd.read_pickle(data_file_path + 'train_w.p')
-    train_w = np.array(train_w_pd)
+    w_train_pd = pd.read_pickle(data_file_path + 'w_train.p')
+    w_train = np.array(w_train_pd)
 
-    train_e_pd = pd.read_pickle(data_file_path + 'train_e.p')
-    train_e = np.array(train_e_pd)
+    e_train_pd = pd.read_pickle(data_file_path + 'e_train.p')
+    e_train = np.array(e_train_pd)
 
-    test_x_pd = pd.read_pickle(data_file_path + 'test_x.p')
-    test_x = np.array(test_x_pd)
+    x_test_pd = pd.read_pickle(data_file_path + 'x_test.p')
+    x_test = np.array(x_test_pd)
 
-    return train_x, train_y, train_w, train_e, test_x
+    id_test_pd = pd.read_pickle(data_file_path + 'id_test.p')
+    id_test = np.array(id_test_pd)
+
+    return x_train, y_train, w_train, e_train, x_test, id_test
+
+
+# Save predictions to csv file
+
+def save_pred_to_csv(file_path, id, prob):
+
+    print('Saving predictions to csv file...')
+
+    df = pd.DataFrame({'id': id['id'].values, 'proba': prob})
+
+    df.to_csv(file_path + 'result.csv', sep=',', index=False, float_format='%.6f')
 
 
 

@@ -1,6 +1,8 @@
 import math
 import time
+import utils
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import tensorflow as tf
 from sklearn.model_selection import cross_val_score
@@ -13,6 +15,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
+import xgboost as xgb
 from xgboost import XGBClassifier
 # from xgboost import plot_importance
 # from sklearn.ensemble import VotingClassifier
@@ -29,11 +32,11 @@ color = sns.color_palette()
 
 class LRegression:
 
-    def __init__(self, t_x, t_y, t_w):
+    def __init__(self, x_tr, y_tr, w_tr):
 
-        self.train_x = t_x
-        self.train_y = t_y
-        self.train_w = t_w
+        self.x_train = x_tr
+        self.y_train = y_tr
+        self.w_train = w_tr
         self.importance = np.array([])
         self.indices = np.array([])
 
@@ -42,14 +45,14 @@ class LRegression:
         self.importance = np.abs(clf.coef_)[0]
         indices = np.argsort(self.importance)[::-1]
 
-        feature_num = self.train_x.shape[1]
+        feature_num = self.x_train.shape[1]
 
         for f in range(feature_num):
             print("%d. feature %d (%f)" % (f + 1, indices[f], self.importance[indices[f]]))
 
     def show(self):
 
-        feature_num = self.train_x.shape[1]
+        feature_num = self.x_train.shape[1]
 
         plt.figure(figsize=(20, 10))
         plt.title('Feature Importance in Logistic Regression')
@@ -68,10 +71,10 @@ class LRegression:
                            verbose=0, warm_start=False)
         '''
 
-        clf_lr.fit(self.train_x, self.train_y, sample_weight=self.train_w)
+        clf_lr.fit(self.x_train, self.y_train, sample_weight=self.w_train)
 
         # K-fold cross-validation on Logistic Regression
-        scores = cross_val_score(clf_lr, self.train_x, self.train_y, cv=10)
+        scores = cross_val_score(clf_lr, self.x_train, self.y_train, cv=10)
         print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
 
         self.get_importance(clf_lr)
@@ -81,11 +84,11 @@ class LRegression:
 
 class KNearestNeighbor:
 
-    def __init__(self, t_x, t_y, t_w):
+    def __init__(self, x_tr, y_tr, w_tr):
 
-        self.train_x = t_x
-        self.train_y = t_y
-        self.train_w = t_w
+        self.x_train = x_tr
+        self.y_train = y_tr
+        self.w_train = w_tr
 
     def train(self, parameters):
 
@@ -96,10 +99,10 @@ class KNearestNeighbor:
                              weights='uniform')
         '''
 
-        clf_knn.fit(self.train_x, self.train_y)  # without parameter sample_weight
+        clf_knn.fit(self.x_train, self.y_train)  # without parameter sample_weight
 
         # K-fold cross-validation on Logistic Regression
-        scores = cross_val_score(clf_knn, self.train_x, self.train_y, cv=10)
+        scores = cross_val_score(clf_knn, self.x_train, self.y_train, cv=10)
         print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
 
 
@@ -107,19 +110,19 @@ class KNearestNeighbor:
 
 class SupportVectorClustering:
 
-    def __init__(self, t_x, t_y, t_w):
+    def __init__(self, x_tr, y_tr, w_tr):
 
-        self.train_x = t_x
-        self.train_y = t_y
-        self.train_w = t_w
+        self.x_train = x_tr
+        self.y_train = y_tr
+        self.w_train = w_tr
 
     def train(self, parameters):
 
         clf_svc = SVC(random_state=1)
 
-        clf_svc.fit(self.train_x, self.train_y, sample_weight=self.train_w)
+        clf_svc.fit(self.x_train, self.y_train, sample_weight=self.w_train)
 
-        scores = cross_val_score(clf_svc, self.train_x, self.train_y, cv=10)
+        scores = cross_val_score(clf_svc, self.x_train, self.y_train, cv=10)
         print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
 
 
@@ -127,19 +130,19 @@ class SupportVectorClustering:
 
 class Gaussian:
 
-    def __init__(self, t_x, t_y, t_w):
+    def __init__(self, x_tr, y_tr, w_tr):
 
-        self.train_x = t_x
-        self.train_y = t_y
-        self.train_w = t_w
+        self.x_train = x_tr
+        self.y_train = y_tr
+        self.w_train = w_tr
 
     def train(self, parameters):
 
         clf_gnb = GaussianNB()
 
-        clf_gnb.fit(self.train_x, self.train_y, sample_weight=self.train_w)
+        clf_gnb.fit(self.x_train, self.y_train, sample_weight=self.w_train)
 
-        scores = cross_val_score(clf_gnb, self.train_x, self.train_y, cv=10)
+        scores = cross_val_score(clf_gnb, self.x_train, self.y_train, cv=10)
         print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
 
 
@@ -150,25 +153,25 @@ class DecisionTree:
     importance = np.array([])
     indices = np.array([])
 
-    def __init__(self, t_x, t_y, t_w):
+    def __init__(self, x_tr, y_tr, w_tr):
 
-        self.train_x = t_x
-        self.train_y = t_y
-        self.train_w = t_w
+        self.x_train = x_tr
+        self.y_train = y_tr
+        self.w_train = w_tr
 
     def get_importance(self, clf):
 
         self.importance = clf.feature_importances_
         self.indices = np.argsort(self.importance)[::-1]
 
-        feature_num = self.train_x.shape[1]
+        feature_num = self.x_train.shape[1]
 
         for f in range(feature_num):
             print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
     def show(self, parameters):
 
-        feature_num = self.train_x.shape[1]
+        feature_num = self.x_train.shape[1]
 
         plt.figure(figsize=(20, 10))
         plt.title('Feature Importance in Decision Tree')
@@ -189,9 +192,9 @@ class DecisionTree:
                                splitter='best')
         '''
 
-        clf_dt.fit(self.train_x, self.train_y)
+        clf_dt.fit(self.x_train, self.y_train)
 
-        scores = cross_val_score(clf_dt, self.train_x, self.train_y, cv=10)
+        scores = cross_val_score(clf_dt, self.x_train, self.y_train, cv=10)
         print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
 
         self.get_importance(clf_dt)
@@ -205,11 +208,11 @@ class RandomForest:
     indices = np.array([])
     std = np.array([])
 
-    def __init__(self, t_x, t_y, t_w):
+    def __init__(self, x_tr, y_tr, w_tr):
 
-        self.train_x = t_x
-        self.train_y = t_y
-        self.train_w = t_w
+        self.x_train = x_tr
+        self.y_train = y_tr
+        self.w_train = w_tr
 
     def get_importance(self, clf):
 
@@ -217,14 +220,14 @@ class RandomForest:
         self.indices = np.argsort(self.importance)[::-1]
         self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
 
-        feature_num = self.train_x.shape[1]
+        feature_num = self.x_train.shape[1]
 
         for f in range(feature_num):
             print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
     def show(self):
 
-        feature_num = self.train_x.shape[1]
+        feature_num = self.x_train.shape[1]
 
         plt.figure(figsize=(20, 10))
         plt.title('Feature Importance in Random Forest')
@@ -246,9 +249,9 @@ class RandomForest:
                                oob_score=False, random_state=1, verbose=0, warm_start=False)
         '''
 
-        clf_rf.fit(self.train_x, self.train_y, self.train_w)
+        clf_rf.fit(self.x_train, self.y_train, self.w_train)
 
-        scores = cross_val_score(clf_rf, self.train_x, self.train_y, cv=10)
+        scores = cross_val_score(clf_rf, self.x_train, self.y_train, cv=10)
         print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
 
         self.get_importance(clf_rf)
@@ -262,11 +265,11 @@ class ExtraTrees:
     indices = np.array([])
     std = np.array([])
 
-    def __init__(self, t_x, t_y, t_w):
+    def __init__(self, x_tr, y_tr, w_tr):
 
-        self.train_x = t_x
-        self.train_y = t_y
-        self.train_w = t_w
+        self.x_train = x_tr
+        self.y_train = y_tr
+        self.w_train = w_tr
 
     def get_importance(self, clf):
 
@@ -274,14 +277,14 @@ class ExtraTrees:
         self.indices = np.argsort(self.importance)[::-1]
         self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
 
-        feature_num = self.train_x.shape[1]
+        feature_num = self.x_train.shape[1]
 
         for f in range(feature_num):
             print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
     def show(self):
 
-        feature_num = self.train_x.shape[1]
+        feature_num = self.x_train.shape[1]
 
         plt.figure(figsize=(20, 10))
         plt.title('Feature Importance in Extra Trees')
@@ -303,9 +306,9 @@ class ExtraTrees:
                              oob_score=False, random_state=1, verbose=0, warm_start=False)
         '''
 
-        clf_et.fit(self.train_x, self.train_y, self.train_w)
+        clf_et.fit(self.x_train, self.y_train, self.w_train)
 
-        scores = cross_val_score(clf_et, self.train_x, self.train_y, cv=10)
+        scores = cross_val_score(clf_et, self.x_train, self.y_train, cv=10)
         print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
 
         self.get_importance(clf_et)
@@ -319,11 +322,11 @@ class AdaBoost:
     indices = np.array([])
     std = np.array([])
 
-    def __init__(self, t_x, t_y, t_w):
+    def __init__(self, x_tr, y_tr, w_tr):
 
-        self.train_x = t_x
-        self.train_y = t_y
-        self.train_w = t_w
+        self.x_train = x_tr
+        self.y_train = y_tr
+        self.w_train = w_tr
 
     def get_importance(self, clf):
 
@@ -331,14 +334,14 @@ class AdaBoost:
         self.indices = np.argsort(self.importance)[::-1]
         self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
 
-        feature_num = self.train_x.shape[1]
+        feature_num = self.x_train.shape[1]
 
         for f in range(feature_num):
             print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
     def show(self):
 
-        feature_num = self.train_x.shape[1]
+        feature_num = self.x_train.shape[1]
 
         plt.figure(figsize=(20, 10))
         plt.title('Feature Importance in AdaBoost')
@@ -356,9 +359,9 @@ class AdaBoost:
                            learning_rate=1.0, n_estimators=50, random_state=1)
         '''
 
-        clf_ab.fit(self.train_x, self.train_y, self.train_w)
+        clf_ab.fit(self.x_train, self.y_train, self.w_train)
 
-        scores = cross_val_score(clf_ab, self.train_x, self.train_y, cv=10)
+        scores = cross_val_score(clf_ab, self.x_train, self.y_train, cv=10)
         print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
 
         self.get_importance(clf_ab)
@@ -372,11 +375,11 @@ class GradientBoosting:
     indices = np.array([])
     std = np.array([])
 
-    def __init__(self, t_x, t_y, t_w):
+    def __init__(self, x_tr, y_tr, w_tr):
 
-        self.train_x = t_x
-        self.train_y = t_y
-        self.train_w = t_w
+        self.x_train = x_tr
+        self.y_train = y_tr
+        self.w_train = w_tr
 
     def get_importance(self, clf):
 
@@ -384,14 +387,14 @@ class GradientBoosting:
         self.indices = np.argsort(self.importance)[::-1]
         self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
 
-        feature_num = self.train_x.shape[1]
+        feature_num = self.x_train.shape[1]
 
         for f in range(feature_num):
             print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
     def show(self):
 
-        feature_num = self.train_x.shape[1]
+        feature_num = self.x_train.shape[1]
 
         plt.figure(figsize=(20, 10))
         plt.title('Feature Importance in GradientBoosting')
@@ -421,9 +424,9 @@ class GradientBoosting:
                                    warm_start=False)
         '''
 
-        clf_gb.fit(self.train_x, self.train_y, self.train_w)
+        clf_gb.fit(self.x_train, self.y_train, self.w_train)
 
-        scores = cross_val_score(clf_gb, self.train_x, self.train_y, cv=10)
+        scores = cross_val_score(clf_gb, self.x_train, self.y_train, cv=10)
         print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
 
         self.get_importance(clf_gb)
@@ -436,25 +439,28 @@ class XGBoost:
     importance = np.array([])
     indices = np.array([])
 
-    def __init__(self, t_x, t_y, t_w):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
-        self.train_x = t_x
-        self.train_y = t_y
-        self.train_w = t_w
+        self.x_train = x_tr
+        self.y_train = y_tr
+        self.w_train = w_tr
+        self.e_train = e_tr
+        self.x_test = x_te
+        self.id_test = id_te
 
     def get_importance(self, clf):
 
         self.importance = clf.feature_importances_
         self.indices = np.argsort(self.importance)[::-1]
 
-        feature_num = self.train_x.shape[1]
+        feature_num = self.x_train.shape[1]
 
         for f in range(feature_num):
             print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
     def show(self):
 
-        feature_num = self.train_x.shape[1]
+        feature_num = self.x_train.shape[1]
 
         plt.figure(figsize=(20, 10))
         plt.title('Feature Importance in XGBoost')
@@ -486,52 +492,92 @@ class XGBoost:
 
         return clf
 
-    def prediction(self):
+    def prediction(self, model, pred_path):
 
-        # TODO: prediction function
+        print('Predicting...')
 
-        pass
+        prob_test = model.predict(xgb.DMatrix(self.x_test))
 
-    def train(self):
+        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
-        clf_xgb = self.clf()
+        return prob_test
 
-        train_scores = cross_val_score(clf_xgb, self.train_x, self.train_y, cv=20)
-        print("Accuracy: %0.6f (+/- %0.6f)" % (train_scores.mean(), train_scores.std() * 2))
+    def train(self, pred_path, parameters=None):
+
+        # sk-learn module
+
+        # clf_xgb = self.clf()
+        #
+        # train_scores = cross_val_score(clf_xgb, self.x_train, self.y_train, cv=20)
+        # print("Accuracy: %0.6f (+/- %0.6f)" % (train_scores.mean(), train_scores.std() * 2))
+        #
+        # count = 0
+        #
+        # for x_train, y_train, w_train, \
+        #     x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(self.x_train,
+        #                                                                              self.y_train,
+        #                                                                              self.w_train):
+        #
+        #     count += 1
+        #     print('Training CV: {}'.format(count))
+        #
+        #     clf_xgb.fit(x_train, y_train, sample_weight=w_train,
+        #                 eval_set=[(x_train, y_train), (x_valid, y_valid)],
+        #                 eval_metric='logloss', verbose=True)
+        #
+        #     result = clf_xgb.evals_result()
+        #
+        #     print(result)
+        #
+        #     self.prediction(clf_xgb)
+        #
+        #     self.get_importance(clf_xgb)
 
         count = 0
+        prob_total = np.array([])
 
-        for train_x, train_y, train_w, \
-            valid_x, valid_y, valid_w in CrossValidation.group_k_fold_with_weight(self.train_x,
-                                                                                  self.train_y,
-                                                                                  self.train_w):
+        for x_train, y_train, w_train, \
+            x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(self.x_train,
+                                                                                     self.y_train,
+                                                                                     self.w_train,
+                                                                                     self.e_train):
 
             count += 1
-            print('Training CV: {}'.format(count))
 
-            clf_xgb.fit(train_x, train_y, sample_weight=train_w,
-                        eval_set=[(train_x, train_y), (valid_x, valid_y)],
-                        eval_metric='logloss', verbose=True)
+            d_train = xgb.DMatrix(x_train, label=y_train, weight=w_train)
+            d_valid = xgb.DMatrix(x_valid, label=y_valid, weight=w_valid)
 
-            result = clf_xgb.evals_result()
+            # parameters = {'learning_rate': 0.05, 'n_estimators': 1000, 'max_depth': 10,
+            #               'min_child_weight': 5, 'gamma': 0, 'silent': 1, 'objective': 'binary:logistic',
+            #               'early_stopping_rounds': 50, 'subsample': 0.8, 'colsample_bytree': 0.8,
+            #               'eval_metric': 'logloss'}
 
-            print(result)
+            eval_list = [(d_valid, 'eval'), (d_train, 'train')]
 
-            self.prediction()
+            bst = xgb.train(parameters, d_train, num_boost_round=30, evals=eval_list)
 
-        self.get_importance(clf_xgb)
+            # Prediction
+            prob_test = self.prediction(bst, pred_path + 'xgb_vc_{}_'.format(count))
+            np.append(prob_total, prob_test)
+
+        prob_mean = np.mean(prob_total, axis=1)
+
+        utils.save_pred_to_csv(pred_path + 'xgb_', self.id_test, prob_mean)
 
 
 # Deep Neural Networks
 
 class DeepNeuralNetworks:
 
-    def __init__(self, t_x, t_y, t_w, parameters):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, parameters):
 
         # Inputs
-        self.train_x = t_x
-        self.train_y = t_y
-        self.train_w = t_w
+        self.x_train = x_tr
+        self.y_train = y_tr
+        self.w_train = w_tr
+        self.e_train = e_tr
+        self.x_test = x_te
+        self.id_test = id_te
 
         # Hyperparameters
         self.version = parameters['version']
@@ -561,21 +607,21 @@ class DeepNeuralNetworks:
     def fc_layer(self, x_tensor, layer_name, num_outputs, keep_prob, training):
 
         with tf.name_scope(layer_name):
+
             x_shape = x_tensor.get_shape().as_list()
 
-            weights = tf.Variable(tf.truncated_normal([x_shape[1], num_outputs], stddev=2.0 / math.sqrt(x_shape[1])))
+            # weights = tf.Variable(tf.truncated_normal([x_shape[1], num_outputs], stddev=2.0 / math.sqrt(x_shape[1])))
+            #
+            # biases = tf.Variable(tf.zeros([num_outputs]))
 
-            biases = tf.Variable(tf.zeros([num_outputs]))
-
-            with tf.name_scope('fc_layer'):
-                fc_layer = tf.add(tf.matmul(x_tensor, weights), biases)
-
-                # Batch Normalization
-                #  fc_layer = tf.layers.batch_normalization(fc_layer, training=training)
-
-                # Activate function
-                fc = tf.nn.relu(fc_layer)
-                #  fc = tf.nn.elu(fc_layer)
+            # fc_layer = tf.add(tf.matmul(x_tensor, weights), biases)
+            #
+            # Batch Normalization
+            # fc_layer = tf.layers.batch_normalization(fc_layer, training=training)
+            #
+            # Activate function
+            # fc = tf.nn.relu(fc_layer)
+            # fc = tf.nn.elu(fc_layer)
 
             fc = tf.contrib.layers.fully_connected(x_tensor,
                                                    num_outputs,
@@ -667,12 +713,12 @@ class DeepNeuralNetworks:
 
         # Build Network
         tf.reset_default_graph()
-        train_graph = tf.Graph()
+        g_trainraph = tf.Graph()
 
-        with train_graph.as_default():
+        with g_trainraph.as_default():
 
             # Inputs
-            feature_num = list(self.train_x.shape)[1]
+            feature_num = list(self.x_train.shape)[1]
             inputs, labels, loss_weights, lr, keep_prob, is_train = self.input_tensor(feature_num)
 
             # Logits
@@ -694,12 +740,12 @@ class DeepNeuralNetworks:
         # Training
         print('Training...')
 
-        with tf.Session(graph=train_graph) as sess:
+        with tf.Session(graph=g_trainraph) as sess:
 
             # Merge all the summaries
             merged = tf.summary.merge_all()
-            train_writer = tf.summary.FileWriter(self.log_path + self.version + '/train', sess.graph)
-            valid_writer = tf.summary.FileWriter(self.log_path + self.version + '/valid')
+            w_trainriter = tf.summary.FileWriter(self.log_path + self.version + '/train', sess.graph)
+            w_validriter = tf.summary.FileWriter(self.log_path + self.version + '/valid')
 
             batch_counter = 0
 
@@ -707,107 +753,112 @@ class DeepNeuralNetworks:
 
             sess.run(tf.global_variables_initializer())
 
-            for epoch_i in range(self.epochs):
+            for x_train, y_train, w_train, \
+                x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(self.x_train,
+                                                                                         self.y_train,
+                                                                                         self.w_train,
+                                                                                         self.e_train):
 
-                for batch_i, (batch_x, batch_y, batch_w) in enumerate(self.get_batches(self.train_x,
-                                                                                       self.train_y,
-                                                                                       self.train_w,
-                                                                                       self.batch_size)):
+                for epoch_i in range(self.epochs):
 
-                    batch_counter += 1
+                    for batch_i, (batch_x, batch_y, batch_w) in enumerate(self.get_batches(x_train,
+                                                                                           y_train,
+                                                                                           w_train,
+                                                                                           self.batch_size)):
 
-                    _, cost = sess.run([optimizer, cost_],
-                                       {inputs: batch_x,
-                                        labels: batch_y,
-                                        loss_weights: batch_w,
-                                        lr: self.learning_rate,
-                                        keep_prob: self.keep_probability,
-                                        is_train: True})
+                        batch_counter += 1
 
-                    if batch_counter % self.display_step == 0 and batch_i > 0:
+                        _, cost = sess.run([optimizer, cost_],
+                                           {inputs: batch_x,
+                                            labels: batch_y,
+                                            loss_weights: batch_w,
+                                            lr: self.learning_rate,
+                                            keep_prob: self.keep_probability,
+                                            is_train: True})
 
-                        summary_train, cost_train = sess.run([merged, cost_],
-                                                             {inputs: batch_x,
-                                                              labels: batch_y,
-                                                              loss_weights: batch_w,
-                                                              keep_prob: 1.0,
-                                                              is_train: False})
-                        train_writer.add_summary(summary_train, batch_counter)
+                        if batch_counter % self.display_step == 0 and batch_i > 0:
 
-                        cost_valid_a = []
+                            summary_train, cost_train = sess.run([merged, cost_],
+                                                                 {inputs: batch_x,
+                                                                  labels: batch_y,
+                                                                  loss_weights: batch_w,
+                                                                  keep_prob: 1.0,
+                                                                  is_train: False})
+                            w_trainriter.add_summary(summary_train, batch_counter)
 
-                        for iii, (valid_batch_x, valid_batch_y, valid_batch_w) in enumerate(self.get_batches(self.valid_x,
-                                                                                                             self.valid_y,
-                                                                                                             self.valid_w,
-                                                                                                             self.batch_size)):
-                            summary_valid_i, cost_valid_i = sess.run([merged, cost_],
-                                                                     {inputs: valid_batch_x,
-                                                                      labels: valid_batch_y,
-                                                                      loss_weights: valid_batch_w,
-                                                                      keep_prob: 1.0,
-                                                                      is_train: False})
+                            cost_valid_a = []
 
-                            valid_writer.add_summary(summary_valid_i, batch_counter)
+                            for iii, (valid_batch_x, valid_batch_y, valid_batch_w) in enumerate(self.get_batches(x_valid,
+                                                                                                                 y_valid,
+                                                                                                                 w_valid,
+                                                                                                                 self.batch_size)):
+                                summary_valid_i, cost_valid_i = sess.run([merged, cost_],
+                                                                         {inputs: valid_batch_x,
+                                                                          labels: valid_batch_y,
+                                                                          loss_weights: valid_batch_w,
+                                                                          keep_prob: 1.0,
+                                                                          is_train: False})
 
-                            cost_valid_a.append(cost_valid_i)
+                                w_validriter.add_summary(summary_valid_i, batch_counter)
 
-                        cost_valid = sum(cost_valid_a) / len(cost_valid_a)
+                                cost_valid_a.append(cost_valid_i)
 
-                        end_time = time.time()
-                        total_time = end_time - start_time
+                            cost_valid = sum(cost_valid_a) / len(cost_valid_a)
 
-                        print("Epoch: {}/{} |".format(epoch_i + 1, self.epochs),
-                              "Batch: {} |".format(batch_counter),
-                              "Time: {:>3.2f}s |".format(total_time),
-                              "Train_Loss: {:>.8f} |".format(cost_train),
-                              "Valid_Loss: {:>.8f}".format(cost_valid))
+                            end_time = time.time()
+                            total_time = end_time - start_time
 
-            # Save Model
-            print('Saving...')
-            saver = tf.train.Saver()
-            saver.save(sess, self.save_path + 'model.' + self.version + '.ckpt')
+                            print("Epoch: {}/{} |".format(epoch_i + 1, self.epochs),
+                                  "Batch: {} |".format(batch_counter),
+                                  "Time: {:>3.2f}s |".format(total_time),
+                                  "Train_Loss: {:>.8f} |".format(cost_train),
+                                  "Valid_Loss: {:>.8f}".format(cost_valid))
+
+                # Save Model
+                print('Saving...')
+                saver = tf.train.Saver()
+                saver.save(sess, self.save_path + 'model.' + self.version + '.ckpt')
 
 
-# K-Fold
+# Cross Validation
 
 class CrossValidation:
 
-    def group_k_fold(self, x, y, e):
+    def sk_group_k_fold(self, x, y, e):
 
         era_k_fold = GroupKFold(n_splits=20)
 
         for train_index, valid_index in era_k_fold.split(x, y, e):
 
             # Training data
-            train_x = x[train_index]
-            train_y = y[train_index]
+            x_train = x[train_index]
+            y_train = y[train_index]
 
             # Validation data
-            valid_x = x[valid_index]
-            valid_y = y[valid_index]
+            x_valid = x[valid_index]
+            y_valid = y[valid_index]
 
-            yield train_x, train_y, valid_x, valid_y
+            yield x_train, y_train, x_valid, y_valid
 
-    def group_k_fold_with_weight(self, x, y, w):
-
-        era = x[:, -1]
-        np.delete(x, 88, axis=1)
+    def sk_group_k_fold_with_weight(self, x, y, w, e):
 
         era_k_fold = GroupKFold(n_splits=20)
 
-        for train_index, valid_index in era_k_fold.split(x, y, era):
+        for train_index, valid_index in era_k_fold.split(x, y, e):
 
             # Training data
-            train_x = x[train_index]
-            train_y = y[train_index]
-            train_w = w[train_index]
+            x_train = x[train_index]
+            y_train = y[train_index]
+            w_train = w[train_index]
 
             # Validation data
-            valid_x = x[valid_index]
-            valid_y = y[valid_index]
-            valid_w = w[valid_index]
+            x_valid = x[valid_index]
+            y_valid = y[valid_index]
+            w_valid = w[valid_index]
 
-            yield train_x, train_y, train_w, valid_x, valid_y, valid_w
+            yield x_train, y_train, w_train, x_valid, y_valid, w_valid
+
+
 
 
 # Grid Search

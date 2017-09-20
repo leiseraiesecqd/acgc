@@ -27,7 +27,7 @@ class Forecast:
 
     train_features = np.array([])
     train_label = np.array([])
-    train_weight = np.array([])
+    w_traineight = np.array([])
 
     val_features = np.array([])
     val_label = np.array([])
@@ -105,8 +105,8 @@ class Forecast:
         self.train_features = train_features_array.astype(np.float64)
         train_label_array = all_train_array[:, -3]
         self.train_label = train_label_array.astype(np.float64)
-        train_weight_array = all_train_array[:, -4]
-        self.train_weight = train_weight_array.astype(np.float64)
+        w_traineight_array = all_train_array[:, -4]
+        self.w_traineight = w_traineight_array.astype(np.float64)
 
         val_features_array = all_val_array[:, 1:-4]
         self.val_features = val_features_array.astype(np.float64)
@@ -144,7 +144,7 @@ class Forecast:
         print("开始训练！！！")
         x = self.train_features[:5000]
         y = self.train_label[:5000]
-        z = self.train_weight[:5000]
+        z = self.w_traineight[:5000]
 
         x1 = self.val_features[:sample_num]
         y1 = self.val_label[:sample_num]
@@ -212,7 +212,7 @@ class Forecast:
         print("开始训练！！！")
         x = self.train_features[:]
         y = self.train_label[:]
-        z = self.train_weight[:]
+        z = self.w_traineight[:]
 
         x1 = self.val_features[:]
         y1 = self.val_label[:]

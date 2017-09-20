@@ -3,35 +3,65 @@ import utils
 import model
 import time
 
-preprocessed_path = './preprocessed_data/'
+preprocessed_data_path = './preprocessed_data/'
+pred_path = './result/'
 
-# HyperParameters
-# hyper_parameters = {'version': '1.0',
-#                     'epochs': 10,
-#                     'layers_number': 10,
-#                     'unit_number': [200, 400, 800, 800, 800, 800, 800, 800, 400, 200],
-#                     'learning_rate': 0.01,
-#                     'keep_probability': 0.75,
-#                     'batch_size': 512,
-#                     'display_step': 100,
-#                     'save_path': './checkpoints/',
-#                     'log_path': './log/'}
-#
-# pickled_data_path = './preprocessed_data/'
-#
-# print('Loading data set...')
-# tr, tr_y, tr_w, val_x, val_y, val_w = model.load_data(pickled_data_path)
-#
-# dnn = model.DNN(tr, tr_y, tr_w, val_x, val_y, val_w, hyper_parameters)
-# dnn.train()
-#
-# print('Done!')
+# DNN
 
-if __name__ == "__main__":
+def dnn_train():
+
+    # HyperParameters
+    hyper_parameters = {'version': '1.0',
+                        'epochs': 10,
+                        'layers_number': 10,
+                        'unit_number': [200, 400, 800, 800, 800, 800, 800, 800, 400, 200],
+                        'learning_rate': 0.01,
+                        'keep_probability': 0.75,
+                        'batch_size': 512,
+                        'display_step': 100,
+                        'save_path': './checkpoints/',
+                        'log_path': './log/'}
+
+    print('Loading data set...')
+
+    x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
+    dnn = model.DeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
+    dnn.train()
+
+    print('Done!')
+
+
+# XGBoost
+
+def xgb_train():
 
     start_time = time.time()
 
-    train_x, train_y, train_w = utils.load_data(preprocessed_path)
+    x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
+    xgb_parameters = {'learning_rate': 0.05,
+                      'n_estimators': 1000,
+                      'max_depth': 10,
+                      'min_child_weight': 5,
+                      'gamma': 0,
+                      'silent': 1,
+                      'objective': 'binary:logistic',
+                      'early_stopping_rounds': 50,
+                      'subsample': 0.8,
+                      'colsample_bytree': 0.8,
+                      'eval_metric': 'logloss'}
+
+    XGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+
+    XGB.train(pred_path, parameters=xgb_parameters)
+
+
+# Grid Search
+
+def grid_search():
+
+    x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
     xgb_parameters = {'base_score': 0.5,
                       'colsample_bylevel': 1,
@@ -52,9 +82,11 @@ if __name__ == "__main__":
                       'silent': 1,
                       'subsample': 0.8}
 
-    XGB = model.XGBoost(train_x, train_y, train_w)
+    XGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
     clf_xgb = XGB.clf(xgb_parameters)
+
+    parameters_grid = None
 
     # parameters_grid = {'base_score': (0.4, 0.5, 0.6),
     #                    # 'colsample_bylevel': 1,
@@ -75,7 +107,14 @@ if __name__ == "__main__":
     #                    # 'silent': True,
     #                    'subsample': (0.5, 0.8, 1.0)}
 
-    model.grid_search(train_x, train_y, clf_xgb)
+    model.grid_search(x_train, y_train, clf_xgb, parameters_grid)
+
+
+if __name__ == "__main__":
+
+    start_time = time.time()
+
+
 
     total_time = time.time() - start_time
 

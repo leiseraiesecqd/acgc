@@ -18,11 +18,11 @@ def sigmoid(x):
 
 print('Loading test codes and labels...')
 
-with open(data_path + 'test_x.p', 'rb') as f:
+with open(data_path + 'x_test.p', 'rb') as f:
     test_f = pickle.load(f)
 
 test_id = test_f[:, 0]
-test_x = test_f[:, 1:89]
+x_test = test_f[:, 1:89]
 
 loaded_graph = tf.Graph()
 
@@ -39,7 +39,7 @@ with tf.Session(graph=loaded_graph) as sess:
         is_train = loaded_graph.get_tensor_by_name('is_train:0')
         logit = loaded_graph.get_tensor_by_name('logits:0')
 
-        feed = {inputs: test_x,
+        feed = {inputs: x_test,
                 keep_prob: 1.0,
                 is_train: False}
 

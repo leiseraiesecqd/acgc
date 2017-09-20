@@ -28,9 +28,9 @@ print('Preprocessing Data...')
 ##drop unnecessary columns
 X_train = train_data.drop(['id','weight','group','era'], axis=1)
 y_label = X_train.pop('label')
-X_train_group = train_data['group']
+X_g_trainroup = train_data['group']
 X_test = test_data.drop(['id','group'], axis=1)
-X_test_group = test_data['group']
+X_g_testroup = test_data['group']
 
 ##drop outliners
 print('dropping outliners...')
@@ -764,8 +764,8 @@ for each in X_test.columns:
     mean, std = X_test[each].mean(), X_test[each].std()
     X_test.loc[:, each] = (X_test[each] - mean)/std
 
-X_train = X_train.join(X_train_group)
-X_test = X_test.join(X_test_group)
+X_train = X_train.join(X_g_trainroup)
+X_test = X_test.join(X_g_testroup)
 
 ##convert columm 'group' to dummies
 print('adding dummies...')
