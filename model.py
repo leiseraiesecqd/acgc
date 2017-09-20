@@ -533,7 +533,7 @@ class XGBoost:
         #     self.get_importance(clf_xgb)
 
         count = 0
-        prob_total = np.array([])
+        prob_total = []
 
         for x_train, y_train, w_train, \
             x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(x=self.x_train,
@@ -543,7 +543,7 @@ class XGBoost:
 
             count += 1
 
-            print('=======================================================')
+            print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
 
             d_train = xgb.DMatrix(x_train, label=y_train, weight=w_train)
@@ -560,9 +560,12 @@ class XGBoost:
 
             # Prediction
             prob_test = self.prediction(bst, pred_path + 'xgb_vc_{}_'.format(count))
-            np.append(prob_total, prob_test)
+            prob_total.append(list(prob_test))
 
-        prob_mean = np.mean(prob_total, axis=1)
+        print('======================================================')
+        print('Calculating final result...')
+
+        prob_mean = np.mean(np.array(prob_total), axis=0)
 
         utils.save_pred_to_csv(pred_path + 'xgb_', self.id_test, prob_mean)
 
