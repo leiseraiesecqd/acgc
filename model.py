@@ -798,7 +798,7 @@ def group_k_fold_with_weight(x, y, w):
 
 # Grid Search
 
-def grid_search(tr_x, tr_y, clf, params):
+def grid_search(tr_x, tr_y, clf, params=None):
 
     era = tr_x[:, -1]
     np.delete(tr_x, 88, axis=1)

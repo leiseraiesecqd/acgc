@@ -1,4 +1,4 @@
-import preprocess
+# import preprocess
 import utils
 import model
 import time
@@ -56,26 +56,26 @@ if __name__ == "__main__":
 
     clf_xgb = XGB.clf(xgb_parameters)
 
-    parameters_grid = {'base_score': (0.4, 0.5, 0.6),
-                       # 'colsample_bylevel': 1,
-                       'colsample_bytree': (0.5, 0.8, 1.0),
-                       # 'gamma': 2,
-                       'learning_rate': (0.01, 0.05, 0.1, 0.15, 0.2),
-                       # 'max_delta_step': 0,
-                       'max_depth': (4, 6, 8, 10),
-                       'min_child_weight': (0.8, 1.0, 1.2),
-                       # 'missing': None,
-                       # 'n_estimators': 100,
-                       # 'nthread': -1,
-                       # 'objective': 'binary:logistic',
-                       # 'reg_alpha': 0,
-                       # 'reg_lambda': 1,
-                       # 'scale_pos_weight': 1,
-                       # 'seed': 1,
-                       # 'silent': True,
-                       'subsample': (0.5, 0.8, 1.0)}
+    # parameters_grid = {'base_score': (0.4, 0.5, 0.6),
+    #                    # 'colsample_bylevel': 1,
+    #                    'colsample_bytree': (0.5, 0.8, 1.0),
+    #                    # 'gamma': 2,
+    #                    'learning_rate': (0.01, 0.05, 0.1, 0.15, 0.2),
+    #                    # 'max_delta_step': 0,
+    #                    'max_depth': (4, 6, 8, 10),
+    #                    'min_child_weight': (0.8, 1.0, 1.2),
+    #                    # 'missing': None,
+    #                    # 'n_estimators': 100,
+    #                    # 'nthread': -1,
+    #                    # 'objective': 'binary:logistic',
+    #                    # 'reg_alpha': 0,
+    #                    # 'reg_lambda': 1,
+    #                    # 'scale_pos_weight': 1,
+    #                    # 'seed': 1,
+    #                    # 'silent': True,
+    #                    'subsample': (0.5, 0.8, 1.0)}
 
-    model.grid_search(train_x, train_y, clf_xgb, parameters_grid)
+    model.grid_search(train_x, train_y, clf_xgb)
 
     total_time = time.time() - start_time
 

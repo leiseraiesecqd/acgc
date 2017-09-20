@@ -1,5 +1,6 @@
 import pickle
 import time
+import utils
 import numpy as np
 from sklearn.model_selection import StratifiedShuffleSplit
 
@@ -69,14 +70,10 @@ class DataPreProcess:
 
         print('Saving data...')
 
-        with open(self.prepro_path + 'train_x.p', 'wb') as f:
-            pickle.dump(self.train_x, f)
-        with open(self.prepro_path + 'train_y.p', 'wb') as f:
-            pickle.dump(self.train_y, f)
-        with open(self.prepro_path + 'train_w.p', 'wb') as f:
-            pickle.dump(self.train_w, f)
-        with open(self.prepro_path + 'test_x.p', 'wb') as f:
-            pickle.dump(self.test_x, f)
+        utils.save_data(self.train_x, self.prepro_path + 'train_x.p')
+        utils.save_data(self.train_y, self.prepro_path + 'train_y.p')
+        utils.save_data(self.train_w, self.prepro_path + 'train_w.p')
+        utils.save_data(self.test_x, self.prepro_path + 'test_x.p')
 
     # Preprocessing
     def preprocess(self):
