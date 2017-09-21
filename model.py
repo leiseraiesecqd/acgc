@@ -854,7 +854,7 @@ class LightGBM:
 
         print('Predicting...')
 
-        prob_test = model.predict(lgb.Dataset(self.x_test))
+        prob_test = model.predict(self.x_test)
 
         utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
