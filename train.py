@@ -172,7 +172,7 @@ def dnn_train():
                         'epochs': 30,
                         'layers_number': 6,
                         'unit_number': [64, 32, 16, 8, 4, 1],
-                        'learning_rate': 0.0001,
+                        'learning_rate': 0.00005,
                         'keep_probability': 0.75,
                         'batch_size': 256,
                         'display_step': 100,
@@ -183,7 +183,7 @@ def dnn_train():
 
     dnn = model.DeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
 
-    dnn.train(pred_path)
+    dnn.train(pred_path, n_valid=4, n_cv=20)
 
 
 # Grid Search

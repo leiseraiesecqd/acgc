@@ -2,7 +2,6 @@
 import time
 import utils
 import os
-import random
 from os.path import isdir
 import numpy as np
 import matplotlib.pyplot as plt
@@ -1077,7 +1076,7 @@ class DeepNeuralNetworks:
             yield batch_x, batch_y, batch_w
 
     # Training
-    def train(self, pred_path):
+    def train(self, pred_path, n_valid, n_cv):
 
         # Build Network
         tf.reset_default_graph()
@@ -1123,7 +1122,9 @@ class DeepNeuralNetworks:
                 x_valid, y_valid, w_valid in CrossValidation.group_k_fold_with_weight(self.x_train,
                                                                                       self.y_train,
                                                                                       self.w_train,
-                                                                                      self.e_train):
+                                                                                      self.e_train,
+                                                                                      n_valid,
+                                                                                      n_cv):
 
                 cv_counter += 1
 
