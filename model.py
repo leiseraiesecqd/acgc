@@ -1043,20 +1043,17 @@ class DeepNeuralNetworks:
         return logit_
 
     # LogLoss
-    def log_loss(self, logit, weight, label):
+    def log_loss(self, logit, w, y):
 
         with tf.name_scope('prob'):
             prob = tf.nn.sigmoid(logit)
 
-            #  with tf.name_scope('weight'):
-            weight = weight / tf.reduce_sum(weight)
-
-        with tf.name_scope('logloss'):
+        with tf.name_scope('log_loss'):
             #  loss = tf.losses.log_loss(labels=label, predictions=prob, weights=weight)
-            loss = - tf.reduce_sum(weight * (label * tf.log(tf.clip_by_value(prob, 1e-10, 1.0)) + (1 - label) * tf.log(
-                tf.clip_by_value((1 - prob), 1e-10, 1.0))))
+            loss = - tf.reduce_sum(w * (y * tf.log(prob) +
+                (tf.ones_like(y, dtype=tf.float64) - y) * tf.log(tf.ones_like(y, dtype=tf.float64)-prob)))
 
-        tf.summary.scalar('logloss', loss)
+        tf.summary.scalar('log_loss', loss)
 
         return loss
 
@@ -1086,7 +1083,7 @@ class DeepNeuralNetworks:
 
             # Inputs
             feature_num = list(self.x_train.shape)[1]
-            inputs, labels, loss_weights, lr, keep_prob, is_train = self.input_tensor(feature_num)
+            inputs, labels, weights, lr, keep_prob, is_train = self.input_tensor(feature_num)
 
             # Logits
             logits = self.model(inputs, self.layers_number, self.unit_number, keep_prob, is_train)
@@ -1094,8 +1091,8 @@ class DeepNeuralNetworks:
 
             # Loss
             with tf.name_scope('Loss'):
-                cost_ = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels))
-                #  cost_ = self.log_loss(logits, loss_weights, labels)
+                # cost_ = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels))
+                cost_ = self.log_loss(logits, weights, labels)
 
             # Optimizer
             optimizer = tf.train.AdamOptimizer(lr).minimize(cost_)
@@ -1156,7 +1153,7 @@ class DeepNeuralNetworks:
                         _, cost = sess.run([optimizer, cost_],
                                            {inputs: batch_x,
                                             labels: batch_y,
-                                            loss_weights: batch_w,
+                                            weights: batch_w,
                                             lr: self.learning_rate,
                                             keep_prob: self.keep_probability,
                                             is_train: True})
@@ -1166,7 +1163,7 @@ class DeepNeuralNetworks:
                             summary_train, cost_train = sess.run([merged, cost_],
                                                                  {inputs: batch_x,
                                                                   labels: batch_y,
-                                                                  loss_weights: batch_w,
+                                                                  weights: batch_w,
                                                                   keep_prob: 1.0,
                                                                   is_train: False})
                             train_writer.add_summary(summary_train, batch_counter)
@@ -1183,7 +1180,7 @@ class DeepNeuralNetworks:
                                 summary_valid_i, cost_valid_i = sess.run([merged, cost_],
                                                                          {inputs: valid_batch_x,
                                                                           labels: valid_batch_y,
-                                                                          loss_weights: valid_batch_w,
+                                                                          weights: valid_batch_w,
                                                                           keep_prob: 1.0,
                                                                           is_train: False})
 

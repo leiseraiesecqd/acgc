@@ -81,3 +81,13 @@ def save_pred_to_csv(file_path, id, prob):
 
 
 # TODO: LogLoss function
+
+def log_loss(prob, y, w):
+
+    loss = - np.sum(np.multiply(w, (np.multiply(y, np.log(prob)) +
+                                np.multiply((np.ones_like(y) - y), np.log(np.ones_like(prob) - prob)))))
+
+    return loss
+
+
+

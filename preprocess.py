@@ -820,7 +820,7 @@ class DataPreProcess:
     # Convert column 'group' to dummies
     def convert_group(self):
         
-        print('Converting groups to dummies')
+        print('Converting groups to dummies...')
 
         group_train_dummies = pd.get_dummies(self.g_train, prefix='group')
         self.x_train = self.x_train.join(group_train_dummies)
