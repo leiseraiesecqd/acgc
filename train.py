@@ -22,8 +22,8 @@ def rf_train():
                      'max_depth': None,
                      'max_features': 'auto',
                      'max_leaf_nodes': None,
-                     'min_impurity_decrease': 0.0,
-                     'min_impurity_split': None,
+                     #  'min_impurity_decrease': 0.0,
+                     #  'min_impurity_split': None,
                      'min_samples_leaf': 1,
                      'min_samples_split': 2,
                      'min_weight_fraction_leaf': 0.0,
@@ -48,11 +48,11 @@ def et_train():
     et_parameters = {'bootstrap': False,
                      'class_weight': None,
                      'criterion': 'gini',
-                     'max_depth': None,
+                     'max_depth': 6,
                      'max_features': 'auto',
                      'max_leaf_nodes': None,
-                     'min_impurity_decrease': 0.0,
-                     'min_impurity_split': None,
+                     #  'min_impurity_decrease': 0.0,
+                     'min_impurity_split': 0.1,
                      'min_samples_leaf': 1,
                      'min_samples_split': 2,
                      'min_weight_fraction_leaf': 0.0,
@@ -144,7 +144,6 @@ def lgb_train():
     x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
     lgb_parameters = {'learning_rate': 0.05,
-                      'n_estimators': 1000,
                       'tree_learner': 'serial',
                       'num_iterations': 100,
                       'max_depth': 6,
@@ -154,7 +153,6 @@ def lgb_train():
                       'feature_fraction': 0.8,
                       'max_bin': 255,
                       'min_data_in_bin': 5,
-                      'early_stopping_rounds': 50,
                       'data_random_seed': 1,
                       'verbosity': 1}
 
@@ -248,24 +246,24 @@ if __name__ == "__main__":
     start_time = time.time()
 
     # Random Forest
-    # print('Start training Random Forest...')
-    # rf_train()
+    print('Start training Random Forest...')
+    rf_train()
 
     # Extra Trees
-    # print('Start training Extra Trees...')
-    # et_train()
+    print('Start training Extra Trees...')
+    et_train()
 
     # AdaBoost
-    # print('Start training AdaBoost...')
-    # ab_train()
+    print('Start training AdaBoost...')
+    ab_train()
 
     # GradientBoosting
-    # print('Start training GradientBoosting...')
-    # gb_train()
+    print('Start training GradientBoosting...')
+    gb_train()
 
     # XGBoost
-    # print('Start training XGBoost...')
-    # xgb_train()
+    print('Start training XGBoost...')
+    xgb_train()
 
     # LGBM
     print('Start training LGBM...')
