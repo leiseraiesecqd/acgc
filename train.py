@@ -200,7 +200,7 @@ def grid_search():
                       'max_depth': 10,
                       'min_child_weight': 5,
                       'objective': 'binary:logistic',
-                      'eval_metric': 'logloss',
+                      #  'eval_metric': 'logloss',
                       'silent': 1,
                       'subsample': 0.8,
                       'colsample_bytree': 0.8,
@@ -224,14 +224,14 @@ def grid_search():
     parameters_grid = {'learning_rate': (0.01, 0.03, 0.05, 0.1, 0.2),
                        'n_estimators': (100, 200, 400),
                        'max_depth': (8, 10, 12),
-                       'min_child_weight': 5,
-                       'objective': 'binary:logistic',
-                       'eval_metric': 'logloss',
-                       'silent': 1,
-                       'subsample': 0.8,
-                       'colsample_bytree': 0.8,
-                       'gamma': 0,
-                       'base_score': 0.5,
+                       #  'min_child_weight': 5,
+                       #  'objective': 'binary:logistic',
+                       #  'eval_metric': 'logloss',
+                       #  'silent': 1,
+                       #  'subsample': 0.8,
+                       #  'colsample_bytree': 0.8,
+                       #  'gamma': 0,
+                       #  'base_score': 0.5,
                        # 'max_delta_step': 0,
                        # 'missing': None,
                        # 'nthread': -1,
@@ -239,7 +239,8 @@ def grid_search():
                        # 'reg_alpha': 0,
                        # 'reg_lambda': 1,
                        # 'scale_pos_weight': 1,
-                       'seed': 1}
+                       #  'seed': 1
+                       }
 
     model.grid_search(x_train, y_train, clf_xgb, parameters_grid)
 
