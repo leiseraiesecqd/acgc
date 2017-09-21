@@ -1,6 +1,8 @@
 import math
 import time
 import utils
+import os
+from os.path import isdir
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
@@ -959,11 +961,11 @@ class DeepNeuralNetworks:
     # Input Tensors
     def input_tensor(self, n_feature):
 
-        inputs_ = tf.placeholder(tf.float32, [None, n_feature], name='inputs')
-        labels_ = tf.placeholder(tf.float32, None, name='labels')
-        loss_weights_ = tf.placeholder(tf.float32, None, name='loss_weights')
-        learning_rate_ = tf.placeholder(tf.float32, name='learning_rate')
-        keep_prob_ = tf.placeholder(tf.float32, name='keep_prob')
+        inputs_ = tf.placeholder(tf.float64, [None, n_feature], name='inputs')
+        labels_ = tf.placeholder(tf.float64, None, name='labels')
+        loss_weights_ = tf.placeholder(tf.float64, None, name='loss_weights')
+        learning_rate_ = tf.placeholder(tf.float64, name='learning_rate')
+        keep_prob_ = tf.placeholder(tf.float64, name='keep_prob')
         is_train_ = tf.placeholder(tf.bool, name='is_train')
 
         return inputs_, labels_, loss_weights_, learning_rate_, keep_prob_, is_train_
@@ -991,7 +993,9 @@ class DeepNeuralNetworks:
             fc = tf.contrib.layers.fully_connected(x_tensor,
                                                    num_outputs,
                                                    activation_fn=tf.nn.sigmoid,
-                                                   weights_initializer=tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
+                                                   # weights_initializer=tf.truncated_normal_initializer(
+                                                   # stddev=2.0 / math.sqrt(x_shape[1])),
+                                                   weights_initializer=tf.contrib.layers.xavier_initializer(dtype=tf.float64),
                                                    biases_initializer=tf.zeros_initializer())
 
             tf.summary.histogram('fc_layer', fc)
@@ -1033,6 +1037,7 @@ class DeepNeuralNetworks:
 
         fc = []
         fc.append(x)
+
         for i in range(n_layers):
             fc.append(self.fc_layer(fc[i], 'fc{}'.format(i + 1), n_unit[i], keep_prob, is_training))
 
@@ -1078,9 +1083,9 @@ class DeepNeuralNetworks:
 
         # Build Network
         tf.reset_default_graph()
-        g_trainraph = tf.Graph()
+        train_graph = tf.Graph()
 
-        with g_trainraph.as_default():
+        with train_graph.as_default():
 
             # Inputs
             feature_num = list(self.x_train.shape)[1]
@@ -1105,24 +1110,40 @@ class DeepNeuralNetworks:
         # Training
         print('Training...')
 
-        with tf.Session(graph=g_trainraph) as sess:
+        with tf.Session(graph=train_graph) as sess:
 
             # Merge all the summaries
             merged = tf.summary.merge_all()
-            w_trainriter = tf.summary.FileWriter(self.log_path + self.version + '/train', sess.graph)
-            w_validriter = tf.summary.FileWriter(self.log_path + self.version + '/valid')
-
-            batch_counter = 0
 
             start_time = time.time()
 
             sess.run(tf.global_variables_initializer())
+
+            vc_counter = 0
 
             for x_train, y_train, w_train, \
                 x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(self.x_train,
                                                                                          self.y_train,
                                                                                          self.w_train,
                                                                                          self.e_train):
+
+                vc_counter += 1
+
+                print('===============================================================================')
+                print('Training on the Cross Validation Set: {}'.format(vc_counter))
+
+                train_log_path = self.log_path + self.version + '/vc_{}/train'.format(vc_counter)
+                valid_log_path = self.log_path + self.version + '/vc_{}/valid'.format(vc_counter)
+
+                if not isdir(train_log_path):
+                    os.mkdir(train_log_path)
+                if not isdir(valid_log_path):
+                    os.mkdir(valid_log_path)
+
+                train_writer = tf.summary.FileWriter(train_log_path, sess.graph)
+                valid_writer = tf.summary.FileWriter(valid_log_path)
+
+                batch_counter = 0
 
                 for epoch_i in range(self.epochs):
 
@@ -1149,14 +1170,17 @@ class DeepNeuralNetworks:
                                                                   loss_weights: batch_w,
                                                                   keep_prob: 1.0,
                                                                   is_train: False})
-                            w_trainriter.add_summary(summary_train, batch_counter)
+                            train_writer.add_summary(summary_train, batch_counter)
 
                             cost_valid_a = []
 
-                            for iii, (valid_batch_x, valid_batch_y, valid_batch_w) in enumerate(self.get_batches(x_valid,
-                                                                                                                 y_valid,
-                                                                                                                 w_valid,
-                                                                                                                 self.batch_size)):
+                            for iii, (valid_batch_x,
+                                      valid_batch_y,
+                                      valid_batch_w) in enumerate(self.get_batches(x_valid,
+                                                                                   y_valid,
+                                                                                   w_valid,
+                                                                                   self.batch_size)):
+
                                 summary_valid_i, cost_valid_i = sess.run([merged, cost_],
                                                                          {inputs: valid_batch_x,
                                                                           labels: valid_batch_y,
@@ -1164,14 +1188,13 @@ class DeepNeuralNetworks:
                                                                           keep_prob: 1.0,
                                                                           is_train: False})
 
-                                w_validriter.add_summary(summary_valid_i, batch_counter)
+                                valid_writer.add_summary(summary_valid_i, batch_counter)
 
                                 cost_valid_a.append(cost_valid_i)
 
                             cost_valid = sum(cost_valid_a) / len(cost_valid_a)
 
-                            end_time = time.time()
-                            total_time = end_time - start_time
+                            total_time = time.time() - start_time
 
                             print("Epoch: {}/{} |".format(epoch_i + 1, self.epochs),
                                   "Batch: {} |".format(batch_counter),
@@ -1180,9 +1203,9 @@ class DeepNeuralNetworks:
                                   "Valid_Loss: {:>.8f}".format(cost_valid))
 
                 # Save Model
-                print('Saving...')
-                saver = tf.train.Saver()
-                saver.save(sess, self.save_path + 'model.' + self.version + '.ckpt')
+                # print('Saving model...')
+                # saver = tf.train.Saver()
+                # saver.save(sess, self.save_path + 'model.' + self.version + '.ckpt')
 
 
 # Cross Validation
