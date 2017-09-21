@@ -1046,7 +1046,10 @@ class DeepNeuralNetworks:
     def log_loss(self, logit, w, y):
 
         with tf.name_scope('prob'):
+            logit = tf.squeeze(logit)
             prob = tf.nn.sigmoid(logit)
+
+        w = w / tf.reduce_sum(w)
 
         with tf.name_scope('log_loss'):
             #  loss = tf.losses.log_loss(labels=label, predictions=prob, weights=weight)
