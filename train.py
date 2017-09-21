@@ -134,7 +134,7 @@ def xgb_train():
 
     XGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
-    XGB.train(pred_path, n_valid=4, n_cv=20, parameters=xgb_parameters)
+    XGB.train(pred_path, n_valid=1, n_cv=20, parameters=xgb_parameters)
 
 
 # LightGBM
@@ -262,17 +262,17 @@ if __name__ == "__main__":
     # print('Start training GradientBoosting...')
     # gb_train()
     #
-    # # XGBoost
-    # print('Start training XGBoost...')
-    # xgb_train()
+    # XGBoost
+    print('Start training XGBoost...')
+    xgb_train()
     #
     # # LGBM
     # print('Start training LGBM...')
     # lgb_train()
 
-    # DNN
-    print('Start training DNN...')
-    dnn_train()
+    #  DNN
+    #  print('Start training DNN...')
+    #  dnn_train()
 
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))

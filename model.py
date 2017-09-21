@@ -1307,8 +1307,6 @@ class CrossValidation:
             y_valid = y[valid_index]
             w_valid = w[valid_index]
 
-            print(x_train.shape(), x_valid.shape())
-
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
 
