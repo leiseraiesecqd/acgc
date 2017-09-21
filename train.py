@@ -164,26 +164,26 @@ def lgb_train():
 # DNN
 
 def dnn_train():
+
+    x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
     # HyperParameters
     hyper_parameters = {'version': '1.0',
                         'epochs': 10,
                         'layers_number': 6,
-                        #  'unit_number': [200, 400, 800, 800, 800, 800, 800, 800, 400, 200],
-                        'unit_number': [48, 24, 12, 8, 4, 1],
+                        'unit_number': [64, 32, 16, 8, 4, 1],
                         'learning_rate': 0.01,
                         'keep_probability': 0.75,
-                        'batch_size': 512,
+                        'batch_size': 256,
                         'display_step': 100,
                         'save_path': './checkpoints/',
                         'log_path': './log/'}
 
     print('Loading data set...')
 
-    x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-
     dnn = model.DeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
 
-    dnn.train()
+    dnn.train(pred_path)
 
 
 # Grid Search
@@ -246,32 +246,33 @@ if __name__ == "__main__":
 
     start_time = time.time()
 
-    # Random Forest
-    #  print('Start training Random Forest...')
-    #  rf_train()
+    # # Random Forest
+    # print('Start training Random Forest...')
+    # rf_train()
     #
-    #  # Extra Trees
-    #  print('Start training Extra Trees...')
-    #  et_train()
+    # # Extra Trees
+    # print('Start training Extra Trees...')
+    # et_train()
     #
-    #  # AdaBoost
-    #  print('Start training AdaBoost...')
-    #  ab_train()
+    # # AdaBoost
+    # print('Start training AdaBoost...')
+    # ab_train()
     #
-    #  # GradientBoosting
-    #  print('Start training GradientBoosting...')
-    #  gb_train()
+    # # GradientBoosting
+    # print('Start training GradientBoosting...')
+    # gb_train()
     #
-    #  # XGBoost
-    print('Start training XGBoost...')
-    xgb_train()
+    # # XGBoost
+    # print('Start training XGBoost...')
+    # xgb_train()
     #
-    #  # LGBM
-    #  print('Start training LGBM...')
-    #  lgb_train()
+    # # LGBM
+    # print('Start training LGBM...')
+    # lgb_train()
 
     # DNN
-    # dnn_train()
+    print('Start training DNN...')
+    dnn_train()
 
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))

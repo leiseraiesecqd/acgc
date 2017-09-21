@@ -246,7 +246,7 @@ class DecisionTree:
 
             self.get_importance(clf_dt)
 
-            prob_test = self.predict(clf_dt, pred_path + 'dt_vc_{}_'.format(count))
+            prob_test = self.predict(clf_dt, pred_path + 'dt_cv_{}_'.format(count))
             prob_total.append(list(prob_test))
 
         print('===========================================')
@@ -345,7 +345,7 @@ class RandomForest:
 
             self.get_importance(clf_rf)
 
-            prob_test = self.predict(clf_rf, pred_path + 'rf_vc_{}_'.format(count))
+            prob_test = self.predict(clf_rf, pred_path + 'rf_cv_{}_'.format(count))
             prob_total.append(list(prob_test))
 
         print('===========================================')
@@ -445,7 +445,7 @@ class ExtraTrees:
 
             self.get_importance(clf_et)
 
-            prob_test = self.predict(clf_et, pred_path + 'et_vc_{}_'.format(count))
+            prob_test = self.predict(clf_et, pred_path + 'et_cv_{}_'.format(count))
             prob_total.append(list(prob_test))
 
         print('===========================================')
@@ -540,7 +540,7 @@ class AdaBoost:
 
             self.get_importance(clf_ab)
 
-            prob_test = self.predict(clf_ab, pred_path + 'ab_vc_{}_'.format(count))
+            prob_test = self.predict(clf_ab, pred_path + 'ab_cv_{}_'.format(count))
             prob_total.append(list(prob_test))
 
         print('===========================================')
@@ -642,7 +642,7 @@ class GradientBoosting:
 
             self.get_importance(clf_gb)
 
-            prob_test = self.predict(clf_gb, pred_path + 'gb_vc_{}_'.format(count))
+            prob_test = self.predict(clf_gb, pred_path + 'gb_cv_{}_'.format(count))
             prob_total.append(list(prob_test))
 
         print('===========================================')
@@ -781,7 +781,7 @@ class XGBoost:
             bst = xgb.train(parameters, d_train, num_boost_round=30, evals=eval_list)
 
             # Prediction
-            prob_test = self.predict(bst, pred_path + 'xgb_vc_{}_'.format(count))
+            prob_test = self.predict(bst, pred_path + 'xgb_cv_{}_'.format(count))
             prob_total.append(list(prob_test))
 
         print('======================================================')
@@ -921,7 +921,7 @@ class LightGBM:
                             valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
 
             # Prediction
-            prob_test = self.predict(bst, pred_path + 'lgb_vc_{}_'.format(count))
+            prob_test = self.predict(bst, pred_path + 'lgb_cv_{}_'.format(count))
             prob_total.append(list(prob_test))
 
         print('======================================================')
@@ -1079,7 +1079,7 @@ class DeepNeuralNetworks:
             yield batch_x, batch_y, batch_w
 
     # Training
-    def train(self):
+    def train(self, pred_path):
 
         # Build Network
         tf.reset_default_graph()
@@ -1117,9 +1117,9 @@ class DeepNeuralNetworks:
 
             start_time = time.time()
 
-            sess.run(tf.global_variables_initializer())
+            cv_counter = 0
 
-            vc_counter = 0
+            prob_total = []
 
             for x_train, y_train, w_train, \
                 x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(self.x_train,
@@ -1127,13 +1127,13 @@ class DeepNeuralNetworks:
                                                                                          self.w_train,
                                                                                          self.e_train):
 
-                vc_counter += 1
+                cv_counter += 1
 
                 print('===============================================================================')
-                print('Training on the Cross Validation Set: {}'.format(vc_counter))
+                print('Training on the Cross Validation Set: {}'.format(cv_counter))
 
-                train_log_path = self.log_path + self.version + '/vc_{}/train'.format(vc_counter)
-                valid_log_path = self.log_path + self.version + '/vc_{}/valid'.format(vc_counter)
+                train_log_path = self.log_path + self.version + '/cv_{}/train'.format(cv_counter)
+                valid_log_path = self.log_path + self.version + '/cv_{}/valid'.format(cv_counter)
 
                 if not isdir(train_log_path):
                     os.mkdir(train_log_path)
@@ -1142,6 +1142,8 @@ class DeepNeuralNetworks:
 
                 train_writer = tf.summary.FileWriter(train_log_path, sess.graph)
                 valid_writer = tf.summary.FileWriter(valid_log_path)
+
+                sess.run(tf.global_variables_initializer())
 
                 batch_counter = 0
 
@@ -1206,6 +1208,26 @@ class DeepNeuralNetworks:
                 # print('Saving model...')
                 # saver = tf.train.Saver()
                 # saver.save(sess, self.save_path + 'model.' + self.version + '.ckpt')
+
+                # Prediction
+                print('Predicting...')
+
+                logits_ = sess.run(logits, {inputs: self.x_test,
+                                            keep_prob: 1.0,
+                                            is_train: False})
+                prob_test = 1.0 / (1.0 + np.exp(-logits_))
+
+                prob_total.append(list(prob_test))
+
+                utils.save_pred_to_csv(pred_path + 'dnn_cv_{}_'.format(cv_counter), self.id_test, prob_test)
+
+            # Final Result
+            print('======================================================')
+            print('Calculating final result...')
+
+            prob_mean = np.mean(np.array(prob_total), axis=0)
+
+            utils.save_pred_to_csv(pred_path + 'dnn_', self.id_test, prob_mean)
 
 
 # Cross Validation
