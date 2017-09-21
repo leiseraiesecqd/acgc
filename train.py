@@ -242,7 +242,7 @@ def grid_search():
 if __name__ == "__main__":
 
     if not isdir(pred_path):
-        os.mkdir(pred_path)
+        os.makedirs(pred_path)
 
     start_time = time.time()
 

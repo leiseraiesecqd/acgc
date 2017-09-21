@@ -861,7 +861,7 @@ class DataPreProcess:
     def save_data_np(self):
 
         if not isdir(self.prepro_path):
-            os.mkdir(self.prepro_path)
+            os.makedirs(self.prepro_path)
 
         print('Saving data...')
 
@@ -891,7 +891,7 @@ class DataPreProcess:
     def save_data_pd(self):
 
         if not isdir(self.prepro_path):
-            os.mkdir(self.prepro_path)
+            os.makedirs(self.prepro_path)
 
         print('Saving data...')
 

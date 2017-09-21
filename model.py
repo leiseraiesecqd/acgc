@@ -848,7 +848,7 @@ class LightGBM:
 
         print('Initialize Model...')
 
-        clf = lgb.LGBMClassifier(**parameters)
+        clf = LGBMClassifier(**parameters)
 
         return clf
 
@@ -1136,9 +1136,9 @@ class DeepNeuralNetworks:
                 valid_log_path = self.log_path + self.version + '/cv_{}/valid'.format(cv_counter)
 
                 if not isdir(train_log_path):
-                    os.mkdir(train_log_path)
+                    os.makedirs(train_log_path)
                 if not isdir(valid_log_path):
-                    os.mkdir(valid_log_path)
+                    os.makedirs(valid_log_path)
 
                 train_writer = tf.summary.FileWriter(train_log_path, sess.graph)
                 valid_writer = tf.summary.FileWriter(valid_log_path)
