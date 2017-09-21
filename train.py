@@ -254,33 +254,33 @@ if __name__ == "__main__":
     # # Random Forest
     # print('Start training Random Forest...')
     # rf_train()
-    #
+
     # # Extra Trees
     # print('Start training Extra Trees...')
     # et_train()
-    #
+
     # # AdaBoost
     # print('Start training AdaBoost...')
     # ab_train()
-    #
+
     # # GradientBoosting
     # print('Start training GradientBoosting...')
     # gb_train()
-    #
+
     # # XGBoost
     # print('Start training XGBoost...')
     # xgb_train()
-    #
-    # # LGBM
-    # print('Start training LGBM...')
-    # lgb_train()
+
+    # LGBM
+    print('Start training LGBM...')
+    lgb_train()
 
     #  DNN
-    print('Start training DNN...')
-    dnn_train()
+    # print('Start training DNN...')
+    # dnn_train()
 
     # Grid Search
-    grid_search()
+    # grid_search()
 
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))
