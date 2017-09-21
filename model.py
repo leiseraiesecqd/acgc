@@ -67,6 +67,27 @@ class LRegression:
         plt.xlim([-1, feature_num])
         plt.show()
 
+    def predict(self, clf, pred_path):
+
+        print('Predicting...')
+
+        prob_test = clf.predict_proba(self.x_test)
+
+        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+
+        return prob_test
+
+    def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
+
+        prob_train = model.predict_proba(xgb.DMatrix(x_t))
+        prob_valid = model.predict_proba(xgb.DMatrix(x_v))
+
+        loss_train = utils.log_loss(prob_train, y_t, w_t)
+        loss_valid = utils.log_loss(prob_valid, y_v, w_v)
+
+        print('Train LogLoss: {:>.8f}|'.format(loss_train),
+              'Validation LogLoss: {:>.8f}|'.format(loss_valid))
+
     def train(self, parameters):
 
         clf_lr = LogisticRegression(random_state=1)
@@ -207,11 +228,22 @@ class DecisionTree:
 
         print('Predicting...')
 
-        prob_test = clf.predict(self.x_test)
+        prob_test = clf.predict_proba(self.x_test)
 
         utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
+
+    def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
+
+        prob_train = model.predict_proba(xgb.DMatrix(x_t))
+        prob_valid = model.predict_proba(xgb.DMatrix(x_v))
+
+        loss_train = utils.log_loss(prob_train, y_t, w_t)
+        loss_valid = utils.log_loss(prob_valid, y_v, w_v)
+
+        print('Train LogLoss: {:>.8f}|'.format(loss_train),
+              'Validation LogLoss: {:>.8f}|'.format(loss_valid))
 
     def train(self, pred_path, n_valid, n_cv, parameters=None):
 
@@ -230,16 +262,22 @@ class DecisionTree:
             print('===========================================')
             print('Training on the Cross Validation Set: {}'.format(count))
 
+            # Classifier
             clf_dt = self.clf(parameters)
 
             clf_dt.fit(x_train, y_train, sample_weight=w_train)
 
+            # Scores
             scores = clf_dt.score(x_valid, y_valid, sample_weight=w_valid)
-
             print('mean accuracy on validation set: %0.6f' % scores)
 
+            # Print LogLoss
+            self.print_loss(clf_dt, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+
+            # Feature Importance
             self.get_importance(clf_dt)
 
+            # Prediction
             prob_test = self.predict(clf_dt, pred_path + 'dt_cv_{}_'.format(count))
             prob_total.append(list(prob_test))
 
@@ -300,11 +338,22 @@ class RandomForest:
 
         print('Predicting...')
 
-        prob_test = clf.predict(self.x_test)
+        prob_test = clf.predict_proba(self.x_test)
 
         utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
+
+    def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
+
+        prob_train = model.predict_proba(xgb.DMatrix(x_t))
+        prob_valid = model.predict_proba(xgb.DMatrix(x_v))
+
+        loss_train = utils.log_loss(prob_train, y_t, w_t)
+        loss_valid = utils.log_loss(prob_valid, y_v, w_v)
+
+        print('Train LogLoss: {:>.8f}|'.format(loss_train),
+              'Validation LogLoss: {:>.8f}|'.format(loss_valid))
 
     def train(self, pred_path, n_valid, n_cv, parameters=None):
 
@@ -323,16 +372,22 @@ class RandomForest:
             print('===========================================')
             print('Training on the Cross Validation Set: {}'.format(count))
 
+            # Classifier
             clf_rf = self.clf(parameters)
 
             clf_rf.fit(x_train, y_train, sample_weight=w_train)
 
+            # Scores
             scores = clf_rf.score(x_valid, y_valid, sample_weight=w_valid)
-
             print('mean accuracy on validation set: %0.6f' % scores)
 
+            # Print LogLoss
+            self.print_loss(clf_rf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+
+            # Feature Importance
             self.get_importance(clf_rf)
 
+            # Prediction
             prob_test = self.predict(clf_rf, pred_path + 'rf_cv_{}_'.format(count))
             prob_total.append(list(prob_test))
 
@@ -393,11 +448,22 @@ class ExtraTrees:
 
         print('Predicting...')
 
-        prob_test = clf.predict(self.x_test)
+        prob_test = clf.predict_proba(self.x_test)
 
         utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
+
+    def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
+
+        prob_train = model.predict_proba(xgb.DMatrix(x_t))
+        prob_valid = model.predict_proba(xgb.DMatrix(x_v))
+
+        loss_train = utils.log_loss(prob_train, y_t, w_t)
+        loss_valid = utils.log_loss(prob_valid, y_v, w_v)
+
+        print('Train LogLoss: {:>.8f}|'.format(loss_train),
+              'Validation LogLoss: {:>.8f}|'.format(loss_valid))
 
     def train(self, pred_path, n_valid, n_cv, parameters=None):
 
@@ -416,16 +482,22 @@ class ExtraTrees:
             print('===========================================')
             print('Training on the Cross Validation Set: {}'.format(count))
 
+            # Classifier
             clf_et = self.clf(parameters)
 
             clf_et.fit(x_train, y_train, sample_weight=w_train)
 
+            # Scores
             scores = clf_et.score(x_valid, y_valid, sample_weight=w_valid)
-
             print('mean accuracy on validation set: %0.6f' % scores)
 
+            # Print LogLoss
+            self.print_loss(clf_et, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+
+            # Feature Importance
             self.get_importance(clf_et)
 
+            # Prediction
             prob_test = self.predict(clf_et, pred_path + 'et_cv_{}_'.format(count))
             prob_total.append(list(prob_test))
 
@@ -486,11 +558,22 @@ class AdaBoost:
 
         print('Predicting...')
 
-        prob_test = clf.predict(self.x_test)
+        prob_test = clf.predict_proba(self.x_test)
 
         utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
+
+    def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
+
+        prob_train = model.predict_proba(xgb.DMatrix(x_t))
+        prob_valid = model.predict_proba(xgb.DMatrix(x_v))
+
+        loss_train = utils.log_loss(prob_train, y_t, w_t)
+        loss_valid = utils.log_loss(prob_valid, y_v, w_v)
+
+        print('Train LogLoss: {:>.8f}|'.format(loss_train),
+              'Validation LogLoss: {:>.8f}|'.format(loss_valid))
 
     def train(self, pred_path, n_valid, n_cv, parameters=None):
 
@@ -509,16 +592,22 @@ class AdaBoost:
             print('===========================================')
             print('Training on the Cross Validation Set: {}'.format(count))
 
+            # Classifier
             clf_ab = self.clf(parameters)
 
             clf_ab.fit(x_train, y_train, sample_weight=w_train)
 
+            # Scores
             scores = clf_ab.score(x_valid, y_valid, sample_weight=w_valid)
-
             print('mean accuracy on validation set: %0.6f' % scores)
 
+            # Print LogLoss
+            self.print_loss(clf_ab, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+
+            # Feature Importance
             self.get_importance(clf_ab)
 
+            # Prediction
             prob_test = self.predict(clf_ab, pred_path + 'ab_cv_{}_'.format(count))
             prob_total.append(list(prob_test))
 
@@ -580,11 +669,22 @@ class GradientBoosting:
 
         print('Predicting...')
 
-        prob_test = clf.predict(self.x_test)
+        prob_test = clf.predict_proba(self.x_test)
 
         utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
+
+    def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
+
+        prob_train = model.predict_proba(xgb.DMatrix(x_t))
+        prob_valid = model.predict_proba(xgb.DMatrix(x_v))
+
+        loss_train = utils.log_loss(prob_train, y_t, w_t)
+        loss_valid = utils.log_loss(prob_valid, y_v, w_v)
+
+        print('Train LogLoss: {:>.8f}|'.format(loss_train),
+              'Validation LogLoss: {:>.8f}|'.format(loss_valid))
 
     def train(self, pred_path, n_valid, n_cv, parameters=None):
 
@@ -605,14 +705,20 @@ class GradientBoosting:
 
             clf_gb = self.clf(parameters)
 
+            # Classifier
             clf_gb.fit(x_train, y_train, sample_weight=w_train)
 
+            # Scores
             scores = clf_gb.score(x_valid, y_valid, sample_weight=w_valid)
-
             print('mean accuracy on validation set: %0.6f' % scores)
 
+            # Print LogLoss
+            self.print_loss(clf_gb, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+
+            # Feature Importance
             self.get_importance(clf_gb)
 
+            # Prediction
             prob_test = self.predict(clf_gb, pred_path + 'gb_cv_{}_'.format(count))
             prob_total.append(list(prob_test))
 
@@ -680,6 +786,17 @@ class XGBoost:
 
         return prob_test
 
+    def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
+
+        prob_train = model.predict(xgb.DMatrix(x_t))
+        prob_valid = model.predict(xgb.DMatrix(x_v))
+
+        loss_train = utils.log_loss(prob_train, y_t, w_t)
+        loss_valid = utils.log_loss(prob_valid, y_v, w_v)
+
+        print('Train LogLoss: {:>.8f}|'.format(loss_train),
+              'Validation LogLoss: {:>.8f}|'.format(loss_valid))
+
     def train(self, pred_path, n_valid, n_cv, parameters=None):
 
         # sk-learn module
@@ -737,7 +854,11 @@ class XGBoost:
 
             eval_list = [(d_valid, 'eval'), (d_train, 'train')]
 
+            # Booster
             bst = xgb.train(parameters, d_train, num_boost_round=30, evals=eval_list)
+
+            # Print LogLoss
+            self.print_loss(bst, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Prediction
             prob_test = self.predict(bst, pred_path + 'xgb_cv_{}_'.format(count))
@@ -806,6 +927,17 @@ class LightGBM:
         utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
+
+    def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
+
+        prob_train = model.predict(xgb.DMatrix(x_t))
+        prob_valid = model.predict(xgb.DMatrix(x_v))
+
+        loss_train = utils.log_loss(prob_train, y_t, w_t)
+        loss_valid = utils.log_loss(prob_valid, y_v, w_v)
+
+        print('Train LogLoss: {:>.8f}|'.format(loss_train),
+              'Validation LogLoss: {:>.8f}|'.format(loss_valid))
 
     def train(self, pred_path, n_valid, n_cv, parameters=None,
               x_train_f=None, g_train=None, g_train_f=None, g_test=None):
@@ -876,8 +1008,12 @@ class LightGBM:
             d_train = lgb.Dataset(x_train, label=y_train, weight=w_train)
             d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid)
 
+            # Booster
             bst = lgb.train(parameters, d_train, num_boost_round=50,
                             valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
+
+            # Print LogLoss
+            self.print_loss(bst, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Prediction
             prob_test = self.predict(bst, pred_path + 'lgb_cv_{}_'.format(count))
@@ -1159,12 +1295,12 @@ class DeepNeuralNetworks:
 
                             total_time = time.time() - start_time
 
-                            print("CV: {} |".format(cv_counter),
-                                  "Epoch: {}/{} |".format(epoch_i + 1, self.epochs),
-                                  "Batch: {} |".format(batch_counter),
-                                  "Time: {:>3.2f}s |".format(total_time),
-                                  "Train_Loss: {:>.8f} |".format(cost_train),
-                                  "Valid_Loss: {:>.8f}".format(cost_valid))
+                            print('CV: {} |'.format(cv_counter),
+                                  'Epoch: {}/{} |'.format(epoch_i + 1, self.epochs),
+                                  'Batch: {} |'.format(batch_counter),
+                                  'Time: {:>3.2f}s |'.format(total_time),
+                                  'Train_Loss: {:>.8f} |'.format(cost_train),
+                                  'Valid_Loss: {:>.8f}'.format(cost_valid))
 
                 # Save Model
                 # print('Saving model...')
@@ -1320,13 +1456,13 @@ def grid_search(tr_x, tr_y, clf, params=None):
 
     best_parameters = grid_search.best_estimator_.get_params()
 
-    print("Best score: %0.3f" % grid_search.best_score_)
-    print("Best parameters set:")
+    print('Best score: %0.3f' % grid_search.best_score_)
+    print('Best parameters set:')
 
     for param_name in sorted(params.keys()):
-        print("\t%s: %r" % (param_name, best_parameters[param_name]))
+        print('\t%s: %r' % (param_name, best_parameters[param_name]))
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 
     pass
