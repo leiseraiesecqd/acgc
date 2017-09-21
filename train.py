@@ -167,8 +167,9 @@ def dnn_train():
     # HyperParameters
     hyper_parameters = {'version': '1.0',
                         'epochs': 10,
-                        'layers_number': 10,
-                        'unit_number': [200, 400, 800, 800, 800, 800, 800, 800, 400, 200],
+                        'layers_number': 6,
+                        #  'unit_number': [200, 400, 800, 800, 800, 800, 800, 800, 400, 200],
+                        'unit_number': [48, 24, 12, 8, 4, 1],
                         'learning_rate': 0.01,
                         'keep_probability': 0.75,
                         'batch_size': 512,
@@ -246,28 +247,28 @@ if __name__ == "__main__":
     start_time = time.time()
 
     # Random Forest
-    print('Start training Random Forest...')
-    rf_train()
-
-    # Extra Trees
-    print('Start training Extra Trees...')
-    et_train()
-
-    # AdaBoost
-    print('Start training AdaBoost...')
-    ab_train()
-
-    # GradientBoosting
-    print('Start training GradientBoosting...')
-    gb_train()
-
-    # XGBoost
-    print('Start training XGBoost...')
-    xgb_train()
-
-    # LGBM
-    print('Start training LGBM...')
-    lgb_train()
+    #  print('Start training Random Forest...')
+    #  rf_train()
+    #
+    #  # Extra Trees
+    #  print('Start training Extra Trees...')
+    #  et_train()
+    #
+    #  # AdaBoost
+    #  print('Start training AdaBoost...')
+    #  ab_train()
+    #
+    #  # GradientBoosting
+    #  print('Start training GradientBoosting...')
+    #  gb_train()
+    #
+    #  # XGBoost
+    #  print('Start training XGBoost...')
+    #  xgb_train()
+    #
+    #  # LGBM
+    #  print('Start training LGBM...')
+    #  lgb_train()
 
     # DNN
     dnn_train()
