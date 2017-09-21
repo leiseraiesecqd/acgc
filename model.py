@@ -213,16 +213,18 @@ class DecisionTree:
 
         return prob_test
 
-    def train(self, pred_path, parameters=None):
+    def train(self, pred_path, n_valid, n_cv, parameters=None):
 
         count = 0
         prob_total = []
 
         for x_train, y_train, w_train, \
-            x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(x=self.x_train,
-                                                                                     y=self.y_train,
-                                                                                     w=self.w_train,
-                                                                                     e=self.e_train):
+            x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+                                                                                y=self.y_train,
+                                                                                w=self.w_train,
+                                                                                e=self.e_train,
+                                                                                n_valid=n_valid,
+                                                                                n_cv=n_cv):
             count += 1
 
             print('===========================================')
@@ -304,16 +306,18 @@ class RandomForest:
 
         return prob_test
 
-    def train(self, pred_path, parameters=None):
+    def train(self, pred_path, n_valid, n_cv, parameters=None):
 
         count = 0
         prob_total = []
 
         for x_train, y_train, w_train, \
-            x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(x=self.x_train,
-                                                                                     y=self.y_train,
-                                                                                     w=self.w_train,
-                                                                                     e=self.e_train):
+            x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+                                                                                y=self.y_train,
+                                                                                w=self.w_train,
+                                                                                e=self.e_train,
+                                                                                n_valid=n_valid,
+                                                                                n_cv=n_cv):
             count += 1
 
             print('===========================================')
@@ -395,16 +399,18 @@ class ExtraTrees:
 
         return prob_test
 
-    def train(self, pred_path, parameters=None):
+    def train(self, pred_path, n_valid, n_cv, parameters=None):
 
         count = 0
         prob_total = []
 
         for x_train, y_train, w_train, \
-            x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(x=self.x_train,
-                                                                                     y=self.y_train,
-                                                                                     w=self.w_train,
-                                                                                     e=self.e_train):
+            x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+                                                                                y=self.y_train,
+                                                                                w=self.w_train,
+                                                                                e=self.e_train,
+                                                                                n_valid=n_valid,
+                                                                                n_cv=n_cv):
             count += 1
 
             print('===========================================')
@@ -486,16 +492,18 @@ class AdaBoost:
 
         return prob_test
 
-    def train(self, pred_path, parameters=None):
+    def train(self, pred_path, n_valid, n_cv, parameters=None):
 
         count = 0
         prob_total = []
 
         for x_train, y_train, w_train, \
-            x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(x=self.x_train,
-                                                                                     y=self.y_train,
-                                                                                     w=self.w_train,
-                                                                                     e=self.e_train):
+            x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+                                                                                y=self.y_train,
+                                                                                w=self.w_train,
+                                                                                e=self.e_train,
+                                                                                n_valid=n_valid,
+                                                                                n_cv=n_cv):
             count += 1
 
             print('===========================================')
@@ -578,16 +586,18 @@ class GradientBoosting:
 
         return prob_test
 
-    def train(self, pred_path, parameters=None):
+    def train(self, pred_path, n_valid, n_cv, parameters=None):
 
         count = 0
         prob_total = []
 
         for x_train, y_train, w_train, \
-            x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(x=self.x_train,
-                                                                                     y=self.y_train,
-                                                                                     w=self.w_train,
-                                                                                     e=self.e_train):
+            x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+                                                                                y=self.y_train,
+                                                                                w=self.w_train,
+                                                                                e=self.e_train,
+                                                                                n_valid=n_valid,
+                                                                                n_cv=n_cv):
             count += 1
 
             print('===========================================')
@@ -682,7 +692,7 @@ class XGBoost:
         # count = 0
         #
         # for x_train, y_train, w_train, \
-        #     x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(self.x_train,
+        #     x_valid, y_valid, w_valid in CrossValidation.sk_era_k_fold_with_weight(self.x_train,
         #                                                                              self.y_train,
         #                                                                              self.w_train):
         #
@@ -705,12 +715,12 @@ class XGBoost:
         prob_total = []
 
         for x_train, y_train, w_train, \
-            x_valid, y_valid, w_valid in CrossValidation.group_k_fold_with_weight(x=self.x_train,
-                                                                                  y=self.y_train,
-                                                                                  w=self.w_train,
-                                                                                  e=self.e_train,
-                                                                                  n_valid=n_valid,
-                                                                                  n_cv=n_cv):
+            x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+                                                                                y=self.y_train,
+                                                                                w=self.w_train,
+                                                                                e=self.e_train,
+                                                                                n_valid=n_valid,
+                                                                                n_cv=n_cv):
 
             count += 1
 
@@ -810,7 +820,7 @@ class LightGBM:
         # count = 0
         #
         # for x_train, y_train, w_train, \
-        #     x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(self.x_train,
+        #     x_valid, y_valid, w_valid in CrossValidation.sk_era_k_fold_with_weight(self.x_train,
         #                                                                              self.y_train,
         #                                                                              self.w_train
         #                                                                              self.e_train):
@@ -834,23 +844,24 @@ class LightGBM:
         prob_total = []
 
         # Use Category
-        for x_train, y_train, w_train, \
-            x_valid, y_valid, w_valid in CrossValidation.group_k_fold_with_weight(x=self.x_train,
-                                                                                  y=self.y_train,
-                                                                                  w=self.w_train,
-                                                                                  e=self.e_train,
-                                                                                  n_valid=n_valid,
-                                                                                  n_cv=n_cv):
+        # for x_train, y_train, w_train, g_train, \
+        #     x_valid, y_valid, w_valid, g_valid in CrossValidation.era_k_fold_with_weight_group(x=x_train_f,
+        #                                                                                        y=self.y_train,
+        #                                                                                        w=self.w_train,
+        #                                                                                        e=self.e_train,
+        #                                                                                        g=g_train,
+        #                                                                                        n_valid=n_valid,
+        #                                                                                        n_cv=n_cv):
 
         # Use Category
-        # for x_train, y_train, w_train, g_train, \
-        #     x_valid, y_valid, w_valid, g_valid in CrossValidation.group_k_fold_with_weight_group(x=x_train_f,
-        #                                                                                          y=self.y_train,
-        #                                                                                          w=self.w_train,
-        #                                                                                          e=self.e_train,
-        #                                                                                          g=g_train,
-        #                                                                                          n_valid=n_valid,
-        #                                                                                          n_cv=n_cv):
+        for x_train, y_train, w_train, \
+            x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+                                                                                y=self.y_train,
+                                                                                w=self.w_train,
+                                                                                e=self.e_train,
+                                                                                n_valid=n_valid,
+                                                                                n_cv=n_cv):
+
             count += 1
 
             print('======================================================')
@@ -1070,13 +1081,12 @@ class DeepNeuralNetworks:
             prob_total = []
 
             for x_train, y_train, w_train, \
-                x_valid, y_valid, w_valid in CrossValidation.group_k_fold_with_weight(self.x_train,
-                                                                                      self.y_train,
-                                                                                      self.w_train,
-                                                                                      self.e_train,
-                                                                                      self.g_train,
-                                                                                      n_valid,
-                                                                                      n_cv):
+                x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(self.x_train,
+                                                                                    self.y_train,
+                                                                                    self.w_train,
+                                                                                    self.e_train,
+                                                                                    n_valid,
+                                                                                    n_cv):
 
                 cv_counter += 1
 
@@ -1225,7 +1235,7 @@ class CrossValidation:
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
     @staticmethod
-    def group_k_fold_with_weight(x, y, w, e, n_valid, n_cv):
+    def era_k_fold_with_weight(x, y, w, e, n_valid, n_cv):
 
         for i in range(n_cv):
 
@@ -1258,7 +1268,7 @@ class CrossValidation:
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
     @staticmethod
-    def group_k_fold_with_weight_group(x, y, w, e, g, n_valid, n_cv):
+    def era_k_fold_with_weight_group(x, y, w, e, g, n_valid, n_cv):
 
         for i in range(n_cv):
 
@@ -1318,25 +1328,5 @@ def grid_search(tr_x, tr_y, clf, params=None):
 
 
 if __name__ == "__main__":
-
-    # # HyperParameters
-    # hyper_parameters = {'version': '1.0',
-    #                     'epochs': 10,
-    #                     'layers_number': 10,
-    #                     'unit_number': [200, 400, 800, 800, 800, 800, 800, 800, 400, 200],
-    #                     'learning_rate': 0.01,
-    #                     'keep_probability': 0.75,
-    #                     'batch_size': 512,
-    #                     'display_step': 100,
-    #                     'save_path': './checkpoints/',
-    #                     'log_path': './log/'}
-    #
-    # pickled_data_path = './preprocessed_data/'
-    #
-    # tr, tr_y, tr_w, val_x, val_y, val_w = load_data(pickled_data_path)
-    #
-    # dnn = DNN(tr, tr_y, tr_w, val_x, val_y, val_w, hyper_parameters)
-    # dnn.train()
-    # print('Done!')
 
     pass

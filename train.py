@@ -36,7 +36,7 @@ def rf_train():
 
     RF = model.RandomForest(x_train, y_train, w_train, e_train, x_test, id_test)
 
-    RF.train(pred_path, parameters=rf_parameters)
+    RF.train(pred_path, n_valid=4, n_cv=20, parameters=rf_parameters)
 
 
 # Extra Trees
@@ -65,7 +65,7 @@ def et_train():
 
     ET = model.ExtraTrees(x_train, y_train, w_train, e_train, x_test, id_test)
 
-    ET.train(pred_path, parameters=et_parameters)
+    ET.train(pred_path, n_valid=4, n_cv=20, parameters=et_parameters)
 
 
 # AdaBoost
@@ -81,7 +81,7 @@ def ab_train():
                      'random_state': 1}
 
     AB = model.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
-    AB.train(pred_path, parameters=ab_parameters)
+    AB.train(pred_path, n_valid=4, n_cv=20, parameters=ab_parameters)
 
 
 # GradientBoosting
@@ -111,7 +111,7 @@ def gb_train():
 
     GB = model.GradientBoosting(x_train, y_train, w_train, e_train, x_test, id_test)
 
-    GB.train(pred_path, parameters=gb_parameters)
+    GB.train(pred_path, n_valid=4, n_cv=20, parameters=gb_parameters)
 
 
 # XGBoost
