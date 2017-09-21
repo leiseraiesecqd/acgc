@@ -1,4 +1,4 @@
-import math
+#  import math
 import time
 import utils
 import os
@@ -354,7 +354,6 @@ class RandomForest:
         prob_mean = np.mean(np.array(prob_total), axis=0)
 
         utils.save_pred_to_csv(pred_path + 'rf_', self.id_test, prob_mean)
-
 
 
 # Extra Trees
@@ -915,8 +914,6 @@ class LightGBM:
             #               'early_stopping_rounds': 50, 'subsample': 0.8, 'colsample_bytree': 0.8,
             #               'eval_metric': 'logloss'}
 
-            eval_list = [(d_valid, 'eval'), (d_train, 'train')]
-
             bst = lgb.train(parameters, d_train, num_boost_round=30,
                             valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
 
@@ -975,7 +972,7 @@ class DeepNeuralNetworks:
 
         with tf.name_scope(layer_name):
 
-            x_shape = x_tensor.get_shape().as_list()
+            #  x_shape = x_tensor.get_shape().as_list()
 
             # weights = tf.Variable(tf.truncated_normal([x_shape[1], num_outputs], stddev=2.0 / math.sqrt(x_shape[1])))
             #
@@ -1129,7 +1126,7 @@ class DeepNeuralNetworks:
 
                 cv_counter += 1
 
-                print('===============================================================================')
+                print('======================================================================================================')
                 print('Training on the Cross Validation Set: {}'.format(cv_counter))
 
                 train_log_path = self.log_path + self.version + '/cv_{}/train'.format(cv_counter)
@@ -1198,7 +1195,8 @@ class DeepNeuralNetworks:
 
                             total_time = time.time() - start_time
 
-                            print("Epoch: {}/{} |".format(epoch_i + 1, self.epochs),
+                            print("CV: {} |".format(cv_counter),
+                                  "Epoch: {}/{} |".format(epoch_i + 1, self.epochs),
                                   "Batch: {} |".format(batch_counter),
                                   "Time: {:>3.2f}s |".format(total_time),
                                   "Train_Loss: {:>.8f} |".format(cost_train),
@@ -1215,6 +1213,8 @@ class DeepNeuralNetworks:
                 logits_ = sess.run(logits, {inputs: self.x_test,
                                             keep_prob: 1.0,
                                             is_train: False})
+
+                logits_ = logits_.flatten()
                 prob_test = 1.0 / (1.0 + np.exp(-logits_))
 
                 prob_total.append(list(prob_test))
@@ -1222,7 +1222,7 @@ class DeepNeuralNetworks:
                 utils.save_pred_to_csv(pred_path + 'dnn_cv_{}_'.format(cv_counter), self.id_test, prob_test)
 
             # Final Result
-            print('======================================================')
+            print('======================================================================================================')
             print('Calculating final result...')
 
             prob_mean = np.mean(np.array(prob_total), axis=0)
