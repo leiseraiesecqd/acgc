@@ -134,7 +134,7 @@ def xgb_train():
 
     XGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
-    XGB.train(pred_path, parameters=xgb_parameters)
+    XGB.train(pred_path, n_valid=4, n_cv=20, parameters=xgb_parameters)
 
 
 # LightGBM
@@ -158,7 +158,7 @@ def lgb_train():
 
     LGBM = model.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test)
 
-    LGBM.train(pred_path, parameters=lgb_parameters)
+    LGBM.train(pred_path, n_valid=4, n_cv=20, parameters=lgb_parameters)
 
 
 # DNN

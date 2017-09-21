@@ -722,7 +722,7 @@ class XGBoost:
 
         return prob_test
 
-    def train(self, pred_path, parameters=None):
+    def train(self, pred_path, n_valid, n_cv, parameters=None):
 
         # sk-learn module
 
@@ -757,10 +757,12 @@ class XGBoost:
         prob_total = []
 
         for x_train, y_train, w_train, \
-            x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(x=self.x_train,
-                                                                                     y=self.y_train,
-                                                                                     w=self.w_train,
-                                                                                     e=self.e_train):
+            x_valid, y_valid, w_valid in CrossValidation.group_k_fold_with_weight(x=self.x_train,
+                                                                                  y=self.y_train,
+                                                                                  w=self.w_train,
+                                                                                  e=self.e_train,
+                                                                                  n_valid=n_valid,
+                                                                                  n_cv=n_cv):
 
             count += 1
 
@@ -861,7 +863,7 @@ class LightGBM:
 
         return prob_test
 
-    def train(self, pred_path, parameters=None):
+    def train(self, pred_path, n_valid, n_cv, parameters=None):
 
         # sk-learn module
 
@@ -897,10 +899,12 @@ class LightGBM:
         prob_total = []
 
         for x_train, y_train, w_train, \
-            x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(x=self.x_train,
-                                                                                     y=self.y_train,
-                                                                                     w=self.w_train,
-                                                                                     e=self.e_train):
+            x_valid, y_valid, w_valid in CrossValidation.group_k_fold_with_weight(x=self.x_train,
+                                                                                  y=self.y_train,
+                                                                                  w=self.w_train,
+                                                                                  e=self.e_train,
+                                                                                  n_valid=n_valid,
+                                                                                  n_cv=n_cv):
             count += 1
 
             print('======================================================')
