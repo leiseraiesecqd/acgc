@@ -2,6 +2,7 @@
 import time
 import utils
 import os
+import random
 from os.path import isdir
 import numpy as np
 import matplotlib.pyplot as plt
@@ -1116,10 +1117,10 @@ class DeepNeuralNetworks:
             prob_total = []
 
             for x_train, y_train, w_train, \
-                x_valid, y_valid, w_valid in CrossValidation.sk_group_k_fold_with_weight(self.x_train,
-                                                                                         self.y_train,
-                                                                                         self.w_train,
-                                                                                         self.e_train):
+                x_valid, y_valid, w_valid in CrossValidation.group_k_fold_with_weight(self.x_train,
+                                                                                      self.y_train,
+                                                                                      self.w_train,
+                                                                                      self.e_train):
 
                 cv_counter += 1
 
@@ -1254,6 +1255,39 @@ class CrossValidation:
         era_k_fold = GroupKFold(n_splits=20)
 
         for train_index, valid_index in era_k_fold.split(x, y, e):
+
+            # Training data
+            x_train = x[train_index]
+            y_train = y[train_index]
+            w_train = w[train_index]
+
+            # Validation data
+            x_valid = x[valid_index]
+            y_valid = y[valid_index]
+            w_valid = w[valid_index]
+
+            yield x_train, y_train, w_train, x_valid, y_valid, w_valid
+
+    @staticmethod
+    def group_k_fold_with_weight(x, y, w, e, n_valid, n_cv):
+
+        for i in range(n_cv):
+
+            era_idx = range(n_valid)
+            valid_group = np.random.choice(era_idx, 4, replace=False)
+
+            train_index = []
+            valid_index = []
+
+            for ii, ele in enumerate(e):
+
+                if ele in valid_group:
+                    valid_index.append(ii)
+                else:
+                    train_index.append(ii)
+
+            np.random.shuffle(train_index)
+            np.random.shuffle(valid_index)
 
             # Training data
             x_train = x[train_index]
