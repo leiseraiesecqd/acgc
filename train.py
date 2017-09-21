@@ -248,21 +248,27 @@ if __name__ == "__main__":
     start_time = time.time()
 
     # Random Forest
-    rf_train()
+    # print('Start training Random Forest...')
+    # rf_train()
 
     # Extra Trees
-    et_train()
+    # print('Start training Extra Trees...')
+    # et_train()
 
     # AdaBoost
-    ab_train()
+    # print('Start training AdaBoost...')
+    # ab_train()
 
     # GradientBoosting
-    gb_train()
+    # print('Start training GradientBoosting...')
+    # gb_train()
 
     # XGBoost
-    xgb_train()
+    # print('Start training XGBoost...')
+    # xgb_train()
 
     # LGBM
+    print('Start training LGBM...')
     lgb_train()
 
     print('Done!')
