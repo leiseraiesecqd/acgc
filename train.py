@@ -169,10 +169,10 @@ def dnn_train():
 
     # HyperParameters
     hyper_parameters = {'version': '1.0',
-                        'epochs': 10,
+                        'epochs': 30,
                         'layers_number': 6,
                         'unit_number': [64, 32, 16, 8, 4, 1],
-                        'learning_rate': 0.01,
+                        'learning_rate': 0.0001,
                         'keep_probability': 0.75,
                         'batch_size': 256,
                         'display_step': 100,
