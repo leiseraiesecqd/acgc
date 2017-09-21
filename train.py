@@ -152,8 +152,8 @@ def lgb_train():
                       'min_data_in_leaf': 20,         # default=20
                       'feature_fraction': 0.8,        # default=1
                       'bagging_fraction': 0.8,        # default=1
-                      'bagging_freq':5,               # default=0 perform bagging every k iteration
-                      'bagging_seed':1,               # default=3
+                      'bagging_freq': 5,               # default=0 perform bagging every k iteration
+                      'bagging_seed': 1,               # default=3
                       'early_stopping_rounds': 50,
                       'max_bin': 255,
                       'metric': 'binary_logloss',
@@ -213,7 +213,7 @@ def grid_search():
                       # 'reg_alpha': 0,
                       # 'reg_lambda': 1,
                       # 'scale_pos_weight': 1,
-                      'seed': 1,}
+                      'seed': 1}
 
     XGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
@@ -239,7 +239,7 @@ def grid_search():
                        # 'reg_alpha': 0,
                        # 'reg_lambda': 1,
                        # 'scale_pos_weight': 1,
-                       'seed': 1,}
+                       'seed': 1}
 
     model.grid_search(x_train, y_train, clf_xgb, parameters_grid)
 
@@ -271,16 +271,16 @@ if __name__ == "__main__":
     # print('Start training XGBoost...')
     # xgb_train()
 
-    # LGBM
-    print('Start training LGBM...')
-    lgb_train()
+    #  LGBM
+    #  print('Start training LGBM...')
+    #  lgb_train()
 
     #  DNN
     # print('Start training DNN...')
     # dnn_train()
 
     # Grid Search
-    # grid_search()
+    grid_search()
 
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))
