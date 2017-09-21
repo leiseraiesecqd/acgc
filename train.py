@@ -122,15 +122,15 @@ def xgb_train():
 
     xgb_parameters = {'learning_rate': 0.05,
                       'n_estimators': 1000,
-                      'max_depth': 10,
-                      'min_child_weight': 5,
-                      'gamma': 0,
-                      'silent': 1,
-                      'objective': 'binary:logistic',
+                      'gamma': 0,                       # 如果loss function小于设定值，停止产生子节点
+                      'max_depth': 10,                  # default=6
                       'early_stopping_rounds': 50,
-                      'subsample': 0.8,
-                      'colsample_bytree': 0.8,
-                      'eval_metric': 'logloss'}
+                      'min_child_weight': 5,            # default=1，建立每个模型所需最小样本数
+                      'subsample': 0.8,                 # 建立树模型时抽取子样本占整个样本的比例
+                      'colsample_bytree': 0.8,          # 建立树时对特征随机采样的比例
+                      'objective': 'binary:logistic',
+                      'eval_metric': 'logloss',
+                      'seed': 1}
 
     XGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
@@ -143,17 +143,20 @@ def lgb_train():
 
     x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-    lgb_parameters = {'learning_rate': 0.05,
+    lgb_parameters = {'application': 'binary',
+                      'num_iterations': 100,          # this parameter is ignored, use num_boost_round input arguments of train and cv methods instead
+                      'learning_rate': 0.05,
+                      'num_leaves': 128,              # <2^(max_depth)
                       'tree_learner': 'serial',
-                      'num_iterations': 100,
-                      'max_depth': 6,
-                      'num_leaves': 64,
-                      'min_data_in_leaf': 20,
-                      'min_child_weight': 5,
-                      'feature_fraction': 0.8,
+                      'max_depth': 9,                 # default=-1
+                      'min_data_in_leaf': 20,         # default=20
+                      'feature_fraction': 0.8,        # default=1
+                      'bagging_fraction': 0.8,        # default=1
+                      'bagging_freq':5,               # default=0 perform bagging every k iteration
+                      'bagging_seed':1,               # default=3
+                      'early_stopping_rounds': 50,
                       'max_bin': 255,
-                      'min_data_in_bin': 5,
-                      'data_random_seed': 1,
+                      'metric': 'binary_logloss',
                       'verbosity': 1}
 
     LGBM = model.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test)
@@ -192,49 +195,51 @@ def grid_search():
 
     x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-    xgb_parameters = {'base_score': 0.5,
-                      'colsample_bylevel': 1,
-                      'colsample_bytree': 0.8,
-                      'gamma': 2,
-                      'learning_rate': 0.05,
-                      'max_delta_step': 0,
-                      'max_depth': 3,
-                      'min_child_weight': 1,
-                      'missing': None,
-                      'n_estimators': 100,
-                      'nthread': -1,
+    xgb_parameters = {'learning_rate': 0.05,
+                      'n_estimators': 1000,
+                      'max_depth': 10,
+                      'min_child_weight': 5,
                       'objective': 'binary:logistic',
-                      'reg_alpha': 0,
-                      'reg_lambda': 1,
-                      'scale_pos_weight': 1,
-                      'seed': 0,
+                      'eval_metric': 'logloss',
                       'silent': 1,
-                      'subsample': 0.8}
+                      'subsample': 0.8
+                      'colsample_bytree': 0.8,
+                      'gamma': 0,
+                      'base_score': 0.5,
+                      # 'max_delta_step': 0,
+                      # 'missing': None,
+                      # 'nthread': -1,
+                      # 'colsample_bylevel': 1,
+                      # 'reg_alpha': 0,
+                      # 'reg_lambda': 1,
+                      # 'scale_pos_weight': 1,
+                      'seed': 1,}
 
     XGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
     clf_xgb = XGB.clf(xgb_parameters)
 
-    parameters_grid = None
+    # parameters_grid = None
 
-    # parameters_grid = {'base_score': (0.4, 0.5, 0.6),
-    #                    # 'colsample_bylevel': 1,
-    #                    'colsample_bytree': (0.5, 0.8, 1.0),
-    #                    # 'gamma': 2,
-    #                    'learning_rate': (0.01, 0.05, 0.1, 0.15, 0.2),
-    #                    # 'max_delta_step': 0,
-    #                    'max_depth': (4, 6, 8, 10),
-    #                    'min_child_weight': (0.8, 1.0, 1.2),
-    #                    # 'missing': None,
-    #                    # 'n_estimators': 100,
-    #                    # 'nthread': -1,
-    #                    # 'objective': 'binary:logistic',
-    #                    # 'reg_alpha': 0,
-    #                    # 'reg_lambda': 1,
-    #                    # 'scale_pos_weight': 1,
-    #                    # 'seed': 1,
-    #                    # 'silent': True,
-    #                    'subsample': (0.5, 0.8, 1.0)}
+    parameters_grid = {'learning_rate': (0.01, 0.03, 0.05, 0.1, 0.2),
+                       'n_estimators': (100, 200, 400),
+                       'max_depth': (8, 10, 12),
+                       'min_child_weight': 5,
+                       'objective': 'binary:logistic',
+                       'eval_metric': 'logloss',
+                       'silent': 1,
+                       'subsample': 0.8
+                       'colsample_bytree': 0.8,
+                       'gamma': 0,
+                       'base_score': 0.5,
+                       # 'max_delta_step': 0,
+                       # 'missing': None,
+                       # 'nthread': -1,
+                       # 'colsample_bylevel': 1,
+                       # 'reg_alpha': 0,
+                       # 'reg_lambda': 1,
+                       # 'scale_pos_weight': 1,
+                       'seed': 1,}
 
     model.grid_search(x_train, y_train, clf_xgb, parameters_grid)
 
@@ -262,9 +267,9 @@ if __name__ == "__main__":
     # print('Start training GradientBoosting...')
     # gb_train()
     #
-    # XGBoost
-    #  print('Start training XGBoost...')
-    #  xgb_train()
+    # # XGBoost
+    # print('Start training XGBoost...')
+    # xgb_train()
     #
     # # LGBM
     # print('Start training LGBM...')
@@ -273,6 +278,9 @@ if __name__ == "__main__":
     #  DNN
     print('Start training DNN...')
     dnn_train()
+
+    # Grid Search
+    grid_search()
 
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))
