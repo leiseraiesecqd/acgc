@@ -911,7 +911,7 @@ class DataPreProcess:
         self.load_data_pd()
 
         # Drop outlines
-        self.drop_outlines()
+        # self.drop_outlines()
 
         # Scale features
         # self.scale()
