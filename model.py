@@ -229,14 +229,6 @@ class DecisionTree:
             print('Training on the Cross Validation Set: {}'.format(count))
 
             clf_dt = self.clf(parameters)
-            '''
-            DecisionTreeClassifier(class_weight=None, criterion='gini', max_depth=None,
-                                   max_features=None, max_leaf_nodes=None,
-                                   min_impurity_decrease=0.0, min_impurity_split=None,
-                                   min_samples_leaf=1, min_samples_split=2,
-                                   min_weight_fraction_leaf=0.0, presort=False, random_state=1,
-                                   splitter='best')
-            '''
 
             clf_dt.fit(x_train, y_train, sample_weight=w_train)
 
@@ -328,14 +320,6 @@ class RandomForest:
             print('Training on the Cross Validation Set: {}'.format(count))
 
             clf_rf = self.clf(parameters)
-            '''
-            RandomForestClassifier(bootstrap=True, class_weight=None, criterion='gini',
-                                   max_depth=None, max_features='auto', max_leaf_nodes=None,
-                                   min_impurity_decrease=0.0, min_impurity_split=None,
-                                   min_samples_leaf=1, min_samples_split=2,
-                                   min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
-                                   oob_score=False, random_state=1, verbose=1, warm_start=False)
-            '''
 
             clf_rf.fit(x_train, y_train, sample_weight=w_train)
 
@@ -427,14 +411,6 @@ class ExtraTrees:
             print('Training on the Cross Validation Set: {}'.format(count))
 
             clf_et = self.clf(parameters)
-            '''
-            ExtraTreesClassifier(bootstrap=False, class_weight=None, criterion='gini',
-                                 max_depth=None, max_features='auto', max_leaf_nodes=None,
-                                 min_impurity_decrease=0.0, min_impurity_split=None,
-                                 min_samples_leaf=1, min_samples_split=2,
-                                 min_weight_fraction_leaf=0.0, n_estimators=10, n_jobs=1,
-                                 oob_score=False, random_state=1, verbose=1, warm_start=False)
-            '''
 
             clf_et.fit(x_train, y_train, sample_weight=w_train)
 
@@ -526,10 +502,6 @@ class AdaBoost:
             print('Training on the Cross Validation Set: {}'.format(count))
 
             clf_ab = self.clf(parameters)
-            '''
-            AdaBoostClassifier(algorithm='SAMME.R', base_estimator=None,
-                               learning_rate=1.0, n_estimators=50, random_state=1)
-            '''
 
             clf_ab.fit(x_train, y_train, sample_weight=w_train)
 
@@ -622,16 +594,6 @@ class GradientBoosting:
             print('Training on the Cross Validation Set: {}'.format(count))
 
             clf_gb = self.clf(parameters)
-            '''
-            GradientBoostingClassifier(criterion='friedman_mse', init=None,
-                                       learning_rate=0.1, loss='deviance', max_depth=3,
-                                       max_features=None, max_leaf_nodes=None,
-                                       min_impurity_decrease=0.0, min_impurity_split=None,
-                                       min_samples_leaf=1, min_samples_split=2,
-                                       min_weight_fraction_leaf=0.0, n_estimators=100,
-                                       presort='auto', random_state=1, subsample=1.0, verbose=1,
-                                       warm_start=False)
-            '''
 
             clf_gb.fit(x_train, y_train, sample_weight=w_train)
 
@@ -691,20 +653,6 @@ class XGBoost:
         plt.show()
 
     def clf(self, parameters=None):
-
-        '''
-            class xgboost.XGBClassifier(max_depth=3, learning_rate=0.1, n_estimators=100, silent=True,
-                                        objective='binary:logistic', booster='gbtree', n_jobs=1, nthread=None,
-                                        gamma=0, min_child_weight=1, max_delta_step=0, subsample=1,
-                                        colsample_bytree=1, colsample_bylevel=1, reg_alpha=0, reg_lambda=1,
-                                        scale_pos_weight=1, base_score=0.5, random_state=0, seed=None,
-                                        missing=None, **kwargs)
-        '''
-        # clf = XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=0.8,
-        #                     gamma=2, learning_rate=0.05, max_delta_step=0, max_depth=3,
-        #                     min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
-        #                     objective='binary:logistic', reg_alpha=0, reg_lambda=1,
-        #                     scale_pos_weight=1, seed=0, silent=True, subsample=0.8)
 
         print('Initialize Model...')
 
@@ -833,20 +781,6 @@ class LightGBM:
 
     def clf(self, parameters=None):
 
-        '''
-            class xgboost.XGBClassifier(max_depth=3, learning_rate=0.1, n_estimators=100, silent=True,
-                                        objective='binary:logistic', booster='gbtree', n_jobs=1, nthread=None,
-                                        gamma=0, min_child_weight=1, max_delta_step=0, subsample=1,
-                                        colsample_bytree=1, colsample_bylevel=1, reg_alpha=0, reg_lambda=1,
-                                        scale_pos_weight=1, base_score=0.5, random_state=0, seed=None,
-                                        missing=None, **kwargs)
-        '''
-        # clf = XGBClassifier(base_score=0.5, colsample_bylevel=1, colsample_bytree=0.8,
-        #                     gamma=2, learning_rate=0.05, max_delta_step=0, max_depth=3,
-        #                     min_child_weight=1, missing=None, n_estimators=100, nthread=-1,
-        #                     objective='binary:logistic', reg_alpha=0, reg_lambda=1,
-        #                     scale_pos_weight=1, seed=0, silent=True, subsample=0.8)
-
         print('Initialize Model...')
 
         clf = LGBMClassifier(**parameters)
@@ -863,7 +797,8 @@ class LightGBM:
 
         return prob_test
 
-    def train(self, pred_path, n_valid, n_cv, parameters=None):
+    def train(self, pred_path, n_valid, n_cv, parameters=None,
+              x_train_f=None, g_train=None, g_train_f=None, g_test=None):
 
         # sk-learn module
 
@@ -898,6 +833,7 @@ class LightGBM:
         count = 0
         prob_total = []
 
+        # Use Category
         for x_train, y_train, w_train, \
             x_valid, y_valid, w_valid in CrossValidation.group_k_fold_with_weight(x=self.x_train,
                                                                                   y=self.y_train,
@@ -905,20 +841,31 @@ class LightGBM:
                                                                                   e=self.e_train,
                                                                                   n_valid=n_valid,
                                                                                   n_cv=n_cv):
+
+        # Use Category
+        # for x_train, y_train, w_train, g_train, \
+        #     x_valid, y_valid, w_valid, g_valid in CrossValidation.group_k_fold_with_weight_group(x=x_train_f,
+        #                                                                                          y=self.y_train,
+        #                                                                                          w=self.w_train,
+        #                                                                                          e=self.e_train,
+        #                                                                                          g=g_train,
+        #                                                                                          n_valid=n_valid,
+        #                                                                                          n_cv=n_cv):
             count += 1
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
 
+            # Use Category
+            # g_train_l = list(g_train)
+            # g_valid_l = list(g_valid)
+            # d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=g_train_l)
+            # d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=g_valid_l)
+
             d_train = lgb.Dataset(x_train, label=y_train, weight=w_train)
             d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid)
 
-            # parameters = {'learning_rate': 0.05, 'n_estimators': 1000, 'max_depth': 10,
-            #               'min_child_weight': 5, 'gamma': 0, 'silent': 1, 'objective': 'binary:logistic',
-            #               'early_stopping_rounds': 50, 'subsample': 0.8, 'colsample_bytree': 0.8,
-            #               'eval_metric': 'logloss'}
-
-            bst = lgb.train(parameters, d_train, num_boost_round=30,
+            bst = lgb.train(parameters, d_train, num_boost_round=50,
                             valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
 
             # Prediction
@@ -1127,6 +1074,7 @@ class DeepNeuralNetworks:
                                                                                       self.y_train,
                                                                                       self.w_train,
                                                                                       self.e_train,
+                                                                                      self.g_train,
                                                                                       n_valid,
                                                                                       n_cv):
 
@@ -1308,6 +1256,41 @@ class CrossValidation:
             w_valid = w[valid_index]
 
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
+
+    @staticmethod
+    def group_k_fold_with_weight_group(x, y, w, e, g, n_valid, n_cv):
+
+        for i in range(n_cv):
+
+            era_idx = list(range(1, 21))
+            valid_group = np.random.choice(era_idx, n_valid, replace=False)
+
+            train_index = []
+            valid_index = []
+
+            for ii, ele in enumerate(e):
+
+                if ele in valid_group:
+                    valid_index.append(ii)
+                else:
+                    train_index.append(ii)
+
+            # np.random.shuffle(train_index)
+            # np.random.shuffle(valid_index)
+
+            # Training data
+            x_train = x[train_index]
+            y_train = y[train_index]
+            w_train = w[train_index]
+            g_train = g[train_index]
+
+            # Validation data
+            x_valid = x[valid_index]
+            y_valid = y[valid_index]
+            w_valid = w[valid_index]
+            g_valid = g[valid_index]
+
+            yield x_train, y_train, w_train, g_train, x_valid, y_valid, w_valid, g_valid
 
 
 # Grid Search

@@ -15,11 +15,13 @@ preprocessed_path = './preprocessed_data/'
 class DataPreProcess:
 
     x_train = np.array([])
+    x_train_f = np.array([])
     y_train = np.array([])
     w_train = np.array([])
     g_train = np.array([])
     e_train = np.array([])
     x_test = np.array([])
+    x_test_f = np.array([])
     g_test = np.array([])
     id_test = np.array([])
 
@@ -823,9 +825,11 @@ class DataPreProcess:
         print('Converting groups to dummies...')
 
         group_train_dummies = pd.get_dummies(self.g_train, prefix='group')
+        self.x_train_f = self.x_train
         self.x_train = self.x_train.join(group_train_dummies)
 
         group_test_dummies = pd.get_dummies(self.g_test, prefix='group')
+        self.x_test_f = self.x_test
         self.x_test = self.x_test.join(group_test_dummies)
 
         print('Shape of x_train with group dummies: {}'.format(self.x_train.shape))
@@ -858,9 +862,11 @@ class DataPreProcess:
         print('Saving data...')
 
         utils.save_np_to_pkl(self.x_train, self.prepro_path + 'x_train.p')
+        utils.save_np_to_pkl(self.x_train_f, self.prepro_path + 'x_train_f.p')
         utils.save_np_to_pkl(self.y_train, self.prepro_path + 'y_train.p')
         utils.save_np_to_pkl(self.w_train, self.prepro_path + 'w_train.p')
         utils.save_np_to_pkl(self.x_test, self.prepro_path + 'x_test.p')
+        utils.save_np_to_pkl(self.x_test_f, self.prepro_path + 'x_test_f.p')
 
     # Preprocessing
     def preprocess_np(self):
@@ -888,10 +894,14 @@ class DataPreProcess:
         print('Saving data...')
 
         self.x_train.to_pickle(self.prepro_path + 'x_train.p')
+        self.x_train_f.to_pickle(self.prepro_path + 'x_train_f.p')
         self.y_train.to_pickle(self.prepro_path + 'y_train.p')
         self.w_train.to_pickle(self.prepro_path + 'w_train.p')
+        self.g_train.to_pickle(self.prepro_path + 'g_train.p')
         self.e_train.to_pickle(self.prepro_path + 'e_train.p')
         self.x_test.to_pickle(self.prepro_path + 'x_test.p')
+        self.x_test_f.to_pickle(self.prepro_path + 'x_test_f.p')
+        self.g_test.to_pickle(self.prepro_path + 'g_test.p')
         self.id_test.to_pickle(self.prepro_path + 'id_test.p')
 
     # Preprocessing

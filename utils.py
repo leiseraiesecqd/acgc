@@ -63,6 +63,25 @@ def load_preprocessed_pd_data(data_file_path):
     return x_train, y_train, w_train, e_train, x_test, id_test
 
 
+# Load Preprocessed Category Data
+
+def load_preprocessed_pd_data_g(data_file_path):
+
+    x_train_f_pd = pd.read_pickle(data_file_path + 'x_train_f.p')
+    x_train_f = np.array(x_train_f_pd)
+
+    g_train_pd = pd.read_pickle(data_file_path + 'g_train.p')
+    g_train = np.array(g_train_pd)
+
+    x_test_f_pd = pd.read_pickle(data_file_path + 'x_test_f.p')
+    x_test_f = np.array(x_test_f_pd)
+
+    g_test_pd = pd.read_pickle(data_file_path + 'g_test.p')
+    g_test = np.array(g_test_pd)
+
+    return x_train_f, g_train, x_test_f, g_test
+
+
 # Save predictions to csv file
 
 def save_pred_to_csv(file_path, id, prob):
