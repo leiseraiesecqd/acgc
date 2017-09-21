@@ -79,8 +79,8 @@ class LRegression:
 
     def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
 
-        prob_train = model.predict_proba(xgb.DMatrix(x_t))
-        prob_valid = model.predict_proba(xgb.DMatrix(x_v))
+        prob_train = model.predict_proba(x_t)
+        prob_valid = model.predict_proba(x_v)
 
         loss_train = utils.log_loss(prob_train, y_t, w_t)
         loss_valid = utils.log_loss(prob_valid, y_v, w_v)
@@ -236,8 +236,8 @@ class DecisionTree:
 
     def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
 
-        prob_train = model.predict_proba(xgb.DMatrix(x_t))
-        prob_valid = model.predict_proba(xgb.DMatrix(x_v))
+        prob_train = model.predict_proba(x_t)
+        prob_valid = model.predict_proba(x_v)
 
         loss_train = utils.log_loss(prob_train, y_t, w_t)
         loss_valid = utils.log_loss(prob_valid, y_v, w_v)
@@ -346,8 +346,8 @@ class RandomForest:
 
     def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
 
-        prob_train = model.predict_proba(xgb.DMatrix(x_t))
-        prob_valid = model.predict_proba(xgb.DMatrix(x_v))
+        prob_train = model.predict_proba(x_t)
+        prob_valid = model.predict_proba(x_v)
 
         loss_train = utils.log_loss(prob_train, y_t, w_t)
         loss_valid = utils.log_loss(prob_valid, y_v, w_v)
@@ -456,8 +456,8 @@ class ExtraTrees:
 
     def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
 
-        prob_train = model.predict_proba(xgb.DMatrix(x_t))
-        prob_valid = model.predict_proba(xgb.DMatrix(x_v))
+        prob_train = model.predict_proba(x_t)
+        prob_valid = model.predict_proba(x_v)
 
         loss_train = utils.log_loss(prob_train, y_t, w_t)
         loss_valid = utils.log_loss(prob_valid, y_v, w_v)
@@ -566,8 +566,8 @@ class AdaBoost:
 
     def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
 
-        prob_train = model.predict_proba(xgb.DMatrix(x_t))
-        prob_valid = model.predict_proba(xgb.DMatrix(x_v))
+        prob_train = model.predict_proba(x_t)
+        prob_valid = model.predict_proba(x_v)
 
         loss_train = utils.log_loss(prob_train, y_t, w_t)
         loss_valid = utils.log_loss(prob_valid, y_v, w_v)
@@ -677,8 +677,8 @@ class GradientBoosting:
 
     def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
 
-        prob_train = model.predict_proba(xgb.DMatrix(x_t))
-        prob_valid = model.predict_proba(xgb.DMatrix(x_v))
+        prob_train = model.predict_proba(x_t)
+        prob_valid = model.predict_proba(x_v)
 
         loss_train = utils.log_loss(prob_train, y_t, w_t)
         loss_valid = utils.log_loss(prob_valid, y_v, w_v)
@@ -930,8 +930,8 @@ class LightGBM:
 
     def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
 
-        prob_train = model.predict(xgb.DMatrix(x_t))
-        prob_valid = model.predict(xgb.DMatrix(x_v))
+        prob_train = model.predict(x_t)
+        prob_valid = model.predict(x_v)
 
         loss_train = utils.log_loss(prob_train, y_t, w_t)
         loss_valid = utils.log_loss(prob_valid, y_v, w_v)
