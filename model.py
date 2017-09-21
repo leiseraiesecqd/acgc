@@ -1281,7 +1281,7 @@ class CrossValidation:
 
         for i in range(n_cv):
 
-            era_idx = range(20)
+            era_idx = list(range(1, 21))
             valid_group = np.random.choice(era_idx, n_valid, replace=False)
 
             train_index = []
