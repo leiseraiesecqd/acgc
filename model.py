@@ -1294,8 +1294,8 @@ class CrossValidation:
                 else:
                     train_index.append(ii)
 
-            np.random.shuffle(train_index)
-            np.random.shuffle(valid_index)
+            # np.random.shuffle(train_index)
+            # np.random.shuffle(valid_index)
 
             # Training data
             x_train = x[train_index]
