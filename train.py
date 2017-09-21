@@ -134,7 +134,7 @@ def xgb_train():
 
     XGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
-    XGB.train(pred_path, n_valid=1, n_cv=20, parameters=xgb_parameters)
+    XGB.train(pred_path, n_valid=4, n_cv=20, parameters=xgb_parameters)
 
 
 # LightGBM
@@ -169,11 +169,11 @@ def dnn_train():
 
     # HyperParameters
     hyper_parameters = {'version': '1.0',
-                        'epochs': 30,
+                        'epochs': 200,
                         'layers_number': 6,
                         'unit_number': [64, 32, 16, 8, 4, 1],
-                        'learning_rate': 0.00005,
-                        'keep_probability': 0.75,
+                        'learning_rate': 0.00001,
+                        'keep_probability': 0.7,
                         'batch_size': 256,
                         'display_step': 100,
                         'save_path': './checkpoints/',
@@ -263,16 +263,16 @@ if __name__ == "__main__":
     # gb_train()
     #
     # XGBoost
-    print('Start training XGBoost...')
-    xgb_train()
+    #  print('Start training XGBoost...')
+    #  xgb_train()
     #
     # # LGBM
     # print('Start training LGBM...')
     # lgb_train()
 
     #  DNN
-    #  print('Start training DNN...')
-    #  dnn_train()
+    print('Start training DNN...')
+    dnn_train()
 
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))
