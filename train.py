@@ -202,7 +202,7 @@ def grid_search():
                       'objective': 'binary:logistic',
                       'eval_metric': 'logloss',
                       'silent': 1,
-                      'subsample': 0.8
+                      'subsample': 0.8,
                       'colsample_bytree': 0.8,
                       'gamma': 0,
                       'base_score': 0.5,
@@ -228,7 +228,7 @@ def grid_search():
                        'objective': 'binary:logistic',
                        'eval_metric': 'logloss',
                        'silent': 1,
-                       'subsample': 0.8
+                       'subsample': 0.8,
                        'colsample_bytree': 0.8,
                        'gamma': 0,
                        'base_score': 0.5,
