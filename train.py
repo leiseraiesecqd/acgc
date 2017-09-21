@@ -269,5 +269,8 @@ if __name__ == "__main__":
     print('Start training LGBM...')
     lgb_train()
 
+    # DNN
+    dnn_train()
+
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))
