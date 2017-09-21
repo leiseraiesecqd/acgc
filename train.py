@@ -263,15 +263,15 @@ if __name__ == "__main__":
     #  gb_train()
     #
     #  # XGBoost
-    #  print('Start training XGBoost...')
-    #  xgb_train()
+    print('Start training XGBoost...')
+    xgb_train()
     #
     #  # LGBM
     #  print('Start training LGBM...')
     #  lgb_train()
 
     # DNN
-    dnn_train()
+    # dnn_train()
 
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))
