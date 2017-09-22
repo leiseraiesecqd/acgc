@@ -121,7 +121,7 @@ def xgb_train():
     x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
     xgb_parameters = {'learning_rate': 0.05,
-                      'n_estimators': 1000,
+                      'n_estimators': 200,
                       'gamma': 0,                       # 如果loss function小于设定值，停止产生子节点
                       'max_depth': 10,                  # default=6
                       'early_stopping_rounds': 50,
@@ -145,7 +145,7 @@ def lgb_train():
     x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
     lgb_parameters = {'application': 'binary',
-                      'num_iterations': 100,          # this parameter is ignored, use num_boost_round input arguments of train and cv methods instead
+                      'num_iterations': 200,          # this parameter is ignored, use num_boost_round input arguments of train and cv methods instead
                       'learning_rate': 0.01,
                       'num_leaves': 64,               # <2^(max_depth)
                       'tree_learner': 'serial',
@@ -192,58 +192,96 @@ def dnn_train():
 
 # Grid Search
 
-def grid_search():
+class GridSearch:
 
-    x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+    @staticmethod
+    def xgb_grid_search():
 
-    xgb_parameters = {'learning_rate': 0.05,
-                      'n_estimators': 1000,
-                      'max_depth': 10,
-                      'min_child_weight': 5,
-                      'objective': 'binary:logistic',
-                      #  'eval_metric': 'logloss',
-                      'silent': 1,
-                      'subsample': 0.8,
-                      'colsample_bytree': 0.8,
-                      'gamma': 0,
-                      'base_score': 0.5,
-                      # 'max_delta_step': 0,
-                      # 'missing': None,
-                      # 'nthread': -1,
-                      # 'colsample_bylevel': 1,
-                      # 'reg_alpha': 0,
-                      # 'reg_lambda': 1,
-                      # 'scale_pos_weight': 1,
-                      'seed': 1}
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-    XGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+        xgb_parameters = {'learning_rate': 0.05,
+                          'n_estimators': 1000,
+                          'max_depth': 10,
+                          'min_child_weight': 5,
+                          'objective': 'binary:logistic',
+                          #  'eval_metric': 'logloss',
+                          'silent': 1,
+                          'subsample': 0.8,
+                          'colsample_bytree': 0.8,
+                          'gamma': 0,
+                          'base_score': 0.5,
+                          # 'max_delta_step': 0,
+                          # 'missing': None,
+                          # 'nthread': -1,
+                          # 'colsample_bylevel': 1,
+                          # 'reg_alpha': 0,
+                          # 'reg_lambda': 1,
+                          # 'scale_pos_weight': 1,
+                          'seed': 1}
 
-    clf_xgb = XGB.clf(xgb_parameters)
+        XGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
-    # parameters_grid = None
+        clf_xgb = XGB.clf(xgb_parameters)
 
-    parameters_grid = {'learning_rate': (0.01, 0.03, 0.05, 0.1, 0.2),
-                       'n_estimators': (100, 200, 400),
-                       'max_depth': (8, 10, 12),
-                       #  'min_child_weight': 5,
-                       #  'objective': 'binary:logistic',
-                       #  'eval_metric': 'logloss',
-                       #  'silent': 1,
-                       #  'subsample': 0.8,
-                       #  'colsample_bytree': 0.8,
-                       #  'gamma': 0,
-                       #  'base_score': 0.5,
-                       # 'max_delta_step': 0,
-                       # 'missing': None,
-                       # 'nthread': -1,
-                       # 'colsample_bylevel': 1,
-                       # 'reg_alpha': 0,
-                       # 'reg_lambda': 1,
-                       # 'scale_pos_weight': 1,
-                       #  'seed': 1
-                       }
+        # parameters_grid = None
 
-    model.grid_search(x_train, y_train, clf_xgb, parameters_grid)
+        parameters_grid = {'learning_rate': (0.01, 0.03, 0.05, 0.1, 0.2),
+                           'n_estimators': (100, 200, 400),
+                           'max_depth': (8, 10, 12),
+                           #  'min_child_weight': 5,
+                           #  'objective': 'binary:logistic',
+                           #  'eval_metric': 'logloss',
+                           #  'silent': 1,
+                           #  'subsample': 0.8,
+                           #  'colsample_bytree': 0.8,
+                           #  'gamma': 0,
+                           #  'base_score': 0.5,
+                           # 'max_delta_step': 0,
+                           # 'missing': None,
+                           # 'nthread': -1,
+                           # 'colsample_bylevel': 1,
+                           # 'reg_alpha': 0,
+                           # 'reg_lambda': 1,
+                           # 'scale_pos_weight': 1,
+                           #  'seed': 1
+                           }
+
+        model.grid_search(x_train, y_train, clf_xgb, parameters_grid)
+
+    @staticmethod
+    def lgb_grid_search():
+
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
+        lgb_parameters = {'objective': 'binary',
+                          'num_iterations': 200,          # this parameter is ignored, use num_boost_round input arguments of train and cv methods instead
+                          'learning_rate': 0.01,
+                          'n_estimators': 200,
+                          'num_leaves': 64,               # <2^(max_depth)
+                          'colsample_bytree': 0.8,
+                          'max_depth': 8,                 # default=-1
+                          'min_data_in_leaf': 20,         # default=20
+                          'subsample': 0.8,
+                          'max_bin': 255}
+
+        LGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+
+        clf_lgb = LGB.clf(lgb_parameters)
+
+        # parameters_grid = None
+
+        parameters_grid = {'learning_rate': (0.001, 0.003, 0.005, 0.01, 0.02, 0.03, 0.05),
+                           'n_estimators': range(50, 200, 30),
+                           'num_leaves': (16, 32, 64),               # <2^(max_depth)
+                           # 'num_iterations': 200,
+                           # 'colsample_bytree': 0.8,
+                           # 'max_depth': 8,                 # default=-1
+                           # 'min_data_in_leaf': 20,         # default=20
+                           # 'subsample': 0.8,
+                           # 'max_bin': 255
+                           }
+
+        model.grid_search(x_train, y_train, clf_lgb, parameters_grid)
 
 
 if __name__ == "__main__":
@@ -274,15 +312,15 @@ if __name__ == "__main__":
     # xgb_train()
 
     #  LGBM
-    print('Start training LGBM...')
-    lgb_train()
+    # print('Start training LGBM...')
+    # lgb_train()
 
     #  DNN
     # print('Start training DNN...')
     # dnn_train()
 
     # Grid Search
-    #  grid_search()
+    GridSearch.lgb_grid_search()
 
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))
