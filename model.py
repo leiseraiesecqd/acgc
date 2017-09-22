@@ -1,4 +1,4 @@
-#  import math
+import math
 import time
 import utils
 import os
@@ -7,11 +7,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
-from keras.layers import Dense
-from keras.models import Sequential
-from keras.layers import Dropout
-from keras import initializers
-from keras import optimizers
+# from keras.layers import Dense
+# from keras.models import Sequential
+# from keras.layers import Dropout
+# from keras import initializers
+# from keras import optimizers
 
 from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import LogisticRegression
@@ -610,7 +610,7 @@ class AdaBoost:
             print('mean accuracy on validation set: %0.6f' % scores)
 
             # Print LogLoss
-            self.print_loss(clf_ab, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+            # self.print_loss(clf_ab, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Feature Importance
             self.get_importance(clf_ab)
@@ -1048,7 +1048,6 @@ class DeepNeuralNetworks:
         # Hyperparameters
         self.version = parameters['version']
         self.epochs = parameters['epochs']
-        self.layers_number = parameters['layers_number']
         self.unit_number = parameters['unit_number']
         self.learning_rate = parameters['learning_rate']
         self.keep_probability = parameters['keep_probability']
@@ -1074,7 +1073,7 @@ class DeepNeuralNetworks:
 
         with tf.name_scope(layer_name):
 
-            #  x_shape = x_tensor.get_shape().as_list()
+            # x_shape = x_tensor.get_shape().as_list()
 
             # weights = tf.Variable(tf.truncated_normal([x_shape[1], num_outputs], stddev=2.0 / math.sqrt(x_shape[1])))
             #
@@ -1092,8 +1091,7 @@ class DeepNeuralNetworks:
             fc = tf.contrib.layers.fully_connected(x_tensor,
                                                    num_outputs,
                                                    activation_fn=tf.nn.sigmoid,
-                                                   # weights_initializer=tf.truncated_normal_initializer(
-                                                   # stddev=2.0 / math.sqrt(x_shape[1])),
+                                                   # weights_initializer=tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
                                                    weights_initializer=tf.contrib.layers.xavier_initializer(dtype=tf.float64),
                                                    biases_initializer=tf.zeros_initializer())
 
@@ -1107,8 +1105,9 @@ class DeepNeuralNetworks:
     def output_layer(self, x_tensor, layer_name, num_outputs):
 
         with tf.name_scope(layer_name):
-            #  x_shape = x_tensor.get_shape().as_list()
-            #
+
+            # x_shape = x_tensor.get_shape().as_list()
+
             #  weights = tf.Variable(tf.truncated_normal([x_shape[1], num_outputs], stddev=2.0 / math.sqrt(x_shape[1])))
             #
             #  biases = tf.Variable(tf.zeros([num_outputs]))
@@ -1119,7 +1118,10 @@ class DeepNeuralNetworks:
 
             out = tf.contrib.layers.fully_connected(x_tensor,
                                                     num_outputs,
-                                                    activation_fn=None)
+                                                    activation_fn=tf.nn.sigmoid,
+                                                    # weights_initializer=tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
+                                                    weights_initializer=tf.contrib.layers.xavier_initializer(dtype=tf.float64),
+                                                    biases_initializer=tf.zeros_initializer())
 
         return out
 
@@ -1148,8 +1150,8 @@ class DeepNeuralNetworks:
     def log_loss(self, logit, w, y):
 
         with tf.name_scope('prob'):
-            logit = tf.squeeze(logit)
-            prob = tf.nn.sigmoid(logit)
+            prob = tf.squeeze(logit)
+            # prob = tf.nn.sigmoid(logit)
 
         w = w / tf.reduce_sum(w)
 
@@ -1191,7 +1193,7 @@ class DeepNeuralNetworks:
             inputs, labels, weights, lr, keep_prob, is_train = self.input_tensor(feature_num)
 
             # Logits
-            logits = self.model(inputs, self.layers_number, self.unit_number, keep_prob, is_train)
+            logits = self.model(inputs, len(self.unit_number), self.unit_number, keep_prob, is_train)
             logits = tf.identity(logits, name='logits')
 
             # Loss
@@ -1306,6 +1308,8 @@ class DeepNeuralNetworks:
                                   'Train_Loss: {:>.8f} |'.format(cost_train),
                                   'Valid_Loss: {:>.8f}'.format(cost_valid))
 
+                            print(sess.run(logits, {inputs: self.x_test, keep_prob: 1.0, is_train: False}))
+
                 # Save Model
                 # print('Saving model...')
                 # saver = tf.train.Saver()
@@ -1319,6 +1323,7 @@ class DeepNeuralNetworks:
                                             is_train: False})
 
                 logits_ = logits_.flatten()
+
                 prob_test = 1.0 / (1.0 + np.exp(-logits_))
 
                 prob_total.append(list(prob_test))
@@ -1431,8 +1436,6 @@ class KerasDeepNeuralNetworks:
         prob_mean = np.mean(np.array(prob_total), axis=0)
 
         utils.save_pred_to_csv(pred_path + 'dnn_keras_', self.id_test, prob_mean)
-
-
 
 
 # Cross Validation

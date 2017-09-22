@@ -4,6 +4,7 @@ import model
 import time
 import os
 from os.path import isdir
+from sklearn.ensemble import ExtraTreesClassifier
 
 
 preprocessed_data_path = './preprocessed_data/'
@@ -74,10 +75,12 @@ def ab_train():
 
     x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
+    clf_et = ExtraTreesClassifier(max_depth=9)
+
     ab_parameters = {'algorithm': 'SAMME.R',
-                     'base_estimator': None,
-                     'learning_rate': 1.0,
-                     'n_estimators': 50,
+                     'base_estimator': clf_et,
+                     'learning_rate': 0.005,
+                     'n_estimators': 100,
                      'random_state': 1}
 
     AB = model.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
@@ -173,11 +176,10 @@ def dnn_tf_train():
 
     # HyperParameters
     hyper_parameters = {'version': '1.0',
-                        'epochs': 200,
-                        'layers_number': 6,
-                        'unit_number': [64, 32, 16, 8, 4, 1],
+                        'epochs': 40,
+                        'unit_number': [200, 100, 50, 25, 12],
                         'learning_rate': 0.00001,
-                        'keep_probability': 0.7,
+                        'keep_probability': 1.0,
                         'batch_size': 256,
                         'display_step': 100,
                         'save_path': './checkpoints/',
@@ -316,8 +318,8 @@ if __name__ == "__main__":
     # et_train()
 
     # AdaBoost
-    # print('Start training AdaBoost...')
-    # ab_train()
+    print('Start training AdaBoost...')
+    ab_train()
 
     # GradientBoosting
     # print('Start training GradientBoosting...')
@@ -333,11 +335,11 @@ if __name__ == "__main__":
 
     # DNN
     # print('Start training DNN...')
-    # dnn_train()
+    # dnn_tf_train()
     # dnn_keras_train()
 
     # Grid Search
-    GridSearch.xgb_grid_search()
+    # GridSearch.xgb_grid_search()
     # GridSearch.lgb_grid_search()
 
     print('Done!')
