@@ -1433,8 +1433,6 @@ class KerasDeepNeuralNetworks:
         utils.save_pred_to_csv(pred_path + 'dnn_keras_', self.id_test, prob_mean)
 
 
-
-
 # Cross Validation
 
 class CrossValidation:

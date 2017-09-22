@@ -243,9 +243,9 @@ class GridSearch:
 
         # parameters_grid = None
 
-        parameters_grid = {'learning_rate': (0.001, 0.002, 0.005, 0.01, 0.02),
-                           'n_estimators': range(50, 100, 10),
-                           'max_depth': range(5, 10, 1),
+        parameters_grid = {'learning_rate': (0.002, 0.005, 0.01),
+                           'n_estimators': (100, 200, 400),
+                           'max_depth': (9, 10, 11),
                            #  'min_child_weight': 5,
                            #  'objective': 'binary:logistic',
                            #  'eval_metric': 'logloss',

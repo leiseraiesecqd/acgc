@@ -91,9 +91,9 @@ class DataPreProcess:
 
     # Dropping outliers
     def drop_outliers(self):
-        
+
         print('Dropping outliers...')
-        
+
         # Drop upper outlines in self.x_train
         upper = self.x_train.feature0.quantile(0.9999)
         self.x_train['feature0'].loc[self.x_train['feature0'] > upper] = upper
@@ -818,10 +818,10 @@ class DataPreProcess:
         for each in self.x_test.columns:
             mean, std = self.x_test[each].mean(), self.x_test[each].std()
             self.x_test.loc[:, each] = (self.x_test[each] - mean)/std
-            
+
     # Convert column 'group' to dummies
     def convert_group(self):
-        
+
         print('Converting groups to dummies...')
 
         group_train_dummies = pd.get_dummies(self.g_train, prefix='group')
