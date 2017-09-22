@@ -142,6 +142,7 @@ def xgb_train():
 def lgb_train():
 
     x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+    x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
     lgb_parameters = {'application': 'binary',
                       'num_iterations': 100,          # this parameter is ignored, use num_boost_round input arguments of train and cv methods instead
@@ -161,7 +162,7 @@ def lgb_train():
 
     LGBM = model.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test)
 
-    LGBM.train(pred_path, n_valid=4, n_cv=20, parameters=lgb_parameters)
+    LGBM.train(pred_path, n_valid=4, n_cv=20, x_train_g=x_train_g, x_test_g=x_test_g, parameters=lgb_parameters)
 
 
 # DNN
@@ -273,15 +274,15 @@ if __name__ == "__main__":
     # xgb_train()
 
     #  LGBM
-    #  print('Start training LGBM...')
-    #  lgb_train()
+    print('Start training LGBM...')
+    lgb_train()
 
     #  DNN
     # print('Start training DNN...')
     # dnn_train()
 
     # Grid Search
-    grid_search()
+    #  grid_search()
 
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))

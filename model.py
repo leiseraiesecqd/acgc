@@ -918,11 +918,11 @@ class LightGBM:
 
         return clf
 
-    def predict(self, model, pred_path):
+    def predict(self, model, x_te_g, pred_path):
 
         print('Predicting...')
 
-        prob_test = model.predict(self.x_test)
+        prob_test = model.predict(x_te_g)
 
         utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
@@ -992,8 +992,6 @@ class LightGBM:
                                                                                 n_valid=n_valid,
                                                                                 n_cv=n_cv):
 
-
-
             count += 1
 
             print('======================================================')
@@ -1014,7 +1012,7 @@ class LightGBM:
             self.print_loss(bst, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Prediction
-            prob_test = self.predict(bst, pred_path + 'lgb_cv_{}_'.format(count))
+            prob_test = self.predict(bst, x_test_g, pred_path + 'lgb_cv_{}_'.format(count))
             prob_total.append(list(prob_test))
 
         print('======================================================')
@@ -1150,7 +1148,7 @@ class DeepNeuralNetworks:
         with tf.name_scope('log_loss'):
             #  loss = tf.losses.log_loss(labels=label, predictions=prob, weights=weight)
             loss = - tf.reduce_sum(w * (y * tf.log(prob) +
-                (tf.ones_like(y, dtype=tf.float64) - y) * tf.log(tf.ones_like(y, dtype=tf.float64)-prob)))
+                                        (tf.ones_like(y, dtype=tf.float64) - y) * tf.log(tf.ones_like(y, dtype=tf.float64)-prob)))
 
         tf.summary.scalar('log_loss', loss)
 
