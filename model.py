@@ -1352,8 +1352,8 @@ class KerasDeepNeuralNetworks:
         self.batch_size = parameters['batch_size']
         self.epochs = parameters['epochs']
         self.learning_rate = parameters['learning_rate']
-        self.unit_num = parameters['unit_num']
-        self.keep_prob = parameters['keep_prob']
+        self.unit_num = parameters['unit_number']
+        self.keep_prob = parameters['keep_probability']
 
     def train(self, pred_path, n_valid, n_cv):
 
@@ -1368,7 +1368,7 @@ class KerasDeepNeuralNetworks:
                         input_dim=feature_num))
         model.add(Dropout(self.keep_prob))
 
-        for i in range(len(self.unit_num)):
+        for i in range(len(self.unit_num)-1):
             model.add(Dense(self.unit_num[i+1],
                             kernel_initializer=initializers.TruncatedNormal(stddev=0.05),
                             bias_initializer='zeros',
@@ -1377,7 +1377,7 @@ class KerasDeepNeuralNetworks:
 
         model.compile(loss='binary_crossentropy',
                       optimizer=optimizers.Adam(self.learning_rate),
-                      metrics='accuracy')
+                      metrics=['accuracy'])
 
         start_time = time.time()
 
