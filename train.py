@@ -167,7 +167,7 @@ def lgb_train():
 
 # DNN
 
-def dnn_train():
+def dnn_tf_train():
 
     x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
@@ -186,6 +186,25 @@ def dnn_train():
     print('Loading data set...')
 
     dnn = model.DeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
+
+    dnn.train(pred_path, n_valid=4, n_cv=20)
+
+
+# DNN using Keras
+
+def dnn_keras_train():
+
+    x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
+    # HyperParameters
+    hyper_parameters = {'epochs': 200,
+                        'layers_number': 6,
+                        'unit_number': [64, 32, 16, 8, 4, 1],
+                        'learning_rate': 0.00001,
+                        'keep_probability': 0.8,
+                        'batch_size': 256}
+
+    dnn = model.KerasDeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
 
     dnn.train(pred_path, n_valid=4, n_cv=20)
 
@@ -289,36 +308,37 @@ if __name__ == "__main__":
 
     start_time = time.time()
 
-    # # Random Forest
+    # Random Forest
     # print('Start training Random Forest...')
     # rf_train()
 
-    # # Extra Trees
+    # Extra Trees
     # print('Start training Extra Trees...')
     # et_train()
 
-    # # AdaBoost
+    # AdaBoost
     # print('Start training AdaBoost...')
     # ab_train()
 
-    # # GradientBoosting
+    # GradientBoosting
     # print('Start training GradientBoosting...')
     # gb_train()
 
-    # # XGBoost
+    # XGBoost
     # print('Start training XGBoost...')
     # xgb_train()
 
-    #  LGBM
+    # LGBM
     # print('Start training LGBM...')
     # lgb_train()
 
-    #  DNN
+    # DNN
     # print('Start training DNN...')
     # dnn_train()
+    dnn_keras_train()
 
     # Grid Search
-    GridSearch.lgb_grid_search()
+    # GridSearch.lgb_grid_search()
 
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))

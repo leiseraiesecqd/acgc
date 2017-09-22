@@ -6,6 +6,13 @@ from os.path import isdir
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
+
+from keras.layers import Dense
+from keras.models import Sequential
+from keras.layers import Dropout
+from keras import initializers
+from keras import optimizers
+
 from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
@@ -16,6 +23,7 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
+
 import xgboost as xgb
 from xgboost import XGBClassifier
 import lightgbm as lgb
@@ -1326,6 +1334,107 @@ class DeepNeuralNetworks:
             utils.save_pred_to_csv(pred_path + 'dnn_', self.id_test, prob_mean)
 
 
+# DNN using Keras
+
+class KerasDeepNeuralNetworks:
+
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, parameters):
+
+        # Inputs
+        self.x_train = x_tr
+        self.y_train = y_tr
+        self.w_train = w_tr
+        self.e_train = e_tr
+        self.x_test = x_te
+        self.id_test = id_te
+
+        # Hyperparameters
+        self.batch_size = parameters['batch_size']
+        self.epochs = parameters['epochs']
+        self.learning_rate = parameters['learning_rate']
+        self.unit_num = parameters['unit_num']
+        self.keep_prob = parameters['keep_prob']
+
+    def train(self, pred_path, n_valid, n_cv):
+
+        model = Sequential()
+
+        feature_num = list(self.x_train.shape)[1]
+
+        model.add(Dense(self.unit_num[0],
+                        kernel_initializer=initializers.TruncatedNormal(stddev=0.05),
+                        bias_initializer='zeros',
+                        activation='sigmoid',
+                        input_dim=feature_num))
+        model.add(Dropout(self.keep_prob))
+
+        for i in range(len(self.unit_num)):
+            model.add(Dense(self.unit_num[i+1],
+                            kernel_initializer=initializers.TruncatedNormal(stddev=0.05),
+                            bias_initializer='zeros',
+                            activation='sigmoid'))
+            model.add(Dropout(self.keep_prob))
+
+        model.compile(loss='binary_crossentropy',
+                      optimizer=optimizers.Adam(self.learning_rate),
+                      metrics='accuracy')
+
+        start_time = time.time()
+
+        cv_counter = 0
+
+        prob_total = []
+
+        for x_train, y_train, w_train, \
+            x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(self.x_train,
+                                                                                self.y_train,
+                                                                                self.w_train,
+                                                                                self.e_train,
+                                                                                n_valid,
+                                                                                n_cv):
+
+            cv_counter += 1
+
+            print(
+                '======================================================================================================')
+            print('Training on the Cross Validation Set: {}'.format(cv_counter))
+
+            model.fit(x_train,
+                      y_train,
+                      epochs=self.epochs,
+                      batch_size=self.batch_size,
+                      verbose=1)
+
+            cost_train = model.evaluate(x_train, y_train, verbose=1)
+            cost_valid = model.evaluate(x_valid, y_valid, verbose=1)
+
+            total_time = time.time() - start_time
+
+            print('CV: {} |'.format(cv_counter),
+                  'Time: {:>3.2f}s |'.format(total_time),
+                  'Train_Loss: {:>.8f} |'.format(cost_train),
+                  'Valid_Loss: {:>.8f}'.format(cost_valid))
+
+            # Prediction
+            print('Predicting...')
+
+            prob_test = model.predict(self.x_test)
+
+            prob_total.append(list(prob_test))
+
+            utils.save_pred_to_csv(pred_path + 'dnn_keras_cv_{}_'.format(cv_counter), self.id_test, prob_test)
+
+        # Final Result
+        print('======================================================================================================')
+        print('Calculating final result...')
+
+        prob_mean = np.mean(np.array(prob_total), axis=0)
+
+        utils.save_pred_to_csv(pred_path + 'dnn_keras_', self.id_test, prob_mean)
+
+
+
+
 # Cross Validation
 
 class CrossValidation:
@@ -1384,8 +1493,8 @@ class CrossValidation:
                 else:
                     train_index.append(ii)
 
-            # np.random.shuffle(train_index)
-            # np.random.shuffle(valid_index)
+            np.random.shuffle(train_index)
+            np.random.shuffle(valid_index)
 
             # Training data
             x_train = x[train_index]
