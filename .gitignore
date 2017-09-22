@@ -9,6 +9,7 @@
 /result/
 /inputs/
 /other/
+/numerai/
 *.jpg
 *.ipynb
 *.p

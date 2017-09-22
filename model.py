@@ -939,8 +939,7 @@ class LightGBM:
         print('Train LogLoss: {:>.8f}|'.format(loss_train),
               'Validation LogLoss: {:>.8f}|'.format(loss_valid))
 
-    def train(self, pred_path, n_valid, n_cv, parameters=None,
-              x_train_f=None, g_train=None, g_train_f=None, g_test=None):
+    def train(self, pred_path, n_valid, n_cv, x_train_g=None, x_test_g=None, parameters=None):
 
         # sk-learn module
 
@@ -975,24 +974,25 @@ class LightGBM:
         count = 0
         prob_total = []
 
-        # Use Category
-        # for x_train, y_train, w_train, g_train, \
-        #     x_valid, y_valid, w_valid, g_valid in CrossValidation.era_k_fold_with_weight_group(x=x_train_f,
-        #                                                                                        y=self.y_train,
-        #                                                                                        w=self.w_train,
-        #                                                                                        e=self.e_train,
-        #                                                                                        g=g_train,
-        #                                                                                        n_valid=n_valid,
-        #                                                                                        n_cv=n_cv):
+        # Use Dummies
+        # for x_train, y_train, w_train, \
+        #     x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+        #                                                                         y=self.y_train,
+        #                                                                         w=self.w_train,
+        #                                                                         e=self.e_train,
+        #                                                                         n_valid=n_valid,
+        #                                                                         n_cv=n_cv):
 
         # Use Category
         for x_train, y_train, w_train, \
-            x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+            x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=x_train_g,
                                                                                 y=self.y_train,
                                                                                 w=self.w_train,
                                                                                 e=self.e_train,
                                                                                 n_valid=n_valid,
                                                                                 n_cv=n_cv):
+
+
 
             count += 1
 
@@ -1000,13 +1000,11 @@ class LightGBM:
             print('Training on the Cross Validation Set: {}'.format(count))
 
             # Use Category
-            # g_train_l = list(g_train)
-            # g_valid_l = list(g_valid)
-            # d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=g_train_l)
-            # d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=g_valid_l)
+            d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=[88])
+            d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=[88])
 
-            d_train = lgb.Dataset(x_train, label=y_train, weight=w_train)
-            d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid)
+            # d_train = lgb.Dataset(x_train, label=y_train, weight=w_train)
+            # d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid)
 
             # Booster
             bst = lgb.train(parameters, d_train, num_boost_round=50,
@@ -1402,41 +1400,6 @@ class CrossValidation:
             w_valid = w[valid_index]
 
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
-
-    @staticmethod
-    def era_k_fold_with_weight_group(x, y, w, e, g, n_valid, n_cv):
-
-        for i in range(n_cv):
-
-            era_idx = list(range(1, 21))
-            valid_group = np.random.choice(era_idx, n_valid, replace=False)
-
-            train_index = []
-            valid_index = []
-
-            for ii, ele in enumerate(e):
-
-                if ele in valid_group:
-                    valid_index.append(ii)
-                else:
-                    train_index.append(ii)
-
-            # np.random.shuffle(train_index)
-            # np.random.shuffle(valid_index)
-
-            # Training data
-            x_train = x[train_index]
-            y_train = y[train_index]
-            w_train = w[train_index]
-            g_train = g[train_index]
-
-            # Validation data
-            x_valid = x[valid_index]
-            y_valid = y[valid_index]
-            w_valid = w[valid_index]
-            g_valid = g[valid_index]
-
-            yield x_train, y_train, w_train, g_train, x_valid, y_valid, w_valid, g_valid
 
 
 # Grid Search
