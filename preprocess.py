@@ -832,8 +832,8 @@ class DataPreProcess:
         self.x_test_g = self.x_test.join(self.g_test)
         self.x_test = self.x_test.join(group_test_dummies)
 
-        print('Shape of x_train with group dummies: {}'.format(self.x_train.shape))
-        print('Shape of x_test with group dummies: {}'.format(self.x_test.shape))
+        # print('Shape of x_train with group dummies: {}'.format(self.x_train.shape))
+        # print('Shape of x_test with group dummies: {}'.format(self.x_test.shape))
 
     # Shuffle and split dataset
     def random_spit_data(self):
