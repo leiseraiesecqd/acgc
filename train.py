@@ -146,15 +146,15 @@ def lgb_train():
 
     lgb_parameters = {'application': 'binary',
                       'num_iterations': 100,          # this parameter is ignored, use num_boost_round input arguments of train and cv methods instead
-                      'learning_rate': 0.05,
-                      'num_leaves': 128,              # <2^(max_depth)
+                      'learning_rate': 0.01,
+                      'num_leaves': 64,               # <2^(max_depth)
                       'tree_learner': 'serial',
-                      'max_depth': 9,                 # default=-1
+                      'max_depth': 8,                 # default=-1
                       'min_data_in_leaf': 20,         # default=20
-                      'feature_fraction': 0.8,        # default=1
+                      'feature_fraction': 0.7,        # default=1
                       'bagging_fraction': 0.8,        # default=1
-                      'bagging_freq': 5,               # default=0 perform bagging every k iteration
-                      'bagging_seed': 1,               # default=3
+                      'bagging_freq': 5,              # default=0 perform bagging every k iteration
+                      'bagging_seed': 1,              # default=3
                       'early_stopping_rounds': 50,
                       'max_bin': 255,
                       'metric': 'binary_logloss',
