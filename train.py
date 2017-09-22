@@ -254,7 +254,6 @@ class GridSearch:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
         lgb_parameters = {'objective': 'binary',
-                          'num_iterations': 200,          # this parameter is ignored, use num_boost_round input arguments of train and cv methods instead
                           'learning_rate': 0.01,
                           'n_estimators': 200,
                           'num_leaves': 64,               # <2^(max_depth)
@@ -264,7 +263,7 @@ class GridSearch:
                           'subsample': 0.8,
                           'max_bin': 255}
 
-        LGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+        LGB = model.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test)
 
         clf_lgb = LGB.clf(lgb_parameters)
 
@@ -273,7 +272,6 @@ class GridSearch:
         parameters_grid = {'learning_rate': (0.001, 0.003, 0.005, 0.01, 0.02, 0.03, 0.05),
                            'n_estimators': range(50, 200, 30),
                            'num_leaves': (16, 32, 64),               # <2^(max_depth)
-                           # 'num_iterations': 200,
                            # 'colsample_bytree': 0.8,
                            # 'max_depth': 8,                 # default=-1
                            # 'min_data_in_leaf': 20,         # default=20
