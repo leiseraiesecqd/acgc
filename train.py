@@ -8,7 +8,7 @@ from sklearn.ensemble import ExtraTreesClassifier
 
 
 preprocessed_data_path = './preprocessed_data/'
-pred_path = './result/'
+pred_path = './results/'
 
 
 # Random Forest
