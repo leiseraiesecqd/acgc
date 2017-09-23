@@ -7,11 +7,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
-from keras.layers import Dense
-from keras.models import Sequential
-from keras.layers import Dropout
-from keras import initializers
-from keras import optimizers
+#  from keras.layers import Dense
+#  from keras.models import Sequential
+#  from keras.layers import Dropout
+#  from keras import initializers
+#  from keras import optimizers
 
 from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import LogisticRegression
@@ -566,7 +566,9 @@ class AdaBoost:
 
         print('Predicting...')
 
-        prob_test = clf.predict_proba(self.x_test)
+        prob_test = np.array(clf.predict_proba(self.x_test))[:, 1]
+        print(prob_test)
+        print(clf.predict(self.x_test))
 
         utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
@@ -574,8 +576,8 @@ class AdaBoost:
 
     def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
 
-        prob_train = model.predict_proba(x_t)
-        prob_valid = model.predict_proba(x_v)
+        prob_train = np.array(model.predict_proba(x_t))[:, 1]
+        prob_valid = np.array(model.predict_proba(x_v))[:, 1]
 
         loss_train = utils.log_loss(prob_train, y_t, w_t)
         loss_valid = utils.log_loss(prob_valid, y_v, w_v)
@@ -616,7 +618,7 @@ class AdaBoost:
             self.get_importance(clf_ab)
 
             # Prediction
-            prob_test = self.predict(clf_ab, pred_path + 'ab_cv_{}_'.format(count))
+            prob_test = self.predict(clf_ab, pred_path + 'ab_cv_3_{}_'.format(count))
             prob_total.append(list(prob_test))
 
         print('===========================================')
