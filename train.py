@@ -245,9 +245,9 @@ class GridSearch:
 
         # parameters_grid = None
 
-        parameters_grid = {'learning_rate': (0.001, 0.002, 0.005, 0.01, 0.02),
-                           'n_estimators': range(50, 100, 10),
-                           'max_depth': range(5, 10, 1),
+        parameters_grid = {'learning_rate': (0.002, 0.005, 0.01),
+                           'n_estimators': (100, 200, 400),
+                           'max_depth': (9, 10, 11),
                            #  'min_child_weight': 5,
                            #  'objective': 'binary:logistic',
                            #  'eval_metric': 'logloss',
@@ -278,7 +278,7 @@ class GridSearch:
                           'n_estimators': 200,
                           'num_leaves': 64,               # <2^(max_depth)
                           'colsample_bytree': 0.8,
-                          'max_depth': 8,                 # default=-1
+                          'max_depth': 9,                 # default=-1
                           'min_data_in_leaf': 20,         # default=20
                           'subsample': 0.8,
                           'max_bin': 255}
@@ -289,13 +289,13 @@ class GridSearch:
 
         # parameters_grid = None
 
-        parameters_grid = {'learning_rate': (0.001, 0.003, 0.005, 0.01, 0.02, 0.03, 0.05),
-                           'n_estimators': range(50, 200, 30),
-                           'num_leaves': (16, 32, 64),               # <2^(max_depth)
+        parameters_grid = {'learning_rate': (0.001, 0.002, 0.003),
+                           'n_estimators': (100, 150, 200),
+                           'num_leaves': (32, 48, 64),               # <2^(max_depth)
                            # 'colsample_bytree': 0.8,
-                           # 'max_depth': 8,                 # default=-1
+                           'max_depth': (8, 9, 10, 11, 12),                 # default=-1
                            # 'min_data_in_leaf': 20,         # default=20
-                           # 'subsample': 0.8,
+                           'subsample': (0.7, 0.8, 0.9, 1.0),
                            # 'max_bin': 255
                            }
 
@@ -318,8 +318,8 @@ if __name__ == "__main__":
     # et_train()
 
     # AdaBoost
-    print('Start training AdaBoost...')
-    ab_train()
+    #  print('Start training AdaBoost...')
+    #  ab_train()
 
     # GradientBoosting
     # print('Start training GradientBoosting...')
@@ -340,7 +340,7 @@ if __name__ == "__main__":
 
     # Grid Search
     # GridSearch.xgb_grid_search()
-    # GridSearch.lgb_grid_search()
+    GridSearch.lgb_grid_search()
 
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))
