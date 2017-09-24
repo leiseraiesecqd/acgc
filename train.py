@@ -37,6 +37,8 @@ def rf_train():
 
     RF = model.RandomForest(x_train, y_train, w_train, e_train, x_test, id_test)
 
+    print('Start training Random Forest...')
+
     RF.train(pred_path, n_valid=4, n_cv=20, parameters=rf_parameters)
 
 
@@ -66,6 +68,8 @@ def et_train():
 
     ET = model.ExtraTrees(x_train, y_train, w_train, e_train, x_test, id_test)
 
+    print('Start training Extra Trees...')
+
     ET.train(pred_path, n_valid=4, n_cv=20, parameters=et_parameters)
 
 
@@ -84,6 +88,9 @@ def ab_train():
                      'random_state': 1}
 
     AB = model.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+
+    print('Start training AdaBoost...')
+
     AB.train(pred_path, n_valid=4, n_cv=20, parameters=ab_parameters)
 
 
@@ -114,6 +121,8 @@ def gb_train():
 
     GB = model.GradientBoosting(x_train, y_train, w_train, e_train, x_test, id_test)
 
+    print('Start training GradientBoosting...')
+
     GB.train(pred_path, n_valid=4, n_cv=20, parameters=gb_parameters)
 
 
@@ -136,6 +145,8 @@ def xgb_train():
                       'seed': 1}
 
     XGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+
+    print('Start training XGBoost...')
 
     XGB.train(pred_path, n_valid=4, n_cv=20, parameters=xgb_parameters)
 
@@ -165,6 +176,8 @@ def lgb_train():
 
     LGBM = model.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test)
 
+    print('Start training LGBM...')
+
     LGBM.train(pred_path, n_valid=4, n_cv=20, x_train_g=x_train_g, x_test_g=x_test_g, parameters=lgb_parameters)
 
 
@@ -189,6 +202,8 @@ def dnn_tf_train():
 
     dnn = model.DeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
 
+    print('Start training DNN(TensorFlow)...')
+
     dnn.train(pred_path, n_valid=4, n_cv=20)
 
 
@@ -207,6 +222,8 @@ def dnn_keras_train():
 
     dnn = model.KerasDeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
 
+    print('Start training DNN(Keras)...')
+
     dnn.train(pred_path, n_valid=4, n_cv=20)
 
 
@@ -214,45 +231,92 @@ def dnn_keras_train():
 
 class GridSearch:
 
+    # AdaBoost
     @staticmethod
-    def xgb_grid_search():
+    def ab_grid_search():
+
+        print('\nModel: AdaBoost \n')
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-        xgb_parameters = {'learning_rate': 0.05,
-                          'n_estimators': 1000,
-                          'max_depth': 10,
-                          'min_child_weight': 5,
-                          'objective': 'binary:logistic',
-                          #  'eval_metric': 'logloss',
-                          'silent': 1,
-                          'subsample': 0.8,
-                          'colsample_bytree': 0.8,
-                          'gamma': 0,
-                          'base_score': 0.5,
-                          # 'max_delta_step': 0,
-                          # 'missing': None,
-                          # 'nthread': -1,
-                          # 'colsample_bylevel': 1,
-                          # 'reg_alpha': 0,
-                          # 'reg_lambda': 1,
-                          # 'scale_pos_weight': 1,
-                          'seed': 1}
+        clf_et = ExtraTreesClassifier(max_depth=9)
 
-        XGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+        parameters = {'algorithm': 'SAMME.R',
+                      'base_estimator': clf_et,
+                      'learning_rate': 0.005,
+                      'n_estimators': 100,
+                      'random_state': 1}
 
-        clf_xgb = XGB.clf(xgb_parameters)
+        print("Parameters:")
+        print(parameters)
+        print('\n')
+
+        AB = model.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+
+        clf_ab = AB.clf(parameters)
 
         # parameters_grid = None
 
-        parameters_grid = {'learning_rate': (0.002, 0.005, 0.01),
-                           'n_estimators': (100, 200, 400),
-                           'max_depth': (9, 10, 11),
+        parameters_grid = {
+                           'learning_rate': (0.002, 0.003, 0.005),
+                           #  'n_estimators': 100,
+                           #  'random_state': 2,
+                           #  'algorithm': 'SAMME.R',
+                           #  'base_estimator': clf_et,
+                           }
+
+        print("Parameters' grid:")
+        print(parameters_grid)
+        print('\n')
+
+        model.grid_search(x_train, y_train, clf_ab, parameters_grid)
+
+    # XGBoost
+    @staticmethod
+    def xgb_grid_search():
+
+        print('\nModel: XGBoost \n')
+
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
+        parameters = {'learning_rate': 0.05,
+                      'n_estimators': 1000,
+                      'max_depth': 10,
+                      'min_child_weight': 5,
+                      'objective': 'binary:logistic',
+                      #  'eval_metric': 'logloss',
+                      'silent': 1,
+                      'subsample': 0.8,
+                      'colsample_bytree': 0.8,
+                      'gamma': 0,
+                      'base_score': 0.5,
+                      # 'max_delta_step': 0,
+                      # 'missing': None,
+                      # 'nthread': -1,
+                      # 'colsample_bylevel': 1,
+                      # 'reg_alpha': 0,
+                      # 'reg_lambda': 1,
+                      # 'scale_pos_weight': 1,
+                      'seed': 1}
+
+        print("Parameters:")
+        print(parameters)
+        print('\n')
+
+        XGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+
+        clf_xgb = XGB.clf(parameters)
+
+        # parameters_grid = None
+
+        parameters_grid = {'learning_rate': (0.002, 0.003, 0.005),
+                           'n_estimators': (100, 200, 400, 800),
+                           'max_depth': (8, 9, 10, 11),
                            #  'min_child_weight': 5,
                            #  'objective': 'binary:logistic',
                            #  'eval_metric': 'logloss',
                            #  'silent': 1,
-                           #  'subsample': 0.8,
+                           'subsample': (0.5, 0.6, 0.7, 0.8, 0.9, 1.0),
                            #  'colsample_bytree': 0.8,
                            #  'gamma': 0,
                            #  'base_score': 0.5,
@@ -266,38 +330,56 @@ class GridSearch:
                            #  'seed': 1
                            }
 
+        print("Parameters' grid:")
+        print(parameters_grid)
+        print('\n')
+
         model.grid_search(x_train, y_train, clf_xgb, parameters_grid)
 
+    # LightGBM
     @staticmethod
     def lgb_grid_search():
 
+        print('\nModel: XGBoost \n')
+
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-        lgb_parameters = {'objective': 'binary',
-                          'learning_rate': 0.01,
-                          'n_estimators': 200,
-                          'num_leaves': 64,               # <2^(max_depth)
-                          'colsample_bytree': 0.8,
-                          'max_depth': 9,                 # default=-1
-                          'min_data_in_leaf': 20,         # default=20
-                          'subsample': 0.8,
-                          'max_bin': 255}
+        parameters = {'objective': 'binary',
+                      'learning_rate': 0.01,
+                      'n_estimators': 200,
+                      'num_leaves': 64,               # <2^(max_depth)
+                      'colsample_bytree': 0.8,
+                      'max_depth': 9,                 # default=-1
+                      'min_data_in_leaf': 20,         # default=20
+                      'subsample': 0.8,
+                      'max_bin': 255}
+
+        print("Parameters:")
+        print(parameters)
+        print('\n')
 
         LGB = model.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test)
 
-        clf_lgb = LGB.clf(lgb_parameters)
+        clf_lgb = LGB.clf(parameters)
 
         # parameters_grid = None
 
-        parameters_grid = {'learning_rate': (0.001, 0.002, 0.003),
+        parameters_grid = {
+                           'learning_rate': (0.002, 0.003),
                            'n_estimators': (100, 150, 200),
-                           'num_leaves': (32, 48, 64),               # <2^(max_depth)
+                           'num_leaves': (32, 128),               # <2^(max_depth)
                            # 'colsample_bytree': 0.8,
-                           'max_depth': (8, 9, 10, 11, 12),                 # default=-1
+                           'max_depth': (8, 9, 10, 11),                 # default=-1
                            # 'min_data_in_leaf': 20,         # default=20
-                           'subsample': (0.7, 0.8, 0.9, 1.0),
+                           'bagging_fraction': (0.5, 0.6, 0.7, 0.8, 0.9, 1.0),
+                           'feature_fraction': (0.5, 0.6, 0.7, 0.8, 0.9, 1.0)
+                           #  'subsample': (0.8),
                            # 'max_bin': 255
                            }
+
+        print("Parameters' grid:")
+        print(parameters_grid)
+        print('\n')
 
         model.grid_search(x_train, y_train, clf_lgb, parameters_grid)
 
@@ -310,37 +392,31 @@ if __name__ == "__main__":
     start_time = time.time()
 
     # Random Forest
-    # print('Start training Random Forest...')
     # rf_train()
 
     # Extra Trees
-    # print('Start training Extra Trees...')
     # et_train()
 
     # AdaBoost
-    #  print('Start training AdaBoost...')
     #  ab_train()
 
     # GradientBoosting
-    # print('Start training GradientBoosting...')
     # gb_train()
 
     # XGBoost
-    # print('Start training XGBoost...')
     # xgb_train()
 
-    # LGBM
-    # print('Start training LGBM...')
+    # LightGBM
     # lgb_train()
 
     # DNN
-    # print('Start training DNN...')
     # dnn_tf_train()
     # dnn_keras_train()
 
     # Grid Search
-    # GridSearch.xgb_grid_search()
-    GridSearch.lgb_grid_search()
+    GridSearch.xgb_grid_search()
+    #  GridSearch.lgb_grid_search()
+    #  GridSearch.ab_grid_search()
 
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))

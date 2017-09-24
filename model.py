@@ -7,11 +7,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
-from keras.layers import Dense
-from keras.models import Sequential
-from keras.layers import Dropout
-from keras import initializers
-from keras import optimizers
+#  from keras.layers import Dense
+#  from keras.models import Sequential
+#  from keras.layers import Dropout
+#  from keras import initializers
+#  from keras import optimizers
 
 from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import LogisticRegression
