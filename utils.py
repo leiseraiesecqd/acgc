@@ -93,9 +93,17 @@ def save_pred_to_csv(file_path, id, prob):
 # TODO: Save final loss to csv file
 
 
-# LogLoss function
+# LogLoss without weight
+def log_loss(prob, y):
 
-def log_loss(prob, y, w):
+    loss = - np.sum(np.multiply(y, np.log(prob)) +
+                    np.multiply((np.ones_like(y) - y), np.log(np.ones_like(prob) - prob)))
+
+    return loss
+
+
+# LogLoss with weight
+def log_loss_with_weight(prob, y, w):
 
     w = w / np.sum(w)
 
@@ -103,3 +111,41 @@ def log_loss(prob, y, w):
                                 np.multiply((np.ones_like(y) - y), np.log(np.ones_like(prob) - prob)))))
 
     return loss
+
+
+def print_loss(model, x_t, y_t, w_t, x_v, y_v, w_v):
+
+    prob_train = model.predict(x_t)
+    prob_valid = model.predict(x_v)
+
+    loss_train = log_loss(prob_train, y_t)
+    loss_valid = log_loss(prob_valid, y_v)
+
+    loss_train_w = log_loss_with_weight(prob_train, y_t, w_t)
+    loss_valid_w = log_loss_with_weight(prob_valid, y_v, w_v)
+
+    print('Train LogLoss: {:>.8f}\n'.format(loss_train),
+          'Validation LogLoss: {:>.8f}\n'.format(loss_valid),
+          'Train LogLoss with Weight: {:>.8f}\n'.format(loss_train_w),
+          'Validation LogLoss with Weight: {:>.8f}\n'.format(loss_valid_w))
+
+    return loss_train, loss_valid, loss_train_w, loss_valid_w
+
+
+def print_loss_proba(model, x_t, y_t, w_t, x_v, y_v, w_v):
+
+    prob_train = np.array(model.predict_proba(x_t))[:, 1]
+    prob_valid = np.array(model.predict_proba(x_v))[:, 1]
+
+    loss_train = log_loss(prob_train, y_t)
+    loss_valid = log_loss(prob_valid, y_v)
+
+    loss_train_w = log_loss_with_weight(prob_train, y_t, w_t)
+    loss_valid_w = log_loss_with_weight(prob_valid, y_v, w_v)
+
+    print('Train LogLoss: {:>.8f}\n'.format(loss_train),
+          'Validation LogLoss: {:>.8f}\n'.format(loss_valid),
+          'Train LogLoss with Weight: {:>.8f}\n'.format(loss_train_w),
+          'Validation LogLoss with Weight: {:>.8f}\n'.format(loss_valid_w))
+
+    return loss_train, loss_valid, loss_train_w, loss_valid_w

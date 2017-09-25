@@ -7,11 +7,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
-#  from keras.layers import Dense
-#  from keras.models import Sequential
-#  from keras.layers import Dropout
-#  from keras import initializers
-#  from keras import optimizers
+from keras.layers import Dense
+from keras.models import Sequential
+from keras.layers import Dropout
+from keras import initializers
+from keras import optimizers
 
 from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import LogisticRegression
@@ -84,17 +84,6 @@ class LRegression:
         utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-
-    def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
-
-        prob_train = model.predict_proba(x_t)
-        prob_valid = model.predict_proba(x_v)
-
-        loss_train = utils.log_loss(prob_train, y_t, w_t)
-        loss_valid = utils.log_loss(prob_valid, y_v, w_v)
-
-        print('Train LogLoss: {:>.8f}|'.format(loss_train),
-              'Validation LogLoss: {:>.8f}|'.format(loss_valid))
 
     def train(self, parameters):
 
@@ -242,21 +231,14 @@ class DecisionTree:
 
         return prob_test
 
-    def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
-
-        prob_train = model.predict_proba(x_t)
-        prob_valid = model.predict_proba(x_v)
-
-        loss_train = utils.log_loss(prob_train, y_t, w_t)
-        loss_valid = utils.log_loss(prob_valid, y_v, w_v)
-
-        print('Train LogLoss: {:>.8f}|'.format(loss_train),
-              'Validation LogLoss: {:>.8f}|'.format(loss_valid))
-
     def train(self, pred_path, n_valid, n_cv, parameters=None):
 
         count = 0
         prob_total = []
+        loss_train_total = []
+        loss_valid_total = []
+        loss_train_w_total = []
+        loss_valid_w_total = []
 
         for x_train, y_train, w_train, \
             x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train,
@@ -275,24 +257,35 @@ class DecisionTree:
 
             clf_dt.fit(x_train, y_train, sample_weight=w_train)
 
-            # Scores
-            scores = clf_dt.score(x_valid, y_valid, sample_weight=w_valid)
-            print('mean accuracy on validation set: %0.6f' % scores)
-
             # Print LogLoss
-            self.print_loss(clf_dt, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+            loss_train, loss_valid, loss_train_w, loss_valid_w = \
+                utils.print_loss_proba(clf_dt, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Feature Importance
             self.get_importance(clf_dt)
 
             # Prediction
             prob_test = self.predict(clf_dt, pred_path + 'dt_cv_{}_'.format(count))
+
             prob_total.append(list(prob_test))
+            loss_train_total.append(loss_train)
+            loss_valid_total.append(loss_valid)
+            loss_train_w_total.append(loss_train_w)
+            loss_valid_w_total.append(loss_valid_w)
 
         print('===========================================')
         print('Calculating final result...')
 
         prob_mean = np.mean(np.array(prob_total), axis=0)
+        loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
+        loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
+        loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
+        loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
+
+        print('Total Train LogLoss: {0.6f}'.format(loss_train_mean),
+              'Total Validation LogLoss: {0.6f}'.format(loss_valid_mean),
+              'Total Train LogLoss with Weight: {0.6f}'.format(loss_train_w_mean),
+              'Total Validation LogLoss with Weight: {0.6f}'.format(loss_valid_w_mean))
 
         utils.save_pred_to_csv(pred_path + 'dt_', self.id_test, prob_mean)
 
@@ -352,21 +345,14 @@ class RandomForest:
 
         return prob_test
 
-    def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
-
-        prob_train = model.predict_proba(x_t)
-        prob_valid = model.predict_proba(x_v)
-
-        loss_train = utils.log_loss(prob_train, y_t, w_t)
-        loss_valid = utils.log_loss(prob_valid, y_v, w_v)
-
-        print('Train LogLoss: {:>.8f}|'.format(loss_train),
-              'Validation LogLoss: {:>.8f}|'.format(loss_valid))
-
     def train(self, pred_path, n_valid, n_cv, parameters=None):
 
         count = 0
         prob_total = []
+        loss_train_total = []
+        loss_valid_total = []
+        loss_train_w_total = []
+        loss_valid_w_total = []
 
         for x_train, y_train, w_train, \
             x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train,
@@ -385,24 +371,35 @@ class RandomForest:
 
             clf_rf.fit(x_train, y_train, sample_weight=w_train)
 
-            # Scores
-            scores = clf_rf.score(x_valid, y_valid, sample_weight=w_valid)
-            print('mean accuracy on validation set: %0.6f' % scores)
-
             # Print LogLoss
-            self.print_loss(clf_rf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+            loss_train, loss_valid, loss_train_w, loss_valid_w = \
+                utils.print_loss_proba(clf_rf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Feature Importance
             self.get_importance(clf_rf)
 
             # Prediction
             prob_test = self.predict(clf_rf, pred_path + 'rf_cv_{}_'.format(count))
+
             prob_total.append(list(prob_test))
+            loss_train_total.append(loss_train)
+            loss_valid_total.append(loss_valid)
+            loss_train_w_total.append(loss_train_w)
+            loss_valid_w_total.append(loss_valid_w)
 
         print('===========================================')
         print('Calculating final result...')
 
         prob_mean = np.mean(np.array(prob_total), axis=0)
+        loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
+        loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
+        loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
+        loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
+
+        print('Total Train LogLoss: {0.6f}'.format(loss_train_mean),
+              'Total Validation LogLoss: {0.6f}'.format(loss_valid_mean),
+              'Total Train LogLoss with Weight: {0.6f}'.format(loss_train_w_mean),
+              'Total Validation LogLoss with Weight: {0.6f}'.format(loss_valid_w_mean))
 
         utils.save_pred_to_csv(pred_path + 'rf_', self.id_test, prob_mean)
 
@@ -462,21 +459,14 @@ class ExtraTrees:
 
         return prob_test
 
-    def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
-
-        prob_train = model.predict_proba(x_t)
-        prob_valid = model.predict_proba(x_v)
-
-        loss_train = utils.log_loss(prob_train, y_t, w_t)
-        loss_valid = utils.log_loss(prob_valid, y_v, w_v)
-
-        print('Train LogLoss: {:>.8f}|'.format(loss_train),
-              'Validation LogLoss: {:>.8f}|'.format(loss_valid))
-
     def train(self, pred_path, n_valid, n_cv, parameters=None):
 
         count = 0
         prob_total = []
+        loss_train_total = []
+        loss_valid_total = []
+        loss_train_w_total = []
+        loss_valid_w_total = []
 
         for x_train, y_train, w_train, \
             x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train,
@@ -495,24 +485,35 @@ class ExtraTrees:
 
             clf_et.fit(x_train, y_train, sample_weight=w_train)
 
-            # Scores
-            scores = clf_et.score(x_valid, y_valid, sample_weight=w_valid)
-            print('mean accuracy on validation set: %0.6f' % scores)
-
             # Print LogLoss
-            self.print_loss(clf_et, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+            loss_train, loss_valid, loss_train_w, loss_valid_w = \
+                utils.print_loss_proba(clf_et, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Feature Importance
             self.get_importance(clf_et)
 
             # Prediction
             prob_test = self.predict(clf_et, pred_path + 'et_cv_{}_'.format(count))
+
             prob_total.append(list(prob_test))
+            loss_train_total.append(loss_train)
+            loss_valid_total.append(loss_valid)
+            loss_train_w_total.append(loss_train_w)
+            loss_valid_w_total.append(loss_valid_w)
 
         print('===========================================')
         print('Calculating final result...')
 
         prob_mean = np.mean(np.array(prob_total), axis=0)
+        loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
+        loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
+        loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
+        loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
+
+        print('Total Train LogLoss: {0.6f}'.format(loss_train_mean),
+              'Total Validation LogLoss: {0.6f}'.format(loss_valid_mean),
+              'Total Train LogLoss with Weight: {0.6f}'.format(loss_train_w_mean),
+              'Total Validation LogLoss with Weight: {0.6f}'.format(loss_valid_w_mean))
 
         utils.save_pred_to_csv(pred_path + 'et_', self.id_test, prob_mean)
 
@@ -574,21 +575,14 @@ class AdaBoost:
 
         return prob_test
 
-    def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
-
-        prob_train = np.array(model.predict_proba(x_t))[:, 1]
-        prob_valid = np.array(model.predict_proba(x_v))[:, 1]
-
-        loss_train = utils.log_loss(prob_train, y_t, w_t)
-        loss_valid = utils.log_loss(prob_valid, y_v, w_v)
-
-        print('Train LogLoss: {:>.8f}|'.format(loss_train),
-              'Validation LogLoss: {:>.8f}|'.format(loss_valid))
-
     def train(self, pred_path, n_valid, n_cv, parameters=None):
 
         count = 0
         prob_total = []
+        loss_train_total = []
+        loss_valid_total = []
+        loss_train_w_total = []
+        loss_valid_w_total = []
 
         for x_train, y_train, w_train, \
             x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train,
@@ -607,24 +601,35 @@ class AdaBoost:
 
             clf_ab.fit(x_train, y_train, sample_weight=w_train)
 
-            # Scores
-            scores = clf_ab.score(x_valid, y_valid, sample_weight=w_valid)
-            print('mean accuracy on validation set: %0.6f' % scores)
-
             # Print LogLoss
-            self.print_loss(clf_ab, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+            loss_train, loss_valid, loss_train_w, loss_valid_w = \
+                utils.print_loss_proba(clf_ab, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Feature Importance
             self.get_importance(clf_ab)
 
             # Prediction
             prob_test = self.predict(clf_ab, pred_path + 'ab_cv_3_{}_'.format(count))
+
             prob_total.append(list(prob_test))
+            loss_train_total.append(loss_train)
+            loss_valid_total.append(loss_valid)
+            loss_train_w_total.append(loss_train_w)
+            loss_valid_w_total.append(loss_valid_w)
 
         print('===========================================')
         print('Calculating final result...')
 
         prob_mean = np.mean(np.array(prob_total), axis=0)
+        loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
+        loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
+        loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
+        loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
+
+        print('Total Train LogLoss: {0.6f}'.format(loss_train_mean),
+              'Total Validation LogLoss: {0.6f}'.format(loss_valid_mean),
+              'Total Train LogLoss with Weight: {0.6f}'.format(loss_train_w_mean),
+              'Total Validation LogLoss with Weight: {0.6f}'.format(loss_valid_w_mean))
 
         utils.save_pred_to_csv(pred_path + 'ab_', self.id_test, prob_mean)
 
@@ -685,21 +690,14 @@ class GradientBoosting:
 
         return prob_test
 
-    def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
-
-        prob_train = model.predict_proba(x_t)
-        prob_valid = model.predict_proba(x_v)
-
-        loss_train = utils.log_loss(prob_train, y_t, w_t)
-        loss_valid = utils.log_loss(prob_valid, y_v, w_v)
-
-        print('Train LogLoss: {:>.8f}|'.format(loss_train),
-              'Validation LogLoss: {:>.8f}|'.format(loss_valid))
-
     def train(self, pred_path, n_valid, n_cv, parameters=None):
 
         count = 0
         prob_total = []
+        loss_train_total = []
+        loss_valid_total = []
+        loss_train_w_total = []
+        loss_valid_w_total = []
 
         for x_train, y_train, w_train, \
             x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train,
@@ -718,24 +716,35 @@ class GradientBoosting:
             # Classifier
             clf_gb.fit(x_train, y_train, sample_weight=w_train)
 
-            # Scores
-            scores = clf_gb.score(x_valid, y_valid, sample_weight=w_valid)
-            print('mean accuracy on validation set: %0.6f' % scores)
-
             # Print LogLoss
-            self.print_loss(clf_gb, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+            loss_train, loss_valid, loss_train_w, loss_valid_w = \
+                utils.print_loss_proba(clf_gb, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Feature Importance
             self.get_importance(clf_gb)
 
             # Prediction
             prob_test = self.predict(clf_gb, pred_path + 'gb_cv_{}_'.format(count))
+
             prob_total.append(list(prob_test))
+            loss_train_total.append(loss_train)
+            loss_valid_total.append(loss_valid)
+            loss_train_w_total.append(loss_train_w)
+            loss_valid_w_total.append(loss_valid_w)
 
         print('===========================================')
         print('Calculating final result...')
 
         prob_mean = np.mean(np.array(prob_total), axis=0)
+        loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
+        loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
+        loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
+        loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
+
+        print('Total Train LogLoss: {0.6f}'.format(loss_train_mean),
+              'Total Validation LogLoss: {0.6f}'.format(loss_valid_mean),
+              'Total Train LogLoss with Weight: {0.6f}'.format(loss_train_w_mean),
+              'Total Validation LogLoss with Weight: {0.6f}'.format(loss_valid_w_mean))
 
         utils.save_pred_to_csv(pred_path + 'gb_', self.id_test, prob_mean)
 
@@ -796,17 +805,6 @@ class XGBoost:
 
         return prob_test
 
-    def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
-
-        prob_train = model.predict(xgb.DMatrix(x_t))
-        prob_valid = model.predict(xgb.DMatrix(x_v))
-
-        loss_train = utils.log_loss(prob_train, y_t, w_t)
-        loss_valid = utils.log_loss(prob_valid, y_v, w_v)
-
-        print('Train LogLoss: {:>.8f}|'.format(loss_train),
-              'Validation LogLoss: {:>.8f}|'.format(loss_valid))
-
     def train(self, pred_path, n_valid, n_cv, parameters=None):
 
         # sk-learn module
@@ -840,6 +838,10 @@ class XGBoost:
 
         count = 0
         prob_total = []
+        loss_train_total = []
+        loss_valid_total = []
+        loss_train_w_total = []
+        loss_valid_w_total = []
 
         for x_train, y_train, w_train, \
             x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train,
@@ -868,7 +870,14 @@ class XGBoost:
             bst = xgb.train(parameters, d_train, num_boost_round=30, evals=eval_list)
 
             # Print LogLoss
-            self.print_loss(bst, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+            loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_train, y_train, w_train,
+                                                                                  x_valid, y_valid, w_valid)
+
+            prob_total.append(list(prob_test))
+            loss_train_total.append(loss_train)
+            loss_valid_total.append(loss_valid)
+            loss_train_w_total.append(loss_train_w)
+            loss_valid_w_total.append(loss_valid_w)
 
             # Prediction
             prob_test = self.predict(bst, pred_path + 'xgb_cv_{}_'.format(count))
@@ -878,6 +887,15 @@ class XGBoost:
         print('Calculating final result...')
 
         prob_mean = np.mean(np.array(prob_total), axis=0)
+        loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
+        loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
+        loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
+        loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
+
+        print('Total Train LogLoss: {0.6f}'.format(loss_train_mean),
+              'Total Validation LogLoss: {0.6f}'.format(loss_valid_mean),
+              'Total Train LogLoss with Weight: {0.6f}'.format(loss_train_w_mean),
+              'Total Validation LogLoss with Weight: {0.6f}'.format(loss_valid_w_mean))
 
         utils.save_pred_to_csv(pred_path + 'xgb_', self.id_test, prob_mean)
 
@@ -938,17 +956,6 @@ class LightGBM:
 
         return prob_test
 
-    def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
-
-        prob_train = model.predict(x_t)
-        prob_valid = model.predict(x_v)
-
-        loss_train = utils.log_loss(prob_train, y_t, w_t)
-        loss_valid = utils.log_loss(prob_valid, y_v, w_v)
-
-        print('Train LogLoss: {:>.8f}|'.format(loss_train),
-              'Validation LogLoss: {:>.8f}|'.format(loss_valid))
-
     def train(self, pred_path, n_valid, n_cv, x_train_g=None, x_test_g=None, parameters=None):
 
         # sk-learn module
@@ -983,6 +990,10 @@ class LightGBM:
 
         count = 0
         prob_total = []
+        loss_train_total = []
+        loss_valid_total = []
+        loss_train_w_total = []
+        loss_valid_w_total = []
 
         # Use Dummies
         # for x_train, y_train, w_train, \
@@ -1019,16 +1030,31 @@ class LightGBM:
                             valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
 
             # Print LogLoss
-            self.print_loss(bst, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+            loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_train, y_train, w_train,
+                                                                                  x_valid, y_valid, w_valid)
 
             # Prediction
             prob_test = self.predict(bst, x_test_g, pred_path + 'lgb_cv_{}_'.format(count))
+
             prob_total.append(list(prob_test))
+            loss_train_total.append(loss_train)
+            loss_valid_total.append(loss_valid)
+            loss_train_w_total.append(loss_train_w)
+            loss_valid_w_total.append(loss_valid_w)
 
         print('======================================================')
         print('Calculating final result...')
 
         prob_mean = np.mean(np.array(prob_total), axis=0)
+        loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
+        loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
+        loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
+        loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
+
+        print('Total Train LogLoss: {0.6f}'.format(loss_train_mean),
+              'Total Validation LogLoss: {0.6f}'.format(loss_valid_mean),
+              'Total Train LogLoss with Weight: {0.6f}'.format(loss_train_w_mean),
+              'Total Validation LogLoss with Weight: {0.6f}'.format(loss_valid_w_mean))
 
         utils.save_pred_to_csv(pred_path + 'lgb_', self.id_test, prob_mean)
 
@@ -1476,7 +1502,7 @@ class CrossValidation:
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
     @staticmethod
-    def era_k_fold_split(e, n_valid, n_cv):
+    def era_k_fold_split_all_random(e, n_valid, n_cv):
 
         for i in range(n_cv):
 
@@ -1499,7 +1525,7 @@ class CrossValidation:
             yield zip(train_index, valid_index)
 
     @staticmethod
-    def era_k_fold_with_weight(x, y, w, e, n_valid, n_cv):
+    def era_k_fold_with_weight_all_random(x, y, w, e, n_valid, n_cv):
 
         for i in range(n_cv):
 
@@ -1530,6 +1556,272 @@ class CrossValidation:
             w_valid = w[valid_index]
 
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
+
+    @staticmethod
+    def era_k_fold_split(x, y, w, e, n_valid, n_cv):
+
+        n_era = 20
+        n_traverse = n_era // n_valid
+        n_rest = n_era % n_valid
+
+        if n_cv % n_valid != 0:
+            raise ValueError("Number of CV is not an integer multiple of number of validation era!")
+
+        if n_rest != 0:
+            n_traverse += 1
+
+        n_epoch = n_cv // n_traverse
+        trained_cv = []
+
+        for epoch in range(n_epoch):
+
+            era_idx = []
+            era_idx.append(list(range(1, n_era + 1)))
+
+            if n_rest == 0:
+
+                for i in range(n_traverse):
+
+                    # Choose eras that have not used
+                    if trained_cv != []:
+                        valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                        while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                            print('This CV split has been chosen, choosing another one...')
+                            valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                    else:
+                        valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+
+                    # Generate era set for next choosing
+                    if i != n_traverse - 1:
+                        era_next = [rest for rest in era_idx[i] if rest not in valid_era]
+                        era_idx.append(era_next)
+
+                    train_index = []
+                    valid_index = []
+
+                    # Generate train-validation split index
+                    for ii, ele in enumerate(e):
+
+                        if ele in valid_era:
+                            valid_index.append(ii)
+                        else:
+                            train_index.append(ii)
+
+                    np.random.shuffle(train_index)
+                    np.random.shuffle(valid_index)
+
+                    yield zip(train_index, valid_index)
+
+            # n_cv is not an integer multiple of n_valid
+            else:
+
+                for i in range(n_traverse):
+
+                    if i != n_traverse - 1:
+
+                        valid_era = []
+                        if trained_cv != []:
+                            valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                            while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                                print('This CV split has been chosen, choosing another one...')
+                                valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                        else:
+                            valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+
+                        era_next = [rest for rest in era_idx[i] if rest not in valid_era]
+                        era_idx.append(era_next)
+
+                        train_index = []
+                        valid_index = []
+
+                        for ii, ele in enumerate(e):
+
+                            if ele in valid_era:
+                                valid_index.append(ii)
+                            else:
+                                train_index.append(ii)
+
+                        np.random.shuffle(train_index)
+                        np.random.shuffle(valid_index)
+
+                        yield zip(train_index, valid_index)
+
+                    else:
+
+                        era_idx_else = [t for t in list(range(1, n_era + 1)) if t not in era_idx[i]]
+
+                        valid_era = []
+                        valid_era = era_idx[i] + list(np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
+                        while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                            print('This CV split has been chosen, choosing another one...')
+                            valid_era = era_idx[i] + list(
+                                np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
+
+                        train_index = []
+                        valid_index = []
+
+                        for ii, ele in enumerate(e):
+
+                            if ele in valid_era:
+                                valid_index.append(ii)
+                            else:
+                                train_index.append(ii)
+
+                        np.random.shuffle(train_index)
+                        np.random.shuffle(valid_index)
+
+                        yield zip(train_index, valid_index)
+
+    @staticmethod
+    def era_k_fold_with_weight(x, y, w, e, n_valid, n_cv):
+
+        n_era = 20
+        n_traverse = n_era // n_valid
+        n_rest = n_era % n_valid
+
+        if n_cv % n_valid != 0:
+            raise ValueError("Number of CV is not an integer multiple of number of validation era!")
+
+        if n_rest != 0:
+            n_traverse += 1
+
+        n_epoch = n_cv // n_traverse
+        trained_cv = []
+
+        for epoch in range(n_epoch):
+
+            era_idx = []
+            era_idx.append(list(range(1, n_era + 1)))
+
+            if n_rest == 0:
+
+                for i in range(n_traverse):
+
+                    # Choose eras that have not used
+                    if trained_cv != []:
+                        valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                        while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                            print('This CV split has been chosen, choosing another one...')
+                            valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                    else:
+                        valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+
+                    # Generate era set for next choosing
+                    if i != n_traverse - 1:
+                        era_next = [rest for rest in era_idx[i] if rest not in valid_era]
+                        era_idx.append(era_next)
+
+                    train_index = []
+                    valid_index = []
+
+                    # Generate train-validation split index
+                    for ii, ele in enumerate(e):
+
+                        if ele in valid_era:
+                            valid_index.append(ii)
+                        else:
+                            train_index.append(ii)
+
+                    np.random.shuffle(train_index)
+                    np.random.shuffle(valid_index)
+
+                    # Training data
+                    x_train = x[train_index]
+                    y_train = y[train_index]
+                    w_train = w[train_index]
+
+                    # Validation data
+                    x_valid = x[valid_index]
+                    y_valid = y[valid_index]
+                    w_valid = w[valid_index]
+
+                    trained_cv.append(set(valid_era))
+
+                    yield x_train, y_train, w_train, x_valid, y_valid, w_valid
+
+            # n_cv is not an integer multiple of n_valid
+            else:
+
+                for i in range(n_traverse):
+
+                    if i != n_traverse - 1:
+
+                        valid_era = []
+                        if trained_cv != []:
+                            valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                            while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                                print('This CV split has been chosen, choosing another one...')
+                                valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                        else:
+                            valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+
+                        era_next = [rest for rest in era_idx[i] if rest not in valid_era]
+                        era_idx.append(era_next)
+
+                        train_index = []
+                        valid_index = []
+
+                        for ii, ele in enumerate(e):
+
+                            if ele in valid_era:
+                                valid_index.append(ii)
+                            else:
+                                train_index.append(ii)
+
+                        np.random.shuffle(train_index)
+                        np.random.shuffle(valid_index)
+
+                        # Training data
+                        x_train = x[train_index]
+                        y_train = y[train_index]
+                        w_train = w[train_index]
+
+                        # Validation data
+                        x_valid = x[valid_index]
+                        y_valid = y[valid_index]
+                        w_valid = w[valid_index]
+
+                        trained_cv.append(set(valid_era))
+
+                        yield x_train, y_train, w_train, x_valid, y_valid, w_valid
+
+                    else:
+
+                        era_idx_else = [t for t in list(range(1, n_era + 1)) if t not in era_idx[i]]
+
+                        valid_era = []
+                        valid_era = era_idx[i] + list(np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
+                        while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                            print('This CV split has been chosen, choosing another one...')
+                            valid_era = era_idx[i] + list(
+                                np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
+
+                        train_index = []
+                        valid_index = []
+
+                        for ii, ele in enumerate(e):
+
+                            if ele in valid_era:
+                                valid_index.append(ii)
+                            else:
+                                train_index.append(ii)
+
+                        np.random.shuffle(train_index)
+                        np.random.shuffle(valid_index)
+
+                        # Training data
+                        x_train = x[train_index]
+                        y_train = y[train_index]
+                        w_train = w[train_index]
+
+                        # Validation data
+                        x_valid = x[valid_index]
+                        y_valid = y[valid_index]
+                        w_valid = w[valid_index]
+
+                        trained_cv.append(set(valid_era))
+
+                        yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
 
 # Grid Search
