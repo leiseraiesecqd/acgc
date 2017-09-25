@@ -99,6 +99,8 @@ def log_loss(prob, y):
     loss = - np.sum(np.multiply(y, np.log(prob)) +
                     np.multiply((np.ones_like(y) - y), np.log(np.ones_like(prob) - prob)))
 
+    loss /= len(y)
+
     return loss
 
 
