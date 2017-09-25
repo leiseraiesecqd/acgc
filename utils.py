@@ -93,7 +93,7 @@ def save_pred_to_csv(file_path, id, prob):
 # TODO: Save final loss to csv file
 
 
-# TODO: LogLoss function
+# LogLoss function
 
 def log_loss(prob, y, w):
 
@@ -103,6 +103,3 @@ def log_loss(prob, y, w):
                                 np.multiply((np.ones_like(y) - y), np.log(np.ones_like(prob) - prob)))))
 
     return loss
-
-
-

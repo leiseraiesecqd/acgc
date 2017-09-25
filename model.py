@@ -1476,6 +1476,29 @@ class CrossValidation:
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
     @staticmethod
+    def era_k_fold_split(e, n_valid, n_cv):
+
+        for i in range(n_cv):
+
+            era_idx = list(range(1, 21))
+            valid_group = np.random.choice(era_idx, n_valid, replace=False)
+
+            train_index = []
+            valid_index = []
+
+            for ii, ele in enumerate(e):
+
+                if ele in valid_group:
+                    valid_index.append(ii)
+                else:
+                    train_index.append(ii)
+
+            np.random.shuffle(train_index)
+            np.random.shuffle(valid_index)
+
+            yield zip(train_index, valid_index)
+
+    @staticmethod
     def era_k_fold_with_weight(x, y, w, e, n_valid, n_cv):
 
         for i in range(n_cv):
@@ -1511,18 +1534,21 @@ class CrossValidation:
 
 # Grid Search
 
-def grid_search(tr_x, tr_y, clf, params=None):
+def grid_search(tr_x, tr_y, tr_e, clf, cv=[4, 20], params=None):
 
-    era = tr_x[:, -1]
-    np.delete(tr_x, 88, axis=1)
+    n_valid = cv[0]
+    n_cv = cv[1]
 
-    #  grid_search = GridSearchCV(estimator=clf, param_grid=params, cv=group_k_fold(tr_x, tr_y))
-    grid_search = GridSearchCV(estimator=clf, param_grid=params, scoring='neg_log_loss')
+    grid_search = GridSearchCV(estimator=clf,
+                               param_grid=params,
+                               scoring='neg_log_loss',
+                               verbose=2,
+                               cv=CrossValidation.era_k_fold_split(tr_e, n_valid, n_cv))
 
     # Start Grid Search
     print('Grid Seaching...')
 
-    grid_search.fit(tr_x, tr_y, era)
+    grid_search.fit(tr_x, tr_y, tr_e)
 
     best_parameters = grid_search.best_estimator_.get_params()
 

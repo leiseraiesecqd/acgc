@@ -39,7 +39,7 @@ def rf_train():
 
     print('Start training Random Forest...')
 
-    RF.train(pred_path, n_valid=4, n_cv=20, parameters=rf_parameters)
+    RF.train(pred_path, cv=[4, 20], parameters=rf_parameters)
 
 
 # Extra Trees
@@ -70,7 +70,7 @@ def et_train():
 
     print('Start training Extra Trees...')
 
-    ET.train(pred_path, n_valid=4, n_cv=20, parameters=et_parameters)
+    ET.train(pred_path, cv=[4, 20], parameters=et_parameters)
 
 
 # AdaBoost
@@ -91,7 +91,7 @@ def ab_train():
 
     print('Start training AdaBoost...')
 
-    AB.train(pred_path, n_valid=4, n_cv=20, parameters=ab_parameters)
+    AB.train(pred_path, cv=[4, 20], parameters=ab_parameters)
 
 
 # GradientBoosting
@@ -123,7 +123,7 @@ def gb_train():
 
     print('Start training GradientBoosting...')
 
-    GB.train(pred_path, n_valid=4, n_cv=20, parameters=gb_parameters)
+    GB.train(pred_path, cv=[4, 20], parameters=gb_parameters)
 
 
 # XGBoost
@@ -148,7 +148,7 @@ def xgb_train():
 
     print('Start training XGBoost...')
 
-    XGB.train(pred_path, n_valid=4, n_cv=20, parameters=xgb_parameters)
+    XGB.train(pred_path, cv=[4, 20], parameters=xgb_parameters)
 
 
 # LightGBM
@@ -178,7 +178,7 @@ def lgb_train():
 
     print('Start training LGBM...')
 
-    LGBM.train(pred_path, n_valid=4, n_cv=20, x_train_g=x_train_g, x_test_g=x_test_g, parameters=lgb_parameters)
+    LGBM.train(pred_path, cv=[4, 20], x_train_g=x_train_g, x_test_g=x_test_g, parameters=lgb_parameters)
 
 
 # DNN
@@ -204,7 +204,7 @@ def dnn_tf_train():
 
     print('Start training DNN(TensorFlow)...')
 
-    dnn.train(pred_path, n_valid=4, n_cv=20)
+    dnn.train(pred_path, cv=[4, 20])
 
 
 # DNN using Keras
@@ -224,7 +224,7 @@ def dnn_keras_train():
 
     print('Start training DNN(Keras)...')
 
-    dnn.train(pred_path, n_valid=4, n_cv=20)
+    dnn.train(pred_path, cv=[4, 20])
 
 
 # Grid Search
@@ -381,7 +381,9 @@ class GridSearch:
         print(parameters_grid)
         print('\n')
 
-        model.grid_search(x_train, y_train, clf_lgb, parameters_grid)
+        model.grid_search(x_train, y_train, e_train, clf_lgb,
+                          cv=[4, 20],
+                          params=parameters_grid)
 
 
 if __name__ == "__main__":
@@ -414,9 +416,9 @@ if __name__ == "__main__":
     # dnn_keras_train()
 
     # Grid Search
-    GridSearch.xgb_grid_search()
-    #  GridSearch.lgb_grid_search()
     #  GridSearch.ab_grid_search()
+    #  GridSearch.xgb_grid_search()
+    GridSearch.lgb_grid_search()
 
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))
