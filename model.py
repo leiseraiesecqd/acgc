@@ -805,6 +805,18 @@ class XGBoost:
 
         return prob_test
 
+    def get_importance(self, model):
+
+        self.importance = model.get_fscore()
+        self.indices = np.argsort(self.importance)[::-1]
+
+        feature_num = self.x_train.shape[1]
+
+        for f in range(feature_num):
+            print('Importance: ')
+            print('%d. feature %d (%f)' % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+            print('\n')
+
     def train(self, pred_path, n_valid, n_cv, parameters=None):
 
         # sk-learn module
@@ -868,6 +880,9 @@ class XGBoost:
 
             # Booster
             bst = xgb.train(parameters, d_train, num_boost_round=30, evals=eval_list)
+
+            # Feature Importance
+            self.get_importance(bst)
 
             # Print LogLoss
             loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_train, y_train, w_train,

@@ -519,7 +519,7 @@ if __name__ == "__main__":
     # gb_train()
 
     # XGBoost
-    # xgb_train()
+    xgb_train()
 
     # LightGBM
     # lgb_train()
@@ -529,7 +529,7 @@ if __name__ == "__main__":
     # dnn_keras_train()
 
     # Grid Search
-    GridSearch.rf_grid_search()
+    # GridSearch.rf_grid_search()
     #  GridSearch.ab_grid_search()
     #  GridSearch.xgb_grid_search()
     #  GridSearch.lgb_grid_search()
