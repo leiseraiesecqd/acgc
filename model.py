@@ -963,7 +963,7 @@ class LightGBM:
         self.importance = model.feature_importance()
         self.indices = np.argsort(self.importance)[::-1]
 
-        feature_num = self.x_train.shape[1]
+        feature_num = self.self.len(self.importance)
         print(feature_num)
 
         for f in range(feature_num):
