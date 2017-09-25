@@ -1832,7 +1832,7 @@ def grid_search(tr_x, tr_y, tr_e, clf, n_valid, n_cv, params=None):
                                param_grid=params,
                                scoring='neg_log_loss',
                                verbose=2,
-                               cv=CrossValidation.era_k_fold_split(tr_e, n_valid, n_cv))
+                               cv=CrossValidation.era_k_fold_split(e=tr_e, n_valid=n_valid, n_cv=n_cv))
 
     # Start Grid Search
     print('Grid Searching...')
