@@ -290,6 +290,56 @@ class GridSearch:
 
         print_grid_info('Random Forest', parameters, parameters_grid)
 
+    # Extra Trees
+    @staticmethod
+    def et_grid_search():
+
+        print('\nModel: Extra Trees \n')
+
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(
+            preprocessed_data_path)
+
+        parameters = {'bootstrap': False,
+                      'class_weight': None,
+                      'criterion': 'gini',
+                      'max_depth': 25,
+                      'max_features': 'auto',
+                      'max_leaf_nodes': None,
+                      'min_impurity_decrease': 0.0,
+                      'min_samples_leaf': 50,
+                      'min_samples_split': 1000,
+                      'min_weight_fraction_leaf': 0.0,
+                      'n_jobs': 1,
+                      'oob_score': True,
+                      'random_state': 1,
+                      'verbose': 2,
+                      'warm_start': False}
+
+        print("Parameters:")
+        print(parameters)
+        print('\n')
+
+        ET = model.ExtraTrees(x_train, y_train, w_train, e_train, x_test, id_test)
+
+        clf = ET.clf(parameters)
+
+        # parameters_grid = None
+
+        parameters_grid = {
+                           'max_depth': (10, 20, 30, 40),
+                           'max_features': (9, 10, 11),
+                           'min_sample_leaf': (50, 100, 150),
+                           'min_sample_split': (500, 1000, 1500)
+                           }
+
+        print("Parameters' grid:")
+        print(parameters_grid)
+        print('\n')
+
+        model.grid_search(x_train, y_train, clf, params=parameters_grid)
+
+        print_grid_info('Extra Trees', parameters, parameters_grid)
+
     # AdaBoost
     @staticmethod
     def ab_grid_search():
