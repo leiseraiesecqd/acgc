@@ -519,10 +519,10 @@ if __name__ == "__main__":
     # gb_train()
 
     # XGBoost
-    xgb_train()
+    # xgb_train()
 
     # LightGBM
-    # lgb_train()
+    lgb_train()
 
     # DNN
     # dnn_tf_train()

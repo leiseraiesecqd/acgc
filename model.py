@@ -54,16 +54,6 @@ class LRegression:
         self.importance = np.array([])
         self.indices = np.array([])
 
-    def get_importance(self, clf):
-
-        self.importance = np.abs(clf.coef_)[0]
-        indices = np.argsort(self.importance)[::-1]
-
-        feature_num = self.x_train.shape[1]
-
-        for f in range(feature_num):
-            print("%d. feature %d (%f)" % (f + 1, indices[f], self.importance[indices[f]]))
-
     def show(self):
 
         feature_num = self.x_train.shape[1]
@@ -74,6 +64,16 @@ class LRegression:
         plt.xticks(range(feature_num), self.indices)
         plt.xlim([-1, feature_num])
         plt.show()
+
+    def get_importance(self, clf):
+
+        self.importance = np.abs(clf.coef_)[0]
+        indices = np.argsort(self.importance)[::-1]
+
+        feature_num = self.x_train.shape[1]
+
+        for f in range(feature_num):
+            print("%d | feature %d | %f" % (f + 1, indices[f], self.importance[indices[f]]))
 
     def predict(self, clf, pred_path):
 
@@ -194,16 +194,6 @@ class DecisionTree:
         self.importance = np.array([])
         self.indices = np.array([])
 
-    def get_importance(self, clf):
-
-        self.importance = clf.feature_importances_
-        self.indices = np.argsort(self.importance)[::-1]
-
-        feature_num = self.x_train.shape[1]
-
-        for f in range(feature_num):
-            print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
-
     def show(self, parameters):
 
         feature_num = self.x_train.shape[1]
@@ -220,6 +210,16 @@ class DecisionTree:
         clf = DecisionTreeClassifier(**parameters)
 
         return clf
+
+    def get_importance(self, clf):
+
+        self.importance = clf.feature_importances_
+        self.indices = np.argsort(self.importance)[::-1]
+
+        feature_num = self.x_train.shape[1]
+
+        for f in range(feature_num):
+            print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
     def predict(self, clf, pred_path):
 
@@ -306,17 +306,6 @@ class RandomForest:
         self.indices = np.array([])
         self.std = np.array([])
 
-    def get_importance(self, clf):
-
-        self.importance = clf.feature_importances_
-        self.indices = np.argsort(self.importance)[::-1]
-        self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
-
-        feature_num = self.x_train.shape[1]
-
-        for f in range(feature_num):
-            print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
-
     def show(self):
 
         feature_num = self.x_train.shape[1]
@@ -334,6 +323,17 @@ class RandomForest:
         clf = RandomForestClassifier(**parameters)
 
         return clf
+
+    def get_importance(self, clf):
+
+        self.importance = clf.feature_importances_
+        self.indices = np.argsort(self.importance)[::-1]
+        self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
+
+        feature_num = self.x_train.shape[1]
+
+        for f in range(feature_num):
+            print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
     def predict(self, clf, pred_path):
 
@@ -420,17 +420,6 @@ class ExtraTrees:
         self.indices = np.array([])
         self.std = np.array([])
 
-    def get_importance(self, clf):
-
-        self.importance = clf.feature_importances_
-        self.indices = np.argsort(self.importance)[::-1]
-        self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
-
-        feature_num = self.x_train.shape[1]
-
-        for f in range(feature_num):
-            print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
-
     def show(self):
 
         feature_num = self.x_train.shape[1]
@@ -448,6 +437,17 @@ class ExtraTrees:
         clf = ExtraTreesClassifier(**parameters)
 
         return clf
+
+    def get_importance(self, clf):
+
+        self.importance = clf.feature_importances_
+        self.indices = np.argsort(self.importance)[::-1]
+        self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
+
+        feature_num = self.x_train.shape[1]
+
+        for f in range(feature_num):
+            print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
     def predict(self, clf, pred_path):
 
@@ -534,17 +534,6 @@ class AdaBoost:
         self.indices = np.array([])
         self.std = np.array([])
 
-    def get_importance(self, clf):
-
-        self.importance = clf.feature_importances_
-        self.indices = np.argsort(self.importance)[::-1]
-        self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
-
-        feature_num = self.x_train.shape[1]
-
-        for f in range(feature_num):
-            print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
-
     def show(self):
 
         feature_num = self.x_train.shape[1]
@@ -562,6 +551,17 @@ class AdaBoost:
         clf = AdaBoostClassifier(**parameters)
 
         return clf
+
+    def get_importance(self, clf):
+
+        self.importance = clf.feature_importances_
+        self.indices = np.argsort(self.importance)[::-1]
+        self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
+
+        feature_num = self.x_train.shape[1]
+
+        for f in range(feature_num):
+            print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
     def predict(self, clf, pred_path):
 
@@ -650,17 +650,6 @@ class GradientBoosting:
         self.indices = np.array([])
         self.std = np.array([])
 
-    def get_importance(self, clf):
-
-        self.importance = clf.feature_importances_
-        self.indices = np.argsort(self.importance)[::-1]
-        self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
-
-        feature_num = self.x_train.shape[1]
-
-        for f in range(feature_num):
-            print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
-
     def show(self):
 
         feature_num = self.x_train.shape[1]
@@ -678,6 +667,17 @@ class GradientBoosting:
         clf = GradientBoostingClassifier(**parameters)
 
         return clf
+
+    def get_importance(self, clf):
+
+        self.importance = clf.feature_importances_
+        self.indices = np.argsort(self.importance)[::-1]
+        self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
+
+        feature_num = self.x_train.shape[1]
+
+        for f in range(feature_num):
+            print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
     def predict(self, clf, pred_path):
 
@@ -784,16 +784,6 @@ class XGBoost:
 
         return clf
 
-    def predict(self, model, pred_path):
-
-        print('Predicting...')
-
-        prob_test = model.predict(xgb.DMatrix(self.x_test))
-
-        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
-
-        return prob_test
-
     def get_importance(self, model):
 
         self.importance = model.get_fscore()
@@ -824,6 +814,16 @@ class XGBoost:
               'Validation LogLoss with Weight: {:>.8f}\n'.format(loss_valid_w))
 
         return loss_train, loss_valid, loss_train_w, loss_valid_w
+
+    def predict(self, model, pred_path):
+
+        print('Predicting...')
+
+        prob_test = model.predict(xgb.DMatrix(self.x_test))
+
+        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+
+        return prob_test
 
     def train(self, pred_path, n_valid, n_cv, parameters=None):
 
@@ -870,8 +870,6 @@ class XGBoost:
                                                                                 e=self.e_train,
                                                                                 n_valid=n_valid,
                                                                                 n_cv=n_cv):
-
-            print(x_train.shape[1])
 
             count += 1
 
@@ -940,18 +938,6 @@ class LightGBM:
         self.indices = np.array([])
         self.std = np.array([])
 
-    def get_importance(self, model):
-
-        self.importance = model.feature_importance()
-        self.indices = np.argsort(self.importance)[::-1]
-
-        feature_num = self.x_train.shape[1]
-
-        for f in range(feature_num):
-            print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
-
-        print('\n')
-
     def show(self):
 
         feature_num = self.x_train.shape[1]
@@ -971,6 +957,18 @@ class LightGBM:
         clf = LGBMClassifier(**parameters)
 
         return clf
+
+    def get_importance(self, model):
+
+        self.importance = model.feature_importance()
+        self.indices = np.argsort(self.importance)[::-1]
+
+        feature_num = self.x_train.shape[1]
+
+        for f in range(feature_num):
+            print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+
+        print('\n')
 
     def predict(self, model, x_te_g, pred_path):
 
