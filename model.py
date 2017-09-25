@@ -799,7 +799,7 @@ class XGBoost:
         self.importance = model.get_fscore()
         sorted_importance = sorted(self.importance.items(), key=lambda d: d[1], reverse=True)
 
-        feature_num = self.x_train.shape[1]
+        feature_num = len(self.importance)
 
         for i in range(feature_num):
             print('Importance:')
@@ -853,6 +853,8 @@ class XGBoost:
                                                                                 n_valid=n_valid,
                                                                                 n_cv=n_cv):
 
+            print(x_train.shape[1])
+
             count += 1
 
             print('======================================================')
@@ -878,15 +880,14 @@ class XGBoost:
             loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_train, y_train, w_train,
                                                                                   x_valid, y_valid, w_valid)
 
+            # Prediction
+            prob_test = self.predict(bst, pred_path + 'xgb_cv_{}_'.format(count))
+
             prob_total.append(list(prob_test))
             loss_train_total.append(loss_train)
             loss_valid_total.append(loss_valid)
             loss_train_w_total.append(loss_train_w)
             loss_valid_w_total.append(loss_valid_w)
-
-            # Prediction
-            prob_test = self.predict(bst, pred_path + 'xgb_cv_{}_'.format(count))
-            prob_total.append(list(prob_test))
 
         print('======================================================')
         print('Calculating final result...')
