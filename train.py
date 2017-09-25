@@ -286,7 +286,7 @@ class GridSearch:
         print(parameters_grid)
         print('\n')
 
-        model.grid_search(x_train, y_train, clf, params=parameters_grid)
+        model.grid_search(x_train, y_train, clf, n_valid=4, n_cv=20, params=parameters_grid)
 
         print_grid_info('Random Forest', parameters, parameters_grid)
 
@@ -336,7 +336,7 @@ class GridSearch:
         print(parameters_grid)
         print('\n')
 
-        model.grid_search(x_train, y_train, clf, params=parameters_grid)
+        model.grid_search(x_train, y_train, clf, n_valid=4, n_cv=20, params=parameters_grid)
 
         print_grid_info('Extra Trees', parameters, parameters_grid)
 
@@ -378,7 +378,7 @@ class GridSearch:
         print(parameters_grid)
         print('\n')
 
-        model.grid_search(x_train, y_train, clf, params=parameters_grid)
+        model.grid_search(x_train, y_train, clf, n_valid=4, n_cv=20, params=parameters_grid)
 
         print_grid_info('AdaBoost', parameters, parameters_grid)
 
@@ -445,7 +445,7 @@ class GridSearch:
         print(parameters_grid)
         print('\n')
 
-        model.grid_search(x_train, y_train, clf, params=parameters_grid)
+        model.grid_search(x_train, y_train, clf, n_valid=4, n_cv=20, params=parameters_grid)
 
         print_grid_info('XGBoost', parameters, parameters_grid)
 
