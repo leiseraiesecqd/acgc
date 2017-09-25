@@ -7,8 +7,8 @@ from os.path import isdir
 from sklearn.model_selection import StratifiedShuffleSplit
 
 
-train_csv_path = './inputs/stock_train_data_20170916.csv'
-test_csv_path = './inputs/stock_test_data_20170916.csv'
+train_csv_path = './inputs/stock_train_data_20170923.csv'
+test_csv_path = './inputs/stock_test_data_20170923.csv'
 preprocessed_path = './preprocessed_data/'
 
 

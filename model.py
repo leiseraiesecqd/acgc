@@ -7,11 +7,11 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
-from keras.layers import Dense
-from keras.models import Sequential
-from keras.layers import Dropout
-from keras import initializers
-from keras import optimizers
+# from keras.layers import Dense
+# from keras.models import Sequential
+# from keras.layers import Dropout
+# from keras import initializers
+# from keras import optimizers
 
 from sklearn.model_selection import cross_val_score
 from sklearn.linear_model import LogisticRegression
@@ -1826,10 +1826,7 @@ class CrossValidation:
 
 # Grid Search
 
-def grid_search(tr_x, tr_y, tr_e, clf, cv=[4, 20], params=None):
-
-    n_valid = cv[0]
-    n_cv = cv[1]
+def grid_search(tr_x, tr_y, tr_e, clf, n_valid, n_cv, params=None):
 
     grid_search = GridSearchCV(estimator=clf,
                                param_grid=params,
@@ -1838,7 +1835,7 @@ def grid_search(tr_x, tr_y, tr_e, clf, cv=[4, 20], params=None):
                                cv=CrossValidation.era_k_fold_split(tr_e, n_valid, n_cv))
 
     # Start Grid Search
-    print('Grid Seaching...')
+    print('Grid Searching...')
 
     grid_search.fit(tr_x, tr_y, tr_e)
 
