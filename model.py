@@ -1832,12 +1832,14 @@ def grid_search(tr_x, tr_y, tr_e, clf, n_valid, n_cv, params=None):
                                param_grid=params,
                                scoring='neg_log_loss',
                                verbose=2,
-                               cv=CrossValidation.era_k_fold_split(e=tr_e, n_valid=n_valid, n_cv=n_cv))
+                               # cv=CrossValidation.era_k_fold_split(e=tr_e, n_valid=n_valid, n_cv=n_cv),
+                               cv=5
+                               )
 
     # Start Grid Search
     print('Grid Searching...')
 
-    grid_search.fit(tr_x, tr_y)
+    grid_search.fit(tr_x, tr_y, tr_e)
 
     best_parameters = grid_search.best_estimator_.get_params()
 
