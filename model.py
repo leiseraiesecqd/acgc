@@ -1558,7 +1558,7 @@ class CrossValidation:
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
     @staticmethod
-    def era_k_fold_split(x, y, w, e, n_valid, n_cv):
+    def era_k_fold_split(e, n_valid, n_cv):
 
         n_era = 20
         n_traverse = n_era // n_valid
