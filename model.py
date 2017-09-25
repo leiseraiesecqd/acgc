@@ -1837,7 +1837,7 @@ def grid_search(tr_x, tr_y, tr_e, clf, n_valid, n_cv, params=None):
     # Start Grid Search
     print('Grid Searching...')
 
-    grid_search.fit(tr_x, tr_y, tr_e)
+    grid_search.fit(tr_x, tr_y)
 
     best_parameters = grid_search.best_estimator_.get_params()
 
