@@ -116,7 +116,6 @@ def log_loss_with_weight(prob, y, w):
 
 
 def print_loss(model, x_t, y_t, w_t, x_v, y_v, w_v):
-
     prob_train = model.predict(x_t)
     prob_valid = model.predict(x_v)
 
@@ -130,8 +129,6 @@ def print_loss(model, x_t, y_t, w_t, x_v, y_v, w_v):
           'Validation LogLoss: {:>.8f}\n'.format(loss_valid),
           'Train LogLoss with Weight: {:>.8f}\n'.format(loss_train_w),
           'Validation LogLoss with Weight: {:>.8f}\n'.format(loss_valid_w))
-
-    return loss_train, loss_valid, loss_train_w, loss_valid_w
 
 
 def print_loss_proba(model, x_t, y_t, w_t, x_v, y_v, w_v):

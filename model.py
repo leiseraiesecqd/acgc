@@ -807,6 +807,24 @@ class XGBoost:
 
         print('\n')
 
+    def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
+
+        prob_train = model.predict(xgb.DMatrix(x_t))
+        prob_valid = model.predict(xgb.DMatrix(x_v))
+
+        loss_train = utils.log_loss(prob_train, y_t)
+        loss_valid = utils.log_loss(prob_valid, y_v)
+
+        loss_train_w = utils.log_loss_with_weight(prob_train, y_t, w_t)
+        loss_valid_w = utils.log_loss_with_weight(prob_valid, y_v, w_v)
+
+        print('Train LogLoss: {:>.8f}\n'.format(loss_train),
+              'Validation LogLoss: {:>.8f}\n'.format(loss_valid),
+              'Train LogLoss with Weight: {:>.8f}\n'.format(loss_train_w),
+              'Validation LogLoss with Weight: {:>.8f}\n'.format(loss_valid_w))
+
+        return loss_train, loss_valid, loss_train_w, loss_valid_w
+
     def train(self, pred_path, n_valid, n_cv, parameters=None):
 
         # sk-learn module
@@ -877,8 +895,8 @@ class XGBoost:
             self.get_importance(bst)
 
             # Print LogLoss
-            loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_train, y_train, w_train,
-                                                                                  x_valid, y_valid, w_valid)
+            loss_train, loss_valid, loss_train_w, loss_valid_w = self.print_loss(bst, x_train, y_train, w_train,
+                                                                                 x_valid, y_valid, w_valid)
 
             # Prediction
             prob_test = self.predict(bst, pred_path + 'xgb_cv_{}_'.format(count))
