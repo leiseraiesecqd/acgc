@@ -765,16 +765,6 @@ class XGBoost:
         self.indices = np.array([])
         self.std = np.array([])
 
-    def get_importance(self, clf):
-
-        self.importance = clf.feature_importances_
-        self.indices = np.argsort(self.importance)[::-1]
-
-        feature_num = self.x_train.shape[1]
-
-        for f in range(feature_num):
-            print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
-
     def show(self):
 
         feature_num = self.x_train.shape[1]
@@ -808,6 +798,7 @@ class XGBoost:
     def get_importance(self, model):
 
         self.importance = model.get_fscore()
+        print(self.importance)
         self.indices = np.argsort(self.importance)[::-1]
 
         feature_num = self.x_train.shape[1]
