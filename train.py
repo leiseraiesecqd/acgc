@@ -223,6 +223,17 @@ def dnn_keras_train():
     dnn.train(pred_path, n_valid=4, n_cv=20)
 
 
+def print_grid_info(model_name, parameters, parameters_grid):
+
+    print('\nModel: ' + model_name + '\n')
+    print("Parameters:")
+    print(parameters)
+    print('\n')
+    print("Parameters' grid:")
+    print(parameters_grid)
+    print('\n')
+
+
 # Grid Search
 
 class GridSearch:
@@ -277,6 +288,8 @@ class GridSearch:
 
         model.grid_search(x_train, y_train, clf, params=parameters_grid)
 
+        print_grid_info('Random Forest', parameters, parameters_grid)
+
     # AdaBoost
     @staticmethod
     def ab_grid_search():
@@ -316,6 +329,8 @@ class GridSearch:
         print('\n')
 
         model.grid_search(x_train, y_train, clf, params=parameters_grid)
+
+        print_grid_info('AdaBoost', parameters, parameters_grid)
 
     # XGBoost
     @staticmethod
@@ -382,6 +397,8 @@ class GridSearch:
 
         model.grid_search(x_train, y_train, clf, params=parameters_grid)
 
+        print_grid_info('XGBoost', parameters, parameters_grid)
+
     # LightGBM
     @staticmethod
     def lgb_grid_search():
@@ -428,6 +445,8 @@ class GridSearch:
         print('\n')
 
         model.grid_search(x_train, y_train, e_train, clf, n_valid=4, n_cv=20, params=parameters_grid)
+
+        print_grid_info('LightGBM', parameters, parameters_grid)
 
 
 if __name__ == "__main__":
