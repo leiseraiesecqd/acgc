@@ -255,7 +255,7 @@ class GridSearch:
                       'max_leaf_nodes': None,
                       'min_impurity_decrease': 0.0,
                       # 'min_samples_leaf': 50,
-                      'min_samples_split': 1000,
+                      # 'min_samples_split': 1000,
                       'min_weight_fraction_leaf': 0.0,
                       'n_estimators': 65,
                       'n_jobs': 1,
@@ -279,7 +279,7 @@ class GridSearch:
                            'max_depth': (10, 20, 30, 40),
                            'max_features': (9, 10, 11),
                            # 'min_sample_leaf': (50, 100, 150),
-                           'min_sample_split': (500, 1000, 1500)
+                           # 'min_sample_split': (500, 1000, 1500)
                            }
 
         print("Parameters' grid:")
