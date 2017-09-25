@@ -429,7 +429,7 @@ class ExtraTrees:
         feature_num = self.x_train.shape[1]
 
         for f in range(feature_num):
-            print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+            print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
     def show(self):
 
@@ -543,7 +543,7 @@ class AdaBoost:
         feature_num = self.x_train.shape[1]
 
         for f in range(feature_num):
-            print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+            print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
     def show(self):
 
@@ -659,8 +659,7 @@ class GradientBoosting:
         feature_num = self.x_train.shape[1]
 
         for f in range(feature_num):
-            print('Importance:')
-            print('%d. feature %d (%f)' % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+            print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
     def show(self):
 
@@ -798,15 +797,15 @@ class XGBoost:
     def get_importance(self, model):
 
         self.importance = model.get_fscore()
-        print(self.importance)
-        self.indices = np.argsort(self.importance)[::-1]
+        sorted_importance = sorted(self.importance.items(), key=lambda d: d[1], reverse=True)
 
         feature_num = self.x_train.shape[1]
 
-        for f in range(feature_num):
-            print('Importance: ')
-            print('%d. feature %d (%f)' % (f + 1, self.indices[f], self.importance[self.indices[f]]))
-            print('\n')
+        for i in range(feature_num):
+            print('Importance:')
+            print('{} | feature {} | {}'.format(i + 1, sorted_importance[i][0], sorted_importance[i][1]))
+
+        print('\n')
 
     def train(self, pred_path, n_valid, n_cv, parameters=None):
 
@@ -922,15 +921,17 @@ class LightGBM:
         self.indices = np.array([])
         self.std = np.array([])
 
-    def get_importance(self, clf):
+    def get_importance(self, model):
 
-        self.importance = clf.feature_importances_
+        self.importance = model.feature_importance()
         self.indices = np.argsort(self.importance)[::-1]
 
         feature_num = self.x_train.shape[1]
 
         for f in range(feature_num):
-            print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+            print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+
+        print('\n')
 
     def show(self):
 
@@ -1034,6 +1035,9 @@ class LightGBM:
             # Booster
             bst = lgb.train(parameters, d_train, num_boost_round=50,
                             valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
+
+            # Feature Importance
+            self.get_importance(bst)
 
             # Print LogLoss
             loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_train, y_train, w_train,
