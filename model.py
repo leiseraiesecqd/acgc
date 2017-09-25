@@ -964,9 +964,10 @@ class LightGBM:
         self.indices = np.argsort(self.importance)[::-1]
 
         feature_num = self.x_train.shape[1]
+        print(feature_num)
 
         for f in range(feature_num):
-            print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+            print("%d | feature %d | %d" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
         print('\n')
 
