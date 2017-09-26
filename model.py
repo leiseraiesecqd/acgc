@@ -1172,7 +1172,7 @@ class LightGBM:
                         eval_set=[(x_train, y_train), (x_valid, y_valid)],
                         eval_names=['train', 'eval'],
                         early_stopping_rounds=50,
-                        eval_sample_weight=w_valid,
+                        eval_sample_weight=list(w_valid),
                         eval_metric='logloss', verbose=True)
 
             # Feature Importance
