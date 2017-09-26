@@ -1167,9 +1167,7 @@ class LightGBM:
 
             clf_lgb = self.clf(parameters)
 
-            print(w_train, w_valid)
-
-            clf_lgb.fit(x_train, y_train, sample_weight=w_train,
+            clf_lgb.fit(x_train, y_train, sample_weight=list(w_train),
                         categorical_feature=[88],
                         eval_set=[(x_train, y_train), (x_valid, y_valid)],
                         eval_names=['train', 'eval'],
