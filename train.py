@@ -189,10 +189,10 @@ def lgb_train_sklearn():
                       # 'boosting_type': 'rf',          # Random Forest.
                       'num_leaves': 32,               # <2^(max_depth)
                       'max_depth': 8,                 # default=-1
-                      'n_estimators': 100,
+                      'n_estimators': 200,
                       'max_bin': 255,
                       'subsample_for_bin': 50000,
-                      'objective': model.LightGBM.logloss_obj,
+                      'objective': 'binary',
                       'min_split_gain': 0.,
                       'min_child_weight': 5,
                       'min_child_samples': 10,
