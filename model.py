@@ -1017,6 +1017,11 @@ class LightGBM:
 
         return clf
 
+    @staticmethod
+    def logloss_obj(self, preds, dataset):
+
+        pass
+
     def get_importance(self, model):
 
         self.importance = model.feature_importance()

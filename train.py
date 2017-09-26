@@ -294,8 +294,6 @@ class GridSearch:
     @staticmethod
     def et_grid_search():
 
-        print('\nModel: Extra Trees \n')
-
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(
             preprocessed_data_path)
 
@@ -315,10 +313,6 @@ class GridSearch:
                       'verbose': 2,
                       'warm_start': False}
 
-        print("Parameters:")
-        print(parameters)
-        print('\n')
-
         ET = model.ExtraTrees(x_train, y_train, w_train, e_train, x_test, id_test)
 
         clf = ET.clf(parameters)
@@ -332,10 +326,6 @@ class GridSearch:
                            'min_sample_split': (500, 1000, 1500)
                            }
 
-        print("Parameters' grid:")
-        print(parameters_grid)
-        print('\n')
-
         model.grid_search(x_train, y_train, e_train, clf, n_valid=4, n_cv=20, params=parameters_grid)
 
         print_grid_info('Extra Trees', parameters, parameters_grid)
@@ -344,21 +334,19 @@ class GridSearch:
     @staticmethod
     def ab_grid_search():
 
-        print('\nModel: AdaBoost \n')
-
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-        clf_et = ExtraTreesClassifier(max_depth=9)
+        clf_et = ExtraTreesClassifier(n_estimators=100,
+                                      max_depth=7,
+                                      max_features=7,
+                                      min_samples_leaf=500,
+                                      min_samples_split=5000)
 
         parameters = {'algorithm': 'SAMME.R',
                       'base_estimator': clf_et,
                       'learning_rate': 0.005,
                       'n_estimators': 100,
                       'random_state': 1}
-
-        print("Parameters:")
-        print(parameters)
-        print('\n')
 
         AB = model.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
@@ -368,15 +356,11 @@ class GridSearch:
 
         parameters_grid = {
                            'learning_rate': (0.002, 0.003, 0.005),
-                           #  'n_estimators': 100,
+                           'n_estimators': (50, 100),
                            #  'random_state': 2,
                            #  'algorithm': 'SAMME.R',
                            #  'base_estimator': clf_et,
                            }
-
-        print("Parameters' grid:")
-        print(parameters_grid)
-        print('\n')
 
         model.grid_search(x_train, y_train, e_train, clf, n_valid=4, n_cv=20, params=parameters_grid)
 
@@ -385,8 +369,6 @@ class GridSearch:
     # XGBoost
     @staticmethod
     def xgb_grid_search():
-
-        print('\nModel: XGBoost \n')
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
@@ -409,10 +391,6 @@ class GridSearch:
                       # 'reg_lambda': 1,
                       # 'scale_pos_weight': 1,
                       'seed': 1}
-
-        print("Parameters:")
-        print(parameters)
-        print('\n')
 
         XGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
@@ -440,10 +418,6 @@ class GridSearch:
                            # 'scale_pos_weight': 1,
                            #  'seed': 1
                            }
-
-        print("Parameters' grid:")
-        print(parameters_grid)
-        print('\n')
 
         model.grid_search(x_train, y_train, e_train, clf, n_valid=4, n_cv=20, params=parameters_grid)
 
@@ -522,7 +496,7 @@ if __name__ == "__main__":
     # xgb_train()
 
     # LightGBM
-    lgb_train()
+    # lgb_train()
 
     # DNN
     # dnn_tf_train()
@@ -530,7 +504,7 @@ if __name__ == "__main__":
 
     # Grid Search
     # GridSearch.rf_grid_search()
-    #  GridSearch.ab_grid_search()
+    GridSearch.ab_grid_search()
     #  GridSearch.xgb_grid_search()
     #  GridSearch.lgb_grid_search()
 

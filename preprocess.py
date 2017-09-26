@@ -913,10 +913,10 @@ class DataPreProcess:
         self.load_data_pd()
 
         # Drop outliers
-        # self.drop_outliers()
+        self.drop_outliers()
 
         # Scale features
-        # self.scale()
+        self.scale()
 
         # Convert column 'group' to dummies
         self.convert_group()
