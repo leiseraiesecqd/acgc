@@ -246,7 +246,6 @@ class GridSearch:
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-
         parameters = {'bootstrap': True,
                       'class_weight': None,
                       'criterion': 'gini',
@@ -254,11 +253,11 @@ class GridSearch:
                       'max_features': 'auto',
                       'max_leaf_nodes': None,
                       'min_impurity_decrease': 0.0,
-                      # 'min_samples_leaf': 50,
-                      # 'min_samples_split': 1000,
+                      'min_samples_leaf': 50,
+                      'min_samples_split': 1000,
                       'min_weight_fraction_leaf': 0.0,
                       'n_estimators': 65,
-                      'n_jobs': 1,
+                      'n_jobs': -1,
                       'oob_score': True,
                       'random_state': 1,
                       'verbose': 2,
@@ -275,11 +274,11 @@ class GridSearch:
         # parameters_grid = None
 
         parameters_grid = {
-                           'n_estimators': (50, 100),
-                           'max_depth': (10, 20, 30, 40),
-                           'max_features': (9, 10, 11),
-                           # 'min_sample_leaf': (50, 100, 150),
-                           # 'min_sample_split': (500, 1000, 1500)
+                           'n_estimators': (100, 200, 300),
+                           'max_depth': (8, 9, 10),
+                           'max_features': (7, 8, 9),
+                           'min_samples_leaf': (150, 300, 450),
+                           'min_samples_split': (1500, 3000, 4500)
                            }
 
         print("Parameters' grid:")
@@ -309,7 +308,7 @@ class GridSearch:
                       'min_samples_leaf': 50,
                       'min_samples_split': 1000,
                       'min_weight_fraction_leaf': 0.0,
-                      'n_jobs': 1,
+                      'n_jobs': -1,
                       'oob_score': True,
                       'random_state': 1,
                       'verbose': 2,
