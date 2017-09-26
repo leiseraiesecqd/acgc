@@ -202,8 +202,7 @@ def lgb_train_sklearn():
                       'reg_alpha': 0.,
                       'reg_lambda': 0.,
                       'random_state': 0,
-                      'n_jobs': -1,
-                      'silent': True}
+                      'silent': False}
 
     LGBM = model.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_train_g, x_test_g)
 
