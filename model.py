@@ -1016,9 +1016,8 @@ class LightGBM:
         return clf
 
     @staticmethod
-    def logloss_obj(preds, train_data):
+    def logloss_obj(y, preds):
 
-        y = train_data.get_label()
         grad = (preds-y)/((1-preds)*preds)
         hess = (preds*preds-2*preds*y+y)/((1-preds)*(1-preds)*preds*preds)
 
