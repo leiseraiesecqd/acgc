@@ -201,7 +201,6 @@ def lgb_train_sklearn():
                       'colsample_bytree': 0.8,
                       'reg_alpha': 0.,
                       'reg_lambda': 0.,
-                      'random_state': 0,
                       'silent': False}
 
     LGBM = model.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_train_g, x_test_g)
