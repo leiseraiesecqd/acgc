@@ -177,6 +177,41 @@ def lgb_train():
     LGBM.train(pred_path, n_valid=4, n_cv=20, parameters=lgb_parameters)
 
 
+def lgb_train_sklearn():
+
+    x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+    x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+
+    lgb_parameters = {'learning_rate': 0.002,
+                      'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
+                      # 'boosting_type': 'dart',        # Dropouts meet Multiple Additive Regression Trees.
+                      # 'boosting_type': 'goss',        # Gradient-based One-Side Sampling.
+                      # 'boosting_type': 'rf',          # Random Forest.
+                      'num_leaves': 32,               # <2^(max_depth)
+                      'max_depth': 8,                 # default=-1
+                      'n_estimators': 200,
+                      'max_bin': 255,
+                      'subsample_for_bin': 50000,
+                      'objective': 'binary',
+                      'min_split_gain': 0.,
+                      'min_child_weight': 5,
+                      'min_child_samples': 10,
+                      'subsample': 0.8,
+                      'subsample_freq': 1,
+                      'colsample_bytree': 0.8,
+                      'reg_alpha': 0.,
+                      'reg_lambda': 0.,
+                      'random_state': 0,
+                      'n_jobs': -1,
+                      'silent': True}
+
+    LGBM = model.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_train_g, x_test_g)
+
+    print('Start training LGBM...')
+
+    LGBM.train_sklearn(pred_path, n_valid=4, n_cv=20, parameters=lgb_parameters)
+
+
 # DNN
 
 def dnn_tf_train():
@@ -503,9 +538,10 @@ if __name__ == "__main__":
 
     # Grid Search
     # GridSearch.rf_grid_search()
-    GridSearch.ab_grid_search()
+    # GridSearch.ab_grid_search()
     #  GridSearch.xgb_grid_search()
     #  GridSearch.lgb_grid_search()
+    lgb_train_sklearn()
 
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))
