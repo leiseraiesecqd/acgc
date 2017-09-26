@@ -189,7 +189,7 @@ def lgb_train_sklearn():
                       # 'boosting_type': 'rf',          # Random Forest.
                       'num_leaves': 32,               # <2^(max_depth)
                       'max_depth': 8,                 # default=-1
-                      'n_estimators': 200,
+                      'n_estimators': 100,
                       'max_bin': 255,
                       'subsample_for_bin': 50000,
                       'objective': 'binary',
@@ -207,7 +207,7 @@ def lgb_train_sklearn():
 
     print('Start training LGBM...')
 
-    LGBM.train_sklearn(pred_path, n_valid=4, n_cv=20, parameters=lgb_parameters)
+    LGBM.train_sklearn(pred_path, n_valid=4, n_cv=400, parameters=lgb_parameters)
 
 
 # DNN
