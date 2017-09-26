@@ -1016,9 +1016,13 @@ class LightGBM:
         return clf
 
     @staticmethod
-    def logloss_obj(self, preds, dataset):
+    def logloss_obj(preds, train_data):
 
-        pass
+        y = train_data.get_label()
+        grad = (preds-y)/((1-preds)*preds)
+        hess = (preds*preds-2*preds*y+y)/((1-preds)*(1-preds)*preds*preds)
+
+        return grad, hess
 
     def get_importance(self, model):
 
