@@ -170,11 +170,11 @@ def lgb_train():
                       'metric': 'binary_logloss',
                       'verbosity': 1}
 
-    LGBM = model.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test)
+    LGBM = model.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_train_g, x_test_g)
 
     print('Start training LGBM...')
 
-    LGBM.train(pred_path, n_valid=4, n_cv=20, x_train_g=x_train_g, x_test_g=x_test_g, parameters=lgb_parameters)
+    LGBM.train(pred_path, n_valid=4, n_cv=20, parameters=lgb_parameters)
 
 
 # DNN

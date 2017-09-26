@@ -926,14 +926,17 @@ class XGBoost:
 
 class LightGBM:
 
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_tr_g, x_te_g):
 
         self.x_train = x_tr
+
         self.y_train = y_tr
         self.w_train = w_tr
         self.e_train = e_tr
         self.x_test = x_te
         self.id_test = id_te
+        self.x_train_g = x_tr_g
+        self.x_test_g = x_te_g
         self.importance = np.array([])
         self.indices = np.array([])
         self.std = np.array([])
@@ -970,17 +973,17 @@ class LightGBM:
 
         print('\n')
 
-    def predict(self, model, x_te_g, pred_path):
+    def predict(self, model, pred_path):
 
         print('Predicting...')
 
-        prob_test = model.predict(x_te_g)
+        prob_test = model.predict(self.x_test_g)
 
         utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
 
-    def train(self, pred_path, n_valid, n_cv, x_train_g=None, x_test_g=None, parameters=None):
+    def train(self, pred_path, n_valid, n_cv, parameters=None):
 
         # sk-learn module
 
@@ -1030,7 +1033,7 @@ class LightGBM:
 
         # Use Category
         for x_train, y_train, w_train, \
-            x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=x_train_g,
+            x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train_g,
                                                                                 y=self.y_train,
                                                                                 w=self.w_train,
                                                                                 e=self.e_train,
@@ -1061,7 +1064,7 @@ class LightGBM:
                                                                                   x_valid, y_valid, w_valid)
 
             # Prediction
-            prob_test = self.predict(bst, x_test_g, pred_path + 'lgb_cv_{}_'.format(count))
+            prob_test = self.predict(bst, pred_path + 'lgb_cv_{}_'.format(count))
 
             prob_total.append(list(prob_test))
             loss_train_total.append(loss_train)
