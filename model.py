@@ -747,6 +747,33 @@ class GradientBoosting:
 
         utils.save_pred_to_csv(pred_path + 'gb_', self.id_test, prob_mean)
 
+    def stack_train(self, count, x_train, y_train, w_train, x_g_train,
+                    x_valid, y_valid, w_valid, x_g_valid, pred_path, parameters):
+
+        print('Training LightGBM...')
+
+        # Use Category
+        d_train = lgb.Dataset(x_g_train, label=y_train, weight=w_train, categorical_feature=[88])
+        d_valid = lgb.Dataset(x_g_valid, label=y_valid, weight=w_valid, categorical_feature=[88])
+
+        # Booster
+        bst = lgb.train(parameters, d_train, num_boost_round=50,
+                        valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
+
+        # Feature Importance
+        self.get_importance(bst)
+
+        # Print LogLoss
+        loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_g_train, y_train, w_train,
+                                                                              x_g_valid, y_valid, w_valid)
+        losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
+
+        # Prediction
+        prob_valid = self.predict_valid(bst, x_g_valid)
+        prob_test = self.predict(bst, pred_path + 'lgb_cv_{}_'.format(count))
+
+        return prob_valid, prob_test, losses
+
 
 # XGBoost
 
@@ -815,6 +842,14 @@ class XGBoost:
 
         return loss_train, loss_valid, loss_train_w, loss_valid_w
 
+    def predict_valid(self, model, x_valid):
+
+        print('Predicting Validation Set...')
+
+        prob_valid = model.predict(x_valid)
+
+        return prob_valid
+
     def predict(self, model, pred_path):
 
         print('Predicting...')
@@ -879,11 +914,6 @@ class XGBoost:
             d_train = xgb.DMatrix(x_train, label=y_train, weight=w_train)
             d_valid = xgb.DMatrix(x_valid, label=y_valid, weight=w_valid)
 
-            # parameters = {'learning_rate': 0.05, 'n_estimators': 1000, 'max_depth': 10,
-            #               'min_child_weight': 5, 'gamma': 0, 'silent': 1, 'objective': 'binary:logistic',
-            #               'early_stopping_rounds': 50, 'subsample': 0.8, 'colsample_bytree': 0.8,
-            #               'eval_metric': 'logloss'}
-
             eval_list = [(d_valid, 'eval'), (d_train, 'train')]
 
             # Booster
@@ -921,6 +951,33 @@ class XGBoost:
 
         utils.save_pred_to_csv(pred_path + 'xgb_', self.id_test, prob_mean)
 
+    def stack_train(self, count, x_train, y_train, w_train, x_g_train,
+                    x_valid, y_valid, w_valid, x_g_valid, pred_path, parameters):
+
+        print('Training LightGBM...')
+
+        # Use Category
+        d_train = lgb.Dataset(x_g_train, label=y_train, weight=w_train, categorical_feature=[88])
+        d_valid = lgb.Dataset(x_g_valid, label=y_valid, weight=w_valid, categorical_feature=[88])
+
+        # Booster
+        bst = lgb.train(parameters, d_train, num_boost_round=50,
+                        valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
+
+        # Feature Importance
+        self.get_importance(bst)
+
+        # Print LogLoss
+        loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_g_train, y_train, w_train,
+                                                                              x_g_valid, y_valid, w_valid)
+        losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
+
+        # Prediction
+        prob_valid = self.predict_valid(bst, x_g_valid)
+        prob_test = self.predict(bst, pred_path + 'lgb_cv_{}_'.format(count))
+
+        return prob_valid, prob_test, losses
+
 
 # LightGBM
 
@@ -929,7 +986,6 @@ class LightGBM:
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_tr_g, x_te_g):
 
         self.x_train = x_tr
-
         self.y_train = y_tr
         self.w_train = w_tr
         self.e_train = e_tr
@@ -975,13 +1031,21 @@ class LightGBM:
 
     def predict(self, model, pred_path):
 
-        print('Predicting...')
+        print('Predicting Test Set...')
 
         prob_test = model.predict(self.x_test_g)
 
         utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
+
+    def predict_valid(self, model, x_valid):
+
+        print('Predicting Validation Set...')
+
+        prob_valid = model.predict(x_valid)
+
+        return prob_valid
 
     def train(self, pred_path, n_valid, n_cv, parameters=None):
 
@@ -1087,6 +1151,33 @@ class LightGBM:
               'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
         utils.save_pred_to_csv(pred_path + 'lgb_', self.id_test, prob_mean)
+
+    def stack_train(self, count, x_train, y_train, w_train, x_g_train,
+                    x_valid, y_valid, w_valid, x_g_valid, pred_path, parameters):
+
+        print('Training LightGBM...')
+
+        # Use Category
+        d_train = lgb.Dataset(x_g_train, label=y_train, weight=w_train, categorical_feature=[88])
+        d_valid = lgb.Dataset(x_g_valid, label=y_valid, weight=w_valid, categorical_feature=[88])
+
+        # Booster
+        bst = lgb.train(parameters, d_train, num_boost_round=50,
+                        valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
+
+        # Feature Importance
+        self.get_importance(bst)
+
+        # Print LogLoss
+        loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_g_train, y_train, w_train,
+                                                                              x_g_valid, y_valid, w_valid)
+        losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
+
+        # Prediction
+        prob_valid = self.predict_valid(bst, x_g_valid)
+        prob_test = self.predict(bst, pred_path + 'lgb_cv_{}_'.format(count))
+
+        return prob_valid, prob_test, losses
 
 
 # Deep Neural Networks
@@ -1852,6 +1943,164 @@ class CrossValidation:
                         trained_cv.append(set(valid_era))
 
                         yield x_train, y_train, w_train, x_valid, y_valid, w_valid
+
+    @staticmethod
+    def era_k_fold_with_category(x, y, w, e, x_g, n_valid, n_cv):
+
+        n_era = 20
+        n_traverse = n_era // n_valid
+        n_rest = n_era % n_valid
+
+        if n_cv % n_valid != 0:
+            raise ValueError("Number of CV is not an integer multiple of number of validation era!")
+
+        if n_rest != 0:
+            n_traverse += 1
+
+        n_epoch = n_cv // n_traverse
+        trained_cv = []
+
+        for epoch in range(n_epoch):
+
+            era_idx = []
+            era_idx.append(list(range(1, n_era + 1)))
+
+            if n_rest == 0:
+
+                for i in range(n_traverse):
+
+                    # Choose eras that have not used
+                    if trained_cv != []:
+                        valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                        while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                            print('This CV split has been chosen, choosing another one...')
+                            valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                    else:
+                        valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+
+                    # Generate era set for next choosing
+                    if i != n_traverse - 1:
+                        era_next = [rest for rest in era_idx[i] if rest not in valid_era]
+                        era_idx.append(era_next)
+
+                    train_index = []
+                    valid_index = []
+
+                    # Generate train-validation split index
+                    for ii, ele in enumerate(e):
+
+                        if ele in valid_era:
+                            valid_index.append(ii)
+                        else:
+                            train_index.append(ii)
+
+                    np.random.shuffle(train_index)
+                    np.random.shuffle(valid_index)
+
+                    # Training data
+                    x_train = x[train_index]
+                    y_train = y[train_index]
+                    w_train = w[train_index]
+                    x_g_train = x_g[train_index]
+
+                    # Validation data
+                    x_valid = x[valid_index]
+                    y_valid = y[valid_index]
+                    w_valid = w[valid_index]
+                    x_g_valid = x_g[valid_index]
+
+                    trained_cv.append(set(valid_era))
+
+                    yield x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid
+
+            # n_cv is not an integer multiple of n_valid
+            else:
+
+                for i in range(n_traverse):
+
+                    if i != n_traverse - 1:
+
+                        valid_era = []
+                        if trained_cv != []:
+                            valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                            while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                                print('This CV split has been chosen, choosing another one...')
+                                valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                        else:
+                            valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+
+                        era_next = [rest for rest in era_idx[i] if rest not in valid_era]
+                        era_idx.append(era_next)
+
+                        train_index = []
+                        valid_index = []
+
+                        for ii, ele in enumerate(e):
+
+                            if ele in valid_era:
+                                valid_index.append(ii)
+                            else:
+                                train_index.append(ii)
+
+                        np.random.shuffle(train_index)
+                        np.random.shuffle(valid_index)
+
+                        # Training data
+                        x_train = x[train_index]
+                        y_train = y[train_index]
+                        w_train = w[train_index]
+                        x_g_train = x_g[train_index]
+
+                        # Validation data
+                        x_valid = x[valid_index]
+                        y_valid = y[valid_index]
+                        w_valid = w[valid_index]
+                        x_g_valid = x_g[valid_index]
+
+                        trained_cv.append(set(valid_era))
+
+                        yield x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid
+
+                    else:
+
+                        era_idx_else = [t for t in list(range(1, n_era + 1)) if t not in era_idx[i]]
+
+                        valid_era = []
+                        valid_era = era_idx[i] + list(
+                            np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
+                        while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                            print('This CV split has been chosen, choosing another one...')
+                            valid_era = era_idx[i] + list(
+                                np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
+
+                        train_index = []
+                        valid_index = []
+
+                        for ii, ele in enumerate(e):
+
+                            if ele in valid_era:
+                                valid_index.append(ii)
+                            else:
+                                train_index.append(ii)
+
+                        np.random.shuffle(train_index)
+                        np.random.shuffle(valid_index)
+
+                        # Training data
+                        x_train = x[train_index]
+                        y_train = y[train_index]
+                        w_train = w[train_index]
+                        x_g_train = x_g[train_index]
+
+                        # Validation data
+                        x_valid = x[valid_index]
+                        y_valid = y[valid_index]
+                        w_valid = w[valid_index]
+                        x_g_valid = x_g[valid_index]
+
+                        trained_cv.append(set(valid_era))
+
+                        yield x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid
 
 
 # Grid Search
