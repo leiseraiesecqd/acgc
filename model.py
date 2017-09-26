@@ -1037,10 +1037,10 @@ class LightGBM:
         self.importance = clf.feature_importances_
         self.indices = np.argsort(self.importance)[::-1]
 
-        feature_num = self.x_train.shape[1]
+        feature_num = len(self.importance)
 
         for f in range(feature_num):
-            print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+            print("%d | feature %d | %d" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
     def predict(self, model, pred_path):
 
@@ -1167,12 +1167,12 @@ class LightGBM:
 
             clf_lgb = self.clf(parameters)
 
-            clf_lgb.fit(x_train, y_train, sample_weight=list(w_train),
+            clf_lgb.fit(x_train, y_train, sample_weight=w_train,
                         categorical_feature=[88],
                         eval_set=[(x_train, y_train), (x_valid, y_valid)],
                         eval_names=['train', 'eval'],
                         early_stopping_rounds=50,
-                        eval_sample_weight=list(w_valid),
+                        eval_sample_weight=[w_train, w_valid],
                         eval_metric='logloss', verbose=True)
 
             # Feature Importance
