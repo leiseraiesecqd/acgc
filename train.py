@@ -192,7 +192,7 @@ def lgb_train_sklearn():
                       'n_estimators': 100,
                       'max_bin': 255,
                       'subsample_for_bin': 50000,
-                      'objective': 'binary',
+                      'objective': model.LightGBM.logloss_obj,
                       'min_split_gain': 0.,
                       'min_child_weight': 5,
                       'min_child_samples': 10,
