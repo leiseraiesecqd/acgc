@@ -10,6 +10,8 @@ from sklearn.ensemble import ExtraTreesClassifier
 preprocessed_data_path = './preprocessed_data/'
 pred_path = './results/'
 grid_search_log_path = './grid_search_logs/'
+loss_log_path = './loss_logs/'
+importance_log_path = './importance_logs/'
 
 
 # Random Forest
@@ -39,7 +41,7 @@ def rf_train():
 
     print('Start training Random Forest...')
 
-    RF.train(pred_path, n_valid=4, n_cv=20, parameters=rf_parameters)
+    RF.train(pred_path, loss_log_path, n_valid=4, n_cv=20, parameters=rf_parameters)
 
 
 # Extra Trees
@@ -68,7 +70,7 @@ def et_train():
 
     print('Start training Extra Trees...')
 
-    ET.train(pred_path, n_valid=4, n_cv=20, parameters=et_parameters)
+    ET.train(pred_path, loss_log_path, n_valid=4, n_cv=20, parameters=et_parameters)
 
 
 # AdaBoost
@@ -89,7 +91,7 @@ def ab_train():
 
     print('Start training AdaBoost...')
 
-    AB.train(pred_path, n_valid=4, n_cv=20, parameters=ab_parameters)
+    AB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, parameters=ab_parameters)
 
 
 # GradientBoosting
@@ -121,7 +123,7 @@ def gb_train():
 
     print('Start training GradientBoosting...')
 
-    GB.train(pred_path, n_valid=4, n_cv=20, parameters=gb_parameters)
+    GB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, parameters=gb_parameters)
 
 
 # XGBoost
@@ -146,7 +148,7 @@ def xgb_train():
 
     print('Start training XGBoost...')
 
-    XGB.train(pred_path, n_valid=4, n_cv=20, parameters=xgb_parameters)
+    XGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, parameters=xgb_parameters)
 
 
 # LightGBM
@@ -175,7 +177,7 @@ def lgb_train():
 
     print('Start training LGBM...')
 
-    LGBM.train(pred_path, n_valid=4, n_cv=20, parameters=lgb_parameters)
+    LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, parameters=lgb_parameters)
 
 
 def lgb_train_sklearn():
@@ -208,7 +210,7 @@ def lgb_train_sklearn():
 
     print('Start training LGBM...')
 
-    LGBM.train_sklearn(pred_path, n_valid=4, n_cv=400, parameters=lgb_parameters)
+    LGBM.train_sklearn(pred_path, loss_log_path, n_valid=4, n_cv=400, parameters=lgb_parameters)
 
 
 # DNN
@@ -234,7 +236,7 @@ def dnn_tf_train():
 
     print('Start training DNN(TensorFlow)...')
 
-    dnn.train(pred_path, n_valid=4, n_cv=20)
+    dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20)
 
 
 # DNN using Keras
@@ -254,7 +256,7 @@ def dnn_keras_train():
 
     print('Start training DNN(Keras)...')
 
-    dnn.train(pred_path, n_valid=4, n_cv=20)
+    dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20)
 
 
 def print_grid_info(model_name, parameters, parameters_grid):
@@ -276,7 +278,7 @@ class GridSearch:
     @staticmethod
     def rf_grid_search():
 
-        log_path = grid_search_log_path + 'rf'
+        log_path = grid_search_log_path + 'rf_'
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
@@ -322,7 +324,7 @@ class GridSearch:
     @staticmethod
     def et_grid_search():
 
-        log_path = grid_search_log_path + 'et'
+        log_path = grid_search_log_path + 'et_'
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(
             preprocessed_data_path)
@@ -365,7 +367,7 @@ class GridSearch:
     @staticmethod
     def ab_grid_search():
 
-        log_path = grid_search_log_path + 'ab'
+        log_path = grid_search_log_path + 'ab_'
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
@@ -404,7 +406,7 @@ class GridSearch:
     @staticmethod
     def xgb_grid_search():
 
-        log_path = grid_search_log_path + 'xgb'
+        log_path = grid_search_log_path + 'xgb_'
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
@@ -464,7 +466,7 @@ class GridSearch:
     @staticmethod
     def lgb_grid_search():
 
-        log_path = grid_search_log_path + 'lgb'
+        log_path = grid_search_log_path + 'lgb_'
 
         print('\nModel: XGBoost \n')
 
@@ -520,6 +522,9 @@ if __name__ == "__main__":
 
     if not isdir(grid_search_log_path):
         os.makedirs(grid_search_log_path)
+
+    if not isdir(loss_log_path):
+        os.makedirs(loss_log_path)
 
     start_time = time.time()
 

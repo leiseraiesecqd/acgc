@@ -39,10 +39,6 @@ sns.set(font_scale=1)
 color = sns.color_palette()
 
 
-loss_log_path = './loss_logs/'
-importance_log_path = './importance_logs/'
-
-
 # Logistic Regression
 
 class LRegression:
@@ -235,7 +231,7 @@ class DecisionTree:
 
         return prob_test
 
-    def train(self, pred_path, n_valid, n_cv, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
         count = 0
         prob_total = []
@@ -291,6 +287,11 @@ class DecisionTree:
               'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
               'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
+        # Save Losses to file
+        utils.save_loss_log(loss_log_path + 'dt_', parameters, loss_train_mean,
+                            loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+
+        # Save final result
         utils.save_pred_to_csv(pred_path + 'dt_', self.id_test, prob_mean)
 
 
@@ -349,7 +350,7 @@ class RandomForest:
 
         return prob_test
 
-    def train(self, pred_path, n_valid, n_cv, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
         count = 0
         prob_total = []
@@ -405,6 +406,11 @@ class RandomForest:
               'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
               'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
+        # Save Losses to file
+        utils.save_loss_log(loss_log_path + 'rf_', parameters, loss_train_mean,
+                            loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+
+        # Save final result
         utils.save_pred_to_csv(pred_path + 'rf_', self.id_test, prob_mean)
 
 
@@ -463,7 +469,7 @@ class ExtraTrees:
 
         return prob_test
 
-    def train(self, pred_path, n_valid, n_cv, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
         count = 0
         prob_total = []
@@ -519,6 +525,11 @@ class ExtraTrees:
               'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
               'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
+        # Save Losses to file
+        utils.save_loss_log(loss_log_path + 'et_', parameters, loss_train_mean,
+                            loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+
+        # Save final result
         utils.save_pred_to_csv(pred_path + 'et_', self.id_test, prob_mean)
 
 
@@ -577,7 +588,7 @@ class AdaBoost:
 
         return prob_test
 
-    def train(self, pred_path, n_valid, n_cv, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
         count = 0
         prob_total = []
@@ -633,6 +644,11 @@ class AdaBoost:
               'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
               'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
+        # Save Losses to file
+        utils.save_loss_log(loss_log_path + 'ab_', parameters, loss_train_mean,
+                            loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+
+        # Save final result
         utils.save_pred_to_csv(pred_path + 'ab_', self.id_test, prob_mean)
 
 
@@ -691,7 +707,7 @@ class GradientBoosting:
 
         return prob_test
 
-    def train(self, pred_path, n_valid, n_cv, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
         count = 0
         prob_total = []
@@ -747,6 +763,11 @@ class GradientBoosting:
               'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
               'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
+        # Save Losses to file
+        utils.save_loss_log(loss_log_path + 'gb_', parameters, loss_train_mean,
+                            loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+
+        # Save final result
         utils.save_pred_to_csv(pred_path + 'gb_', self.id_test, prob_mean)
 
     def stack_train(self, count, x_train, y_train, w_train, x_g_train,
@@ -862,7 +883,7 @@ class XGBoost:
 
         return prob_test
 
-    def train(self, pred_path, n_valid, n_cv, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
         # sk-learn module
 
@@ -951,6 +972,11 @@ class XGBoost:
               'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
               'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
+        # Save Losses to file
+        utils.save_loss_log(loss_log_path + 'xgb_', parameters, loss_train_mean,
+                            loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+
+        # Save final result
         utils.save_pred_to_csv(pred_path + 'xgb_', self.id_test, prob_mean)
 
     def stack_train(self, count, x_train, y_train, w_train, x_g_train,
@@ -1085,7 +1111,7 @@ class LightGBM:
 
         return prob_valid
 
-    def train(self, pred_path, n_valid, n_cv, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
         count = 0
         prob_total = []
@@ -1146,10 +1172,15 @@ class LightGBM:
               'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
               'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
+        # Save Losses to file
+        utils.save_loss_log(loss_log_path + 'lgb_', parameters, loss_train_mean,
+                            loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+
+        # Save final result
         utils.save_pred_to_csv(pred_path + 'lgb_', self.id_test, prob_mean)
 
     # Using sk-learn API
-    def train_sklearn(self, pred_path, n_valid, n_cv, parameters=None):
+    def train_sklearn(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
         count = 0
         prob_total = []
@@ -1213,7 +1244,12 @@ class LightGBM:
               'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
               'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
-        utils.save_pred_to_csv(pred_path + 'lgb_', self.id_test, prob_mean)
+        # Save Losses to file
+        utils.save_loss_log(loss_log_path + 'lgb_sk_', parameters, loss_train_mean,
+                            loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+
+        # Save final result
+        utils.save_pred_to_csv(pred_path + 'lgb_sk_', self.id_test, prob_mean)
 
     def stack_train(self, count, x_train, y_train, w_train, x_g_train,
                     x_valid, y_valid, w_valid, x_g_valid, pred_path, parameters):
@@ -2198,7 +2234,7 @@ def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, params, params_g
     for param_name in sorted(params.keys()):
         print('\t%s: %r' % (param_name, best_parameters[param_name]))
 
-    utils.seve_grid_search_log(log_path, best_score, best_parameters, params, params_grid)
+    utils.seve_grid_search_log(log_path, params, params_grid, best_score, best_parameters)
 
 
 
