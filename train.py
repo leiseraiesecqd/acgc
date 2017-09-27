@@ -546,14 +546,14 @@ if __name__ == "__main__":
 
     # LightGBM
     #  lgb_train()
-    lgb_train_sklearn()
+    # lgb_train_sklearn()
 
     # DNN
     # dnn_tf_train()
     # dnn_keras_train()
 
     # Grid Search
-    # GridSearch.rf_grid_search()
+    GridSearch.rf_grid_search()
     # GridSearch.ab_grid_search()
     #  GridSearch.xgb_grid_search()
     #  GridSearch.lgb_grid_search()
