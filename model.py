@@ -221,15 +221,24 @@ class DecisionTree:
         for f in range(feature_num):
             print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
-    def predict(self, clf, pred_path):
+    def predict(self, clf, pred_path=None):
 
         print('Predicting...')
 
-        prob_test = clf.predict_proba(self.x_test)
+        prob_test = np.array(clf.predict_proba(self.x_test))[:, 1]
 
-        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+        if pred_path is not None:
+            utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
+
+    def predict_valid(self, clf, x_valid):
+
+        print('Predicting Validation Set...')
+
+        prob_valid = np.array(clf.predict_proba(x_valid))[:, 1]
+
+        return prob_valid
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
@@ -298,6 +307,32 @@ class DecisionTree:
         # Save final result
         utils.save_pred_to_csv(pred_path + 'final_results/dt_', self.id_test, prob_mean)
 
+    def stack_train(self, x_train, y_train, w_train, x_g_train,
+                    x_valid, y_valid, w_valid, x_g_valid, parameters):
+
+        print('------------------------------------------------------')
+        print('Training # Random Forest...')
+
+        clf = self.clf(parameters)
+
+        clf.fit(x_train, y_train, sample_weight=w_train)
+
+        # Feature Importance
+        self.get_importance(clf)
+
+        # Print LogLoss
+        loss_train, loss_valid, \
+            loss_train_w, loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
+                                                                x_valid, y_valid, w_valid)
+
+        losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
+
+        # Prediction
+        prob_valid = self.predict_valid(clf, x_valid)
+        prob_test = self.predict(clf)
+
+        return prob_valid, prob_test, losses
+
 
 # Random Forest
 
@@ -344,15 +379,24 @@ class RandomForest:
         for f in range(feature_num):
             print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
-    def predict(self, clf, pred_path):
+    def predict(self, clf, pred_path=None):
 
         print('Predicting...')
 
-        prob_test = clf.predict_proba(self.x_test)
+        prob_test = np.array(clf.predict_proba(self.x_test))[:, 1]
 
-        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+        if pred_path is not None:
+            utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
+
+    def predict_valid(self, clf, x_valid):
+
+        print('Predicting Validation Set...')
+
+        prob_valid = np.array(clf.predict_proba(x_valid))[:, 1]
+
+        return prob_valid
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
@@ -421,6 +465,32 @@ class RandomForest:
         # Save final result
         utils.save_pred_to_csv(pred_path + 'final_results/rf_', self.id_test, prob_mean)
 
+    def stack_train(self, x_train, y_train, w_train, x_g_train,
+                    x_valid, y_valid, w_valid, x_g_valid, parameters):
+
+        print('------------------------------------------------------')
+        print('Training # Random Forest...')
+
+        clf = self.clf(parameters)
+
+        clf.fit(x_train, y_train, sample_weight=w_train)
+
+        # Feature Importance
+        self.get_importance(clf)
+
+        # Print LogLoss
+        loss_train, loss_valid, \
+            loss_train_w, loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
+                                                                x_valid, y_valid, w_valid)
+
+        losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
+
+        # Prediction
+        prob_valid = self.predict_valid(clf, x_valid)
+        prob_test = self.predict(clf)
+
+        return prob_valid, prob_test, losses
+
 
 # Extra Trees
 
@@ -467,15 +537,24 @@ class ExtraTrees:
         for f in range(feature_num):
             print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
-    def predict(self, clf, pred_path):
+    def predict(self, clf, pred_path=None):
 
         print('Predicting...')
 
-        prob_test = clf.predict_proba(self.x_test)
+        prob_test = np.array(clf.predict_proba(self.x_test))[:, 1]
 
-        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+        if pred_path is not None:
+            utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
+
+    def predict_valid(self, clf, x_valid):
+
+        print('Predicting Validation Set...')
+
+        prob_valid = np.array(clf.predict_proba(x_valid))[:, 1]
+
+        return prob_valid
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
@@ -544,6 +623,32 @@ class ExtraTrees:
         # Save final result
         utils.save_pred_to_csv(pred_path + 'final_results/et_', self.id_test, prob_mean)
 
+    def stack_train(self, x_train, y_train, w_train, x_g_train,
+                    x_valid, y_valid, w_valid, x_g_valid, parameters):
+
+        print('------------------------------------------------------')
+        print('Training Extra Trees...')
+
+        clf = self.clf(parameters)
+
+        clf.fit(x_train, y_train, sample_weight=w_train)
+
+        # Feature Importance
+        self.get_importance(clf)
+
+        # Print LogLoss
+        loss_train, loss_valid, \
+            loss_train_w, loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
+                                                                x_valid, y_valid, w_valid)
+
+        losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
+
+        # Prediction
+        prob_valid = self.predict_valid(clf, x_valid)
+        prob_test = self.predict(clf)
+
+        return prob_valid, prob_test, losses
+
 
 # AdaBoost
 
@@ -590,15 +695,24 @@ class AdaBoost:
         for f in range(feature_num):
             print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
-    def predict(self, clf, pred_path):
+    def predict(self, clf, pred_path=None):
 
         print('Predicting...')
 
         prob_test = np.array(clf.predict_proba(self.x_test))[:, 1]
 
-        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+        if pred_path is not None:
+            utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
+
+    def predict_valid(self, clf, x_valid):
+
+        print('Predicting Validation Set...')
+
+        prob_valid = np.array(clf.predict_proba(x_valid))[:, 1]
+
+        return prob_valid
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
@@ -667,6 +781,32 @@ class AdaBoost:
         # Save final result
         utils.save_pred_to_csv(pred_path + 'final_results/ab_', self.id_test, prob_mean)
 
+    def stack_train(self, x_train, y_train, w_train, x_g_train,
+                    x_valid, y_valid, w_valid, x_g_valid, parameters):
+
+        print('------------------------------------------------------')
+        print('Training AdaBoost...')
+
+        clf = self.clf(parameters)
+
+        clf.fit(x_train, y_train, sample_weight=w_train)
+
+        # Feature Importance
+        self.get_importance(clf)
+
+        # Print LogLoss
+        loss_train, loss_valid, \
+            loss_train_w, loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
+                                                                x_valid, y_valid, w_valid)
+
+        losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
+
+        # Prediction
+        prob_valid = self.predict_valid(clf, x_valid)
+        prob_test = self.predict(clf)
+
+        return prob_valid, prob_test, losses
+
 
 # GradientBoosting
 
@@ -713,15 +853,24 @@ class GradientBoosting:
         for f in range(feature_num):
             print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
-    def predict(self, clf, pred_path):
+    def predict(self, clf, pred_path=None):
 
         print('Predicting...')
 
-        prob_test = clf.predict_proba(self.x_test)
+        prob_test = np.array(clf.predict_proba(self.x_test))[:, 1]
 
-        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+        if pred_path is not None:
+            utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
+
+    def predict_valid(self, clf, x_valid):
+
+        print('Predicting Validation Set...')
+
+        prob_valid = np.array(clf.predict_proba(x_valid))[:, 1]
+
+        return prob_valid
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
@@ -790,30 +939,29 @@ class GradientBoosting:
         # Save final result
         utils.save_pred_to_csv(pred_path + 'final_results/gb_', self.id_test, prob_mean)
 
-    def stack_train(self, count, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, pred_path, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train,
+                    x_valid, y_valid, w_valid, x_g_valid, parameters):
 
-        print('Training LightGBM...')
+        print('------------------------------------------------------')
+        print('Training GradientBoosting...')
 
-        # Use Category
-        d_train = lgb.Dataset(x_g_train, label=y_train, weight=w_train, categorical_feature=[88])
-        d_valid = lgb.Dataset(x_g_valid, label=y_valid, weight=w_valid, categorical_feature=[88])
+        clf = self.clf(parameters)
 
-        # Booster
-        bst = lgb.train(parameters, d_train, num_boost_round=50,
-                        valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
+        clf.fit(x_train, y_train, sample_weight=w_train)
 
         # Feature Importance
-        self.get_importance(bst)
+        self.get_importance(clf)
 
         # Print LogLoss
-        loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_g_train, y_train, w_train,
-                                                                              x_g_valid, y_valid, w_valid)
+        loss_train, loss_valid, \
+            loss_train_w, loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
+                                                                x_valid, y_valid, w_valid)
+
         losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
 
         # Prediction
-        prob_valid = self.predict_valid(bst, x_g_valid)
-        prob_test = self.predict(bst, pred_path + 'lgb_cv_{}_'.format(count))
+        prob_valid = self.predict_valid(clf, x_valid)
+        prob_test = self.predict(clf)
 
         return prob_valid, prob_test, losses
 
@@ -1109,21 +1257,14 @@ class LightGBM:
 
         return prob_test
 
-    def predict_valid(self, model, x_valid):
-
-        print('Predicting Validation Set...')
-
-        prob_valid = model.predict(x_valid)
-
-        return prob_valid
-
-    def predict_sklearn(self, clf, pred_path):
+    def predict_sklearn(self, clf, pred_path=None):
 
         print('Predicting Test Set...')
 
         prob_test = np.array(clf.predict_proba(self.x_test))[:, 1]
 
-        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+        if pred_path is not None:
+            utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
 
@@ -1283,30 +1424,35 @@ class LightGBM:
         # Save final result
         utils.save_pred_to_csv(pred_path + 'final_results/lgb_sk_', self.id_test, prob_mean)
 
-    def stack_train(self, count, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, pred_path, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train,
+                    x_valid, y_valid, w_valid, x_g_valid, parameters):
 
+        print('------------------------------------------------------')
         print('Training LightGBM...')
 
-        # Use Category
-        d_train = lgb.Dataset(x_g_train, label=y_train, weight=w_train, categorical_feature=[88])
-        d_valid = lgb.Dataset(x_g_valid, label=y_valid, weight=w_valid, categorical_feature=[88])
+        clf = self.clf(parameters)
 
-        # Booster
-        bst = lgb.train(parameters, d_train, num_boost_round=50,
-                        valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
+        clf.fit(x_g_train, y_train, sample_weight=w_train,
+                categorical_feature=[88],
+                eval_set=[(x_g_train, y_train), (x_g_valid, y_valid)],
+                eval_names=['train', 'eval'],
+                early_stopping_rounds=50,
+                eval_sample_weight=[w_train, w_valid],
+                eval_metric='logloss', verbose=True)
 
         # Feature Importance
-        self.get_importance(bst)
+        self.get_importance_sklearn(clf)
 
         # Print LogLoss
-        loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_g_train, y_train, w_train,
-                                                                              x_g_valid, y_valid, w_valid)
+        loss_train, loss_valid, \
+            loss_train_w, loss_valid_w = utils.print_loss_proba(clf, x_g_train, y_train, w_train,
+                                                                x_g_valid, y_valid, w_valid)
+
         losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
 
         # Prediction
-        prob_valid = self.predict_valid(bst, x_g_valid)
-        prob_test = self.predict(bst, pred_path + 'lgb_cv_{}_'.format(count))
+        prob_valid = self.predict_valid_sklearn(clf, x_g_valid)
+        prob_test = self.predict_sklearn(clf)
 
         return prob_valid, prob_test, losses
 
@@ -1613,7 +1759,6 @@ class DeepNeuralNetworks:
 
             utils.save_pred_to_csv(pred_path + 'final_results/dnn_', self.id_test, prob_mean)
 
-
 # DNN using Keras
 
 class KerasDeepNeuralNetworks:
@@ -1711,6 +1856,34 @@ class KerasDeepNeuralNetworks:
         prob_mean = np.mean(np.array(prob_total), axis=0)
 
         utils.save_pred_to_csv(pred_path + 'final_results/dnn_keras_', self.id_test, prob_mean)
+
+# DNN for Stacking
+
+class StackingLayer1:
+
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, parameters):
+
+        # Inputs
+        self.x_train = x_tr
+        self.y_train = y_tr
+        self.w_train = w_tr
+        self.e_train = e_tr
+        self.x_test = x_te
+        self.id_test = id_te
+
+        # Hyperparameters
+        self.version = parameters['version']
+        self.epochs = parameters['epochs']
+        self.layers_number = parameters['layers_number']
+        self.unit_number = parameters['unit_number']
+        self.learning_rate = parameters['learning_rate']
+        self.keep_probability = parameters['keep_probability']
+        self.batch_size = parameters['batch_size']
+        self.display_step = parameters['display_step']
+        self.save_path = parameters['save_path']
+        self.log_path = parameters['log_path']
+
+
 
 
 # Cross Validation
@@ -1818,11 +1991,11 @@ class CrossValidation:
         n_traverse = n_era // n_valid
         n_rest = n_era % n_valid
 
-        if n_cv % n_valid != 0:
-            raise ValueError("Number of CV is not an integer multiple of number of validation era!")
-
         if n_rest != 0:
             n_traverse += 1
+
+        if n_cv % n_traverse != 0:
+            raise ValueError
 
         n_epoch = n_cv // n_traverse
         trained_cv = []
@@ -1935,11 +2108,11 @@ class CrossValidation:
         n_traverse = n_era // n_valid
         n_rest = n_era % n_valid
 
-        if n_cv % n_valid != 0:
-            raise ValueError("Number of CV is not an integer multiple of number of validation era!")
-
         if n_rest != 0:
             n_traverse += 1
+
+        if n_cv % n_traverse != 0:
+            raise ValueError
 
         n_epoch = n_cv // n_traverse
         trained_cv = []
@@ -2081,17 +2254,17 @@ class CrossValidation:
 
                         yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
-    def era_k_fold_with_category(self, x, y, w, e, x_g, n_valid, n_cv):
+    def era_k_fold_for_stack(self, x, y, w, e, x_g, n_valid, n_cv):
 
         n_era = 20
         n_traverse = n_era // n_valid
         n_rest = n_era % n_valid
 
-        if n_cv % n_valid != 0:
-            raise ValueError("Number of CV is not an integer multiple of number of validation era!")
-
         if n_rest != 0:
             n_traverse += 1
+
+        if n_cv % n_traverse != 0:
+            raise ValueError
 
         n_epoch = n_cv // n_traverse
 
@@ -2149,7 +2322,7 @@ class CrossValidation:
 
                     self.trained_cv.append(set(valid_era))
 
-                    yield x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid
+                    yield x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid, valid_index
 
             # n_cv is not an integer multiple of n_valid
             else:
@@ -2196,7 +2369,7 @@ class CrossValidation:
 
                         self.trained_cv.append(set(valid_era))
 
-                        yield x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid
+                        yield x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid, valid_index
 
                     else:
 
@@ -2236,7 +2409,7 @@ class CrossValidation:
 
                         self.trained_cv.append(set(valid_era))
 
-                        yield x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid
+                        yield x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid, valid_index
 
 
 # Grid Search
