@@ -307,11 +307,11 @@ class GridSearch:
         # parameters_grid = None
 
         parameters_grid = {
-                           'n_estimators': (32, 35, 38),
-                           'max_depth': (3, 4, 5),
+                           'n_estimators': (30, 31, 32),
+                           'max_depth': (1, 2, 3),
                            # 'max_features': (6, 7),
-                           'min_samples_leaf': (255, 270, 285),
-                           'min_samples_split': (3600, 3750, 3900)
+                           'min_samples_leaf': (285, 288, 291, 294, 297),
+                           'min_samples_split': (3900, 3910, 3920, 3930, 3940, 3950, 3960, 3970, 3980, 3990)
                            }
 
         model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,

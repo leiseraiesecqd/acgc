@@ -55,8 +55,6 @@ class Layer1:
 
         n_cv = n_cv_l1 * n_cv_l2
 
-        models = self.init_models()
-
         count = 0
 
         for x_train, y_train, w_train, x_g_train, \
