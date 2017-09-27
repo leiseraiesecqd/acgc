@@ -296,7 +296,7 @@ class DecisionTree:
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
-        utils.save_pred_to_csv(pred_path + 'dt_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/dt_', self.id_test, prob_mean)
 
 
 # Random Forest
@@ -419,7 +419,7 @@ class RandomForest:
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
-        utils.save_pred_to_csv(pred_path + 'rf_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/rf_', self.id_test, prob_mean)
 
 
 # Extra Trees
@@ -542,7 +542,7 @@ class ExtraTrees:
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
-        utils.save_pred_to_csv(pred_path + 'et_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/et_', self.id_test, prob_mean)
 
 
 # AdaBoost
@@ -665,7 +665,7 @@ class AdaBoost:
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
-        utils.save_pred_to_csv(pred_path + 'ab_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/ab_', self.id_test, prob_mean)
 
 
 # GradientBoosting
@@ -788,7 +788,7 @@ class GradientBoosting:
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
-        utils.save_pred_to_csv(pred_path + 'gb_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/gb_', self.id_test, prob_mean)
 
     def stack_train(self, count, x_train, y_train, w_train, x_g_train,
                     x_valid, y_valid, w_valid, x_g_valid, pred_path, parameters):
@@ -1001,7 +1001,7 @@ class XGBoost:
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
-        utils.save_pred_to_csv(pred_path + 'xgb_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/xgb_', self.id_test, prob_mean)
 
     def stack_train(self, count, x_train, y_train, w_train, x_g_train,
                     x_valid, y_valid, w_valid, x_g_valid, pred_path, parameters):
@@ -1205,7 +1205,7 @@ class LightGBM:
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
-        utils.save_pred_to_csv(pred_path + 'lgb_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/lgb_', self.id_test, prob_mean)
 
     # Using sk-learn API
     def train_sklearn(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
@@ -1281,7 +1281,7 @@ class LightGBM:
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
-        utils.save_pred_to_csv(pred_path + 'lgb_sk_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/lgb_sk_', self.id_test, prob_mean)
 
     def stack_train(self, count, x_train, y_train, w_train, x_g_train,
                     x_valid, y_valid, w_valid, x_g_valid, pred_path, parameters):
@@ -1611,7 +1611,7 @@ class DeepNeuralNetworks:
 
             prob_mean = np.mean(np.array(prob_total), axis=0)
 
-            utils.save_pred_to_csv(pred_path + 'dnn_', self.id_test, prob_mean)
+            utils.save_pred_to_csv(pred_path + 'final_results/dnn_', self.id_test, prob_mean)
 
 
 # DNN using Keras
@@ -1710,7 +1710,7 @@ class KerasDeepNeuralNetworks:
 
         prob_mean = np.mean(np.array(prob_total), axis=0)
 
-        utils.save_pred_to_csv(pred_path + 'dnn_keras_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/dnn_keras_', self.id_test, prob_mean)
 
 
 # Cross Validation
