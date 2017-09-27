@@ -166,7 +166,7 @@ def seve_grid_search_log(log_path, params, params_grid, best_score, best_paramet
         f.write('Parameters Grid:\n')
         f.write('\t' + str(params_grid) + '\n\n')
         f.write('Best parameters set:\n')
-        for param_name in sorted(params.keys()):
+        for param_name in sorted(params_grid.keys()):
             f.write('\t' + str(param_name) + ': {}\n'.format(str(best_parameters[param_name])))
 
 

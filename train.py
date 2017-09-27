@@ -288,7 +288,7 @@ class GridSearch:
                       'class_weight': None,
                       'criterion': 'gini',
                       'max_depth': 6,
-                      'max_features': 'auto',
+                      'max_features': 7,
                       'max_leaf_nodes': None,
                       'min_impurity_decrease': 0.0,
                       'min_samples_leaf': 300,
@@ -307,11 +307,11 @@ class GridSearch:
         # parameters_grid = None
 
         parameters_grid = {
-                           'n_estimators': (30, 40, 50),
-                           'max_depth': (5, 6),
-                           'max_features': (6, 7),
-                           'min_samples_leaf': (200, 250, 300),
-                           'min_samples_split': (3000, 3500, 4000)
+                           'n_estimators': (32, 35, 38),
+                           'max_depth': (3, 4, 5),
+                           # 'max_features': (6, 7),
+                           'min_samples_leaf': (255, 270, 285),
+                           'min_samples_split': (3600, 3750, 3900)
                            }
 
         model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
