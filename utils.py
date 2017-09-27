@@ -210,7 +210,7 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv,
         f.write('=====================================================\n')
         f.write('=====================================================\n')
 
-    with open(log_path + 'loss_log.txt', 'a') as f:
+    with open(log_path + 'final_loss_log.txt', 'a') as f:
 
         print('Saving Final Losses')
 
