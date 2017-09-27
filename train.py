@@ -193,16 +193,16 @@ def lgb_train_sklearn():
                       # 'boosting_type': 'rf',          # Random Forest.
                       'num_leaves': 32,               # <2^(max_depth)
                       'max_depth': 8,                 # default=-1
-                      'n_estimators': 100,
+                      'n_estimators': 50,
                       'max_bin': 255,
                       'subsample_for_bin': 50000,
                       'objective': 'binary',
                       'min_split_gain': 0.,
                       'min_child_weight': 5,
                       'min_child_samples': 10,
-                      'subsample': 0.8,
-                      'subsample_freq': 1,
-                      'colsample_bytree': 0.8,
+                      'subsample': 0.6,
+                      'subsample_freq': 5,
+                      'colsample_bytree': 0.5,
                       'reg_alpha': 0.,
                       'reg_lambda': 0.,
                       'silent': False}
