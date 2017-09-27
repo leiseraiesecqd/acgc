@@ -179,7 +179,7 @@ def save_loss_log(log_path, count, parameters, loss_train, loss_valid, loss_trai
 
         f.write('-------------------- CV: {} --------------------------\n'.format(count))
         f.write('Parameters:\n')
-        f.write('\t' + str(parameters))
+        f.write('\t' + str(parameters) + '\n\n')
         f.write('Losses:\n')
         f.write('\tTotal Train LogLoss: {:.6f}\n'.format(loss_train))
         f.write('\tTotal Validation LogLoss: {:.6f}\n'.format(loss_valid))
@@ -195,7 +195,7 @@ def save_final_loss_log(log_path, parameters, loss_train_mean, loss_valid_mean, 
 
         f.write('==================== Final Losses ===================\n')
         f.write('Parameters:\n')
-        f.write('\t' + str(parameters))
+        f.write('\t' + str(parameters) + '\n\n')
         f.write('Losses:\n')
         f.write('\tTotal Train LogLoss: {:.6f}\n'.format(loss_train_mean))
         f.write('\tTotal Validation LogLoss: {:.6f}\n'.format(loss_valid_mean))
