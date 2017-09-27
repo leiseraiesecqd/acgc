@@ -1259,7 +1259,7 @@ class LightGBM:
             loss_valid_w_total.append(loss_valid_w)
             
             # Save Losses to file
-            utils.save_final_loss_log(loss_log_path + 'lgb_sk_', count, parameters, loss_train, 
+            utils.save_loss_log(loss_log_path + 'lgb_sk_', count, parameters, loss_train,
                                 loss_valid, loss_train_w, loss_valid_w)
 
         print('======================================================')
