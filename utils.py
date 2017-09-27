@@ -171,13 +171,16 @@ def seve_grid_search_log(log_path, params, params_grid, best_score, best_paramet
 
 # Save Final Losses
 
-def save_loss_log(log_path, count, parameters, loss_train, loss_valid, loss_train_w, loss_valid_w):
+def save_loss_log(log_path, count, parameters, n_valid, n_cv,
+                  loss_train, loss_valid, loss_train_w, loss_valid_w):
 
     with open(log_path + 'loss_log.txt', 'a') as f:
 
         print('Saving Losses')
 
-        f.write('-------------------- CV: {} --------------------------\n'.format(count))
+        f.write('===================== CV: {}/{} =====================\n'.format(count, n_cv))
+        f.write('Validation Era: {}\n'.format(n_valid))
+        f.write('Validation Spilt Number: {}\n'.format(n_cv))
         f.write('Parameters:\n')
         f.write('\t' + str(parameters) + '\n\n')
         f.write('Losses:\n')
@@ -187,13 +190,16 @@ def save_loss_log(log_path, count, parameters, loss_train, loss_valid, loss_trai
         f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w))
 
 
-def save_final_loss_log(log_path, parameters, loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean):
+def save_final_loss_log(log_path, parameters, n_valid, n_cv,
+                        loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean):
 
     with open(log_path + 'loss_log.txt', 'a') as f:
 
         print('Saving Final Losses')
 
         f.write('==================== Final Losses ===================\n')
+        f.write('Validation Era: {}\n'.format(n_valid))
+        f.write('Validation Spilt Number: {}\n'.format(n_cv))
         f.write('Parameters:\n')
         f.write('\t' + str(parameters) + '\n\n')
         f.write('Losses:\n')
@@ -203,3 +209,18 @@ def save_final_loss_log(log_path, parameters, loss_train_mean, loss_valid_mean, 
         f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
         f.write('=====================================================\n')
         f.write('=====================================================\n')
+
+    with open(log_path + 'loss_log.txt', 'a') as f:
+
+        print('Saving Final Losses')
+
+        f.write('=====================================================\n')
+        f.write('Validation Era: {}\n'.format(n_valid))
+        f.write('Validation Spilt Number: {}\n'.format(n_cv))
+        f.write('Parameters:\n')
+        f.write('\t' + str(parameters) + '\n\n')
+        f.write('Losses:\n')
+        f.write('\tTotal Train LogLoss: {:.6f}\n'.format(loss_train_mean))
+        f.write('\tTotal Validation LogLoss: {:.6f}\n'.format(loss_valid_mean))
+        f.write('\tTotal Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean))
+        f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
