@@ -171,11 +171,29 @@ def seve_grid_search_log(log_path, params, params_grid, best_score, best_paramet
 
 # Save Final Losses
 
-def save_loss_log(log_path, parameters, loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean):
+def save_loss_log(log_path, count, parameters, loss_train, loss_valid, loss_train_w, loss_valid_w):
 
     with open(log_path + 'loss_log.txt', 'a') as f:
 
-        f.write('=====================================================\n')
+        print('Saving Losses')
+
+        f.write('-------------------- CV: {} --------------------------\n'.format(count))
+        f.write('Parameters:\n')
+        f.write('\t' + str(parameters))
+        f.write('Losses:\n')
+        f.write('\tTotal Train LogLoss: {:.6f}\n'.format(loss_train))
+        f.write('\tTotal Validation LogLoss: {:.6f}\n'.format(loss_valid))
+        f.write('\tTotal Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w))
+        f.write('\tTotal Validation LogLoss with Weight: {:.6f\n}'.format(loss_valid_w))
+
+
+def save_final_loss_log(log_path, parameters, loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean):
+
+    with open(log_path + 'loss_log.txt', 'a') as f:
+
+        print('Saving Final Losses')
+
+        f.write('==================== Final Losses ===================\n')
         f.write('Parameters:\n')
         f.write('\t' + str(parameters))
         f.write('Losses:\n')
@@ -183,3 +201,5 @@ def save_loss_log(log_path, parameters, loss_train_mean, loss_valid_mean, loss_t
         f.write('\tTotal Validation LogLoss: {:.6f}\n'.format(loss_valid_mean))
         f.write('\tTotal Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean))
         f.write('\tTotal Validation LogLoss with Weight: {:.6f\n}'.format(loss_valid_w_mean))
+        f.write('=====================================================\n')
+        f.write('=====================================================\n')

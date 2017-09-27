@@ -273,6 +273,10 @@ class DecisionTree:
             loss_train_w_total.append(loss_train_w)
             loss_valid_w_total.append(loss_valid_w)
 
+            # Save Losses to file
+            utils.save_loss_log(loss_log_path + 'dt_', count, parameters, loss_train,
+                                loss_valid, loss_train_w, loss_valid_w)
+
         print('===========================================')
         print('Calculating final result...')
 
@@ -287,9 +291,9 @@ class DecisionTree:
               'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
               'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
-        # Save Losses to file
-        utils.save_loss_log(loss_log_path + 'dt_', parameters, loss_train_mean,
-                            loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+        # Save Final Losses to file
+        utils.save_final_loss_log(loss_log_path + 'dt_', parameters, loss_train_mean,
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
         utils.save_pred_to_csv(pred_path + 'dt_', self.id_test, prob_mean)
@@ -392,6 +396,10 @@ class RandomForest:
             loss_train_w_total.append(loss_train_w)
             loss_valid_w_total.append(loss_valid_w)
 
+            # Save Losses to file
+            utils.save_loss_log(loss_log_path + 'rf_', count, parameters, loss_train,
+                                loss_valid, loss_train_w, loss_valid_w)
+
         print('===========================================')
         print('Calculating final result...')
 
@@ -406,9 +414,9 @@ class RandomForest:
               'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
               'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
-        # Save Losses to file
-        utils.save_loss_log(loss_log_path + 'rf_', parameters, loss_train_mean,
-                            loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+        # Save Final Losses to file
+        utils.save_final_loss_log(loss_log_path + 'rf_', parameters, loss_train_mean,
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
         utils.save_pred_to_csv(pred_path + 'rf_', self.id_test, prob_mean)
@@ -511,6 +519,10 @@ class ExtraTrees:
             loss_train_w_total.append(loss_train_w)
             loss_valid_w_total.append(loss_valid_w)
 
+            # Save Losses to file
+            utils.save_loss_log(loss_log_path + 'et_', count, parameters, loss_train,
+                                loss_valid, loss_train_w, loss_valid_w)
+
         print('===========================================')
         print('Calculating final result...')
 
@@ -525,9 +537,9 @@ class ExtraTrees:
               'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
               'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
-        # Save Losses to file
-        utils.save_loss_log(loss_log_path + 'et_', parameters, loss_train_mean,
-                            loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+        # Save Final Losses to file
+        utils.save_final_loss_log(loss_log_path + 'et_', parameters, loss_train_mean,
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
         utils.save_pred_to_csv(pred_path + 'et_', self.id_test, prob_mean)
@@ -630,6 +642,10 @@ class AdaBoost:
             loss_train_w_total.append(loss_train_w)
             loss_valid_w_total.append(loss_valid_w)
 
+            # Save Losses to file
+            utils.save_loss_log(loss_log_path + 'ab_', count, parameters, loss_train,
+                                loss_valid, loss_train_w, loss_valid_w)
+
         print('===========================================')
         print('Calculating final result...')
 
@@ -644,9 +660,9 @@ class AdaBoost:
               'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
               'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
-        # Save Losses to file
-        utils.save_loss_log(loss_log_path + 'ab_', parameters, loss_train_mean,
-                            loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+        # Save Final Losses to file
+        utils.save_final_loss_log(loss_log_path + 'ab_', parameters, loss_train_mean,
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
         utils.save_pred_to_csv(pred_path + 'ab_', self.id_test, prob_mean)
@@ -749,6 +765,10 @@ class GradientBoosting:
             loss_train_w_total.append(loss_train_w)
             loss_valid_w_total.append(loss_valid_w)
 
+            # Save Losses to file
+            utils.save_loss_log(loss_log_path + 'gb_', count, parameters, loss_train,
+                                loss_valid, loss_train_w, loss_valid_w)
+
         print('===========================================')
         print('Calculating final result...')
 
@@ -763,9 +783,9 @@ class GradientBoosting:
               'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
               'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
-        # Save Losses to file
-        utils.save_loss_log(loss_log_path + 'gb_', parameters, loss_train_mean,
-                            loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+        # Save Final Losses to file
+        utils.save_final_loss_log(loss_log_path + 'gb_', parameters, loss_train_mean,
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
         utils.save_pred_to_csv(pred_path + 'gb_', self.id_test, prob_mean)
@@ -958,6 +978,10 @@ class XGBoost:
             loss_train_w_total.append(loss_train_w)
             loss_valid_w_total.append(loss_valid_w)
 
+            # Save Losses to file
+            utils.save_loss_log(loss_log_path + 'xgb_', count, parameters, loss_train,
+                                loss_valid, loss_train_w, loss_valid_w)
+
         print('======================================================')
         print('Calculating final result...')
 
@@ -972,9 +996,9 @@ class XGBoost:
               'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
               'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
-        # Save Losses to file
-        utils.save_loss_log(loss_log_path + 'xgb_', parameters, loss_train_mean,
-                            loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+        # Save Final Losses to file
+        utils.save_final_loss_log(loss_log_path + 'xgb_', parameters, loss_train_mean,
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
         utils.save_pred_to_csv(pred_path + 'xgb_', self.id_test, prob_mean)
@@ -1158,6 +1182,10 @@ class LightGBM:
             loss_train_w_total.append(loss_train_w)
             loss_valid_w_total.append(loss_valid_w)
 
+            # Save Losses to file
+            utils.save_loss_log(loss_log_path + 'lgb_', count, parameters, loss_train,
+                                loss_valid, loss_train_w, loss_valid_w)
+
         print('======================================================')
         print('Calculating final result...')
 
@@ -1172,9 +1200,9 @@ class LightGBM:
               'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
               'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
-        # Save Losses to file
-        utils.save_loss_log(loss_log_path + 'lgb_', parameters, loss_train_mean,
-                            loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+        # Save Final Losses to file
+        utils.save_final_loss_log(loss_log_path + 'lgb_', parameters, loss_train_mean,
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
         utils.save_pred_to_csv(pred_path + 'lgb_', self.id_test, prob_mean)
@@ -1229,6 +1257,10 @@ class LightGBM:
             loss_valid_total.append(loss_valid)
             loss_train_w_total.append(loss_train_w)
             loss_valid_w_total.append(loss_valid_w)
+            
+            # Save Losses to file
+            utils.save_final_loss_log(loss_log_path + 'lgb_sk_', count, parameters, loss_train, 
+                                loss_valid, loss_train_w, loss_valid_w)
 
         print('======================================================')
         print('Calculating final result...')
@@ -1244,9 +1276,9 @@ class LightGBM:
               'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
               'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
-        # Save Losses to file
-        utils.save_loss_log(loss_log_path + 'lgb_sk_', parameters, loss_train_mean,
-                            loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+        # Save Final Losses to file
+        utils.save_final_loss_log(loss_log_path + 'lgb_sk_', parameters, loss_train_mean,
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
         utils.save_pred_to_csv(pred_path + 'lgb_sk_', self.id_test, prob_mean)
