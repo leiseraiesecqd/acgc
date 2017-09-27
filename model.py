@@ -1767,7 +1767,10 @@ class CrossValidation:
                         valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                         while any(set(valid_era) == i_cv for i_cv in trained_cv):
                             print('This CV split has been chosen, choosing another one...')
-                            valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                            if set(valid_era) != set(era_idx[i]):
+                                valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                            else:
+                                valid_era = np.random.choice(range(1, n_era+1), n_valid, replace=False)
                     else:
                         valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
 
@@ -1881,7 +1884,7 @@ class CrossValidation:
                         valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                         while any(set(valid_era) == i_cv for i_cv in trained_cv):
                             print('This CV split has been chosen, choosing another one...')
-                            if valid_era != era_idx[i]:
+                            if set(valid_era) != set(era_idx[i]):
                                 valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                             else:
                                 valid_era = np.random.choice(range(1, n_era+1), n_valid, replace=False)
@@ -2034,7 +2037,10 @@ class CrossValidation:
                         valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                         while any(set(valid_era) == i_cv for i_cv in trained_cv):
                             print('This CV split has been chosen, choosing another one...')
-                            valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                            if set(valid_era) != set(era_idx[i]):
+                                valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                            else:
+                                valid_era = np.random.choice(range(1, n_era+1), n_valid, replace=False)
                     else:
                         valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
 
