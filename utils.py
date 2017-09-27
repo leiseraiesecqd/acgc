@@ -184,7 +184,7 @@ def save_loss_log(log_path, count, parameters, loss_train, loss_valid, loss_trai
         f.write('\tTotal Train LogLoss: {:.6f}\n'.format(loss_train))
         f.write('\tTotal Validation LogLoss: {:.6f}\n'.format(loss_valid))
         f.write('\tTotal Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w))
-        f.write('\tTotal Validation LogLoss with Weight: {:.6f\n}'.format(loss_valid_w))
+        f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w))
 
 
 def save_final_loss_log(log_path, parameters, loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean):
@@ -200,6 +200,6 @@ def save_final_loss_log(log_path, parameters, loss_train_mean, loss_valid_mean, 
         f.write('\tTotal Train LogLoss: {:.6f}\n'.format(loss_train_mean))
         f.write('\tTotal Validation LogLoss: {:.6f}\n'.format(loss_valid_mean))
         f.write('\tTotal Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean))
-        f.write('\tTotal Validation LogLoss with Weight: {:.6f\n}'.format(loss_valid_w_mean))
+        f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
         f.write('=====================================================\n')
         f.write('=====================================================\n')
