@@ -30,7 +30,7 @@ def rf_train():
                      'min_samples_leaf': 50,
                      'min_samples_split': 1000,
                      'min_weight_fraction_leaf': 0.0,
-                     'n_estimators': 65,
+                     'n_estimators': 50,
                      'n_jobs': 1,
                      'oob_score': True,
                      'random_state': 1,
@@ -50,7 +50,7 @@ def et_train():
 
     x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-    et_parameters = {'bootstrap': False,
+    et_parameters = {'bootstrap': True,
                      'class_weight': None,
                      'criterion': 'gini',
                      'max_depth': 25,
@@ -60,6 +60,7 @@ def et_train():
                      'min_samples_leaf': 50,
                      'min_samples_split': 1000,
                      'min_weight_fraction_leaf': 0.0,
+                     'n_estimators': 50,
                      'n_jobs': 1,
                      'oob_score': True,
                      'random_state': 1,
@@ -282,7 +283,8 @@ class GridSearch:
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-        parameters = {'bootstrap': True,
+        parameters = {'n_estimators': 50,
+                      'bootstrap': True,
                       'class_weight': None,
                       'criterion': 'gini',
                       'max_depth': 25,
@@ -292,7 +294,6 @@ class GridSearch:
                       'min_samples_leaf': 50,
                       'min_samples_split': 1000,
                       'min_weight_fraction_leaf': 0.0,
-                      'n_estimators': 65,
                       'n_jobs': -1,
                       'oob_score': True,
                       'random_state': 1,
@@ -306,14 +307,12 @@ class GridSearch:
         # parameters_grid = None
 
         parameters_grid = {
-                           'n_estimators': (100, 200, 300),
-                           'max_depth': (8, 9, 10),
-                           'max_features': (7, 8, 9),
-                           'min_samples_leaf': (150, 300, 450),
-                           'min_samples_split': (1500, 3000, 4500)
+                           'n_estimators': (30, 40, 50),
+                           'max_depth': (5, 6),
+                           'max_features': (6, 7),
+                           'min_samples_leaf': (200, 250, 300),
+                           'min_samples_split': (3000, 3500, 4000)
                            }
-
-
 
         model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
                           params=parameters, params_grid=parameters_grid)
@@ -329,7 +328,8 @@ class GridSearch:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(
             preprocessed_data_path)
 
-        parameters = {'bootstrap': False,
+        parameters = {'bootstrap': True,
+                      'n_estimators': 50,
                       'class_weight': None,
                       'criterion': 'gini',
                       'max_depth': 25,
@@ -352,10 +352,11 @@ class GridSearch:
         # parameters_grid = None
 
         parameters_grid = {
-                           'max_depth': (10, 20, 30, 40),
-                           'max_features': (9, 10, 11),
-                           'min_sample_leaf': (50, 100, 150),
-                           'min_sample_split': (500, 1000, 1500)
+                           'n_estimators': (30, 40, 50),
+                           'max_depth': (5, 6),
+                           'max_features': (6, 7),
+                           'min_samples_leaf': (200, 250, 300),
+                           'min_samples_split': (3000, 3500, 4000)
                            }
 
         model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
