@@ -1799,7 +1799,6 @@ class CrossValidation:
 
                     if i != n_traverse - 1:
 
-                        valid_era = []
                         if trained_cv != []:
                             valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                             while any(set(valid_era) == i_cv for i_cv in trained_cv):
@@ -1871,7 +1870,7 @@ class CrossValidation:
         for epoch in range(n_epoch):
 
             era_idx = []
-            era_idx.append(list(range(1, n_era + 1)))
+            era_idx.append(list(range(1, n_era+1)))
 
             if n_rest == 0:
 
@@ -1882,7 +1881,10 @@ class CrossValidation:
                         valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                         while any(set(valid_era) == i_cv for i_cv in trained_cv):
                             print('This CV split has been chosen, choosing another one...')
-                            valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                            if valid_era != era_idx[i]:
+                                valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                            else:
+                                valid_era = np.random.choice(range(1, n_era+1), n_valid, replace=False)
                     else:
                         valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
 
@@ -1926,7 +1928,6 @@ class CrossValidation:
 
                     if i != n_traverse - 1:
 
-                        valid_era = []
                         if trained_cv != []:
                             valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                             while any(set(valid_era) == i_cv for i_cv in trained_cv):
@@ -2079,7 +2080,6 @@ class CrossValidation:
 
                     if i != n_traverse - 1:
 
-                        valid_era = []
                         if trained_cv != []:
                             valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                             while any(set(valid_era) == i_cv for i_cv in trained_cv):
