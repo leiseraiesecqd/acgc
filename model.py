@@ -932,7 +932,7 @@ class XGBoost:
             count += 1
 
             print('======================================================')
-            print('Training on the Cross Validation Set: {}'.format(count))
+            print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
 
             d_train = xgb.DMatrix(x_train, label=y_train, weight=w_train)
             d_valid = xgb.DMatrix(x_valid, label=y_valid, weight=w_valid)
@@ -1132,7 +1132,7 @@ class LightGBM:
             count += 1
 
             print('======================================================')
-            print('Training on the Cross Validation Set: {}'.format(count))
+            print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
 
             # Use Category
             d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=[88])
@@ -1201,7 +1201,7 @@ class LightGBM:
             count += 1
 
             print('======================================================')
-            print('Training on the Cross Validation Set: {}'.format(count))
+            print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
 
             clf_lgb = self.clf(parameters)
 
