@@ -283,16 +283,16 @@ class GridSearch:
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-        parameters = {'n_estimators': 50,
+        parameters = {'n_estimators': 30,
                       'bootstrap': True,
                       'class_weight': None,
                       'criterion': 'gini',
-                      'max_depth': 25,
+                      'max_depth': 6,
                       'max_features': 'auto',
                       'max_leaf_nodes': None,
                       'min_impurity_decrease': 0.0,
-                      'min_samples_leaf': 50,
-                      'min_samples_split': 1000,
+                      'min_samples_leaf': 300,
+                      'min_samples_split': 4000,
                       'min_weight_fraction_leaf': 0.0,
                       'n_jobs': -1,
                       'oob_score': True,
