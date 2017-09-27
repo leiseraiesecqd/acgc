@@ -10,6 +10,8 @@
 /inputs/
 /other/
 /numerai/
+/loss_logs/
+/grid_search_logs/
 *.jpg
 *.ipynb
 *.p
