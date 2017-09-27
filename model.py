@@ -1250,7 +1250,7 @@ class LightGBM:
                                                                     x_valid, y_valid, w_valid)
 
             # Prediction
-            prob_test = self.predict_sklearn(clf_lgb, pred_path + 'lgb_cv_{}_'.format(count))
+            prob_test = self.predict_sklearn(clf_lgb, pred_path + 'lgb_sk_cv_{}_'.format(count))
 
             prob_total.append(list(prob_test))
             loss_train_total.append(loss_train)
