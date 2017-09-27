@@ -1717,6 +1717,8 @@ class KerasDeepNeuralNetworks:
 
 class CrossValidation:
 
+    trained_cv = []
+
     @staticmethod
     def sk_group_k_fold(x, y, e):
 
@@ -2079,8 +2081,7 @@ class CrossValidation:
 
                         yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
-    @staticmethod
-    def era_k_fold_with_category(x, y, w, e, x_g, n_valid, n_cv):
+    def era_k_fold_with_category(self, x, y, w, e, x_g, n_valid, n_cv):
 
         n_era = 20
         n_traverse = n_era // n_valid
@@ -2093,7 +2094,6 @@ class CrossValidation:
             n_traverse += 1
 
         n_epoch = n_cv // n_traverse
-        trained_cv = []
 
         for epoch in range(n_epoch):
 
@@ -2105,9 +2105,9 @@ class CrossValidation:
                 for i in range(n_traverse):
 
                     # Choose eras that have not used
-                    if trained_cv != []:
+                    if self.trained_cv != []:
                         valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
-                        while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                        while any(set(valid_era) == i_cv for i_cv in self.trained_cv):
                             print('This CV split has been chosen, choosing another one...')
                             if set(valid_era) != set(era_idx[i]):
                                 valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
@@ -2147,7 +2147,7 @@ class CrossValidation:
                     w_valid = w[valid_index]
                     x_g_valid = x_g[valid_index]
 
-                    trained_cv.append(set(valid_era))
+                    self.trained_cv.append(set(valid_era))
 
                     yield x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid
 
@@ -2158,9 +2158,9 @@ class CrossValidation:
 
                     if i != n_traverse - 1:
 
-                        if trained_cv != []:
+                        if self.trained_cv != []:
                             valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
-                            while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                            while any(set(valid_era) == i_cv for i_cv in self.trained_cv):
                                 print('This CV split has been chosen, choosing another one...')
                                 valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                         else:
@@ -2194,7 +2194,7 @@ class CrossValidation:
                         w_valid = w[valid_index]
                         x_g_valid = x_g[valid_index]
 
-                        trained_cv.append(set(valid_era))
+                        self.trained_cv.append(set(valid_era))
 
                         yield x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid
 
@@ -2202,10 +2202,9 @@ class CrossValidation:
 
                         era_idx_else = [t for t in list(range(1, n_era + 1)) if t not in era_idx[i]]
 
-                        valid_era = []
                         valid_era = era_idx[i] + list(
                             np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
-                        while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                        while any(set(valid_era) == i_cv for i_cv in self.trained_cv):
                             print('This CV split has been chosen, choosing another one...')
                             valid_era = era_idx[i] + list(
                                 np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
@@ -2235,7 +2234,7 @@ class CrossValidation:
                         w_valid = w[valid_index]
                         x_g_valid = x_g[valid_index]
 
-                        trained_cv.append(set(valid_era))
+                        self.trained_cv.append(set(valid_era))
 
                         yield x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid
 

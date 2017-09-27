@@ -16,6 +16,9 @@ class Layer1:
         self.x_train_g = x_tr_g
         self.x_test_g = x_te_g
         self.parameters = params
+        self.models = []
+
+        self.init_models()
 
     def init_models(self):
 
@@ -32,11 +35,25 @@ class Layer1:
         GB = model.GradientBoosting(self.x_train, self.y_train, self.w_train,
                                     self.e_train, self.x_test, self.id_test)
 
-        models = [LGB, XGB, AB, RF, ET, GB]
+        self.models = [LGB, XGB, AB, RF, ET, GB]
 
-        return models
+    def layer1(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid):
 
-    def train(self, n_valid, n_cv, pred_path):
+        for iter_model, model in enumerate(self.models):
+
+            print('======================================================')
+            print('Training on the Cross Validation Set: {}'.format(count))
+
+            prob_valid_clf, prob_test_clf, loss_clf = \
+                model.stastack_train(self.count, x_train, y_train, w_train, x_g_train, x_valid,
+                                     y_valid, w_valid, x_g_valid, self.pred_path, self.parameters[iter_model])
+
+
+
+
+    def train_by_cv(self, n_valid, n_cv_l1, n_cv_l2, pred_path):
+
+        n_cv = n_cv_l1 * n_cv_l2
 
         models = self.init_models()
 
@@ -52,14 +69,7 @@ class Layer1:
                                                                                              n_cv=n_cv):
             count += 1
 
-            for iter_model, model in enumerate(models):
 
-                print('======================================================')
-                print('Training on the Cross Validation Set: {}'.format(count))
-
-                prob_valid_clf, prob_test_clf, loss_clf = \
-                    model.stastack_train(count, x_train, y_train, w_train, x_g_train, x_valid,
-                                         y_valid, w_valid, x_g_valid, pred_path, self.parameters[iter_model])
 
 
 
