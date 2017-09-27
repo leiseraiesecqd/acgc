@@ -39,6 +39,10 @@ sns.set(font_scale=1)
 color = sns.color_palette()
 
 
+loss_log_path = './loss_logs/'
+importance_log_path = './importance_logs/'
+
+
 # Logistic Regression
 
 class LRegression:
@@ -2170,10 +2174,10 @@ class CrossValidation:
 
 # Grid Search
 
-def grid_search(tr_x, tr_y, tr_e, clf, n_valid, n_cv, params=None):
+def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, params, params_grid):
 
     grid_search = GridSearchCV(estimator=clf,
-                               param_grid=params,
+                               param_grid=params_grid,
                                scoring='neg_log_loss',
                                verbose=2,
                                # cv=CrossValidation.era_k_fold_split(e=tr_e, n_valid=n_valid, n_cv=n_cv),
@@ -2186,12 +2190,16 @@ def grid_search(tr_x, tr_y, tr_e, clf, n_valid, n_cv, params=None):
     grid_search.fit(tr_x, tr_y, tr_e)
 
     best_parameters = grid_search.best_estimator_.get_params()
+    best_score = grid_search.best_score_
 
-    print('Best score: %0.3f' % grid_search.best_score_)
+    print('Best score: %0.3f' % best_score)
     print('Best parameters set:')
 
     for param_name in sorted(params.keys()):
         print('\t%s: %r' % (param_name, best_parameters[param_name]))
+
+    utils.seve_grid_search_log(log_path, best_score, best_parameters, params, params_grid)
+
 
 
 if __name__ == '__main__':

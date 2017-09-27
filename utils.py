@@ -151,3 +151,19 @@ def print_loss_proba(model, x_t, y_t, w_t, x_v, y_v, w_v):
           'Validation LogLoss with Weight: {:>.8f}\n'.format(loss_valid_w))
 
     return loss_train, loss_valid, loss_train_w, loss_valid_w
+
+
+# Save Grid Search Logs
+
+def seve_grid_search_log(log_path, best_score, best_parameters, params, params_grid):
+
+    with open(log_path + '_grid_search_log.txt', 'a') as f:
+        f.write('=====================================================\n')
+        f.write('Best score: {:.6f}\n'.format(best_score))
+        f.wirte('Parameters:\n')
+        f.wirte('\t' + str(params))
+        f.wirte('Parameters Grid:\n')
+        f.wirte('\t' + str(params_grid))
+        f.write('Best parameters set:\n')
+        for param_name in sorted(params.keys()):
+            f.write('\t' + str(param_name) + ': {}\n'.format(str(best_parameters[param_name])))

@@ -9,6 +9,7 @@ from sklearn.ensemble import ExtraTreesClassifier
 
 preprocessed_data_path = './preprocessed_data/'
 pred_path = './results/'
+grid_search_log_path = './grid_search_logs/'
 
 
 # Random Forest
@@ -275,7 +276,7 @@ class GridSearch:
     @staticmethod
     def rf_grid_search():
 
-        print('\nModel: Random Forest \n')
+        log_path = grid_search_log_path + 'rf'
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
@@ -296,10 +297,6 @@ class GridSearch:
                       'verbose': 2,
                       'warm_start': False}
 
-        print("Parameters:")
-        print(parameters)
-        print('\n')
-
         RF = model.RandomForest(x_train, y_train, w_train, e_train, x_test, id_test)
 
         clf = RF.clf(parameters)
@@ -314,17 +311,18 @@ class GridSearch:
                            'min_samples_split': (1500, 3000, 4500)
                            }
 
-        print("Parameters' grid:")
-        print(parameters_grid)
-        print('\n')
 
-        model.grid_search(x_train, y_train, e_train, clf, n_valid=4, n_cv=20, params=parameters_grid)
+
+        model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
+                          params=parameters, params_grid=parameters_grid)
 
         print_grid_info('Random Forest', parameters, parameters_grid)
 
     # Extra Trees
     @staticmethod
     def et_grid_search():
+
+        log_path = grid_search_log_path + 'et'
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(
             preprocessed_data_path)
@@ -358,13 +356,16 @@ class GridSearch:
                            'min_sample_split': (500, 1000, 1500)
                            }
 
-        model.grid_search(x_train, y_train, e_train, clf, n_valid=4, n_cv=20, params=parameters_grid)
+        model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
+                          params=parameters, params_grid=parameters_grid)
 
         print_grid_info('Extra Trees', parameters, parameters_grid)
 
     # AdaBoost
     @staticmethod
     def ab_grid_search():
+
+        log_path = grid_search_log_path + 'ab'
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
@@ -394,13 +395,16 @@ class GridSearch:
                            #  'base_estimator': clf_et,
                            }
 
-        model.grid_search(x_train, y_train, e_train, clf, n_valid=4, n_cv=20, params=parameters_grid)
+        model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
+                          params=parameters, params_grid=parameters_grid)
 
         print_grid_info('AdaBoost', parameters, parameters_grid)
 
     # XGBoost
     @staticmethod
     def xgb_grid_search():
+
+        log_path = grid_search_log_path + 'xgb'
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
@@ -451,13 +455,16 @@ class GridSearch:
                            #  'seed': 1
                            }
 
-        model.grid_search(x_train, y_train, e_train, clf, n_valid=4, n_cv=20, params=parameters_grid)
+        model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
+                          params=parameters, params_grid=parameters_grid)
 
         print_grid_info('XGBoost', parameters, parameters_grid)
 
     # LightGBM
     @staticmethod
     def lgb_grid_search():
+
+        log_path = grid_search_log_path + 'lgb'
 
         print('\nModel: XGBoost \n')
 
@@ -500,7 +507,8 @@ class GridSearch:
         print(parameters_grid)
         print('\n')
 
-        model.grid_search(x_train, y_train, e_train, e_train, clf, n_valid=4, n_cv=20, params=parameters_grid)
+        model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
+                          params=parameters, params_grid=parameters_grid)
 
         print_grid_info('LightGBM', parameters, parameters_grid)
 
@@ -509,6 +517,9 @@ if __name__ == "__main__":
 
     if not isdir(pred_path):
         os.makedirs(pred_path)
+
+    if not isdir(grid_search_log_path):
+        os.makedirs(grid_search_log_path)
 
     start_time = time.time()
 
