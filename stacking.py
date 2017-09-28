@@ -6,7 +6,7 @@ import numpy as np
 class Stacking:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_tr_g, x_te_g,
-                 pred_path, params_l1, params_l2, params_l3):
+                 pred_path, stack_output_path, hyper_params, params_l1, params_l2, params_l3):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -17,11 +17,15 @@ class Stacking:
         self.x_g_train = x_tr_g
         self.x_g_test = x_te_g
         self.pred_path = pred_path
+        self.stack_output_path = stack_output_path
         self.parameters_l1 = params_l1
         self.parameters_l2 = params_l2
         self.parameters_l3 = params_l3
         self.g_train = x_tr_g[:,-1]
         self.g_test = x_te_g[:, -1]
+        self.n_valid = hyper_params['n_valid']
+        self.n_era = hyper_params['n_era']
+        self.n_epoch = hyper_params['n_epoch']
 
     def init_models_layer1(self, dnn_l1_params):
 
@@ -203,9 +207,15 @@ class Stacking:
         x_outputs_l1, test_outputs_l1, x_g_outputs_l1, test_g_outputs_l1 \
             = self.train_layer(models_l1, self.parameters_l1, self.x_train, self.y_train, self.w_train,
                                self.e_train, self.x_g_train, self.x_test, self.x_g_test,
-                               CV_stack, n_valid=4, n_era=20, n_epoch=1, x_train_reuse=None)
+                               CV_stack, n_valid=self.n_valid[0], n_era=self.n_era[0],
+                               n_epoch=self.n_epoch[0], x_train_reuse=None)
 
+        # Save predicted test prob
         utils.save_pred_to_csv(self.pred_path + 'stack_l1_', self.id_test, test_outputs_l1)
+
+        # Save layer outputs
+        utils.save_stack_outputs(self.stack_output_path + 'l1_',
+                                 x_outputs_l1, test_outputs_l1, x_g_outputs_l1, test_g_outputs_l1)
 
         layer1_time = time.time() - start_time
         print('==============================================')
@@ -221,9 +231,15 @@ class Stacking:
         x_outputs_l2, test_outputs_l2, x_g_outputs_l2, test_g_outputs_l2 \
             = self.train_layer(models_l2, self.parameters_l2, x_outputs_l1, self.y_train, self.w_train,
                                self.e_train, x_g_outputs_l1, test_outputs_l1, test_g_outputs_l1,
-                               CV_stack, n_valid=4, n_era=20, n_epoch=1, x_train_reuse=None)
+                               CV_stack, n_valid=self.n_valid[1], n_era=self.n_era[1],
+                               n_epoch=self.n_epoch[1], x_train_reuse=None)
 
+        # Save predicted test prob
         utils.save_pred_to_csv(self.pred_path + 'stack_l2_', self.id_test, test_outputs_l2)
+
+        # Save layer outputs
+        utils.save_stack_outputs(self.stack_output_path + 'l2_',
+                                 x_outputs_l2, test_outputs_l2, x_g_outputs_l2, test_g_outputs_l2)
 
         layer2_time = time.time() - start_time
         print('----------------------------------------------')
@@ -235,12 +251,18 @@ class Stacking:
         print('Start training layer 3...')
         models_l3 = self.init_models_layer3(dnn_l3_params)
 
-        _, test_outputs_l3, _, _ \
+        x_outputs_l3, test_outputs_l3, x_g_outputs_l3, test_g_outputs_l3 \
             = self.train_layer(models_l3, self.parameters_l3, x_outputs_l2, self.y_train, self.w_train,
                                self.e_train, x_g_outputs_l2, test_outputs_l2, test_g_outputs_l2,
-                               CV_stack, n_valid=4, n_era=20, n_epoch=1, x_train_reuse=None)
+                               CV_stack, n_valid=self.n_valid[2], n_era=self.n_era[2],
+                               n_epoch=self.n_epoch[2], x_train_reuse=None)
 
-        utils.save_pred_to_csv(self.pred_path + 'final_results/stack_', self.id_test, test_outputs_l3)
+        # Save predicted test prob
+        utils.save_pred_to_csv(self.pred_path + 'stack_l3_', self.id_test, test_outputs_l3)
+
+        # Save layer outputs
+        utils.save_stack_outputs(self.stack_output_path + 'l3_',
+                                 x_outputs_l3, test_outputs_l3, x_g_outputs_l3, test_g_outputs_l3)
 
         layer3_time = time.time() - start_time
         print('----------------------------------------------')
@@ -248,10 +270,14 @@ class Stacking:
         print('Time: {}s'.format(layer3_time))
         print('==============================================')
 
+        # Save predicted test prob
+        final_result = test_outputs_l3
+        utils.save_pred_to_csv(self.pred_path + 'final_results/stack_', self.id_test, final_result)
+
         total_time = time.time() - start_time
         print('==============================================')
         print('Training Finished!')
-        print('Toal Time: {}s'.format(total_time))
+        print('Total Time: {}s'.format(total_time))
         print('==============================================')
 
 

@@ -13,6 +13,7 @@ pred_path = './results/'
 grid_search_log_path = './grid_search_logs/'
 loss_log_path = './loss_logs/'
 importance_log_path = './importance_logs/'
+stack_output_path = './stacking_outputs/'
 
 
 # Train single model
@@ -675,7 +676,8 @@ class GridSearch:
 class ModelStacking:
 
     # Parameters for layer1
-    def get_layer1_params(self):
+    @staticmethod
+    def get_layer1_params():
 
         # Parameters of LightGBM
         lgb_params = {'learning_rate': 0.002,
@@ -816,7 +818,8 @@ class ModelStacking:
         return layer1_prams
 
     # Parameters for layer2
-    def get_layer2_params(self):
+    @staticmethod
+    def get_layer2_params():
 
         # Parameters of LightGBM
         lgb_params = {'learning_rate': 0.002,
@@ -854,7 +857,8 @@ class ModelStacking:
         return layer2_prams
 
     # Parameters for layer3
-    def get_layer3_params(self):
+    @staticmethod
+    def get_layer3_params():
 
         # Parameters of Deep Neural Network
         dnn_params = {'version': '1.0',
@@ -872,23 +876,27 @@ class ModelStacking:
 
         return layer3_prams
 
-    def train(self):
+    @staticmethod
+    def train():
 
-        layer1_prams = self.get_layer1_params()
-        layer2_prams = self.get_layer2_params()
-        layer3_prams = self.get_layer3_params()
+        hyper_params = {'n_valid': (4, 4, 4),
+                        'n_era': (20, 20, 20),
+                        'n_epoch': (1, 1, 1)}
+
+        layer1_prams = ModelStacking.get_layer1_params()
+        layer2_prams = ModelStacking.get_layer2_params()
+        layer3_prams = ModelStacking.get_layer3_params()
+
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
         STK = stacking.Stacking(x_train, y_train, w_train, e_train,
                                 x_test, id_test, x_train_g, x_test_g,
-                                pred_path, layer1_prams, layer2_prams, layer3_prams)
+                                pred_path, stack_output_path,
+                                hyper_params, layer1_prams, layer2_prams, layer3_prams)
 
         STK.stack()
-
-
-
 
 
 if __name__ == "__main__":

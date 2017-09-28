@@ -91,6 +91,17 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv,
         f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
 
 
+# Saving stacking outputs of layers
+def save_stack_outputs(output_path, x_outputs, test_outputs, x_g_outputs, test_g_outputs):
+
+    print('Saving stacking outputs of layer...')
+
+    save_np_to_pkl(x_outputs, output_path + 'x_outputs.p')
+    save_np_to_pkl(test_outputs, output_path + 'test_outputs.p')
+    save_np_to_pkl(x_g_outputs, output_path + 'x_g_outputs.p')
+    save_np_to_pkl(test_g_outputs, output_path + 'test_g_outputs.p')
+
+
 # Load Data
 def load_pkl_to_np(data_path):
 

@@ -814,7 +814,7 @@ class DataPreProcess:
             self.x_test.loc[:, each] = (self.x_test[each] - mean)/std
 
     # Convert column 'group' to dummies
-    def convert_group(self):
+    def convert_group_to_dummies(self):
 
         print('Converting groups to dummies...')
 
@@ -913,7 +913,7 @@ class DataPreProcess:
         # self.scale()
 
         # Convert column 'group' to dummies
-        self.convert_group()
+        self.convert_group_to_dummies()
 
         # Save Data to pickle files
         self.save_data_pd()
