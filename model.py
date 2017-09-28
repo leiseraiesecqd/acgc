@@ -1630,12 +1630,8 @@ class DeepNeuralNetworks:
             # Optimizer
             optimizer = tf.train.AdamOptimizer(lr).minimize(cost_)
 
-            # LogLoss
-            #  with tf.name_scope('LogLoss'):
-            #      logloss = log_loss(logits, loss_weights, labels)
-
         # Training
-        print('Training...')
+        print('Training DNN...')
 
         with tf.Session(graph=train_graph) as sess:
 
@@ -1740,10 +1736,7 @@ class DeepNeuralNetworks:
                 # Prediction
                 print('Predicting...')
 
-                logits_pred = sess.run(logits, {inputs: self.x_test,
-                                                keep_prob: 1.0,
-                                                is_train: False})
-
+                logits_pred = sess.run(logits, {inputs: self.x_test, keep_prob: 1.0, is_train: False})
                 logits_pred = logits_pred.flatten()
                 prob_test = 1.0 / (1.0 + np.exp(-logits_pred))
                 prob_total.append(prob_test)
@@ -1756,6 +1749,109 @@ class DeepNeuralNetworks:
             prob_mean = np.mean(np.array(prob_total), axis=0)
 
             utils.save_pred_to_csv(pred_path + 'final_results/dnn_', self.id_test, prob_mean)
+
+    def stack_train(self, x_train, y_train, w_train, x_g_train,
+                    x_valid, y_valid, w_valid, x_g_valid, parameters=None):
+
+        print('------------------------------------------------------')
+        print('Training Deep Neural Network...')
+
+        # Build Network
+        tf.reset_default_graph()
+        train_graph = tf.Graph()
+
+        with train_graph.as_default():
+
+            # Inputs
+            feature_num = self.x_train.shape[1]
+            inputs, labels, weights, lr, keep_prob, is_train = self.input_tensor(feature_num)
+
+            # Logits
+            logits = self.model(inputs, self.unit_number, keep_prob, is_train)
+            logits = tf.identity(logits, name='logits')
+
+            # Loss
+            with tf.name_scope('Loss'):
+                # cost_ = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels))
+                cost_ = self.log_loss(logits, weights, labels)
+
+            # Optimizer
+            optimizer = tf.train.AdamOptimizer(lr).minimize(cost_)
+
+        with tf.Session(graph=train_graph) as sess:
+
+            start_time = time.time()
+            batch_counter = 0
+            sess.run(tf.global_variables_initializer())
+
+            for epoch_i in range(self.epochs):
+
+                for batch_i, (batch_x, batch_y, batch_w) in enumerate(self.get_batches(x_train,
+                                                                                       y_train,
+                                                                                       w_train,
+                                                                                       self.batch_size)):
+
+                    batch_counter += 1
+
+                    _, cost_train = sess.run([optimizer, cost_],
+                                             {inputs: batch_x,
+                                              labels: batch_y,
+                                              weights: batch_w,
+                                              lr: self.learning_rate,
+                                              keep_prob: self.keep_probability,
+                                              is_train: True})
+
+                    if batch_counter % self.display_step == 0 and batch_i > 0:
+
+                        cost_valid_all = []
+
+                        for iii, (valid_batch_x,
+                                  valid_batch_y,
+                                  valid_batch_w) in enumerate(self.get_batches(x_valid,
+                                                                               y_valid,
+                                                                               w_valid,
+                                                                               self.batch_size)):
+                            cost_valid_i = sess.run(cost_,{inputs: valid_batch_x,
+                                                           labels: valid_batch_y,
+                                                           weights: valid_batch_w,
+                                                           keep_prob: 1.0,
+                                                           is_train: False})
+
+                            cost_valid_all.append(cost_valid_i)
+
+                        cost_valid = sum(cost_valid_all) / len(cost_valid_all)
+
+                        total_time = time.time() - start_time
+
+                        print('Epoch: {}/{} |'.format(epoch_i + 1, self.epochs),
+                              'Batch: {} |'.format(batch_counter),
+                              'Time: {:>3.2f}s |'.format(total_time),
+                              'Train_Loss: {:>.8f} |'.format(cost_train),
+                              'Valid_Loss: {:>.8f}'.format(cost_valid))
+
+            # Prediction
+            print('Predicting...')
+
+            logits_pred_train = sess.run(logits, {inputs: x_train, keep_prob: 1.0, is_train: False})
+            logits_pred_valid = sess.run(logits, {inputs: x_valid, keep_prob: 1.0, is_train: False})
+            logits_pred_test = sess.run(logits, {inputs: self.x_test, keep_prob: 1.0, is_train: False})
+
+            logits_pred_train = logits_pred_train.flatten()
+            logits_pred_valid = logits_pred_valid.flatten()
+            logits_pred_test = logits_pred_test.flatten()
+
+            prob_train = 1.0 / (1.0 + np.exp(-logits_pred_train))
+            prob_valid = 1.0 / (1.0 + np.exp(-logits_pred_valid))
+            prob_test = 1.0 / (1.0 + np.exp(-logits_pred_test))
+
+            loss_train, loss_valid, \
+                loss_train_w, loss_valid_w = utils.print_loss_dnn(prob_train, prob_valid,
+                                                                  y_train, w_train, y_valid, w_valid)
+
+            losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
+
+            return prob_valid, prob_test, losses
+
 
 # DNN using Keras
 
@@ -1854,35 +1950,6 @@ class KerasDeepNeuralNetworks:
         prob_mean = np.mean(np.array(prob_total), axis=0)
 
         utils.save_pred_to_csv(pred_path + 'final_results/dnn_keras_', self.id_test, prob_mean)
-
-# DNN for Stacking
-
-class StackingLayer1:
-
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, parameters):
-
-        # Inputs
-        self.x_train = x_tr
-        self.y_train = y_tr
-        self.w_train = w_tr
-        self.e_train = e_tr
-        self.x_test = x_te
-        self.id_test = id_te
-
-        # Hyperparameters
-        self.version = parameters['version']
-        self.epochs = parameters['epochs']
-        self.layers_number = parameters['layers_number']
-        self.unit_number = parameters['unit_number']
-        self.learning_rate = parameters['learning_rate']
-        self.keep_probability = parameters['keep_probability']
-        self.batch_size = parameters['batch_size']
-        self.display_step = parameters['display_step']
-        self.save_path = parameters['save_path']
-        self.log_path = parameters['log_path']
-
-
-
 
 # Cross Validation
 

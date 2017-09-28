@@ -283,7 +283,7 @@ class GridSearch:
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-        parameters = {'n_estimators': 30,
+        parameters = {'n_estimators': 32,
                       'bootstrap': True,
                       'class_weight': None,
                       'criterion': 'gini',
@@ -307,11 +307,11 @@ class GridSearch:
         # parameters_grid = None
 
         parameters_grid = {
-                           'n_estimators': (30, 31, 32),
-                           'max_depth': (1, 2, 3),
+                           # 'n_estimators': (30, 31, 32),
+                           'max_depth': (2, 3),
                            # 'max_features': (6, 7),
-                           'min_samples_leaf': (285, 288, 291, 294, 297),
-                           'min_samples_split': (3900, 3910, 3920, 3930, 3940, 3950, 3960, 3970, 3980, 3990)
+                           'min_samples_leaf': (286, 287),
+                           'min_samples_split': (3972, 3974, 3976, 3978)
                            }
 
         model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
@@ -521,6 +521,9 @@ if __name__ == "__main__":
     if not isdir(pred_path):
         os.makedirs(pred_path)
 
+    if not isdir(pred_path + 'final_results/'):
+        os.makedirs(pred_path + 'final_results/')
+
     if not isdir(grid_search_log_path):
         os.makedirs(grid_search_log_path)
 
@@ -549,11 +552,11 @@ if __name__ == "__main__":
     # lgb_train_sklearn()
 
     # DNN
-    dnn_tf_train()
+    # dnn_tf_train()
     # dnn_keras_train()
 
     # Grid Search
-    # GridSearch.rf_grid_search()
+    GridSearch.rf_grid_search()
     # GridSearch.ab_grid_search()
     #  GridSearch.xgb_grid_search()
     #  GridSearch.lgb_grid_search()

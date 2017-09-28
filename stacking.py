@@ -5,7 +5,7 @@ from model import CrossValidation
 
 class Stacking:
 
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_tr_g, x_te_g, pred_path, params):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_tr_g, x_te_g, pred_path, params_l1, params_l2):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -16,40 +16,43 @@ class Stacking:
         self.x_train_g = x_tr_g
         self.x_test_g = x_te_g
         self.pred_path = pred_path
-        self.parameters = params
+        self.parameters_l1 = params_l1
+        self.parameters_l2 = params_l2
         self.models_l1 = self.init_models_layer1()
-        self.models_stack1 = []
+        self.models_l2 = []
 
     def init_models_layer1(self):
 
-        LGB = model.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
-                             self.x_test, self.id_test, self.x_train_g, self.x_test_g)
-        XGB = model.XGBoost(self.x_train, self.y_train, self.w_train,
-                            self.e_train, self.x_test, self.id_test)
-        AB = model.AdaBoost(self.x_train, self.y_train, self.w_train,
-                            self.e_train, self.x_test, self.id_test)
-        RF = model.RandomForest(self.x_train, self.y_train, self.w_train,
-                                self.e_train, self.x_test, self.id_test)
-        ET = model.ExtraTrees(self.x_train, self.y_train, self.w_train,
-                              self.e_train, self.x_test, self.id_test)
-        GB = model.GradientBoosting(self.x_train, self.y_train, self.w_train,
-                                    self.e_train, self.x_test, self.id_test)
+        LGB_L1 = model.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
+                                self.x_test, self.id_test, self.x_train_g, self.x_test_g)
+        XGB_L1 = model.XGBoost(self.x_train, self.y_train, self.w_train,
+                               self.e_train, self.x_test, self.id_test)
+        AB_L1 = model.AdaBoost(self.x_train, self.y_train, self.w_train,
+                               self.e_train, self.x_test, self.id_test)
+        RF_L1 = model.RandomForest(self.x_train, self.y_train, self.w_train,
+                                   self.e_train, self.x_test, self.id_test)
+        ET_L1 = model.ExtraTrees(self.x_train, self.y_train, self.w_train,
+                                 self.e_train, self.x_test, self.id_test)
+        GB_L1 = model.GradientBoosting(self.x_train, self.y_train, self.w_train,
+                                       self.e_train, self.x_test, self.id_test)
+        DNN_L1 = model.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
+                                          self.e_train, self.x_test, self.id_test, self.parameters_l1[-1])
 
-        models = [LGB, XGB, AB, RF, ET, GB]
+        models_l1 = [LGB_L1, XGB_L1, AB_L1, RF_L1, ET_L1, GB_L1, DNN_L1]
 
-        return models
+        return models_l1
 
-    def init_stack_models_layer1(self, x_train_g_stack1, x_test_g_stack1):
+    def init_models_layer2(self, x_train_g_l2, x_test_g_l2):
 
-        DNN = model.StackingLayer1(self.x_train, self.y_train, self.w_train, self.e_train,
-                                   self.x_test, self.id_test)
+        DNN_L2 = model.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
+                                          self.e_train, self.x_test, self.id_test, self.parameters_l2[-1])
 
-        LGB = model.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
-                             self.x_test, self.id_test, x_train_g_stack1, x_test_g_stack1)
+        LGB_L2 = model.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
+                                self.x_test, self.id_test, x_train_g_l2, x_test_g_l2)
 
-        models = [DNN, LGB]
+        models_l2 = [DNN_L2, LGB_L2]
 
-        return models
+        return models_l2
 
     def train_layer1(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid, idx_valid):
 
@@ -63,7 +66,7 @@ class Stacking:
             # Training on each model in models_l1 using one cross validation set
             prob_valid, prob_test, losses = \
                 model.stastack_train(x_train, y_train, w_train, x_g_train,
-                                     x_valid, y_valid, w_valid, x_g_valid, self.parameters[iter_model])
+                                     x_valid, y_valid, w_valid, x_g_valid, self.parameters_l1[iter_model])
 
             all_model_valid_prob.append(prob_valid)
             all_model_test_prob.append(prob_test)
@@ -76,18 +79,18 @@ class Stacking:
 
         return blender_valid_layer1_cv, blender_test_layer1_cv, blender_losses_layer1_cv
 
-    def stack1(self, x_train_stack1, x_test_stack1, x_train_g_stack1, x_test_g_stack1, n_valid_stack1, n_cv_stack1):
+    def train_layer2(self, x_train_l2, x_test_l2, x_train_g_l2, x_test_g_l2, n_valid_l2, n_cv_l2):
 
-        CV_Stack1 = CrossValidation()
+        CV_l2 = CrossValidation()
 
         for x_train, y_train, w_train, x_g_train, x_valid, y_valid, \
-            w_valid, x_g_valid, valid_index in CV_Stack1.era_k_fold_for_stack(x=self.x_train,
+            w_valid, x_g_valid, valid_index in CV_l2.era_k_fold_for_stack(x=self.x_train,
                                                                               y=self.y_train,
                                                                               w=self.w_train,
                                                                               e=self.e_train,
                                                                               x_g=self.x_train_g,
-                                                                              n_valid=n_valid_stack1,
-                                                                              n_cv=n_cv_stack1):
+                                                                              n_valid=n_valid_l2,
+                                                                              n_cv=n_cv_l2):
 
             all_model_valid_prob = []
             all_model_test_prob = []
@@ -97,20 +100,20 @@ class Stacking:
                 # Training on each model in models_l1 using one cross validation set
                 prob_valid, prob_test, losses = \
                     model.stastack_train(x_train, y_train, w_train, x_g_train,
-                                         x_valid, y_valid, w_valid, x_g_valid, self.parameters[iter_model])
+                                         x_valid, y_valid, w_valid, x_g_valid, self.parameters_l2[iter_model])
 
                 all_model_valid_prob.append(prob_valid)
                 all_model_test_prob.append(prob_test)
                 all_model_losses.append(losses)
 
             # Blenders of one cross validation set
-            blender_valid_stack1_cv = np.array(all_model_valid_prob, dtype=np.float64)
-            blender_test_stack1_cv = np.array(all_model_test_prob, dtype=np.float64)
-            blender_losses_stack1_cv = np.array(all_model_losses, dtype=np.float64)
+            blender_valid_l2_cv = np.array(all_model_valid_prob, dtype=np.float64)
+            blender_test_l2_cv = np.array(all_model_test_prob, dtype=np.float64)
+            blender_losses_l2_cv = np.array(all_model_losses, dtype=np.float64)
 
-        return blender_prob_stack1, blender_test_stack1
+        return blender_prob_l2, blender_test_l2
 
-    def stack(self, pred_path=None, n_valid=4, n_cv_l1=5, n_cv_l2=10, n_valid_stack1=4, n_cv_stack1=16):
+    def stack(self, pred_path=None, n_valid=4, n_cv_l1=5, n_cv_l2=10, n_valid_l2=4, n_cv_l2=16):
 
         CV_stack = model.CrossValidation()
 
@@ -159,23 +162,23 @@ class Stacking:
                 blender_valid_layer1_sorted[:, idx] = blender_valid_layer1[:, column]
             blender_valid_layer1_sorted = np.delete(blender_valid_layer1_sorted, 0, axis=0)
 
-            x_train_stack1 = blender_valid_layer1_sorted.transpose()
-            x_test_stack1 = blender_test_layer1.transpose()
+            x_train_l2 = blender_valid_layer1_sorted.transpose()
+            x_test_l2 = blender_test_layer1.transpose()
 
             g_train = self.x_train_g[:, -1]
             g_test = self.x_test_g[:, -1]
-            x_train_g_stack1 = np.column_stack((x_train_stack1, g_train))
-            x_test_g_stack1 = np.column_stack((x_test_stack1, g_test))
+            x_train_g_l2 = np.column_stack((x_train_l2, g_train))
+            x_test_g_l2 = np.column_stack((x_test_l2, g_test))
 
-            self.models_stack1 = self.init_stack_models_layer1(self, x_train_g_stack1, x_test_g_stack1)
+            self.models_l2 = self.init_models_layer2(x_train_g_l2, x_test_g_l2)
 
             # Stack layer1
-            blender_prob_stack1, blender_test_stack1 = self.stack1(x_train_stack1,
-                                                                   x_test_stack1,
-                                                                   x_train_g_stack1,
-                                                                   x_test_g_stack1,
-                                                                   n_valid_stack1=n_valid_stack1,
-                                                                   n_cv_stack1=n_cv_stack1)
+            blender_prob_l2, blender_test_l2 = self.l2(x_train_l2,
+                                                                   x_test_l2,
+                                                                   x_train_g_l2,
+                                                                   x_test_g_l2,
+                                                                   n_valid_l2=n_valid_l2,
+                                                                   n_cv_l2=n_cv_l2)
 
 
 
