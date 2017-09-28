@@ -155,17 +155,18 @@ def print_loss_proba(model, x_t, y_t, w_t, x_v, y_v, w_v):
 
 # Save Grid Search Logs
 
-def seve_grid_search_log(log_path, params, params_grid, best_score, best_parameters):
+def seve_grid_search_log(log_path, params, params_grid, best_score, best_parameters, total_time):
 
     with open(log_path + 'grid_search_log.txt', 'a') as f:
 
         f.write('=====================================================\n')
-        f.write('Best score: {:.6f}\n'.format(best_score))
+        f.write('Total Time: {:.3f}\n'.format(total_time))
+        f.write('Best Score: {:.6f}\n'.format(best_score))
         f.write('Parameters:\n')
         f.write('\t' + str(params) + '\n\n')
         f.write('Parameters Grid:\n')
         f.write('\t' + str(params_grid) + '\n\n')
-        f.write('Best parameters set:\n')
+        f.write('Best Parameters Set:\n')
         for param_name in sorted(params_grid.keys()):
             f.write('\t' + str(param_name) + ': {}\n'.format(str(best_parameters[param_name])))
 

@@ -1474,7 +1474,6 @@ class DeepNeuralNetworks:
         # Hyperparameters
         self.version = parameters['version']
         self.epochs = parameters['epochs']
-        self.layers_number = parameters['layers_number']
         self.unit_number = parameters['unit_number']
         self.learning_rate = parameters['learning_rate']
         self.keep_probability = parameters['keep_probability']
@@ -1545,12 +1544,14 @@ class DeepNeuralNetworks:
 
             out = tf.contrib.layers.fully_connected(x_tensor,
                                                     num_outputs,
-                                                    activation_fn=None)
+                                                    activation_fn=None,
+                                                    weights_initializer=tf.contrib.layers.xavier_initializer(dtype=tf.float64),
+                                                    biases_initializer=tf.zeros_initializer())
 
         return out
 
     # Model
-    def model(self, x, n_layers, n_unit, keep_prob, is_training):
+    def model(self, x, n_unit, keep_prob, is_training):
 
         #  fc1 = fc_layer(x, 'fc1', n_unit[0], keep_prob)
         #  fc2 = fc_layer(fc1, 'fc2', n_unit[1], keep_prob)
@@ -1563,10 +1564,10 @@ class DeepNeuralNetworks:
         fc = []
         fc.append(x)
 
-        for i in range(n_layers):
+        for i in range(len(n_unit)):
             fc.append(self.fc_layer(fc[i], 'fc{}'.format(i + 1), n_unit[i], keep_prob, is_training))
 
-        logit_ = self.output_layer(fc[n_layers], 'output', 1)
+        logit_ = self.output_layer(fc[len(n_unit)], 'output', 1)
 
         return logit_
 
@@ -2416,6 +2417,8 @@ class CrossValidation:
 
 def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, params, params_grid):
 
+    start_tinme = time.time()
+
     grid_search = GridSearchCV(estimator=clf,
                                param_grid=params_grid,
                                scoring='neg_log_loss',
@@ -2438,7 +2441,9 @@ def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, params, params_g
     for param_name in sorted(params.keys()):
         print('\t%s: %r' % (param_name, best_parameters[param_name]))
 
-    utils.seve_grid_search_log(log_path, params, params_grid, best_score, best_parameters)
+    total_time = time.time() - start_tinme
+
+    utils.seve_grid_search_log(log_path, params, params_grid, best_score, best_parameters, total_time)
 
 
 
