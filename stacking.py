@@ -5,7 +5,7 @@ from model import CrossValidation
 
 class Stacking:
 
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_tr_g, x_te_g, pred_path, params_l1, params_l2):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_tr_g, x_te_g, pred_path, params_l1, params_l2, params_l3):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -18,6 +18,9 @@ class Stacking:
         self.pred_path = pred_path
         self.parameters_l1 = params_l1
         self.parameters_l2 = params_l2
+        self.parameters_l3 = params_l3
+        self.g_train = x_tr_g[:,-1]
+        self.g_test = x_te_g[:, -1]
 
     def init_models_layer1(self, dnn_l1_params):
 
@@ -40,17 +43,26 @@ class Stacking:
 
         return models_l1
 
-    def init_models_layer2(self, dnn_l2_params, x_g_train_l2, x_g_test_l2):
+    def init_models_layer2(self, dnn_l2_params):
 
         DNN_L2 = model.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
                                           self.e_train, self.x_test, self.id_test, dnn_l2_params)
 
         LGB_L2 = model.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
-                                self.x_test, self.id_test, x_g_train_l2, x_g_test_l2)
+                                self.x_test, self.id_test, self.x_g_train, self.x_g_test)
 
         models_l2 = [DNN_L2, LGB_L2]
 
         return models_l2
+
+    def init_models_layer3(self, dnn_l3_params):
+
+        DNN_L3 = model.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
+                                          self.e_train, self.x_test, self.id_test, dnn_l3_params)
+
+        models_l3 = [DNN_L3]
+
+        return models_l3
 
     def train_models(self, models, params, x_train, y_train, w_train, x_g_train,
                     x_valid, y_valid, w_valid, x_g_valid, idx_valid, x_test, x_g_test):
@@ -72,101 +84,117 @@ class Stacking:
             all_model_losses.append(losses)
 
         # Blenders of one cross validation set
-        blender_valid_cv = np.array(all_model_valid_prob, dtype=np.float64)
-        blender_test_cv = np.array(all_model_test_prob, dtype=np.float64)
-        blender_losses_cv = np.array(all_model_losses, dtype=np.float64)
+        blender_valid_cv = np.array(all_model_valid_prob, dtype=np.float64)  # (n_model+1) * n_valid_sample
+        blender_test_cv = np.array(all_model_test_prob, dtype=np.float64)    # n_model * n_test_sample
+        blender_losses_cv = np.array(all_model_losses, dtype=np.float64)     # n_model * n_loss
 
         return blender_valid_cv, blender_test_cv, blender_losses_cv
 
-    def train_layer(self, models, x_train_inputs, y_train_inputs, w_train_inputs, e_train_inputs, 
-                    x_g_train_inputs, x_test, x_g_test, params, CV_stack, n_valid, n_cv_l1):
+    def train_layer(self, models, params, x_train_inputs, y_train_inputs, w_train_inputs,
+                    e_train_inputs, x_g_train_inputs, x_test, x_g_test,
+                    CV, n_valid=4, n_era=20, n_epoch=1, x_train_reuse=None):
 
-        counter_layer1_cv = 0
+        if n_era%n_valid != 0:
+            assert ValueError('n_era must be an integer multiple of n_valid!')
 
-        blender_valid = np.array([])
-        blender_test = np.array([])
-        blender_losses = np.array([])
+        # Stack Reused Features
+        x_train_inputs = np.column_stack((x_train_inputs, x_train_reuse))
+        x_g_train_inputs = np.column_stack((x_g_train_inputs, x_train_reuse))
 
-        for x_train, y_train, w_train, x_g_train, \
-            x_valid, y_valid, w_valid, x_g_valid, valid_index in CV_stack.era_k_fold_for_stack(x=x_train_inputs,
-                                                                                               y=y_train_inputs,
-                                                                                               w=w_train_inputs,
-                                                                                               e=e_train_inputs,
-                                                                                               x_g=x_g_train_inputs,
-                                                                                               n_valid=n_valid,
-                                                                                               n_cv=n_cv_l1):
-            counter_layer1_cv += 1
+        n_cv = int(n_era // n_valid)
+        blender_x_prob = np.array([])
+        blender_test_prob = np.array([])
 
-            print('======================================================')
-            print('Training on the Cross Validation Set: {}/{}'.format(counter_layer1_cv, n_cv_l1))
+        for epoch in range(n_epoch):
 
-            # Training on models and get blenders of one cross validation set
-            blender_valid_cv, blender_test_cv, \
-                blender_losses_cv = self.train_models(models, params, x_train, y_train, w_train, x_g_train,
-                                                      x_valid, y_valid, w_valid, x_g_valid, valid_index,
-                                                      x_test, x_g_test)
+            counter_cv = 0
+            blender_valid = np.array([])
+            blender_test = np.array([])
+            # blender_losses = np.array([])
 
-            # Add blenders of one cross validation set to blenders of all CV
-            if counter_layer1_cv == 1:
-                blender_valid = blender_valid_cv
-                blender_test = blender_test_cv
-                blender_losses = blender_losses_cv
+            for x_train, y_train, w_train, x_g_train, \
+                x_valid, y_valid, w_valid, x_g_valid, valid_index in CV.era_k_fold_for_stack(x=x_train_inputs,
+                                                                                             y=y_train_inputs,
+                                                                                             w=w_train_inputs,
+                                                                                             e=e_train_inputs,
+                                                                                             x_g=x_g_train_inputs,
+                                                                                             n_valid=n_valid,
+                                                                                             n_cv=n_cv):
+                counter_cv += 1
+
+                print('======================================================')
+                print('Training on the Cross Validation Set: {}/{}'.format(counter_cv, n_cv))
+
+                # Training on models and get blenders of one cross validation set
+                blender_valid_cv, blender_test_cv, \
+                    blender_losses_cv = self.train_models(models, params, x_train, y_train, w_train, x_g_train,
+                                                          x_valid, y_valid, w_valid, x_g_valid, valid_index,
+                                                          x_test, x_g_test)
+
+                # Add blenders of one cross validation set to blenders of all CV
+                if counter_cv == 1:
+                    blender_valid = blender_valid_cv
+                    blender_test = blender_test_cv
+                    # blender_losses = blender_losses_cv
+                else:
+                    blender_valid = np.concatenate((blender_valid, blender_valid_cv), axis=1)  # (n_model + 1) * n_sample
+                    blender_test = np.concatenate((blender_test, blender_test_cv), axis=0)     # (n_model x n_cv) * n_test_sample
+                    # blender_losses = np.concatenate((blender_losses, blender_losses_cv), axis=1)
+
+            # Sort blender_valid by valid_index
+            blender_valid_sorted = np.zeros_like(blender_valid, dtype=np.float64)  # n_model*n_sample
+            for column, idx in enumerate(blender_valid[0]):
+                blender_valid_sorted[:, idx] = blender_valid[:, column]
+            blender_valid_sorted = np.delete(blender_valid_sorted, 0, axis=0)  # n_model*n_sample
+
+            # Transpose blenders
+            blender_x_e = blender_valid_sorted.transpose()  # n_sample * n_model
+            blender_test_e = blender_test.transpose()           # n_test_sample * (n_model x n_cv)
+
+            if epoch == 0:
+                blender_x_prob = blender_x_e
+                blender_test_prob = blender_test_e
             else:
-                blender_valid = np.concatenate((blender_valid, blender_valid_cv), axis=1)
-                blender_test = np.concatenate((blender_test, blender_test_cv), axis=1)
-                blender_losses = np.concatenate((blender_losses, blender_losses_cv), axis=1)
+                blender_x_prob = np.concatenate((blender_x_prob, blender_x_e), axis=1) # n_sample * (n_model x n_epoch)
+                blender_test_prob = np.concatenate((blender_test_prob, blender_test_e), axis=1)    # n_test_sample * (n_model x n_cv x n_epoch)
 
-        # Sort blender_valid by valid_index
-        blender_valid_sorted = np.zeros_like(blender_valid, dtype=np.float64)
-        for column, idx in enumerate(blender_valid[0]):
-            blender_valid_sorted[:, idx] = blender_valid[:, column]
-        blender_valid_sorted = np.delete(blender_valid_sorted, 0, axis=0)
+        # Calculate average of test_prob
+        blender_test_outputs = np.mean(blender_test_prob, axis=1)  # vector: n_test_sample
+        blender_x_outputs = blender_x_prob
 
-        x_train_outputs = blender_valid_sorted.transpose()
-        x_test_outputs = blender_test.transpose()
+        # Stack Group Features
+        blender_x_g_outputs = np.column_stack((blender_x_outputs, self.g_train))
+        blender_test_g_outputs = np.column_stack((blender_test_outputs, self.g_test))
 
-        g_train_outputs = x_g_train_inputs[:, -1]
-        g_test_outputs = x_g_test[:, -1]
-        x_g_train_outputs = np.column_stack((x_train_outputs, g_train_outputs))
-        x_g_test_outputs = np.column_stack((x_test_outputs, g_test_outputs))
+        return blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs
 
-        return x_train_outputs, x_test_outputs, x_g_train_outputs, x_g_test_outputs
-
-    def stack(self, pred_path=None, n_valid=4, n_cv_l1=5, n_cv_l2=10, n_valid_l2=4, n_cv_l2=16):
+    def stack(self, pred_path=None):
 
         CV_stack = model.CrossValidation()
 
         dnn_l1_params = self.parameters_l1[-1]
         dnn_l2_params = self.parameters_l2[-1]
+        dnn_l3_params = self.parameters_l3[-1]
 
-        counter_layer2 = 0
+        models_l1 = self.init_models_layer1(dnn_l1_params)
 
-        for iter_l2 in range(n_cv_l2):
+        x_outputs_l1, test_outputs_l1, x_g_outputs_l1, test_g_outputs_l1 \
+            = self.train_layer(models_l1, self.parameters_l1, self.x_train, self.y_train, self.w_train,
+                               self.e_train, self.x_g_train, self.x_test, self.x_g_test,
+                               CV_stack, n_valid=4, n_era=20, n_epoch=1, x_train_reuse=None)
 
-            counter_layer2 += 1
+        models_l2 = self.init_models_layer2(dnn_l2_params)
 
-            models_l1 = self.init_models_layer1(dnn_l1_params)
+        x_outputs_l2, test_outputs_l2, x_g_outputs_l2, test_g_outputs_l2 \
+            = self.train_layer(models_l2, self.parameters_l2, x_outputs_l1, self.y_train, self.w_train,
+                               self.e_train, x_g_outputs_l1, test_outputs_l1, test_g_outputs_l1,
+                               CV_stack, n_valid=4, n_era=20, n_epoch=1, x_train_reuse=None)
 
-            x_train_l2, x_test_l2, \
-                x_g_train_l2, x_g_test_l2 = self.train_layer(models_l1, self.parameters_l1,
-                                                             CV_stack, n_valid, n_cv_l1)
+        models_l3 = self.init_models_layer3(dnn_l3_params)
 
-            models_l2 = self.init_models_layer2(dnn_l2_params, x_g_train_l2, x_g_test_l2)
+        _, test_outputs_l3, _, _ \
+            = self.train_layer(models_l3, self.parameters_l3, x_outputs_l2, self.y_train, self.w_train,
+                               self.e_train, x_g_outputs_l2, test_outputs_l2, test_g_outputs_l2,
+                               CV_stack, n_valid=4, n_era=20, n_epoch=1, x_train_reuse=None)
 
-            x_train_l3, x_test_l3, \
-                x_g_train_l3, x_g_test_l3 = self.train_layer(models_l1, x_train_l2, x_test_l2, x_g_train_l2, x_g_test_l2,
-                                                             self.parameters_l1, CV_stack, n_valid, n_cv_l2)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+        return test_outputs_l3

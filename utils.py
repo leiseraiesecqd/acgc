@@ -4,7 +4,6 @@ import numpy as np
 
 
 # Save Data
-
 def save_np_to_pkl(data, data_path):
 
     print('Saving ' + data_path + '...')
@@ -13,8 +12,82 @@ def save_np_to_pkl(data, data_path):
         pickle.dump(data, f)
 
 
-# Load Data
+# Save predictions to csv file
+def save_pred_to_csv(file_path, id, prob):
+    print('Saving predictions to csv file...')
 
+    df = pd.DataFrame({'id': id, 'proba': prob})
+
+    df.to_csv(file_path + 'result.csv', sep=',', index=False, float_format='%.6f')
+
+
+# Save Grid Search Logs
+def seve_grid_search_log(log_path, params, params_grid, best_score, best_parameters, total_time):
+    with open(log_path + 'grid_search_log.txt', 'a') as f:
+        f.write('=====================================================\n')
+        f.write('Total Time: {:.3f}s\n'.format(total_time))
+        f.write('Best Score: {:.6f}\n'.format(best_score))
+        f.write('Parameters:\n')
+        f.write('\t' + str(params) + '\n\n')
+        f.write('Parameters Grid:\n')
+        f.write('\t' + str(params_grid) + '\n\n')
+        f.write('Best Parameters Set:\n')
+        for param_name in sorted(params_grid.keys()):
+            f.write('\t' + str(param_name) + ': {}\n'.format(str(best_parameters[param_name])))
+
+
+# Save Final Losses
+def save_loss_log(log_path, count, parameters, n_valid, n_cv,
+                  loss_train, loss_valid, loss_train_w, loss_valid_w):
+    with open(log_path + 'loss_log.txt', 'a') as f:
+        print('Saving Losses')
+
+        f.write('===================== CV: {}/{} =====================\n'.format(count, n_cv))
+        f.write('Validation Era: {}\n'.format(n_valid))
+        f.write('Validation Spilt Number: {}\n'.format(n_cv))
+        f.write('Parameters:\n')
+        f.write('\t' + str(parameters) + '\n\n')
+        f.write('Losses:\n')
+        f.write('\tTotal Train LogLoss: {:.6f}\n'.format(loss_train))
+        f.write('\tTotal Validation LogLoss: {:.6f}\n'.format(loss_valid))
+        f.write('\tTotal Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w))
+        f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w))
+
+
+def save_final_loss_log(log_path, parameters, n_valid, n_cv,
+                        loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean):
+    with open(log_path + 'loss_log.txt', 'a') as f:
+        print('Saving Final Losses')
+
+        f.write('==================== Final Losses ===================\n')
+        f.write('Validation Era: {}\n'.format(n_valid))
+        f.write('Validation Spilt Number: {}\n'.format(n_cv))
+        f.write('Parameters:\n')
+        f.write('\t' + str(parameters) + '\n\n')
+        f.write('Losses:\n')
+        f.write('\tTotal Train LogLoss: {:.6f}\n'.format(loss_train_mean))
+        f.write('\tTotal Validation LogLoss: {:.6f}\n'.format(loss_valid_mean))
+        f.write('\tTotal Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean))
+        f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
+        f.write('=====================================================\n')
+        f.write('=====================================================\n')
+
+    with open(log_path + 'final_loss_log.txt', 'a') as f:
+        print('Saving Final Losses')
+
+        f.write('=====================================================\n')
+        f.write('Validation Era: {}\n'.format(n_valid))
+        f.write('Validation Spilt Number: {}\n'.format(n_cv))
+        f.write('Parameters:\n')
+        f.write('\t' + str(parameters) + '\n\n')
+        f.write('Losses:\n')
+        f.write('\tTotal Train LogLoss: {:.6f}\n'.format(loss_train_mean))
+        f.write('\tTotal Validation LogLoss: {:.6f}\n'.format(loss_valid_mean))
+        f.write('\tTotal Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean))
+        f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
+
+
+# Load Data
 def load_pkl_to_np(data_path):
 
     print('Loading ' + data_path + '...')
@@ -26,7 +99,6 @@ def load_pkl_to_np(data_path):
 
 
 # Load Preprocessed Data
-
 def load_preprocessed_np_data(data_file_path):
 
     print('Loading preprocessed data...')
@@ -39,7 +111,6 @@ def load_preprocessed_np_data(data_file_path):
 
 
 # Load Preprocessed Data
-
 def load_preprocessed_pd_data(data_file_path):
 
     x_train_pd = pd.read_pickle(data_file_path + 'x_train.p')
@@ -64,7 +135,6 @@ def load_preprocessed_pd_data(data_file_path):
 
 
 # Load Preprocessed Category Data
-
 def load_preprocessed_pd_data_g(data_file_path):
 
     x_train_g_pd = pd.read_pickle(data_file_path + 'x_train_g.p')
@@ -74,23 +144,6 @@ def load_preprocessed_pd_data_g(data_file_path):
     x_test_g = np.array(x_test_g_pd, dtype=np.float64)
 
     return x_train_g, x_test_g
-
-
-# Save predictions to csv file
-
-def save_pred_to_csv(file_path, id, prob):
-
-    print('Saving predictions to csv file...')
-
-    df = pd.DataFrame({'id': id, 'proba': prob})
-
-    df.to_csv(file_path + 'result.csv', sep=',', index=False, float_format='%.6f')
-
-
-# TODO: Save importance to csv file
-
-
-# TODO: Save final loss to csv file
 
 
 # LogLoss without weight
@@ -113,6 +166,16 @@ def log_loss_with_weight(prob, y, w):
                                 np.multiply((np.ones_like(y) - y), np.log(np.ones_like(prob) - prob)))))
 
     return loss
+
+
+def print_grid_info(model_name, parameters, parameters_grid):
+    print('\nModel: ' + model_name + '\n')
+    print("Parameters:")
+    print(parameters)
+    print('\n')
+    print("Parameters' grid:")
+    print(parameters_grid)
+    print('\n')
 
 
 def print_loss(model, x_t, y_t, w_t, x_v, y_v, w_v):
@@ -167,78 +230,3 @@ def print_loss_dnn(prob_train, prob_valid, y_t, w_t, y_v, w_v):
           'Validation LogLoss with Weight: {:>.8f}\n'.format(loss_valid_w))
 
     return loss_train, loss_valid, loss_train_w, loss_valid_w
-
-
-# Save Grid Search Logs
-
-def seve_grid_search_log(log_path, params, params_grid, best_score, best_parameters, total_time):
-
-    with open(log_path + 'grid_search_log.txt', 'a') as f:
-
-        f.write('=====================================================\n')
-        f.write('Total Time: {:.3f}s\n'.format(total_time))
-        f.write('Best Score: {:.6f}\n'.format(best_score))
-        f.write('Parameters:\n')
-        f.write('\t' + str(params) + '\n\n')
-        f.write('Parameters Grid:\n')
-        f.write('\t' + str(params_grid) + '\n\n')
-        f.write('Best Parameters Set:\n')
-        for param_name in sorted(params_grid.keys()):
-            f.write('\t' + str(param_name) + ': {}\n'.format(str(best_parameters[param_name])))
-
-
-# Save Final Losses
-
-def save_loss_log(log_path, count, parameters, n_valid, n_cv,
-                  loss_train, loss_valid, loss_train_w, loss_valid_w):
-
-    with open(log_path + 'loss_log.txt', 'a') as f:
-
-        print('Saving Losses')
-
-        f.write('===================== CV: {}/{} =====================\n'.format(count, n_cv))
-        f.write('Validation Era: {}\n'.format(n_valid))
-        f.write('Validation Spilt Number: {}\n'.format(n_cv))
-        f.write('Parameters:\n')
-        f.write('\t' + str(parameters) + '\n\n')
-        f.write('Losses:\n')
-        f.write('\tTotal Train LogLoss: {:.6f}\n'.format(loss_train))
-        f.write('\tTotal Validation LogLoss: {:.6f}\n'.format(loss_valid))
-        f.write('\tTotal Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w))
-        f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w))
-
-
-def save_final_loss_log(log_path, parameters, n_valid, n_cv,
-                        loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean):
-
-    with open(log_path + 'loss_log.txt', 'a') as f:
-
-        print('Saving Final Losses')
-
-        f.write('==================== Final Losses ===================\n')
-        f.write('Validation Era: {}\n'.format(n_valid))
-        f.write('Validation Spilt Number: {}\n'.format(n_cv))
-        f.write('Parameters:\n')
-        f.write('\t' + str(parameters) + '\n\n')
-        f.write('Losses:\n')
-        f.write('\tTotal Train LogLoss: {:.6f}\n'.format(loss_train_mean))
-        f.write('\tTotal Validation LogLoss: {:.6f}\n'.format(loss_valid_mean))
-        f.write('\tTotal Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean))
-        f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
-        f.write('=====================================================\n')
-        f.write('=====================================================\n')
-
-    with open(log_path + 'final_loss_log.txt', 'a') as f:
-
-        print('Saving Final Losses')
-
-        f.write('=====================================================\n')
-        f.write('Validation Era: {}\n'.format(n_valid))
-        f.write('Validation Spilt Number: {}\n'.format(n_cv))
-        f.write('Parameters:\n')
-        f.write('\t' + str(parameters) + '\n\n')
-        f.write('Losses:\n')
-        f.write('\tTotal Train LogLoss: {:.6f}\n'.format(loss_train_mean))
-        f.write('\tTotal Validation LogLoss: {:.6f}\n'.format(loss_valid_mean))
-        f.write('\tTotal Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean))
-        f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))

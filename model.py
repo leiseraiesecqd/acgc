@@ -1167,7 +1167,6 @@ class XGBoost:
         loss_train_w_total = []
         loss_valid_w_total = []
 
-        # Use Category
         for x_train, y_train, w_train, \
             x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train,
                                                                                 y=self.y_train,
