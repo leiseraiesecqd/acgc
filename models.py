@@ -1496,10 +1496,13 @@ class LightGBM:
         print('------------------------------------------------------')
         print('Training LightGBM...')
 
+        idx_category = [len(x_g_test.shape[1])-1]
+        print('Index of categorical feature: {}'.format(idx_category))
+
         clf = self.get_clf(parameters)
 
         clf.fit(x_g_train, y_train, sample_weight=w_train,
-                categorical_feature=[88],
+                categorical_feature=idx_category,
                 eval_set=[(x_g_train, y_train), (x_g_valid, y_valid)],
                 eval_names=['train', 'eval'],
                 early_stopping_rounds=50,

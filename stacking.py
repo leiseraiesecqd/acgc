@@ -104,18 +104,20 @@ class Stacking:
                     e_train_inputs, x_g_train_inputs, x_test, x_g_test,
                     cv, n_valid=4, n_era=20, n_epoch=1, x_train_reuse=None):
 
+        n_model = len(models_blender)
         if n_era%n_valid != 0:
             assert ValueError('n_era must be an integer multiple of n_valid!')
 
         # Stack Reused Features
         print('------------------------------------------------------')
         print('Stacking Reused Features...')
-        x_train_inputs = np.column_stack((x_train_inputs, x_train_reuse))
-        x_g_train_inputs = np.column_stack((x_g_train_inputs, x_train_reuse))
+        x_train_inputs = np.concatenate((x_train_inputs, x_train_reuse), axis=1)  # n_sample * (n_feature + n_reuse)
+        x_train_group = x_g_train_inputs[:-1]
+        x_g_train_inputs = np.column_stack((x_train_inputs, x_train_group))       # n_sample * (n_feature + n_reuse + 1)
 
         n_cv = int(n_era // n_valid)
-        blender_x_prob = np.array([])
-        blender_test_prob = np.array([])
+        blender_x_outputs = np.array([])
+        blender_test_outputs = np.array([])
 
         for epoch in range(n_epoch):
 
@@ -147,39 +149,43 @@ class Stacking:
                                                           valid_index, x_test, x_g_test)
 
                 # Add blenders of one cross validation set to blenders of all CV
+                blender_test_cv = blender_test_cv.reshape(n_model, 1, -1)  # n_model * 1 * n_test_sample
                 if counter_cv == 1:
                     blender_valid = blender_valid_cv
                     blender_test = blender_test_cv
                     # blender_losses = blender_losses_cv
                 else:
-                    blender_valid = np.concatenate((blender_valid, blender_valid_cv), axis=1)  # (n_model + 1) * n_sample
-                    blender_test = np.concatenate((blender_test, blender_test_cv), axis=0)     # (n_model x n_cv) * n_test_sample
+                    # (n_model + 1) * n_sample
+                    blender_valid = np.concatenate((blender_valid, blender_valid_cv), axis=1)
+                    # n_model * n_cv * n_test_sample
+                    blender_test = np.concatenate((blender_test, blender_test_cv), axis=1)
                     # blender_losses = np.concatenate((blender_losses, blender_losses_cv), axis=1)
 
             # Sort blender_valid by valid_index
             print('------------------------------------------------------')
             print('Sorting Validation Blenders...')
-            blender_valid_sorted = np.zeros_like(blender_valid, dtype=np.float64)  # n_model*n_sample
+            blender_valid_sorted = np.zeros_like(blender_valid, dtype=np.float64)  # n_model*n_x_sample
             for column, idx in enumerate(blender_valid[0]):
                 blender_valid_sorted[:, idx] = blender_valid[:, column]
-            blender_valid_sorted = np.delete(blender_valid_sorted, 0, axis=0)      # n_model*n_sample
+            blender_valid_sorted = np.delete(blender_valid_sorted, 0, axis=0)      # n_model*n_x_sample
+
+            # Calculate average of test_prob
+            print('------------------------------------------------------')
+            print('Calculating Average of Probabilities of Test Set...')
+            blender_test_mean = np.mean(blender_test, axis=1)   # n_model * n_test_sample
 
             # Transpose blenders
             blender_x_e = blender_valid_sorted.transpose()      # n_sample * n_model
-            blender_test_e = blender_test.transpose()           # n_test_sample * (n_model x n_cv)
+            blender_test_e = blender_test_mean.transpose()      # n_test_sample * n_model
 
             if epoch == 0:
-                blender_x_prob = blender_x_e
-                blender_test_prob = blender_test_e
+                blender_x_outputs = blender_x_e
+                blender_test_outputs = blender_test_e
             else:
-                blender_x_prob = np.concatenate((blender_x_prob, blender_x_e), axis=1)             # n_sample * (n_model x n_epoch)
-                blender_test_prob = np.concatenate((blender_test_prob, blender_test_e), axis=1)    # n_test_sample * (n_model x n_cv x n_epoch)
-
-        # Calculate average of test_prob
-        print('------------------------------------------------------')
-        print('Calculating Average of Probabilities of Test Set...')
-        blender_test_outputs = np.mean(blender_test_prob, axis=1)  # vector: n_test_sample
-        blender_x_outputs = blender_x_prob
+                # n_sample * (n_model x n_epoch)
+                blender_x_outputs = np.concatenate((blender_x_outputs, blender_x_e), axis=1)
+                # n_test_sample * (n_model x n_epoch)
+                blender_test_outputs = np.concatenate((blender_test_outputs, blender_test_e), axis=1)
 
         # Stack Group Features
         print('------------------------------------------------------')
