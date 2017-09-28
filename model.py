@@ -2029,6 +2029,7 @@ class KerasDeepNeuralNetworks:
 
         utils.save_pred_to_csv(pred_path + 'final_results/dnn_keras_', self.id_test, prob_mean)
 
+
 # Cross Validation
 
 class CrossValidation:
@@ -2586,7 +2587,6 @@ def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, params, params_g
     total_time = time.time() - start_time
 
     utils.seve_grid_search_log(log_path, params, params_grid, best_score, best_parameters, total_time)
-
 
 
 if __name__ == '__main__':
