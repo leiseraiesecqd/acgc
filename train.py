@@ -14,6 +14,34 @@ loss_log_path = './loss_logs/'
 importance_log_path = './importance_logs/'
 
 
+# Logistic Regression
+
+def lr_train():
+
+    x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
+    lr_parameters = {'C': 1.0,
+                      'class_weight': None,
+                      'dual': False,
+                      'fit_intercept': 'True',
+                      'intercept_scaling': 1,
+                      'max_iter': 100,
+                      'multi_class': 'multinomial',
+                      'n_jobs': -1,
+                      'penalty': 'l2',
+                      'solver': 'sag',
+                      'tol': 0.0001,
+                      'random_state': 1,
+                      'verbose': 2,
+                      'warm_start': False}
+
+    LR = model.LRegression(x_train, y_train, w_train, e_train, x_test, id_test)
+
+    print('Start training Logistic Regression...')
+
+    LR.train(pred_path, loss_log_path, n_valid=4, n_cv=20, parameters=lr_parameters)
+
+
 # Random Forest
 
 def rf_train():
@@ -23,15 +51,15 @@ def rf_train():
     rf_parameters = {'bootstrap': True,
                      'class_weight': None,
                      'criterion': 'gini',
-                     'max_depth': 25,
-                     'max_features': 'auto',
+                     'max_depth': 2,
+                     'max_features': 7,
                      'max_leaf_nodes': None,
                      'min_impurity_decrease': 0.0,
-                     'min_samples_leaf': 50,
-                     'min_samples_split': 1000,
+                     'min_samples_leaf': 286,
+                     'min_samples_split': 3974,
                      'min_weight_fraction_leaf': 0.0,
-                     'n_estimators': 50,
-                     'n_jobs': 1,
+                     'n_estimators': 32,
+                     'n_jobs': -1,
                      'oob_score': True,
                      'random_state': 1,
                      'verbose': 2,
@@ -53,15 +81,15 @@ def et_train():
     et_parameters = {'bootstrap': True,
                      'class_weight': None,
                      'criterion': 'gini',
-                     'max_depth': 25,
-                     'max_features': 'auto',
+                     'max_depth': 2,
+                     'max_features': 7,
                      'max_leaf_nodes': None,
                      'min_impurity_decrease': 0.0,
-                     'min_samples_leaf': 50,
-                     'min_samples_split': 1000,
+                     'min_samples_leaf': 357,
+                     'min_samples_split': 4909,
                      'min_weight_fraction_leaf': 0.0,
-                     'n_estimators': 50,
-                     'n_jobs': 1,
+                     'n_estimators': 20,
+                     'n_jobs': -1,
                      'oob_score': True,
                      'random_state': 1,
                      'verbose': 2,
@@ -80,12 +108,29 @@ def ab_train():
 
     x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-    clf_et = ExtraTreesClassifier(max_depth=9)
+    et_parameters = {'bootstrap': True,
+                     'class_weight': None,
+                     'criterion': 'gini',
+                     'max_depth': 2,
+                     'max_features': 7,
+                     'max_leaf_nodes': None,
+                     'min_impurity_decrease': 0.0,
+                     'min_samples_leaf': 357,
+                     'min_samples_split': 4909,
+                     'min_weight_fraction_leaf': 0.0,
+                     'n_estimators': 20,
+                     'n_jobs': -1,
+                     'oob_score': True,
+                     'random_state': 1,
+                     'verbose': 2,
+                     'warm_start': False}
+
+    clf_et = ExtraTreesClassifier(**et_parameters)
 
     ab_parameters = {'algorithm': 'SAMME.R',
                      'base_estimator': clf_et,
-                     'learning_rate': 0.005,
-                     'n_estimators': 65,
+                     'learning_rate': 0.0051,
+                     'n_estimators': 9,
                      'random_state': 1}
 
     AB = model.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
@@ -275,6 +320,46 @@ def print_grid_info(model_name, parameters, parameters_grid):
 
 class GridSearch:
 
+    # LRegression:
+    @staticmethod
+    def lr_grid_search():
+
+        log_path = grid_search_log_path + 'lr_'
+
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
+        parameters = {'C': 1.0,
+                      'class_weight': None,
+                      'dual': False,
+                      'fit_intercept': 'True',
+                      'intercept_scaling': 1,
+                      'max_iter': 100,
+                      'multi_class': 'multinomial',
+                      'n_jobs': -1,
+                      'penalty': 'l2',
+                      'solver': 'sag',
+                      'tol': 0.0001,
+                      'random_state': 1,
+                      'verbose': 2,
+                      'warm_start': False}
+
+        LR = model.LRegression(x_train, y_train, w_train, e_train, x_test, id_test)
+
+        clf = LR.clf(parameters)
+
+        # parameters_grid = None
+
+        parameters_grid = {
+                           'C': (0.2, 0.5, 1),
+                           'max_iter': (50, 100, 200),
+                           'tol': (0.001, 0.005, 0.01)
+                           }
+
+        model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
+                          params=parameters, params_grid=parameters_grid)
+
+        print_grid_info('Logistic Regression', parameters, parameters_grid)
+
     # Random Forest
     @staticmethod
     def rf_grid_search():
@@ -402,6 +487,54 @@ class GridSearch:
                           params=parameters, params_grid=parameters_grid)
 
         print_grid_info('AdaBoost', parameters, parameters_grid)
+
+    # GradientBoosting
+    @staticmethod
+    def gb_grid_search():
+
+        log_path = grid_search_log_path + 'gb_'
+
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
+        parameters = {'criterion': 'friedman_mse',
+                      'init': None,
+                      'learning_rate': 0.05,
+                      'loss': 'deviance',
+                      'max_depth': 25,
+                      'max_features': 'auto',
+                      'max_leaf_nodes': None,
+                      'min_impurity_decrease': 0.0,
+                      'min_impurity_split': None,
+                      'min_samples_leaf': 50,
+                      'min_samples_split': 1000,
+                      'min_weight_fraction_leaf': 0.0,
+                      'n_estimators': 200,
+                      'presort': 'auto',
+                      'random_state': 1,
+                      'subsample': 0.8,
+                      'verbose': 2,
+                      'warm_start': False}
+
+        GB = model.GradientBoosting(x_train, y_train, w_train, e_train, x_test, id_test)
+
+        clf = GB.clf(parameters)
+
+        # parameters_grid = None
+
+        parameters_grid = {
+                           'n_estimators': (20, 50, 100),
+                           'learning_rate': (0.05, 0.2, 0.5),
+                           'max_depth': (5, 10, 15),
+                           'max_features': (6, 8, 10),
+                           'min_samples_leaf': (300, 400, 500),
+                           'min_samples_split': (3000, 4000, 5000),
+                           'subsample': (0.6, 0.8, 1)
+                           }
+
+        model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
+                          params=parameters, params_grid=parameters_grid)
+
+        print_grid_info('GradientBoosting', parameters, parameters_grid)
 
     # XGBoost
     @staticmethod

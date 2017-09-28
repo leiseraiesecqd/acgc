@@ -58,14 +58,8 @@ class DataPreProcess:
     # Load CSV files Using pandas
     def load_csv_pd(self):
 
-        train_f = pd.read_csv(self.train_path, header=0)
-        test_f = pd.read_csv(self.test_path, header=0)
-
-        for feat in train_f.columns:
-            train_f[feat] = train_f[feat].map(lambda x: round(x, 6))
-
-        for feat in test_f.columns:
-            test_f[feat] = test_f[feat].map(lambda x: round(x, 6))
+        train_f = pd.read_csv(self.train_path, header=0, dtype=np.float64)
+        test_f = pd.read_csv(self.test_path, header=0, dtype=np.float64)
 
         return train_f, test_f
 

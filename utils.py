@@ -43,22 +43,22 @@ def load_preprocessed_np_data(data_file_path):
 def load_preprocessed_pd_data(data_file_path):
 
     x_train_pd = pd.read_pickle(data_file_path + 'x_train.p')
-    x_train = np.array(x_train_pd)
+    x_train = np.array(x_train_pd, dtype=np.float64)
 
     y_train_pd = pd.read_pickle(data_file_path + 'y_train.p')
-    y_train = np.array(y_train_pd)
+    y_train = np.array(y_train_pd, dtype=np.float64)
 
     w_train_pd = pd.read_pickle(data_file_path + 'w_train.p')
-    w_train = np.array(w_train_pd)
+    w_train = np.array(w_train_pd, dtype=np.float64)
 
     e_train_pd = pd.read_pickle(data_file_path + 'e_train.p')
-    e_train = np.array(e_train_pd)
+    e_train = np.array(e_train_pd, dtype=np.float64)
 
     x_test_pd = pd.read_pickle(data_file_path + 'x_test.p')
-    x_test = np.array(x_test_pd)
+    x_test = np.array(x_test_pd, dtype=np.float64)
 
     id_test_pd = pd.read_pickle(data_file_path + 'id_test.p')
-    id_test = np.array(id_test_pd)
+    id_test = np.array(id_test_pd, dtype=np.float64)
 
     return x_train, y_train, w_train, e_train, x_test, id_test
 
@@ -68,10 +68,10 @@ def load_preprocessed_pd_data(data_file_path):
 def load_preprocessed_pd_data_g(data_file_path):
 
     x_train_g_pd = pd.read_pickle(data_file_path + 'x_train_g.p')
-    x_train_g = np.array(x_train_g_pd)
+    x_train_g = np.array(x_train_g_pd, dtype=np.float64)
 
     x_test_g_pd = pd.read_pickle(data_file_path + 'x_test_g.p')
-    x_test_g = np.array(x_test_g_pd)
+    x_test_g = np.array(x_test_g_pd, dtype=np.float64)
 
     return x_train_g, x_test_g
 

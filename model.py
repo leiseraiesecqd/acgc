@@ -54,6 +54,12 @@ class LRegression:
         self.importance = np.array([])
         self.indices = np.array([])
 
+    def clf(self, parameters):
+
+        clf = LogisticRegression(**parameters)
+
+        return clf
+
     def show(self):
 
         feature_num = self.x_train.shape[1]
@@ -221,11 +227,11 @@ class DecisionTree:
         for f in range(feature_num):
             print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
-    def predict(self, clf, pred_path=None):
+    def predict(self, clf, x_test, pred_path=None):
 
         print('Predicting...')
 
-        prob_test = np.array(clf.predict_proba(self.x_test))[:, 1]
+        prob_test = np.array(clf.predict_proba(x_test))[:, 1]
 
         if pred_path is not None:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
@@ -308,7 +314,7 @@ class DecisionTree:
         utils.save_pred_to_csv(pred_path + 'final_results/dt_', self.id_test, prob_mean)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, parameters):
+                    x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
 
         print('------------------------------------------------------')
         print('Training # Random Forest...')
@@ -329,7 +335,7 @@ class DecisionTree:
 
         # Prediction
         prob_valid = self.predict_valid(clf, x_valid)
-        prob_test = self.predict(clf)
+        prob_test = self.predict(clf, x_test)
 
         return prob_valid, prob_test, losses
 
@@ -379,11 +385,11 @@ class RandomForest:
         for f in range(feature_num):
             print("%d. feature %d (%f)" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
-    def predict(self, clf, pred_path=None):
+    def predict(self, clf, x_test, pred_path=None):
 
         print('Predicting...')
 
-        prob_test = np.array(clf.predict_proba(self.x_test))[:, 1]
+        prob_test = np.array(clf.predict_proba(x_test))[:, 1]
 
         if pred_path is not None:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
@@ -466,7 +472,7 @@ class RandomForest:
         utils.save_pred_to_csv(pred_path + 'final_results/rf_', self.id_test, prob_mean)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, parameters):
+                    x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
 
         print('------------------------------------------------------')
         print('Training # Random Forest...')
@@ -487,7 +493,7 @@ class RandomForest:
 
         # Prediction
         prob_valid = self.predict_valid(clf, x_valid)
-        prob_test = self.predict(clf)
+        prob_test = self.predict(clf, x_test)
 
         return prob_valid, prob_test, losses
 
@@ -537,11 +543,11 @@ class ExtraTrees:
         for f in range(feature_num):
             print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
-    def predict(self, clf, pred_path=None):
+    def predict(self, clf, x_test, pred_path=None):
 
         print('Predicting...')
 
-        prob_test = np.array(clf.predict_proba(self.x_test))[:, 1]
+        prob_test = np.array(clf.predict_proba(x_test))[:, 1]
 
         if pred_path is not None:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
@@ -624,7 +630,7 @@ class ExtraTrees:
         utils.save_pred_to_csv(pred_path + 'final_results/et_', self.id_test, prob_mean)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, parameters):
+                    x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
 
         print('------------------------------------------------------')
         print('Training Extra Trees...')
@@ -645,7 +651,7 @@ class ExtraTrees:
 
         # Prediction
         prob_valid = self.predict_valid(clf, x_valid)
-        prob_test = self.predict(clf)
+        prob_test = self.predict(clf, x_test)
 
         return prob_valid, prob_test, losses
 
@@ -695,11 +701,11 @@ class AdaBoost:
         for f in range(feature_num):
             print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
-    def predict(self, clf, pred_path=None):
+    def predict(self, clf, x_test, pred_path=None):
 
         print('Predicting...')
 
-        prob_test = np.array(clf.predict_proba(self.x_test))[:, 1]
+        prob_test = np.array(clf.predict_proba(x_test))[:, 1]
 
         if pred_path is not None:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
@@ -782,7 +788,7 @@ class AdaBoost:
         utils.save_pred_to_csv(pred_path + 'final_results/ab_', self.id_test, prob_mean)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, parameters):
+                    x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
 
         print('------------------------------------------------------')
         print('Training AdaBoost...')
@@ -803,7 +809,7 @@ class AdaBoost:
 
         # Prediction
         prob_valid = self.predict_valid(clf, x_valid)
-        prob_test = self.predict(clf)
+        prob_test = self.predict(clf, x_test)
 
         return prob_valid, prob_test, losses
 
@@ -853,11 +859,11 @@ class GradientBoosting:
         for f in range(feature_num):
             print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
-    def predict(self, clf, pred_path=None):
+    def predict(self, clf, x_test, pred_path=None):
 
         print('Predicting...')
 
-        prob_test = np.array(clf.predict_proba(self.x_test))[:, 1]
+        prob_test = np.array(clf.predict_proba(x_test))[:, 1]
 
         if pred_path is not None:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
@@ -940,7 +946,7 @@ class GradientBoosting:
         utils.save_pred_to_csv(pred_path + 'final_results/gb_', self.id_test, prob_mean)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, parameters):
+                    x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
 
         print('------------------------------------------------------')
         print('Training GradientBoosting...')
@@ -961,7 +967,7 @@ class GradientBoosting:
 
         # Prediction
         prob_valid = self.predict_valid(clf, x_valid)
-        prob_test = self.predict(clf)
+        prob_test = self.predict(clf, x_test)
 
         return prob_valid, prob_test, losses
 
@@ -1152,7 +1158,7 @@ class XGBoost:
         utils.save_pred_to_csv(pred_path + 'final_results/xgb_', self.id_test, prob_mean)
 
     def stack_train(self, count, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, pred_path, parameters):
+                    x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
 
         print('Training LightGBM...')
 
@@ -1174,7 +1180,7 @@ class XGBoost:
 
         # Prediction
         prob_valid = self.predict_valid(bst, x_g_valid)
-        prob_test = self.predict(bst, pred_path + 'lgb_cv_{}_'.format(count))
+        prob_test = self.predict(bst)
 
         return prob_valid, prob_test, losses
 
@@ -1191,8 +1197,8 @@ class LightGBM:
         self.e_train = e_tr
         self.x_test = x_te
         self.id_test = id_te
-        self.x_train_g = x_tr_g
-        self.x_test_g = x_te_g
+        self.x_g_train = x_tr_g
+        self.x_g_test = x_te_g
         self.importance = np.array([])
         self.indices = np.array([])
         self.std = np.array([])
@@ -1251,17 +1257,17 @@ class LightGBM:
 
         print('Predicting Test Set...')
 
-        prob_test = model.predict(self.x_test_g)
+        prob_test = model.predict(self.x_g_test)
 
         utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
 
-    def predict_sklearn(self, clf, pred_path=None):
+    def predict_sklearn(self, clf, x_g_test, pred_path=None):
 
         print('Predicting Test Set...')
 
-        prob_test = np.array(clf.predict_proba(self.x_test))[:, 1]
+        prob_test = np.array(clf.predict_proba(x_g_test))[:, 1]
 
         if pred_path is not None:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
@@ -1287,7 +1293,7 @@ class LightGBM:
 
         # Cross Validation
         for x_train, y_train, w_train, \
-            x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train_g,
+            x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_g_train,
                                                                                 y=self.y_train,
                                                                                 w=self.w_train,
                                                                                 e=self.e_train,
@@ -1360,7 +1366,7 @@ class LightGBM:
 
         # Use Category
         for x_train, y_train, w_train, \
-            x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train_g,
+            x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_g_train,
                                                                                 y=self.y_train,
                                                                                 w=self.w_train,
                                                                                 e=self.e_train,
@@ -1425,7 +1431,7 @@ class LightGBM:
         utils.save_pred_to_csv(pred_path + 'final_results/lgb_sk_', self.id_test, prob_mean)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, parameters):
+                    x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
 
         print('------------------------------------------------------')
         print('Training LightGBM...')
@@ -1452,7 +1458,7 @@ class LightGBM:
 
         # Prediction
         prob_valid = self.predict_valid_sklearn(clf, x_g_valid)
-        prob_test = self.predict_sklearn(clf)
+        prob_test = self.predict_sklearn(clf, x_g_test)
 
         return prob_valid, prob_test, losses
 
@@ -1751,7 +1757,7 @@ class DeepNeuralNetworks:
             utils.save_pred_to_csv(pred_path + 'final_results/dnn_', self.id_test, prob_mean)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, parameters=None):
+                    x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters=None):
 
         print('------------------------------------------------------')
         print('Training Deep Neural Network...')
@@ -1834,7 +1840,7 @@ class DeepNeuralNetworks:
 
             logits_pred_train = sess.run(logits, {inputs: x_train, keep_prob: 1.0, is_train: False})
             logits_pred_valid = sess.run(logits, {inputs: x_valid, keep_prob: 1.0, is_train: False})
-            logits_pred_test = sess.run(logits, {inputs: self.x_test, keep_prob: 1.0, is_train: False})
+            logits_pred_test = sess.run(logits, {inputs: x_test, keep_prob: 1.0, is_train: False})
 
             logits_pred_train = logits_pred_train.flatten()
             logits_pred_valid = logits_pred_valid.flatten()
