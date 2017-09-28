@@ -1609,6 +1609,7 @@ class DeepNeuralNetworks:
     def train(self, pred_path, n_valid, n_cv):
 
         # Build Network
+        tf.reset_default_graph()
         train_graph = tf.Graph()
 
         with train_graph.as_default():
