@@ -162,17 +162,17 @@ class Stacking:
             blender_valid_sorted = np.zeros_like(blender_valid, dtype=np.float64)  # n_model*n_sample
             for column, idx in enumerate(blender_valid[0]):
                 blender_valid_sorted[:, idx] = blender_valid[:, column]
-            blender_valid_sorted = np.delete(blender_valid_sorted, 0, axis=0)  # n_model*n_sample
+            blender_valid_sorted = np.delete(blender_valid_sorted, 0, axis=0)      # n_model*n_sample
 
             # Transpose blenders
-            blender_x_e = blender_valid_sorted.transpose()  # n_sample * n_model
+            blender_x_e = blender_valid_sorted.transpose()      # n_sample * n_model
             blender_test_e = blender_test.transpose()           # n_test_sample * (n_model x n_cv)
 
             if epoch == 0:
                 blender_x_prob = blender_x_e
                 blender_test_prob = blender_test_e
             else:
-                blender_x_prob = np.concatenate((blender_x_prob, blender_x_e), axis=1) # n_sample * (n_model x n_epoch)
+                blender_x_prob = np.concatenate((blender_x_prob, blender_x_e), axis=1)             # n_sample * (n_model x n_epoch)
                 blender_test_prob = np.concatenate((blender_test_prob, blender_test_e), axis=1)    # n_test_sample * (n_model x n_cv x n_epoch)
 
         # Calculate average of test_prob

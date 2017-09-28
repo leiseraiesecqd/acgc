@@ -943,7 +943,10 @@ if __name__ == "__main__":
     # GridSearch.rf_grid_search()
     # GridSearch.ab_grid_search()
     # GridSearch.xgb_grid_search()
-    GridSearch.lgb_grid_search()
+    # GridSearch.lgb_grid_search()
+
+    # Stacking
+    ModelStacking.train()
 
     print('Done!')
     print('Use {:.3}s'.format(time.time() - start_time))
