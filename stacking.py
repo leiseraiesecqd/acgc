@@ -102,7 +102,7 @@ class Stacking:
 
     def train_layer(self, models_blender, params, x_train_inputs, y_train_inputs, w_train_inputs,
                     e_train_inputs, x_g_train_inputs, x_test, x_g_test,
-                    CV, n_valid=4, n_era=20, n_epoch=1, x_train_reuse=None):
+                    cv, n_valid=4, n_era=20, n_epoch=1, x_train_reuse=None):
 
         if n_era%n_valid != 0:
             assert ValueError('n_era must be an integer multiple of n_valid!')
@@ -128,7 +128,7 @@ class Stacking:
             # blender_losses = np.array([])
 
             for x_train, y_train, w_train, x_g_train, \
-                x_valid, y_valid, w_valid, x_g_valid, valid_index in CV.era_k_fold_for_stack(x=x_train_inputs,
+                x_valid, y_valid, w_valid, x_g_valid, valid_index in cv.era_k_fold_for_stack(x=x_train_inputs,
                                                                                              y=y_train_inputs,
                                                                                              w=w_train_inputs,
                                                                                              e=e_train_inputs,
@@ -193,7 +193,7 @@ class Stacking:
 
         start_time = time.time()
 
-        CV_stack = models.CrossValidation()
+        cv_stack = models.CrossValidation()
 
         dnn_l1_params = self.parameters_l1[-1]
         dnn_l2_params = self.parameters_l2[-1]
@@ -207,7 +207,7 @@ class Stacking:
         x_outputs_l1, test_outputs_l1, x_g_outputs_l1, test_g_outputs_l1 \
             = self.train_layer(models_l1, self.parameters_l1, self.x_train, self.y_train, self.w_train,
                                self.e_train, self.x_g_train, self.x_test, self.x_g_test,
-                               CV_stack, n_valid=self.n_valid[0], n_era=self.n_era[0],
+                               cv_stack, n_valid=self.n_valid[0], n_era=self.n_era[0],
                                n_epoch=self.n_epoch[0], x_train_reuse=None)
 
         # Save predicted test prob
@@ -231,7 +231,7 @@ class Stacking:
         x_outputs_l2, test_outputs_l2, x_g_outputs_l2, test_g_outputs_l2 \
             = self.train_layer(models_l2, self.parameters_l2, x_outputs_l1, self.y_train, self.w_train,
                                self.e_train, x_g_outputs_l1, test_outputs_l1, test_g_outputs_l1,
-                               CV_stack, n_valid=self.n_valid[1], n_era=self.n_era[1],
+                               cv_stack, n_valid=self.n_valid[1], n_era=self.n_era[1],
                                n_epoch=self.n_epoch[1], x_train_reuse=None)
 
         # Save predicted test prob
@@ -254,7 +254,7 @@ class Stacking:
         x_outputs_l3, test_outputs_l3, x_g_outputs_l3, test_g_outputs_l3 \
             = self.train_layer(models_l3, self.parameters_l3, x_outputs_l2, self.y_train, self.w_train,
                                self.e_train, x_g_outputs_l2, test_outputs_l2, test_g_outputs_l2,
-                               CV_stack, n_valid=self.n_valid[2], n_era=self.n_era[2],
+                               cv_stack, n_valid=self.n_valid[2], n_era=self.n_era[2],
                                n_epoch=self.n_epoch[2], x_train_reuse=None)
 
         # Save predicted test prob
