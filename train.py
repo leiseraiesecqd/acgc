@@ -639,15 +639,26 @@ class GridSearch:
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-        parameters = {'objective': 'binary',
-                      'learning_rate': 0.01,
-                      'n_estimators': 200,
-                      'num_leaves': 64,               # <2^(max_depth)
-                      'colsample_bytree': 0.8,
-                      'max_depth': 9,                 # default=-1
-                      'min_data_in_leaf': 20,         # default=20
-                      'subsample': 0.8,
-                      'max_bin': 255}
+        parameters = {'learning_rate': 0.002,
+                      'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
+                      # 'boosting_type': 'dart',        # Dropouts meet Multiple Additive Regression Trees.
+                      # 'boosting_type': 'goss',        # Gradient-based One-Side Sampling.
+                      # 'boosting_type': 'rf',          # Random Forest.
+                      'num_leaves': 32,               # <2^(max_depth)
+                      'max_depth': 8,                 # default=-1
+                      'n_estimators': 50,
+                      'max_bin': 255,
+                      'subsample_for_bin': 50000,
+                      'objective': 'binary',
+                      'min_split_gain': 0.,
+                      'min_child_weight': 5,
+                      'min_child_samples': 10,
+                      'subsample': 0.6,
+                      'subsample_freq': 5,
+                      'colsample_bytree': 0.5,
+                      'reg_alpha': 0.,
+                      'reg_lambda': 0.,
+                      'silent': False}
 
         print("Parameters:")
         print(parameters)
@@ -714,7 +725,7 @@ if __name__ == "__main__":
 
     # XGBoost
     # xgb_train()
-    xgb_train_sklearn()
+    # xgb_train_sklearn()
 
     # LightGBM
     # lgb_train()
@@ -728,7 +739,7 @@ if __name__ == "__main__":
     # GridSearch.rf_grid_search()
     # GridSearch.ab_grid_search()
     # GridSearch.xgb_grid_search()
-    # GridSearch.lgb_grid_search()
+    GridSearch.lgb_grid_search()
 
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))
