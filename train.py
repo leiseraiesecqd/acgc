@@ -635,8 +635,6 @@ class GridSearch:
 
         log_path = grid_search_log_path + 'lgb_'
 
-        print('\nModel: LGBoost \n')
-
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
@@ -661,10 +659,6 @@ class GridSearch:
                       'reg_lambda': 0.,
                       'silent': False}
 
-        print("Parameters:")
-        print(parameters)
-        print('\n')
-
         LGB = model.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_train_g, x_test_g)
 
         clf = LGB.get_clf(parameters)
@@ -685,10 +679,6 @@ class GridSearch:
                            # 'subsample': (0.6, 0.8, 1.0),
                            # 'max_bin': (255, 355, 455)
                            }
-
-        print("Parameters' grid:")
-        print(parameters_grid)
-        print('\n')
 
         model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
                           params=parameters, params_grid=parameters_grid)
