@@ -222,8 +222,8 @@ def dnn_tf_train():
 
     # HyperParameters
     hyper_parameters = {'version': '1.0',
-                        'epochs': 40,
-                        'unit_number': [32, 16, 8, 4, 2],
+                        'epochs': 20,
+                        'unit_number': [48, 24, 12, 6, 3],
                         'learning_rate': 0.0001,
                         'keep_probability': 0.8,
                         'batch_size': 256,
@@ -539,7 +539,7 @@ if __name__ == "__main__":
     # et_train()
 
     # AdaBoost
-    #  ab_train()
+    # ab_train()
 
     # GradientBoosting
     # gb_train()
@@ -548,18 +548,18 @@ if __name__ == "__main__":
     # xgb_train()
 
     # LightGBM
-    #  lgb_train()
+    # lgb_train()
     # lgb_train_sklearn()
 
     # DNN
-    # dnn_tf_train()
+    dnn_tf_train()
     # dnn_keras_train()
 
     # Grid Search
-    GridSearch.rf_grid_search()
+    # GridSearch.rf_grid_search()
     # GridSearch.ab_grid_search()
-    #  GridSearch.xgb_grid_search()
-    #  GridSearch.lgb_grid_search()
+    # GridSearch.xgb_grid_search()
+    # GridSearch.lgb_grid_search()
 
     print('Done!')
     print('Using {:.3}s'.format(time.time() - start_time))
