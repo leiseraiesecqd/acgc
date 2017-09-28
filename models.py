@@ -40,7 +40,6 @@ color = sns.color_palette()
 
 
 # Logistic Regression
-
 class LRegression:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
@@ -111,7 +110,6 @@ class LRegression:
 
 
 # k-Nearest Neighbor
-
 class KNearestNeighbor:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
@@ -140,7 +138,6 @@ class KNearestNeighbor:
 
 
 # SVM-SVC
-
 class SupportVectorClustering:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
@@ -163,7 +160,6 @@ class SupportVectorClustering:
 
 
 # Gaussian NB
-
 class Gaussian:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
@@ -186,7 +182,6 @@ class Gaussian:
 
 
 # Decision Tree
-
 class DecisionTree:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
@@ -341,7 +336,6 @@ class DecisionTree:
 
 
 # Random Forest
-
 class RandomForest:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
@@ -499,7 +493,6 @@ class RandomForest:
 
 
 # Extra Trees
-
 class ExtraTrees:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
@@ -657,7 +650,6 @@ class ExtraTrees:
 
 
 # AdaBoost
-
 class AdaBoost:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
@@ -815,7 +807,6 @@ class AdaBoost:
 
 
 # GradientBoosting
-
 class GradientBoosting:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
@@ -973,7 +964,6 @@ class GradientBoosting:
 
 
 # XGBoost
-
 class XGBoost:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
@@ -1257,7 +1247,6 @@ class XGBoost:
 
 
 # LightGBM
-
 class LightGBM:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_tr_g, x_te_g):
@@ -1535,7 +1524,6 @@ class LightGBM:
 
 
 # Deep Neural Networks
-
 class DeepNeuralNetworks:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, parameters):
@@ -1931,7 +1919,6 @@ class DeepNeuralNetworks:
 
 
 # DNN using Keras
-
 class KerasDeepNeuralNetworks:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, parameters):
@@ -2030,7 +2017,6 @@ class KerasDeepNeuralNetworks:
 
 
 # Cross Validation
-
 class CrossValidation:
 
     trained_cv = []
@@ -2556,7 +2542,6 @@ class CrossValidation:
 
 
 # Grid Search
-
 def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, params, params_grid):
 
     start_time = time.time()

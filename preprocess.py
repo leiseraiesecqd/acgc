@@ -862,23 +862,6 @@ class DataPreProcess:
         utils.save_np_to_pkl(self.x_test, self.prepro_path + 'x_test.p')
         utils.save_np_to_pkl(self.x_test_g, self.prepro_path + 'x_test_g.p')
 
-    # Preprocessing
-    def preprocess_np(self):
-
-        start_time = time.time()
-
-        self.load_data_np()
-
-        # x_train, y_train, w_train, x_valid, y_valid, w_valid = self.random_spit_data(train_data_x, train_data_y)
-
-        self.save_data_np()
-
-        end_time = time.time()
-        total_time = end_time - start_time
-
-        print('Done!')
-        print('Using {:.3}s'.format(total_time))
-
     # Save Data
     def save_data_pd(self):
 
@@ -897,6 +880,23 @@ class DataPreProcess:
         self.x_test_g.to_pickle(self.prepro_path + 'x_test_g.p')
         # self.g_test.to_pickle(self.prepro_path + 'g_test.p')
         self.id_test.to_pickle(self.prepro_path + 'id_test.p')
+
+    # Preprocessing
+    def preprocess_np(self):
+
+        start_time = time.time()
+
+        self.load_data_np()
+
+        # x_train, y_train, w_train, x_valid, y_valid, w_valid = self.random_spit_data(train_data_x, train_data_y)
+
+        self.save_data_np()
+
+        end_time = time.time()
+        total_time = end_time - start_time
+
+        print('Done!')
+        print('Using {:.3}s'.format(total_time))
 
     # Preprocessing
     def preprocess_pd(self):

@@ -1,6 +1,7 @@
 # import preprocess
 import utils
-import model
+import models
+import stacking
 import time
 import os
 from os.path import isdir
@@ -15,7 +16,6 @@ importance_log_path = './importance_logs/'
 
 
 # Train single model
-
 class TrainSingleModel:
 
     # Logistic Regression
@@ -39,7 +39,7 @@ class TrainSingleModel:
                           'verbose': 2,
                           'warm_start': False}
 
-        LR = model.LRegression(x_train, y_train, w_train, e_train, x_test, id_test)
+        LR = models.LRegression(x_train, y_train, w_train, e_train, x_test, id_test)
 
         print('Start training Logistic Regression...')
 
@@ -68,7 +68,7 @@ class TrainSingleModel:
                          'verbose': 2,
                          'warm_start': False}
 
-        RF = model.RandomForest(x_train, y_train, w_train, e_train, x_test, id_test)
+        RF = models.RandomForest(x_train, y_train, w_train, e_train, x_test, id_test)
 
         print('Start training Random Forest...')
 
@@ -97,7 +97,7 @@ class TrainSingleModel:
                          'verbose': 2,
                          'warm_start': False}
 
-        ET = model.ExtraTrees(x_train, y_train, w_train, e_train, x_test, id_test)
+        ET = models.ExtraTrees(x_train, y_train, w_train, e_train, x_test, id_test)
 
         print('Start training Extra Trees...')
 
@@ -134,7 +134,7 @@ class TrainSingleModel:
                          'n_estimators': 9,
                          'random_state': 1}
 
-        AB = model.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+        AB = models.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
         print('Start training AdaBoost...')
 
@@ -165,7 +165,7 @@ class TrainSingleModel:
                          'verbose': 2,
                          'warm_start': False}
 
-        GB = model.GradientBoosting(x_train, y_train, w_train, e_train, x_test, id_test)
+        GB = models.GradientBoosting(x_train, y_train, w_train, e_train, x_test, id_test)
 
         print('Start training GradientBoosting...')
 
@@ -189,7 +189,7 @@ class TrainSingleModel:
                           'eval_metric': 'logloss',
                           'seed': 1}
 
-        XGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+        XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
         print('Start training XGBoost...')
 
@@ -222,7 +222,7 @@ class TrainSingleModel:
                           'seed': None,
                           'missing': None}
 
-        XGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+        XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
         print('Start training XGBoost...')
 
@@ -250,7 +250,7 @@ class TrainSingleModel:
                           'metric': 'binary_logloss',
                           'verbosity': 1}
 
-        LGBM = model.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_train_g, x_test_g)
+        LGBM = models.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_train_g, x_test_g)
 
         print('Start training LGBM...')
 
@@ -283,7 +283,7 @@ class TrainSingleModel:
                           'reg_lambda': 0.,
                           'silent': False}
 
-        LGBM = model.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_train_g, x_test_g)
+        LGBM = models.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_train_g, x_test_g)
 
         print('Start training LGBM...')
 
@@ -308,7 +308,7 @@ class TrainSingleModel:
 
         print('Loading data set...')
 
-        dnn = model.DeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
+        dnn = models.DeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
 
         print('Start training DNN(TensorFlow)...')
 
@@ -327,18 +327,14 @@ class TrainSingleModel:
                             'keep_probability': 0.8,
                             'batch_size': 256}
 
-        dnn = model.KerasDeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
+        dnn = models.KerasDeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
 
         print('Start training DNN(Keras)...')
 
         dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20)
 
 
-
-
-
 # Grid Search
-
 class GridSearch:
 
     # LRegression:
@@ -364,7 +360,7 @@ class GridSearch:
                       'verbose': 2,
                       'warm_start': False}
 
-        LR = model.LRegression(x_train, y_train, w_train, e_train, x_test, id_test)
+        LR = models.LRegression(x_train, y_train, w_train, e_train, x_test, id_test)
 
         clf = LR.get_clf(parameters)
 
@@ -376,8 +372,8 @@ class GridSearch:
                            'tol': (0.001, 0.005, 0.01)
                            }
 
-        model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
-                          params=parameters, params_grid=parameters_grid)
+        models.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
+                           params=parameters, params_grid=parameters_grid)
 
         utils.print_grid_info('Logistic Regression', parameters, parameters_grid)
 
@@ -406,7 +402,7 @@ class GridSearch:
                       'verbose': 2,
                       'warm_start': False}
 
-        RF = model.RandomForest(x_train, y_train, w_train, e_train, x_test, id_test)
+        RF = models.RandomForest(x_train, y_train, w_train, e_train, x_test, id_test)
 
         clf = RF.get_clf(parameters)
 
@@ -420,8 +416,8 @@ class GridSearch:
                            'min_samples_split': (3972, 3974, 3976, 3978)
                            }
 
-        model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
-                          params=parameters, params_grid=parameters_grid)
+        models.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
+                           params=parameters, params_grid=parameters_grid)
 
         utils.print_grid_info('Random Forest', parameters, parameters_grid)
 
@@ -451,7 +447,7 @@ class GridSearch:
                       'verbose': 2,
                       'warm_start': False}
 
-        ET = model.ExtraTrees(x_train, y_train, w_train, e_train, x_test, id_test)
+        ET = models.ExtraTrees(x_train, y_train, w_train, e_train, x_test, id_test)
 
         clf = ET.get_clf(parameters)
 
@@ -465,8 +461,8 @@ class GridSearch:
                            'min_samples_split': (3000, 3500, 4000)
                            }
 
-        model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
-                          params=parameters, params_grid=parameters_grid)
+        models.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
+                           params=parameters, params_grid=parameters_grid)
 
         utils.print_grid_info('Extra Trees', parameters, parameters_grid)
 
@@ -490,7 +486,7 @@ class GridSearch:
                       'n_estimators': 100,
                       'random_state': 1}
 
-        AB = model.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+        AB = models.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
         clf = AB.get_clf(parameters)
 
@@ -504,8 +500,8 @@ class GridSearch:
                            #  'base_estimator': clf_et,
                            }
 
-        model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
-                          params=parameters, params_grid=parameters_grid)
+        models.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
+                           params=parameters, params_grid=parameters_grid)
 
         utils.print_grid_info('AdaBoost', parameters, parameters_grid)
 
@@ -536,7 +532,7 @@ class GridSearch:
                       'verbose': 2,
                       'warm_start': False}
 
-        GB = model.GradientBoosting(x_train, y_train, w_train, e_train, x_test, id_test)
+        GB = models.GradientBoosting(x_train, y_train, w_train, e_train, x_test, id_test)
 
         clf = GB.get_clf(parameters)
 
@@ -552,8 +548,8 @@ class GridSearch:
                            'subsample': (0.6, 0.8, 1)
                            }
 
-        model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
-                          params=parameters, params_grid=parameters_grid)
+        models.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
+                           params=parameters, params_grid=parameters_grid)
 
         utils.print_grid_info('GradientBoosting', parameters, parameters_grid)
 
@@ -585,7 +581,7 @@ class GridSearch:
                       # 'scale_pos_weight': 1,
                       'seed': 1}
 
-        XGB = model.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+        XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
         clf = XGB.get_clf(parameters)
 
@@ -612,8 +608,8 @@ class GridSearch:
                            #  'seed': 1
                            }
 
-        model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
-                          params=parameters, params_grid=parameters_grid)
+        models.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
+                           params=parameters, params_grid=parameters_grid)
 
         utils.print_grid_info('XGBoost', parameters, parameters_grid)
 
@@ -647,7 +643,7 @@ class GridSearch:
                       'reg_lambda': 0.,
                       'silent': False}
 
-        LGB = model.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_train_g, x_test_g)
+        LGB = models.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_train_g, x_test_g)
 
         clf = LGB.get_clf(parameters)
 
@@ -668,10 +664,231 @@ class GridSearch:
                            # 'max_bin': (255, 355, 455)
                            }
 
-        model.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
-                          params=parameters, params_grid=parameters_grid)
+        models.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
+                           params=parameters, params_grid=parameters_grid)
 
         utils.print_grid_info('LightGBM', parameters, parameters_grid)
+
+
+# Stacking
+
+class ModelStacking:
+
+    # Parameters for layer1
+    def get_layer1_params(self):
+
+        # Parameters of LightGBM
+        lgb_params = {'learning_rate': 0.002,
+                      'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
+                      'num_leaves': 32,               # <2^(max_depth)
+                      'max_depth': 8,                 # default=-1
+                      'n_estimators': 50,
+                      'max_bin': 255,
+                      'subsample_for_bin': 50000,
+                      'objective': 'binary',
+                      'min_split_gain': 0.,
+                      'min_child_weight': 5,
+                      'min_child_samples': 10,
+                      'subsample': 0.6,
+                      'subsample_freq': 5,
+                      'colsample_bytree': 0.5,
+                      'reg_alpha': 0.,
+                      'reg_lambda': 0.,
+                      'silent': False}
+
+        # Parameters of XGBoost
+        xgb_params = {'max_depth': 3,
+                      'learning_rate': 0.1,
+                      'n_estimators': 100,
+                      'silent': True,
+                      'objective': "binary:logistic",
+                      'booster': 'gbtree',
+                      'n_jobs':  1,
+                      'nthread': None,
+                      'gamma': 0,
+                      'min_child_weight': 1,
+                      'max_delta_step': 0,
+                      'subsample': 1,
+                      'colsample_bytree': 1,
+                      'colsample_bylevel': 1,
+                      'reg_alpha': 0,
+                      'reg_lambda': 1,
+                      'scale_pos_weight': 1,
+                      'base_score': 0.5,
+                      'random_state': 0,
+                      'seed': None,
+                      'missing': None}
+
+        # Parameters of AdaBoost
+        et_for_ab_params = {'bootstrap': True,
+                            'class_weight': None,
+                            'criterion': 'gini',
+                            'max_depth': 2,
+                            'max_features': 7,
+                            'max_leaf_nodes': None,
+                            'min_impurity_decrease': 0.0,
+                            'min_samples_leaf': 357,
+                            'min_samples_split': 4909,
+                            'min_weight_fraction_leaf': 0.0,
+                            'n_estimators': 20,
+                            'n_jobs': -1,
+                            'oob_score': True,
+                            'random_state': 1,
+                            'verbose': 2,
+                            'warm_start': False}
+        clf_et_for_ab = ExtraTreesClassifier(**et_for_ab_params)
+        ab_params = {'algorithm': 'SAMME.R',
+                         'base_estimator': clf_et_for_ab,
+                         'learning_rate': 0.0051,
+                         'n_estimators': 9,
+                         'random_state': 1}
+
+        # Parameters of Random Forest
+        rf_params = {'bootstrap': True,
+                     'class_weight': None,
+                     'criterion': 'gini',
+                     'max_depth': 2,
+                     'max_features': 7,
+                     'max_leaf_nodes': None,
+                     'min_impurity_decrease': 0.0,
+                     'min_samples_leaf': 286,
+                     'min_samples_split': 3974,
+                     'min_weight_fraction_leaf': 0.0,
+                     'n_estimators': 32,
+                     'n_jobs': -1,
+                     'oob_score': True,
+                     'random_state': 1,
+                     'verbose': 2,
+                     'warm_start': False}
+
+        # Parameters of Extra Trees
+        et_params = {'bootstrap': True,
+                     'class_weight': None,
+                     'criterion': 'gini',
+                     'max_depth': 2,
+                     'max_features': 7,
+                     'max_leaf_nodes': None,
+                     'min_impurity_decrease': 0.0,
+                     'min_samples_leaf': 357,
+                     'min_samples_split': 4909,
+                     'min_weight_fraction_leaf': 0.0,
+                     'n_estimators': 20,
+                     'n_jobs': -1,
+                     'oob_score': True,
+                     'random_state': 1,
+                     'verbose': 2,
+                     'warm_start': False}
+
+        # Parameters of Gradient Boost
+        gb_params = {'criterion': 'friedman_mse',
+                     'init': None,
+                     'learning_rate': 0.05,
+                     'loss': 'deviance',
+                     'max_depth': 25,
+                     'max_features': 'auto',
+                     'max_leaf_nodes': None,
+                     'min_impurity_decrease': 0.0,
+                     'min_impurity_split': None,
+                     'min_samples_leaf': 50,
+                     'min_samples_split': 1000,
+                     'min_weight_fraction_leaf': 0.0,
+                     'n_estimators': 200,
+                     'presort': 'auto',
+                     'random_state': 1,
+                     'subsample': 0.8,
+                     'verbose': 2,
+                     'warm_start': False}
+
+        # Parameters of Deep Neural Network
+        dnn_params = {'version': '1.0',
+                      'epochs': 15,
+                      'unit_number': [48, 24, 12],
+                      'learning_rate': 0.0001,
+                      'keep_probability': 0.8,
+                      'batch_size': 256,
+                      'display_step': 100,
+                      'save_path': './checkpoints/',
+                      'log_path': './log/'}
+
+        # List of parameters for layer1
+        layer1_prams = [lgb_params, xgb_params, ab_params, rf_params, et_params, gb_params, dnn_params]
+
+        return layer1_prams
+
+    # Parameters for layer2
+    def get_layer2_params(self):
+
+        # Parameters of LightGBM
+        lgb_params = {'learning_rate': 0.002,
+                      'boosting_type': 'gbdt',  # traditional Gradient Boosting Decision Tree.
+                      'num_leaves': 32,         # <2^(max_depth)
+                      'max_depth': 8,           # default=-1
+                      'n_estimators': 50,
+                      'max_bin': 255,
+                      'subsample_for_bin': 50000,
+                      'objective': 'binary',
+                      'min_split_gain': 0.,
+                      'min_child_weight': 5,
+                      'min_child_samples': 10,
+                      'subsample': 0.6,
+                      'subsample_freq': 5,
+                      'colsample_bytree': 0.5,
+                      'reg_alpha': 0.,
+                      'reg_lambda': 0.,
+                      'silent': False}
+
+        # Parameters of Deep Neural Network
+        dnn_params = {'version': '1.0',
+                      'epochs': 15,
+                      'unit_number': [48, 24, 12],
+                      'learning_rate': 0.0001,
+                      'keep_probability': 0.8,
+                      'batch_size': 256,
+                      'display_step': 100,
+                      'save_path': './checkpoints/',
+                      'log_path': './log/'}
+
+        # List of parameters for layer1
+        layer2_prams = [lgb_params, dnn_params]
+
+        return layer2_prams
+
+    # Parameters for layer3
+    def get_layer3_params(self):
+
+        # Parameters of Deep Neural Network
+        dnn_params = {'version': '1.0',
+                      'epochs': 15,
+                      'unit_number': [48, 24, 12],
+                      'learning_rate': 0.0001,
+                      'keep_probability': 0.8,
+                      'batch_size': 256,
+                      'display_step': 100,
+                      'save_path': './checkpoints/',
+                      'log_path': './log/'}
+
+        # List of parameters for layer1
+        layer3_prams = [dnn_params]
+
+        return layer3_prams
+
+    def train(self):
+
+        layer1_prams = self.get_layer1_params()
+        layer2_prams = self.get_layer2_params()
+        layer3_prams = self.get_layer3_params()
+
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+
+        STK = stacking.Stacking(x_train, y_train, w_train, e_train,
+                                x_test, id_test, x_train_g, x_test_g,
+                                pred_path, layer1_prams, layer2_prams, layer3_prams)
+
+        STK.stack()
+
+
+
 
 
 if __name__ == "__main__":
@@ -721,4 +938,4 @@ if __name__ == "__main__":
     GridSearch.lgb_grid_search()
 
     print('Done!')
-    print('Using {:.3}s'.format(time.time() - start_time))
+    print('Use {:.3}s'.format(time.time() - start_time))
