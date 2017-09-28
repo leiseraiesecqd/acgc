@@ -635,9 +635,10 @@ class GridSearch:
 
         log_path = grid_search_log_path + 'lgb_'
 
-        print('\nModel: XGBoost \n')
+        print('\nModel: LGBoost \n')
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
         parameters = {'learning_rate': 0.002,
                       'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
@@ -664,7 +665,7 @@ class GridSearch:
         print(parameters)
         print('\n')
 
-        LGB = model.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test)
+        LGB = model.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_train_g, x_test_g)
 
         clf = LGB.get_clf(parameters)
 
