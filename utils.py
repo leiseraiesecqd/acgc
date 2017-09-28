@@ -160,7 +160,7 @@ def seve_grid_search_log(log_path, params, params_grid, best_score, best_paramet
     with open(log_path + 'grid_search_log.txt', 'a') as f:
 
         f.write('=====================================================\n')
-        f.write('Total Time: {:.3f}\n'.format(total_time))
+        f.write('Total Time: {:.3f}s\n'.format(total_time))
         f.write('Best Score: {:.6f}\n'.format(best_score))
         f.write('Parameters:\n')
         f.write('\t' + str(params) + '\n\n')

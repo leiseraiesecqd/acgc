@@ -223,9 +223,9 @@ def dnn_tf_train():
     # HyperParameters
     hyper_parameters = {'version': '1.0',
                         'epochs': 40,
-                        'unit_number': [200, 100, 50, 25, 12],
-                        'learning_rate': 0.00001,
-                        'keep_probability': 1.0,
+                        'unit_number': [32, 16, 8, 4, 2],
+                        'learning_rate': 0.0001,
+                        'keep_probability': 0.8,
                         'batch_size': 256,
                         'display_step': 100,
                         'save_path': './checkpoints/',
@@ -237,7 +237,7 @@ def dnn_tf_train():
 
     print('Start training DNN(TensorFlow)...')
 
-    dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20)
+    dnn.train(pred_path, n_valid=4, n_cv=20)
 
 
 # DNN using Keras
@@ -549,11 +549,11 @@ if __name__ == "__main__":
     # lgb_train_sklearn()
 
     # DNN
-    # dnn_tf_train()
+    dnn_tf_train()
     # dnn_keras_train()
 
     # Grid Search
-    GridSearch.rf_grid_search()
+    # GridSearch.rf_grid_search()
     # GridSearch.ab_grid_search()
     #  GridSearch.xgb_grid_search()
     #  GridSearch.lgb_grid_search()

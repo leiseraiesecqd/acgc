@@ -78,10 +78,10 @@ class Stacking:
 
     def stack1(self, x_train_stack1, x_test_stack1, x_train_g_stack1, x_test_g_stack1, n_valid_stack1, n_cv_stack1):
 
-        CV_stack1 = model.CrossValidation()
+        CV_Stack1 = CrossValidation()
 
         for x_train, y_train, w_train, x_g_train, x_valid, y_valid, \
-            w_valid, x_g_valid, valid_index in CV_stack1.era_k_fold_for_stack(x=self.x_train,
+            w_valid, x_g_valid, valid_index in CV_Stack1.era_k_fold_for_stack(x=self.x_train,
                                                                               y=self.y_train,
                                                                               w=self.w_train,
                                                                               e=self.e_train,
@@ -107,10 +107,6 @@ class Stacking:
             blender_valid_stack1_cv = np.array(all_model_valid_prob, dtype=np.float64)
             blender_test_stack1_cv = np.array(all_model_test_prob, dtype=np.float64)
             blender_losses_stack1_cv = np.array(all_model_losses, dtype=np.float64)
-
-
-
-
 
         return blender_prob_stack1, blender_test_stack1
 

@@ -1583,7 +1583,8 @@ class DeepNeuralNetworks:
         with tf.name_scope('log_loss'):
             #  loss = tf.losses.log_loss(labels=label, predictions=prob, weights=weight)
             loss = - tf.reduce_sum(w * (y * tf.log(prob) +
-                                        (tf.ones_like(y, dtype=tf.float64) - y) * tf.log(tf.ones_like(y, dtype=tf.float64)-prob)))
+                                        (tf.ones_like(y, dtype=tf.float64) - y) *
+                                        tf.log(tf.ones_like(y, dtype=tf.float64)-prob)))
 
         tf.summary.scalar('log_loss', loss)
 
@@ -1594,9 +1595,9 @@ class DeepNeuralNetworks:
 
         n_batches = len(x) // batch_num
 
-        for ii in range(0, n_batches * batch_num, batch_num):
+        for ii in range(0, n_batches * batch_num+1 , batch_num):
 
-            if ii != n_batches * batch_num:
+            if ii != n_batches * batch_num - 1:
                 batch_x, batch_y, batch_w = x[ii: ii + batch_num], y[ii: ii + batch_num], w[ii: ii + batch_num]
 
             else:
@@ -1614,11 +1615,11 @@ class DeepNeuralNetworks:
         with train_graph.as_default():
 
             # Inputs
-            feature_num = list(self.x_train.shape)[1]
+            feature_num = self.x_train.shape[1]
             inputs, labels, weights, lr, keep_prob, is_train = self.input_tensor(feature_num)
 
             # Logits
-            logits = self.model(inputs, self.layers_number, self.unit_number, keep_prob, is_train)
+            logits = self.model(inputs, self.unit_number, keep_prob, is_train)
             logits = tf.identity(logits, name='logits')
 
             # Loss
@@ -1642,9 +1643,7 @@ class DeepNeuralNetworks:
             merged = tf.summary.merge_all()
 
             start_time = time.time()
-
             cv_counter = 0
-
             prob_total = []
 
             for x_train, y_train, w_train, \
@@ -1702,7 +1701,7 @@ class DeepNeuralNetworks:
                                                                   is_train: False})
                             train_writer.add_summary(summary_train, batch_counter)
 
-                            cost_valid_a = []
+                            cost_valid_all = []
 
                             for iii, (valid_batch_x,
                                       valid_batch_y,
@@ -1720,9 +1719,9 @@ class DeepNeuralNetworks:
 
                                 valid_writer.add_summary(summary_valid_i, batch_counter)
 
-                                cost_valid_a.append(cost_valid_i)
+                                cost_valid_all.append(cost_valid_i)
 
-                            cost_valid = sum(cost_valid_a) / len(cost_valid_a)
+                            cost_valid = sum(cost_valid_all) / len(cost_valid_all)
 
                             total_time = time.time() - start_time
 
@@ -1741,15 +1740,13 @@ class DeepNeuralNetworks:
                 # Prediction
                 print('Predicting...')
 
-                logits_ = sess.run(logits, {inputs: self.x_test,
-                                            keep_prob: 1.0,
-                                            is_train: False})
+                logits_pred = sess.run(logits, {inputs: self.x_test,
+                                                keep_prob: 1.0,
+                                                is_train: False})
 
-                logits_ = logits_.flatten()
-                prob_test = 1.0 / (1.0 + np.exp(-logits_))
-
-                prob_total.append(list(prob_test))
-
+                logits_pred = logits_pred.flatten()
+                prob_test = 1.0 / (1.0 + np.exp(-logits_pred))
+                prob_total.append(prob_test)
                 utils.save_pred_to_csv(pred_path + 'dnn_cv_{}_'.format(cv_counter), self.id_test, prob_test)
 
             # Final Result
@@ -2417,15 +2414,14 @@ class CrossValidation:
 
 def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, params, params_grid):
 
-    start_tinme = time.time()
+    start_time = time.time()
 
     grid_search = GridSearchCV(estimator=clf,
                                param_grid=params_grid,
                                scoring='neg_log_loss',
                                verbose=2,
                                # cv=CrossValidation.era_k_fold_split(e=tr_e, n_valid=n_valid, n_cv=n_cv),
-                               cv=5
-                               )
+                               cv=5)
 
     # Start Grid Search
     print('Grid Searching...')
@@ -2441,7 +2437,7 @@ def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, params, params_g
     for param_name in sorted(params.keys()):
         print('\t%s: %r' % (param_name, best_parameters[param_name]))
 
-    total_time = time.time() - start_tinme
+    total_time = time.time() - start_time
 
     utils.seve_grid_search_log(log_path, params, params_grid, best_score, best_parameters, total_time)
 
