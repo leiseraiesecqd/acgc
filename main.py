@@ -301,7 +301,7 @@ class TrainSingleModel:
                             'epochs': 5,
                             'unit_number': [48, 24, 12, 4],
                             'learning_rate': 0.0001,
-                            'keep_probability': 0.8,
+                            'keep_probability': 0.65,
                             'batch_size': 256,
                             'display_step': 100,
                             'save_path': './checkpoints/',
