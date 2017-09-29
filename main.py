@@ -366,7 +366,7 @@ class TrainSingleModel:
 
         print('Start training LGBM...')
 
-        LGB.train_sklearn(pred_path + 'stack_', loss_log_path, n_valid=4, n_cv=20, parameters=lgb_parameters)
+        LGB.train_sklearn(pred_path, loss_log_path, n_valid=4, n_cv=20, parameters=lgb_parameters)
 
 
 # Grid Search
