@@ -561,25 +561,24 @@ class GridSearch:
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-        parameters = {'learning_rate': 0.05,
+        parameters = {'objective': 'binary:logistic',
+                      'learning_rate': 0.05,
                       'n_estimators': 1000,
                       'max_depth': 10,
-                      'min_child_weight': 5,
-                      'objective': 'binary:logistic',
-                      'eval_metric': 'logloss',
-                      'silent': 1,
                       'subsample': 0.8,
                       'colsample_bytree': 0.8,
+                      'colsample_bylevel': 1,
                       'gamma': 0,
+                      'min_child_weight': 1,
+                      'max_delta_step': 0,
                       'base_score': 0.5,
-                      # 'max_delta_step': 0,
+                      'reg_alpha': 0,
+                      'reg_lambda': 0,
+                      'silent': False,
+                      'seed': 1,
                       # 'missing': None,
-                      # 'nthread': -1,
-                      # 'colsample_bylevel': 1,
-                      # 'reg_alpha': 0,
-                      # 'reg_lambda': 1,
                       # 'scale_pos_weight': 1,
-                      'seed': 1}
+                      }
 
         XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
@@ -587,25 +586,18 @@ class GridSearch:
 
         # parameters_grid = None
 
-        parameters_grid = {'learning_rate': (0.002, 0.003, 0.005),
-                           'n_estimators': (100, 200, 400, 800),
-                           'max_depth': (8, 9, 10, 11),
-                           #  'min_child_weight': 5,
-                           #  'objective': 'binary:logistic',
-                           #  'eval_metric': 'logloss',
-                           #  'silent': 1,
-                           'subsample': (0.5, 0.6, 0.7, 0.8, 0.9, 1.0),
-                           #  'colsample_bytree': 0.8,
-                           #  'gamma': 0,
-                           #  'base_score': 0.5,
-                           # 'max_delta_step': 0,
-                           # 'missing': None,
-                           # 'nthread': -1,
-                           # 'colsample_bylevel': 1,
-                           # 'reg_alpha': 0,
-                           # 'reg_lambda': 1,
-                           # 'scale_pos_weight': 1,
-                           #  'seed': 1
+        parameters_grid = {'learning_rate': (0.002,0.005,0.01),
+                           'n_estimators': (20,50,100,150),
+                           'max_depth': (5,7,9),
+                           #'subsample': 0.8,
+                           #'colsample_bytree': 0.8,
+                           #'colsample_bylevel': 1,
+                           #'gamma': 0,
+                           #'min_child_weight': 1,
+                           #'max_delta_step': 0,
+                           #'base_score': 0.5,
+                           #'reg_alpha': 0,
+                           #'reg_lambda': 0,
                            }
 
         models.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
@@ -956,11 +948,11 @@ if __name__ == "__main__":
     # GridSearch.et_grid_search()
     # GridSearch.ab_grid_search()
     # GridSearch.gb_grid_search()
-    # GridSearch.xgb_grid_search()
+    GridSearch.xgb_grid_search()
     # GridSearch.lgb_grid_search()
 
     # Stacking
-    ModelStacking.train()
+    # ModelStacking.train()
 
     print('======================================================')
     print('Done!')
