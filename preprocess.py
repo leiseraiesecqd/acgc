@@ -80,7 +80,7 @@ class DataPreProcess:
         self.g_train = train_f['group']
         self.e_train = train_f['era']
         self.x_test = test_f.drop(['id', 'group'], axis=1)
-        self.id_test = test_f['id']
+        self.id_test = test_f['id'].astype(int)
         self.g_test = test_f['group']
 
     # Dropping outliers
