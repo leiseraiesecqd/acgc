@@ -366,7 +366,7 @@ class TrainSingleModel:
 
         print('Start training LGBM...')
 
-        LGB.train_sklearn(pred_path, loss_log_path, n_valid=4, n_cv=20, parameters=lgb_parameters)
+        LGB.train_sklearn(pred_path + 'stack_', loss_log_path, n_valid=4, n_cv=20, parameters=lgb_parameters)
 
 
 # Grid Search
@@ -975,7 +975,7 @@ class ModelStacking:
 
         hyper_params = {'n_valid': (4, 4),
                         'n_era': (20, 20),
-                        'n_epoch': (4, 1)}
+                        'n_epoch': (8, 1)}
 
         layer1_prams = ModelStacking.get_layer1_params()
         layer2_prams = ModelStacking.get_layer2_params()

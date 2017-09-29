@@ -1318,7 +1318,7 @@ class XGBoost:
 
         clf.fit(x_train, y_train, sample_weight=w_train,
                 eval_set=[(x_train, y_train), (x_valid, y_valid)],
-                early_stopping_rounds=100, eval_metric='logloss', verbose=True)
+                early_stopping_rounds=10, eval_metric='logloss', verbose=True)
 
         # Feature Importance
         self.get_importance_sklearn(clf)
