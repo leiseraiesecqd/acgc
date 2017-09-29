@@ -213,7 +213,7 @@ class Stacking:
             print('======================================================')
             print('======================================================')
             print('blender_x_e shape:{}'.format(blender_x_e.shape))
-            print('blender_x_e shape:{}'.format(blender_x_e.shape))
+            print('blender_test_e shape:{}'.format(blender_test_e.shape))
             print('======================================================')
             print('======================================================')
 
@@ -237,6 +237,8 @@ class Stacking:
         print('======================================================')
         print('blender_x_outputs:{}'.format(blender_x_outputs.shape))
         print('blender_test_outputs:{}'.format(blender_test_outputs.shape))
+        print('blender_x_g_outputs:{}'.format(blender_x_g_outputs.shape))
+        print('blender_test_g_outputs:{}'.format(blender_test_g_outputs.shape))
         print('======================================================')
         print('======================================================')
 

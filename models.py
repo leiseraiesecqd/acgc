@@ -1839,7 +1839,7 @@ class DeepNeuralNetworks:
         with train_graph.as_default():
 
             # Inputs
-            feature_num = self.x_train.shape[1]
+            feature_num = x_train.shape[1]
             inputs, labels, weights, lr, keep_prob, is_train = self.input_tensor(feature_num)
 
             # Logits
