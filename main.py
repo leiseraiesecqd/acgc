@@ -938,8 +938,11 @@ if __name__ == "__main__":
     # TrainSingleModel.dnn_keras_train()
 
     # Grid Search
+    # GridSearch.lr_grid_search()
     # GridSearch.rf_grid_search()
+    # GridSearch.et_grid_search()
     # GridSearch.ab_grid_search()
+    # GridSearch.gb_grid_search()
     # GridSearch.xgb_grid_search()
     # GridSearch.lgb_grid_search()
 
