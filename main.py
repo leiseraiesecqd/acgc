@@ -811,7 +811,13 @@ class ModelStacking:
                       'log_path': './log/'}
 
         # List of parameters for layer1
-        layer1_prams = [lgb_params, xgb_params, ab_params, rf_params, et_params, gb_params, dnn_params]
+        layer1_prams = [lgb_params,
+                        xgb_params,
+                        ab_params,
+                        rf_params,
+                        et_params,
+                        # gb_params,
+                        dnn_params]
 
         return layer1_prams
 
