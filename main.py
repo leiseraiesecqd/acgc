@@ -27,16 +27,17 @@ class TrainSingleModel:
         lr_parameters = {'C': 1.0,
                          'class_weight': None,
                          'dual': False,
-                         'fit_intercept': 'True',
+                         'fit_intercept': True,
                          'intercept_scaling': 1,
                          'max_iter': 100,
-                         'multi_class': 'multinomial',
+                         # 'multi_class': 'multinomial',
+                         'multi_class': 'ovr',
                          'n_jobs': -1,
                          'penalty': 'l2',
                          'solver': 'sag',
                          'tol': 0.0001,
                          'random_state': 1,
-                         'verbose': 2,
+                         'verbose': 1,
                          'warm_start': False}
 
         LR = models.LRegression(x_train, y_train, w_train, e_train, x_test, id_test)
