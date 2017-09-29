@@ -731,20 +731,20 @@ class ModelStacking:
     def get_layer1_params():
 
         # Parameters of LightGBM
-        lgb_params = {'learning_rate': 0.006,
+        lgb_params = {'learning_rate': 0.002,
                       'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
-                      'num_leaves': 3,                # <2^(max_depth)
+                      'num_leaves': 128,                # <2^(max_depth)
                       'max_depth': 8,                 # default=-1
-                      'n_estimators': 79,
+                      'n_estimators': 65,
                       'max_bin': 1005,
                       'subsample_for_bin': 1981,
                       'objective': 'binary',
                       'min_split_gain': 0.,
                       'min_child_weight': 1,
                       'min_child_samples': 0,
-                      'subsample': 0.723,
-                      'subsample_freq': 3,
-                      'colsample_bytree': 0.11,
+                      'subsample': 0.8,
+                      'subsample_freq': 5,
+                      'colsample_bytree': 0.8,
                       'reg_alpha': 0.,
                       'reg_lambda': 0.,
                       'silent': False}
