@@ -704,7 +704,7 @@ class ModelStacking:
                       'max_depth': 10,
                       'min_child_weight': 5,
                       'objective': 'binary:logistic',
-                      'eval_metric': 'logloss',
+                      # 'eval_metric': 'logloss',
                       'silent': 1,
                       'subsample': 0.8,
                       'colsample_bytree': 0.8,
