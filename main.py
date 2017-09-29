@@ -298,10 +298,10 @@ class TrainSingleModel:
 
         # HyperParameters
         hyper_parameters = {'version': '1.0',
-                            'epochs': 5,
+                            'epochs': 10,
                             'unit_number': [48, 24, 12, 4],
-                            'learning_rate': 0.0001,
-                            'keep_probability': 0.65,
+                            'learning_rate': 0.001,
+                            'keep_probability': 0.5,
                             'batch_size': 256,
                             'display_step': 100,
                             'save_path': './checkpoints/',
@@ -1014,7 +1014,7 @@ if __name__ == "__main__":
     # GridSearch.et_grid_search()
     # GridSearch.ab_grid_search()
     # GridSearch.gb_grid_search()
-    GridSearch.xgb_grid_search()
+    # GridSearch.xgb_grid_search()
     # GridSearch.lgb_grid_search()
     # GridSearch.stack_lgb_grid_search()
 
