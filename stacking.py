@@ -61,8 +61,8 @@ class DeepStack:
         LGB_L2 = models.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
                                  self.x_test, self.id_test, self.x_g_train, self.x_g_test)
 
-        DNN_L2 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
-                                           self.e_train, self.x_test, self.id_test, dnn_l2_params)
+        # DNN_L2 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
+        #                                    self.e_train, self.x_test, self.id_test, dnn_l2_params)
 
         models_l2 = [
                      LGB_L2,
