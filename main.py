@@ -314,24 +314,24 @@ class TrainSingleModel:
 
         dnn.train(pred_path, n_valid=4, n_cv=20)
 
-    # DNN using Keras
-    @staticmethod
-    def dnn_keras_train():
-
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-
-        # HyperParameters
-        hyper_parameters = {'epochs': 200,
-                            'unit_number': [64, 32, 16, 8, 4, 1],
-                            'learning_rate': 0.00001,
-                            'keep_probability': 0.8,
-                            'batch_size': 256}
-
-        dnn = models.KerasDeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
-
-        print('Start training DNN(Keras)...')
-
-        dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20)
+    # # DNN using Keras
+    # @staticmethod
+    # def dnn_keras_train():
+    #
+    #     x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+    #
+    #     # HyperParameters
+    #     hyper_parameters = {'epochs': 200,
+    #                         'unit_number': [64, 32, 16, 8, 4, 1],
+    #                         'learning_rate': 0.00001,
+    #                         'keep_probability': 0.8,
+    #                         'batch_size': 256}
+    #
+    #     dnn = models.KerasDeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
+    #
+    #     print('Start training DNN(Keras)...')
+    #
+    #     dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20)
 
 
 # Grid Search
@@ -960,7 +960,7 @@ if __name__ == "__main__":
     # GridSearch.lgb_grid_search()
 
     # Stacking
-    ModelStacking.train()
+    # ModelStacking.train()
 
     print('======================================================')
     print('Done!')
