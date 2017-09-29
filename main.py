@@ -299,7 +299,7 @@ class TrainSingleModel:
         # HyperParameters
         hyper_parameters = {'version': '1.0',
                             'epochs': 10,
-                            'unit_number': [48, 24, 12],
+                            'unit_number': [48, 24, 12, 4],
                             'learning_rate': 0.00005,
                             'keep_probability': 0.8,
                             'batch_size': 256,
@@ -852,8 +852,8 @@ class ModelStacking:
 
         # Parameters of Deep Neural Network
         dnn_params = {'version': '1.0',
-                      'epochs': 10,
-                      'unit_number': [48, 24, 12],
+                      'epochs': 5,
+                      'unit_number': [48, 24, 12, 4],
                       'learning_rate': 0.0001,
                       'keep_probability': 0.7,
                       'batch_size': 256,
