@@ -2565,10 +2565,10 @@ def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, params, params_g
     best_parameters = grid_search.best_estimator_.get_params()
     best_score = grid_search.best_score_
 
-    print('Best score: %0.3f' % best_score)
+    print('Best score: %0.6f' % best_score)
     print('Best parameters set:')
 
-    for param_name in sorted(params.keys()):
+    for param_name in sorted(params_grid.keys()):
         print('\t%s: %r' % (param_name, best_parameters[param_name]))
 
     total_time = time.time() - start_time
