@@ -333,7 +333,7 @@ class Stacking:
 
         # Save predicted test prob
         final_result = test_outputs_l3
-        utils.save_pred_to_csv(self.pred_path + 'final_results/stack_', self.id_test, final_result)
+        self.save_predict(self.pred_path + 'final_results/stack_', final_result)
 
         total_time = time.time() - start_time
         print('======================================================')

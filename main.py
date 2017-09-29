@@ -12,7 +12,6 @@ preprocessed_data_path = './preprocessed_data/'
 pred_path = './results/'
 grid_search_log_path = './grid_search_logs/'
 loss_log_path = './loss_logs/'
-importance_log_path = './importance_logs/'
 stack_output_path = './stacking_outputs/'
 
 
@@ -887,7 +886,7 @@ class ModelStacking:
 
         hyper_params = {'n_valid': (4, 4, 4),
                         'n_era': (20, 20, 20),
-                        'n_epoch': (1, 1, 1)}
+                        'n_epoch': (2, 2, 1)}
 
         layer1_prams = ModelStacking.get_layer1_params()
         layer2_prams = ModelStacking.get_layer2_params()
@@ -922,6 +921,10 @@ if __name__ == "__main__":
         os.makedirs(stack_output_path)
 
     start_time = time.time()
+
+    print('======================================================')
+    print('Start training...')
+    print('======================================================')
 
     # Random Forest
     # TrainSingleModel.rf_train()
@@ -959,5 +962,7 @@ if __name__ == "__main__":
     # Stacking
     ModelStacking.train()
 
+    print('======================================================')
     print('Done!')
-    print('Use {:.3}s'.format(time.time() - start_time))
+    print('Time: {}s'.format(time.time() - start_time))
+    print('======================================================')
