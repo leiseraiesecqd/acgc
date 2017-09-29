@@ -561,25 +561,25 @@ class GridSearch:
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-        parameters = {'learning_rate': 0.05,
-                      'n_estimators': 1000,
-                      'max_depth': 10,
+        parameters = {'objective': 'binary:logistic',
+                      'learning_rate': 0.002,
+                      'n_estimators': 100,
+                      'max_depth': 9,
                       'min_child_weight': 5,
-                      'objective': 'binary:logistic',
-                      'eval_metric': 'logloss',
-                      'silent': 1,
+                      'max_delta_step': 0,
+                      'silent': False,
                       'subsample': 0.8,
                       'colsample_bytree': 0.8,
-                      'gamma': 0,
+                      'colsample_bylevel': 1,
                       'base_score': 0.5,
-                      # 'max_delta_step': 0,
+                      'gamma': 0,
+                      'reg_alpha': 0,
+                      'reg_lambda': 0,
+                      'seed': 1
                       # 'missing': None,
                       # 'nthread': -1,
-                      # 'colsample_bylevel': 1,
-                      # 'reg_alpha': 0,
-                      # 'reg_lambda': 1,
                       # 'scale_pos_weight': 1,
-                      'seed': 1}
+                      }
 
         XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
@@ -652,10 +652,10 @@ class GridSearch:
         parameters_grid = {
                            'learning_rate': (0.002, 0.005, 0.01),
                            'n_estimators': (30, 60, 90),
-                           'num_leaves': (32, 64, 128),               # <2^(max_depth)
+                           'num_leaves': (32, 64, 128),             # <2^(max_depth)
                            'colsample_bytree': (0.6, 0.8, 0.1),
                            'max_depth': (6, 8, 10),                 # default=-1
-                           # 'min_data_in_leaf': 20,         # default=20
+                           # 'min_data_in_leaf': 20,                  # default=20
                            # 'bagging_fraction': (0.5, 0.7, 0.9),
                            # 'feature_fraction': (0.5, 0.7, 0.9),
                            # 'subsample_for_bin': (50000, 100000, 150000),
@@ -698,25 +698,25 @@ class ModelStacking:
                       'silent': False}
 
         # Parameters of XGBoost
-        xgb_params = {'learning_rate': 0.002,
+        xgb_params = {'objective': 'binary:logistic',
+                      'learning_rate': 0.002,
                       'n_estimators': 100,
                       'max_depth': 9,
                       'min_child_weight': 5,
-                      'objective': 'binary:logistic',
-                      # 'eval_metric': 'logloss',
-                      'silent': 1,
+                      'max_delta_step': 0,
+                      'silent': False,
                       'subsample': 0.8,
                       'colsample_bytree': 0.8,
+                      'colsample_bylevel': 1,
                       'gamma': 0,
                       'base_score': 0.5,
-                      # 'max_delta_step': 0,
+                      'reg_alpha': 0,
+                      'reg_lambda': 0,
                       # 'missing': None,
                       # 'nthread': -1,
-                      # 'colsample_bylevel': 1,
-                      # 'reg_alpha': 0,
-                      # 'reg_lambda': 1,
                       # 'scale_pos_weight': 1,
-                      'seed': 1}
+                      'seed': 1
+                      }
 
         # Parameters of AdaBoost
         et_for_ab_params = {'bootstrap': True,
@@ -895,10 +895,10 @@ class ModelStacking:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
-        STK = stacking.Stacking(x_train, y_train, w_train, e_train,
-                                x_test, id_test, x_train_g, x_test_g,
-                                pred_path, stack_output_path,
-                                hyper_params, layer1_prams, layer2_prams, layer3_prams)
+        STK = stacking.DeepStack(x_train, y_train, w_train, e_train,
+                                 x_test, id_test, x_train_g, x_test_g,
+                                 pred_path, stack_output_path,
+                                 hyper_params, layer1_prams, layer2_prams, layer3_prams)
 
         STK.stack()
 
@@ -960,7 +960,7 @@ if __name__ == "__main__":
     # GridSearch.lgb_grid_search()
 
     # Stacking
-    # ModelStacking.train()
+    ModelStacking.train()
 
     print('======================================================')
     print('Done!')

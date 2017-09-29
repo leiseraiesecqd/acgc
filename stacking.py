@@ -3,7 +3,7 @@ import utils
 import time
 import numpy as np
 
-class Stacking:
+class DeepStack:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_tr_g, x_te_g,
                  pred_path, stack_output_path, hyper_params, params_l1, params_l2, params_l3):
@@ -146,6 +146,7 @@ class Stacking:
             n_model = len(models_blender)
 
             counter_cv = 0
+            epoch_start_time = time.time()
             blender_valid = np.array([])
             blender_test = np.array([])
             # blender_losses = np.array([])
@@ -220,6 +221,11 @@ class Stacking:
                 # n_test_sample * (n_model x n_epoch)
                 blender_test_outputs = np.concatenate((blender_test_outputs, blender_test_e), axis=1)
 
+            epoch_time = time.time() - epoch_start_time
+            print('------------------------------------------------------')
+            print('Epoch Done!')
+            print('Epoch Time: {}s'.format(epoch_time))
+
         # Stack Group Features
         print('------------------------------------------------------')
         print('Stacking Group Features...')
@@ -272,8 +278,8 @@ class Stacking:
 
         layer1_time = time.time() - start_time
         print('------------------------------------------------------')
-        print('Layer 1 Training Finished!')
-        print('Time: {}s'.format(layer1_time))
+        print('Layer 1 Training Done!')
+        print('Layer Time: {}s'.format(layer1_time))
         print('======================================================')
 
 
@@ -296,8 +302,8 @@ class Stacking:
 
         layer2_time = time.time() - start_time
         print('------------------------------------------------------')
-        print('Layer 2 Training Finished!')
-        print('Time: {}s'.format(layer2_time))
+        print('Layer 2 Training Done!')
+        print('Layer Time: {}s'.format(layer2_time))
         print('======================================================')
 
         # Layer 3
@@ -319,8 +325,8 @@ class Stacking:
 
         layer3_time = time.time() - start_time
         print('------------------------------------------------------')
-        print('Layer3 Training Finished!')
-        print('Time: {}s'.format(layer3_time))
+        print('Layer3 Training Done!')
+        print('Layer Time: {}s'.format(layer3_time))
         print('======================================================')
 
         # Save predicted test prob
@@ -329,7 +335,7 @@ class Stacking:
 
         total_time = time.time() - start_time
         print('======================================================')
-        print('Training Finished!')
+        print('Training Done!')
         print('Total Time: {}s'.format(total_time))
         print('======================================================')
 
