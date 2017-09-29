@@ -154,10 +154,10 @@ class LRegression:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
+              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
+              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
+              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
 
         # Save Final Losses to file
         utils.save_final_loss_log(loss_log_path + 'lr_', parameters, n_valid, n_cv, loss_train_mean,
@@ -381,10 +381,10 @@ class DecisionTree:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
+              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
+              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
+              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
 
         # Save Final Losses to file
         utils.save_final_loss_log(loss_log_path + 'dt_', parameters, n_valid, n_cv, loss_train_mean,
@@ -539,10 +539,10 @@ class RandomForest:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
+              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
+              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
+              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
 
         # Save Final Losses to file
         utils.save_final_loss_log(loss_log_path + 'rf_', parameters, n_valid, n_cv, loss_train_mean,
@@ -697,10 +697,10 @@ class ExtraTrees:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
+              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
+              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
+              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
 
         # Save Final Losses to file
         utils.save_final_loss_log(loss_log_path + 'et_', parameters, n_valid, n_cv, loss_train_mean,
@@ -855,10 +855,10 @@ class AdaBoost:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
+              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
+              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
+              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
 
         # Save Final Losses to file
         utils.save_final_loss_log(loss_log_path + 'ab_', parameters, n_valid, n_cv, loss_train_mean,
@@ -1013,10 +1013,10 @@ class GradientBoosting:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
+              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
+              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
+              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
 
         # Save Final Losses to file
         utils.save_final_loss_log(loss_log_path + 'gb_', parameters, n_valid, n_cv, loss_train_mean,
@@ -1225,10 +1225,10 @@ class XGBoost:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
+              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
+              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
+              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
 
         # Save Final Losses to file
         utils.save_final_loss_log(loss_log_path + 'xgb_', parameters, n_valid, n_cv, loss_train_mean,
@@ -1295,10 +1295,10 @@ class XGBoost:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
+              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
+              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
+              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
 
         # Save Final Losses to file
         utils.save_final_loss_log(loss_log_path + 'xgb_sk_', parameters, n_valid, n_cv, loss_train_mean,
@@ -1494,10 +1494,10 @@ class LightGBM:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
+              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
+              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
+              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
 
         # Save Final Losses to file
         utils.save_final_loss_log(loss_log_path + 'lgb_', parameters, n_valid, n_cv, loss_train_mean,
@@ -1573,10 +1573,10 @@ class LightGBM:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
+              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
+              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
+              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
 
         # Save Final Losses to file
         utils.save_final_loss_log(loss_log_path + 'lgb_sk_', parameters, n_valid, n_cv, loss_train_mean,
