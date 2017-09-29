@@ -704,7 +704,6 @@ class ModelStacking:
                       'n_estimators': 100,
                       'silent': True,
                       'objective': "binary:logistic",
-                      'n_jobs':  1,
                       'nthread': None,
                       'gamma': 0,
                       'min_child_weight': 1,
