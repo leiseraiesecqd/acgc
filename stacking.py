@@ -27,7 +27,7 @@ class DeepStack:
         self.n_era = hyper_params['n_era']
         self.n_epoch = hyper_params['n_epoch']
 
-    def init_models_layer1(self, dnn_l1_params):
+    def init_models_layer1(self, dnn_l1_params=None):
 
         LGB_L1 = models.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
                                  self.x_test, self.id_test, self.x_g_train, self.x_g_test)
@@ -56,7 +56,7 @@ class DeepStack:
 
         return models_l1
 
-    def init_models_layer2(self, dnn_l2_params):
+    def init_models_layer2(self, dnn_l2_params=None):
 
         LGB_L2 = models.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
                                  self.x_test, self.id_test, self.x_g_train, self.x_g_test)
@@ -71,7 +71,7 @@ class DeepStack:
 
         return models_l2
 
-    def init_models_layer3(self, dnn_l3_params):
+    def init_models_layer3(self, dnn_l3_params=None):
 
         DNN_L3 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
                                            self.e_train, self.x_test, self.id_test, dnn_l3_params)

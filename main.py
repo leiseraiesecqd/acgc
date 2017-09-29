@@ -975,7 +975,7 @@ class ModelStacking:
 
         hyper_params = {'n_valid': (4, 4),
                         'n_era': (20, 20),
-                        'n_epoch': (8, 1)}
+                        'n_epoch': (1, 1)}
 
         layer1_prams = ModelStacking.get_layer1_params()
         layer2_prams = ModelStacking.get_layer2_params()
@@ -1053,7 +1053,7 @@ if __name__ == "__main__":
     # GridSearch.stack_lgb_grid_search()
 
     # Stacking
-    # ModelStacking.train()
+    ModelStacking.train()
     TrainSingleModel.stack_lgb_train()
 
     print('======================================================')
