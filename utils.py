@@ -17,7 +17,7 @@ def save_pred_to_csv(file_path, id, prob):
 
     print('Saving predictions to csv file...')
 
-    df = pd.DataFrame({'id': int(id), 'proba': prob})
+    df = pd.DataFrame({'id': id, 'proba': prob})
 
     df.to_csv(file_path + 'result.csv', sep=',', index=False)
 
