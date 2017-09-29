@@ -45,12 +45,13 @@ class Stacking:
                                            self.e_train, self.x_test, self.id_test, dnn_l1_params)
 
         models_l1 = [LGB_L1,
-                     XGB_L1,
-                     AB_L1,
-                     RF_L1,
+                     # XGB_L1,
+                     # AB_L1,
+                     # RF_L1,
                      ET_L1,
                      # GB_L1,
-                     DNN_L1]
+                     # DNN_L1
+                     ]
 
         return models_l1
 
@@ -89,7 +90,7 @@ class Stacking:
         for iter_model, model in enumerate(models_blender):
 
             print('------------------------------------------------------')
-            print('Training on model:{}/{}'.format(iter_model, n_model))
+            print('Training on model:{}/{}'.format(iter_model+1, n_model))
 
             # Training on each model in models_l1 using one cross validation set
             prob_valid, prob_test, losses = \
@@ -180,7 +181,7 @@ class Stacking:
             print('Sorting Validation Blenders...')
             blender_valid_sorted = np.zeros_like(blender_valid, dtype=np.float64)  # n_model*n_x_sample
             for column, idx in enumerate(blender_valid[0]):
-                blender_valid_sorted[:, idx] = blender_valid[:, column]
+                blender_valid_sorted[:, int(idx)] = blender_valid[:, column]
             blender_valid_sorted = np.delete(blender_valid_sorted, 0, axis=0)      # n_model*n_x_sample
 
             # Calculate average of test_prob

@@ -682,26 +682,26 @@ class ModelStacking:
         # Parameters of LightGBM
         lgb_params = {'learning_rate': 0.002,
                       'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
-                      'num_leaves': 32,               # <2^(max_depth)
-                      'max_depth': 8,                 # default=-1
-                      'n_estimators': 50,
-                      'max_bin': 255,
-                      'subsample_for_bin': 50000,
+                      'num_leaves': 4,                # <2^(max_depth)
+                      'max_depth': 4,                 # default=-1
+                      'n_estimators': 79,
+                      'max_bin': 1005,
+                      'subsample_for_bin': 1981,
                       'objective': 'binary',
                       'min_split_gain': 0.,
                       'min_child_weight': 5,
                       'min_child_samples': 10,
-                      'subsample': 0.6,
-                      'subsample_freq': 5,
+                      'subsample': 0.723,
+                      'subsample_freq': 3,
                       'colsample_bytree': 0.5,
                       'reg_alpha': 0.,
                       'reg_lambda': 0.,
                       'silent': False}
 
         # Parameters of XGBoost
-        xgb_params = {'learning_rate': 0.05,
-                      'n_estimators': 1000,
-                      'max_depth': 10,
+        xgb_params = {'learning_rate': 0.002,
+                      'n_estimators': 100,
+                      'max_depth': 9,
                       'min_child_weight': 5,
                       'objective': 'binary:logistic',
                       # 'eval_metric': 'logloss',
@@ -801,10 +801,10 @@ class ModelStacking:
 
         # Parameters of Deep Neural Network
         dnn_params = {'version': '1.0',
-                      'epochs': 15,
+                      'epochs': 20,
                       'unit_number': [48, 24, 12],
-                      'learning_rate': 0.0001,
-                      'keep_probability': 0.8,
+                      'learning_rate': 0.00005,
+                      'keep_probability': 0.7,
                       'batch_size': 256,
                       'display_step': 100,
                       'save_path': './checkpoints/',
@@ -812,12 +812,13 @@ class ModelStacking:
 
         # List of parameters for layer1
         layer1_prams = [lgb_params,
-                        xgb_params,
-                        ab_params,
-                        rf_params,
+                        # xgb_params,
+                        # ab_params,
+                        # rf_params,
                         et_params,
                         # gb_params,
-                        dnn_params]
+                        # dnn_params
+                        ]
 
         return layer1_prams
 
@@ -846,8 +847,8 @@ class ModelStacking:
 
         # Parameters of Deep Neural Network
         dnn_params = {'version': '1.0',
-                      'epochs': 15,
-                      'unit_number': [48, 24, 12],
+                      'epochs': 10,
+                      'unit_number': [4, 2],
                       'learning_rate': 0.0001,
                       'keep_probability': 0.8,
                       'batch_size': 256,
@@ -856,7 +857,8 @@ class ModelStacking:
                       'log_path': './log/'}
 
         # List of parameters for layer1
-        layer2_prams = [lgb_params, dnn_params]
+        layer2_prams = [lgb_params,
+                        dnn_params]
 
         return layer2_prams
 
@@ -866,8 +868,8 @@ class ModelStacking:
 
         # Parameters of Deep Neural Network
         dnn_params = {'version': '1.0',
-                      'epochs': 15,
-                      'unit_number': [48, 24, 12],
+                      'epochs': 10,
+                      'unit_number': [4, 2],
                       'learning_rate': 0.0001,
                       'keep_probability': 0.8,
                       'batch_size': 256,
@@ -915,6 +917,9 @@ if __name__ == "__main__":
 
     if not isdir(loss_log_path):
         os.makedirs(loss_log_path)
+
+    if not isdir(stack_output_path):
+        os.makedirs(stack_output_path)
 
     start_time = time.time()
 
