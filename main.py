@@ -769,7 +769,7 @@ class ModelStacking:
                       'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
                       'num_leaves': 128,                # <2^(max_depth)
                       'max_depth': 8,                 # default=-1
-                      'n_estimators': 65,
+                      'n_estimators': 50,
                       'max_bin': 1005,
                       'subsample_for_bin': 1981,
                       'objective': 'binary',
