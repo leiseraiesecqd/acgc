@@ -123,6 +123,14 @@ class Stacking:
             x_train_group = x_g_train_inputs[:-1]
             x_g_train_inputs = np.column_stack((x_train_inputs, x_train_group))       # n_sample * (n_feature + n_reuse + 1)
 
+        # TODO: shape
+        print('======================================================')
+        print('======================================================')
+        print('x_train_inputs shape:{}'.format(x_train_inputs.shape))
+        print('x_test shape:{}'.format(x_test.shape))
+        print('======================================================')
+        print('======================================================')
+
         n_cv = int(n_era // n_valid)
         blender_x_outputs = np.array([])
         blender_test_outputs = np.array([])
@@ -176,6 +184,14 @@ class Stacking:
                     blender_test = np.concatenate((blender_test, blender_test_cv), axis=1)
                     # blender_losses = np.concatenate((blender_losses, blender_losses_cv), axis=1)
 
+            # TODO: shape
+            print('======================================================')
+            print('======================================================')
+            print('blender_valid shape:{}'.format(blender_valid.shape))
+            print('blender_test shape:{}'.format(blender_test.shape))
+            print('======================================================')
+            print('======================================================')
+
             # Sort blender_valid by valid_index
             print('------------------------------------------------------')
             print('Sorting Validation Blenders...')
@@ -193,6 +209,14 @@ class Stacking:
             blender_x_e = blender_valid_sorted.transpose()      # n_sample * n_model
             blender_test_e = blender_test_mean.transpose()      # n_test_sample * n_model
 
+            # TODO: shape
+            print('======================================================')
+            print('======================================================')
+            print('blender_x_e shape:{}'.format(blender_x_e.shape))
+            print('blender_x_e shape:{}'.format(blender_x_e.shape))
+            print('======================================================')
+            print('======================================================')
+
             if epoch == 0:
                 blender_x_outputs = blender_x_e
                 blender_test_outputs = blender_test_e
@@ -207,6 +231,14 @@ class Stacking:
         print('Stacking Group Features...')
         blender_x_g_outputs = np.column_stack((blender_x_outputs, self.g_train))
         blender_test_g_outputs = np.column_stack((blender_test_outputs, self.g_test))
+
+        # TODO: shape
+        print('======================================================')
+        print('======================================================')
+        print('blender_x_outputs:{}'.format(blender_x_outputs.shape))
+        print('blender_test_outputs:{}'.format(blender_test_outputs.shape))
+        print('======================================================')
+        print('======================================================')
 
         return blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs
 
@@ -227,7 +259,7 @@ class Stacking:
         dnn_l3_params = self.parameters_l3[-1]
 
         # Layer 1
-        print('----------------------------------------------')
+        print('------------------------------------------------------')
         print('Start training layer 1...')
         models_initializer_l1 = self.init_models_layer1
 
@@ -245,10 +277,10 @@ class Stacking:
                                  x_outputs_l1, test_outputs_l1, x_g_outputs_l1, test_g_outputs_l1)
 
         layer1_time = time.time() - start_time
-        print('==============================================')
+        print('------------------------------------------------------')
         print('Layer 1 Training Finished!')
         print('Time: {}s'.format(layer1_time))
-        print('==============================================')
+        print('======================================================')
 
 
         # Layer 2
@@ -269,10 +301,10 @@ class Stacking:
                                  x_outputs_l2, test_outputs_l2, x_g_outputs_l2, test_g_outputs_l2)
 
         layer2_time = time.time() - start_time
-        print('----------------------------------------------')
+        print('------------------------------------------------------')
         print('Layer 2 Training Finished!')
         print('Time: {}s'.format(layer2_time))
-        print('==============================================')
+        print('======================================================')
 
         # Layer 3
         print('Start training layer 3...')
@@ -292,20 +324,20 @@ class Stacking:
                                  x_outputs_l3, test_outputs_l3, x_g_outputs_l3, test_g_outputs_l3)
 
         layer3_time = time.time() - start_time
-        print('----------------------------------------------')
+        print('------------------------------------------------------')
         print('Layer3 Training Finished!')
         print('Time: {}s'.format(layer3_time))
-        print('==============================================')
+        print('======================================================')
 
         # Save predicted test prob
         final_result = test_outputs_l3
         utils.save_pred_to_csv(self.pred_path + 'final_results/stack_', self.id_test, final_result)
 
         total_time = time.time() - start_time
-        print('==============================================')
+        print('======================================================')
         print('Training Finished!')
         print('Total Time: {}s'.format(total_time))
-        print('==============================================')
+        print('======================================================')
 
 
 if __name__ == '__main__':

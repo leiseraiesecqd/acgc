@@ -313,6 +313,7 @@ class DecisionTree:
 
         print('------------------------------------------------------')
         print('Training # Random Forest...')
+        print('------------------------------------------------------')
 
         clf = self.get_clf(parameters)
 
@@ -470,6 +471,7 @@ class RandomForest:
 
         print('------------------------------------------------------')
         print('Training # Random Forest...')
+        print('------------------------------------------------------')
 
         clf = self.get_clf(parameters)
 
@@ -627,6 +629,7 @@ class ExtraTrees:
 
         print('------------------------------------------------------')
         print('Training Extra Trees...')
+        print('------------------------------------------------------')
 
         clf = self.get_clf(parameters)
 
@@ -784,6 +787,7 @@ class AdaBoost:
 
         print('------------------------------------------------------')
         print('Training AdaBoost...')
+        print('------------------------------------------------------')
 
         clf = self.get_clf(parameters)
 
@@ -941,6 +945,7 @@ class GradientBoosting:
 
         print('------------------------------------------------------')
         print('Training GradientBoosting...')
+        print('------------------------------------------------------')
 
         clf = self.get_clf(parameters)
 
@@ -1222,6 +1227,7 @@ class XGBoost:
 
         print('------------------------------------------------------')
         print('Training XGBoost...')
+        print('------------------------------------------------------')
 
         clf = self.get_clf(parameters)
 
@@ -1495,6 +1501,7 @@ class LightGBM:
 
         print('------------------------------------------------------')
         print('Training LightGBM...')
+        print('------------------------------------------------------')
 
         idx_category = [x_g_test.shape[1]-1]
         print('Index of categorical feature: {}'.format(idx_category))
@@ -1720,7 +1727,7 @@ class DeepNeuralNetworks:
 
                 cv_counter += 1
 
-                print('======================================================================================================')
+                print('======================================================')
                 print('Training on the Cross Validation Set: {}'.format(cv_counter))
 
                 train_log_path = self.log_path + self.version + '/cv_{}/train'.format(cv_counter)
@@ -1811,7 +1818,7 @@ class DeepNeuralNetworks:
                 utils.save_pred_to_csv(pred_path + 'dnn_cv_{}_'.format(cv_counter), self.id_test, prob_test)
 
             # Final Result
-            print('======================================================================================================')
+            print('======================================================')
             print('Calculating final result...')
 
             prob_mean = np.mean(np.array(prob_total), axis=0)
@@ -1823,6 +1830,7 @@ class DeepNeuralNetworks:
 
         print('------------------------------------------------------')
         print('Training Deep Neural Network...')
+        print('------------------------------------------------------')
 
         # Build Network
         tf.reset_default_graph()
@@ -1981,8 +1989,7 @@ class KerasDeepNeuralNetworks:
 
             cv_counter += 1
 
-            print(
-                '======================================================================================================')
+            print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(cv_counter))
 
             model.fit(x_train,
@@ -2011,7 +2018,7 @@ class KerasDeepNeuralNetworks:
             utils.save_pred_to_csv(pred_path + 'dnn_keras_cv_{}_'.format(cv_counter), self.id_test, prob_test)
 
         # Final Result
-        print('======================================================================================================')
+        print('======================================================')
         print('Calculating final result...')
 
         prob_mean = np.mean(np.array(prob_total), axis=0)
