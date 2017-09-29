@@ -237,7 +237,7 @@ class TrainSingleModel:
 
         lgb_parameters = {'application': 'binary',
                           'learning_rate': 0.002,
-                          'num_leaves': 32,               # <2^(max_depth)
+                          'num_leaves': 3,                # <2^(max_depth)
                           'tree_learner': 'serial',
                           'max_depth': 8,                 # default=-1
                           'min_data_in_leaf': 20,         # default=20
@@ -262,23 +262,23 @@ class TrainSingleModel:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
-        lgb_parameters = {'learning_rate': 0.002,
+        lgb_parameters = {'learning_rate': 0.006,
                           'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
                           # 'boosting_type': 'dart',        # Dropouts meet Multiple Additive Regression Trees.
                           # 'boosting_type': 'goss',        # Gradient-based One-Side Sampling.
                           # 'boosting_type': 'rf',          # Random Forest.
-                          'num_leaves': 32,               # <2^(max_depth)
+                          'num_leaves': 3,                # <2^(max_depth)
                           'max_depth': 8,                 # default=-1
-                          'n_estimators': 50,
-                          'max_bin': 255,
-                          'subsample_for_bin': 50000,
+                          'n_estimators': 79,
+                          'max_bin': 1005,
+                          'subsample_for_bin': 1981,
                           'objective': 'binary',
                           'min_split_gain': 0.,
-                          'min_child_weight': 5,
-                          'min_child_samples': 10,
-                          'subsample': 0.6,
-                          'subsample_freq': 5,
-                          'colsample_bytree': 0.5,
+                          'min_child_weight': 1,
+                          'min_child_samples': 0,
+                          'subsample': 0.723,
+                          'subsample_freq': 3,
+                          'colsample_bytree': 0.11,
                           'reg_alpha': 0.,
                           'reg_lambda': 0.,
                           'silent': False}
@@ -622,23 +622,23 @@ class GridSearch:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
-        parameters = {'learning_rate': 0.002,
+        parameters = {'learning_rate': 0.006,
                       'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
                       # 'boosting_type': 'dart',        # Dropouts meet Multiple Additive Regression Trees.
                       # 'boosting_type': 'goss',        # Gradient-based One-Side Sampling.
                       # 'boosting_type': 'rf',          # Random Forest.
-                      'num_leaves': 32,               # <2^(max_depth)
+                      'num_leaves': 3,                # <2^(max_depth)
                       'max_depth': 8,                 # default=-1
-                      'n_estimators': 50,
-                      'max_bin': 255,
-                      'subsample_for_bin': 50000,
+                      'n_estimators': 79,
+                      'max_bin': 1005,
+                      'subsample_for_bin': 1981,
                       'objective': 'binary',
                       'min_split_gain': 0.,
-                      'min_child_weight': 5,
-                      'min_child_samples': 10,
-                      'subsample': 0.6,
-                      'subsample_freq': 5,
-                      'colsample_bytree': 0.5,
+                      'min_child_weight': 1,
+                      'min_child_samples': 0,
+                      'subsample': 0.723,
+                      'subsample_freq': 3,
+                      'colsample_bytree': 0.11,
                       'reg_alpha': 0.,
                       'reg_lambda': 0.,
                       'silent': False}
@@ -679,20 +679,20 @@ class ModelStacking:
     def get_layer1_params():
 
         # Parameters of LightGBM
-        lgb_params = {'learning_rate': 0.002,
+        lgb_params = {'learning_rate': 0.006,
                       'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
-                      'num_leaves': 4,                # <2^(max_depth)
-                      'max_depth': 4,                 # default=-1
+                      'num_leaves': 3,                # <2^(max_depth)
+                      'max_depth': 8,                 # default=-1
                       'n_estimators': 79,
                       'max_bin': 1005,
                       'subsample_for_bin': 1981,
                       'objective': 'binary',
                       'min_split_gain': 0.,
-                      'min_child_weight': 5,
-                      'min_child_samples': 10,
+                      'min_child_weight': 1,
+                      'min_child_samples': 0,
                       'subsample': 0.723,
                       'subsample_freq': 3,
-                      'colsample_bytree': 0.5,
+                      'colsample_bytree': 0.11,
                       'reg_alpha': 0.,
                       'reg_lambda': 0.,
                       'silent': False}
@@ -926,6 +926,9 @@ if __name__ == "__main__":
     print('Start training...')
     print('======================================================')
 
+    # Logistic Regression
+    TrainSingleModel.lr_train()
+
     # Random Forest
     # TrainSingleModel.rf_train()
 
@@ -960,7 +963,7 @@ if __name__ == "__main__":
     # GridSearch.lgb_grid_search()
 
     # Stacking
-    ModelStacking.train()
+    # ModelStacking.train()
 
     print('======================================================')
     print('Done!')
