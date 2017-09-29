@@ -210,6 +210,12 @@ class Stacking:
 
         return blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs
 
+    def save_predict(self, pred_path, test_outputs):
+
+        test_prob = np.mean(test_outputs, axis=1)
+
+        utils.save_pred_to_csv(pred_path, self.id_test, test_prob)
+
     def stack(self):
 
         start_time = time.time()
@@ -232,7 +238,7 @@ class Stacking:
                                n_epoch=self.n_epoch[0], x_train_reuse=None)
 
         # Save predicted test prob
-        utils.save_pred_to_csv(self.pred_path + 'stack_l1_', self.id_test, test_outputs_l1)
+        self.save_predict(self.pred_path + 'stack_l1_', test_outputs_l1)
 
         # Save layer outputs
         utils.save_stack_outputs(self.stack_output_path + 'l1_',
@@ -256,7 +262,7 @@ class Stacking:
                                n_epoch=self.n_epoch[1], x_train_reuse=None)
 
         # Save predicted test prob
-        utils.save_pred_to_csv(self.pred_path + 'stack_l2_', self.id_test, test_outputs_l2)
+        self.save_predict(self.pred_path + 'stack_l2_', test_outputs_l2)
 
         # Save layer outputs
         utils.save_stack_outputs(self.stack_output_path + 'l2_',
@@ -279,7 +285,7 @@ class Stacking:
                                n_epoch=self.n_epoch[2], x_train_reuse=None)
 
         # Save predicted test prob
-        utils.save_pred_to_csv(self.pred_path + 'stack_l3_', self.id_test, test_outputs_l3)
+        self.save_predict(self.pred_path + 'stack_l3_', test_outputs_l3)
 
         # Save layer outputs
         utils.save_stack_outputs(self.stack_output_path + 'l3_',

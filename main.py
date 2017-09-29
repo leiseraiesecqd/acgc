@@ -782,9 +782,9 @@ class ModelStacking:
         # Parameters of Gradient Boost
         gb_params = {'criterion': 'friedman_mse',
                      'init': None,
-                     'learning_rate': 0.05,
+                     'learning_rate': 0.002,
                      'loss': 'deviance',
-                     'max_depth': 25,
+                     'max_depth': 5,
                      'max_features': 'auto',
                      'max_leaf_nodes': None,
                      'min_impurity_decrease': 0.0,
