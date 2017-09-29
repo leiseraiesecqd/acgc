@@ -17,7 +17,7 @@ def save_pred_to_csv(file_path, id, prob):
 
     print('Saving predictions to csv file...')
 
-    df = pd.DataFrame({'id': id, 'proba': prob})
+    df = pd.DataFrame({'id': int(id), 'proba': prob})
 
     df.to_csv(file_path + 'result.csv', sep=',', index=False)
 
@@ -111,6 +111,18 @@ def load_pkl_to_np(data_path):
         data = pickle.load(f)
 
     return data
+
+# Load Stacked Layer
+def load_stacked_data(output_path):
+
+    print('Loading Stacked Data...')
+
+    x_outputs = load_pkl_to_np(output_path + 'x_outputs.p')
+    test_outputs = load_pkl_to_np(output_path + 'test_outputs.p')
+    x_g_outputs = load_pkl_to_np(output_path + 'x_g_outputs.p')
+    test_g_outputs = load_pkl_to_np(output_path + 'test_g_outputs.p')
+
+    return x_outputs, test_outputs, x_g_outputs, test_g_outputs
 
 
 # Load Preprocessed Data

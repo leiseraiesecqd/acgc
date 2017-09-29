@@ -28,8 +28,6 @@ import xgboost as xgb
 from xgboost import XGBClassifier
 import lightgbm as lgb
 from lightgbm import LGBMClassifier
-# from xgboost import plot_importance
-# from sklearn.ensemble import VotingClassifier
 from sklearn.model_selection import GroupKFold
 from sklearn.model_selection import GridSearchCV
 
@@ -52,12 +50,7 @@ class LRegression:
         self.id_test = id_te
         self.importance = np.array([])
         self.indices = np.array([])
-
-    def get_clf(self, parameters):
-
-        clf = LogisticRegression(**parameters)
-
-        return clf
+        self.std = np.array([])
 
     def show(self):
 
@@ -65,10 +58,17 @@ class LRegression:
 
         plt.figure(figsize=(20, 10))
         plt.title('Feature Importance in Logistic Regression')
-        plt.bar(range(feature_num), self.importance[self.indices], color=color[0], align="center")
+        plt.bar(range(feature_num), self.importance[self.indices],
+                color=color[2], yerr=self.std[self.indices], align="center")
         plt.xticks(range(feature_num), self.indices)
         plt.xlim([-1, feature_num])
         plt.show()
+
+    def get_clf(self, parameters):
+
+        clf = LogisticRegression(**parameters)
+
+        return clf
 
     def get_importance(self, clf):
 
@@ -80,33 +80,118 @@ class LRegression:
         for f in range(feature_num):
             print("%d | feature %d | %f" % (f + 1, indices[f], self.importance[indices[f]]))
 
-    def predict(self, clf, pred_path):
+    def predict(self, clf, x_test, pred_path=None):
 
         print('Predicting...')
 
-        prob_test = clf.predict_proba(self.x_test)
+        prob_test = np.array(clf.predict_proba(x_test))[:, 1]
 
-        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+        if pred_path is not None:
+            utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
 
-    def train(self, parameters):
+    def predict_valid(self, clf, x_valid):
 
-        clf = LogisticRegression(random_state=1)
-        '''
-        LogisticRegression(C=1.0, class_weight=None, dual=False, fit_intercept=True,
-                           intercept_scaling=1, max_iter=100, multi_class='ovr', n_jobs=1,
-                           penalty='l2', random_state=1, solver='liblinear', tol=0.0001,
-                           verbose=0, warm_start=False)
-        '''
+        print('Predicting Validation Set...')
 
-        clf.fit(self.x_train, self.y_train, sample_weight=self.w_train)
+        prob_valid = np.array(clf.predict_proba(x_valid))[:, 1]
 
-        # K-fold cross-validation on Logistic Regression
-        scores = cross_val_score(clf, self.x_train, self.y_train, cv=10)
-        print("Accuracy: %0.6f (+/- %0.6f)" % (scores.mean(), scores.std() * 2))
+        return prob_valid
 
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
+
+        count = 0
+        prob_total = []
+        loss_train_total = []
+        loss_valid_total = []
+        loss_train_w_total = []
+        loss_valid_w_total = []
+
+        for x_train, y_train, w_train, \
+            x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+                                                                                y=self.y_train,
+                                                                                w=self.w_train,
+                                                                                e=self.e_train,
+                                                                                n_valid=n_valid,
+                                                                                n_cv=n_cv):
+            count += 1
+
+            print('===========================================')
+            print('Training on the Cross Validation Set: {}'.format(count))
+
+            # Classifier
+            clf = self.get_clf(parameters)
+
+            clf.fit(x_train, y_train, sample_weight=w_train)
+
+            # Print LogLoss
+            loss_train, loss_valid, loss_train_w, loss_valid_w = \
+                utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+
+            # Feature Importance
+            self.get_importance(clf)
+
+            # Prediction
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'lr_cv_{}_'.format(count))
+
+            prob_total.append(list(prob_test))
+            loss_train_total.append(loss_train)
+            loss_valid_total.append(loss_valid)
+            loss_train_w_total.append(loss_train_w)
+            loss_valid_w_total.append(loss_valid_w)
+
+            # Save Losses to file
+            utils.save_loss_log(loss_log_path + 'lr_', count, parameters, n_valid, n_cv, loss_train,
+                                loss_valid, loss_train_w, loss_valid_w)
+
+        print('===========================================')
+        print('Calculating final result...')
+
+        prob_mean = np.mean(np.array(prob_total), axis=0)
+        loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
+        loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
+        loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
+        loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
+
+        print('Total Train LogLoss: {:.6f}'.format(loss_train_mean),
+              'Total Validation LogLoss: {:.6f}'.format(loss_valid_mean),
+              'Total Train LogLoss with Weight: {:.6f}'.format(loss_train_w_mean),
+              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+
+        # Save Final Losses to file
+        utils.save_final_loss_log(loss_log_path + 'lr_', parameters, n_valid, n_cv, loss_train_mean,
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+
+        # Save final result
+        utils.save_pred_to_csv(pred_path + 'final_results/lr_', self.id_test, prob_mean)
+
+    def stack_train(self, x_train, y_train, w_train, x_g_train,
+                    x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+
+        print('------------------------------------------------------')
+        print('Training Logistic Regression...')
+        print('------------------------------------------------------')
+
+        clf = self.get_clf(parameters)
+
+        clf.fit(x_train, y_train, sample_weight=w_train)
+
+        # Feature Importance
         self.get_importance(clf)
+
+        # Print LogLoss
+        loss_train, loss_valid, \
+        loss_train_w, loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
+                                                            x_valid, y_valid, w_valid)
+
+        losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
+
+        # Prediction
+        prob_valid = self.predict_valid(clf, x_valid)
+        prob_test = self.predict(clf, x_test)
+
+        return prob_valid, prob_test, losses
 
 
 # k-Nearest Neighbor
@@ -275,7 +360,7 @@ class DecisionTree:
             self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_test, pred_path + 'dt_cv_{}_'.format(count))
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'dt_cv_{}_'.format(count))
 
             prob_total.append(list(prob_test))
             loss_train_total.append(loss_train)
@@ -312,7 +397,7 @@ class DecisionTree:
                     x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
 
         print('------------------------------------------------------')
-        print('Training # Random Forest...')
+        print('Training Decision Tree...')
         print('------------------------------------------------------')
 
         clf = self.get_clf(parameters)
@@ -421,19 +506,19 @@ class RandomForest:
             print('Training on the Cross Validation Set: {}'.format(count))
 
             # Classifier
-            clf_rf = self.get_clf(parameters)
+            clf = self.get_clf(parameters)
 
-            clf_rf.fit(x_train, y_train, sample_weight=w_train)
+            clf.fit(x_train, y_train, sample_weight=w_train)
 
             # Print LogLoss
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
-                utils.print_loss_proba(clf_rf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+                utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Feature Importance
-            self.get_importance(clf_rf)
+            self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf_rf, self.x_test, pred_path + 'rf_cv_{}_'.format(count))
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'rf_cv_{}_'.format(count))
 
             prob_total.append(list(prob_test))
             loss_train_total.append(loss_train)
@@ -470,7 +555,7 @@ class RandomForest:
                     x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
 
         print('------------------------------------------------------')
-        print('Training # Random Forest...')
+        print('Training Random Forest...')
         print('------------------------------------------------------')
 
         clf = self.get_clf(parameters)
@@ -591,7 +676,7 @@ class ExtraTrees:
             self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_test, pred_path + 'et_cv_{}_'.format(count))
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'et_cv_{}_'.format(count))
 
             prob_total.append(list(prob_test))
             loss_train_total.append(loss_train)
@@ -749,7 +834,7 @@ class AdaBoost:
             self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_test, pred_path + 'ab_cv_3_{}_'.format(count))
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'ab_cv_{}_'.format(count))
 
             prob_total.append(list(prob_test))
             loss_train_total.append(loss_train)
@@ -907,7 +992,7 @@ class GradientBoosting:
             self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_test, pred_path + 'gb_cv_{}_'.format(count))
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'gb_cv_{}_'.format(count))
 
             prob_total.append(list(prob_test))
             loss_train_total.append(loss_train)
@@ -1119,7 +1204,7 @@ class XGBoost:
                                                                                  x_valid, y_valid, w_valid)
 
             # Prediction
-            prob_test = self.predict(bst, pred_path + 'xgb_cv_{}_'.format(count))
+            prob_test = self.predict(bst, pred_path=pred_path + 'xgb_cv_{}_'.format(count))
 
             prob_total.append(list(prob_test))
             loss_train_total.append(loss_train)
@@ -1189,7 +1274,7 @@ class XGBoost:
                                                                 x_valid, y_valid, w_valid)
 
             # Prediction
-            prob_test = self.predict_sklearn(clf, self.x_test, pred_path + 'xgb_sk_cv_{}_'.format(count))
+            prob_test = self.predict_sklearn(clf, self.x_test, pred_path=pred_path + 'xgb_sk_cv_{}_'.format(count))
 
             prob_total.append(list(prob_test))
             loss_train_total.append(loss_train)
@@ -1372,8 +1457,9 @@ class LightGBM:
             print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
 
             # Use Category
-            d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=[88])
-            d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=[88])
+            idx_category = [x_train.shape[1] - 1]
+            d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=idx_category)
+            d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
 
             # Booster
             bst = lgb.train(parameters, d_train, num_boost_round=50,
@@ -1446,8 +1532,11 @@ class LightGBM:
 
             clf = self.get_clf(parameters)
 
+            idx_category = [x_train.shape[1] - 1]
+            print('Index of categorical feature: {}'.format(idx_category))
+
             clf.fit(x_train, y_train, sample_weight=w_train,
-                    categorical_feature=[88],
+                    categorical_feature=idx_category,
                     eval_set=[(x_train, y_train), (x_valid, y_valid)],
                     eval_names=['train', 'eval'],
                     early_stopping_rounds=50,
@@ -1929,101 +2018,101 @@ class DeepNeuralNetworks:
             return prob_valid, prob_test, losses
 
 
-# DNN using Keras
-class KerasDeepNeuralNetworks:
-
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, parameters):
-
-        # Inputs
-        self.x_train = x_tr
-        self.y_train = y_tr
-        self.w_train = w_tr
-        self.e_train = e_tr
-        self.x_test = x_te
-        self.id_test = id_te
-
-        # Hyperparameters
-        self.batch_size = parameters['batch_size']
-        self.epochs = parameters['epochs']
-        self.learning_rate = parameters['learning_rate']
-        self.unit_num = parameters['unit_number']
-        self.keep_prob = parameters['keep_probability']
-
-    def train(self, pred_path, n_valid, n_cv):
-
-        model = Sequential()
-
-        feature_num = list(self.x_train.shape)[1]
-
-        model.add(Dense(self.unit_num[0],
-                        kernel_initializer=initializers.TruncatedNormal(stddev=0.05),
-                        bias_initializer='zeros',
-                        activation='sigmoid',
-                        input_dim=feature_num))
-        model.add(Dropout(self.keep_prob))
-
-        for i in range(len(self.unit_num)-1):
-            model.add(Dense(self.unit_num[i+1],
-                            kernel_initializer=initializers.TruncatedNormal(stddev=0.05),
-                            bias_initializer='zeros',
-                            activation='sigmoid'))
-            model.add(Dropout(self.keep_prob))
-
-        model.compile(loss='binary_crossentropy',
-                      optimizer=optimizers.Adam(self.learning_rate),
-                      metrics=['accuracy'])
-
-        start_time = time.time()
-
-        cv_counter = 0
-
-        prob_total = []
-
-        for x_train, y_train, w_train, \
-            x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(self.x_train,
-                                                                                self.y_train,
-                                                                                self.w_train,
-                                                                                self.e_train,
-                                                                                n_valid,
-                                                                                n_cv):
-
-            cv_counter += 1
-
-            print('======================================================')
-            print('Training on the Cross Validation Set: {}'.format(cv_counter))
-
-            model.fit(x_train,
-                      y_train,
-                      epochs=self.epochs,
-                      batch_size=self.batch_size,
-                      verbose=1)
-
-            cost_train = model.evaluate(x_train, y_train, verbose=1)
-            cost_valid = model.evaluate(x_valid, y_valid, verbose=1)
-
-            total_time = time.time() - start_time
-
-            print('CV: {} |'.format(cv_counter),
-                  'Time: {:>3.2f}s |'.format(total_time),
-                  'Train_Loss: {:>.8f} |'.format(cost_train),
-                  'Valid_Loss: {:>.8f}'.format(cost_valid))
-
-            # Prediction
-            print('Predicting...')
-
-            prob_test = model.predict(self.x_test)
-
-            prob_total.append(list(prob_test))
-
-            utils.save_pred_to_csv(pred_path + 'dnn_keras_cv_{}_'.format(cv_counter), self.id_test, prob_test)
-
-        # Final Result
-        print('======================================================')
-        print('Calculating final result...')
-
-        prob_mean = np.mean(np.array(prob_total), axis=0)
-
-        utils.save_pred_to_csv(pred_path + 'final_results/dnn_keras_', self.id_test, prob_mean)
+# # DNN using Keras
+# class KerasDeepNeuralNetworks:
+#
+#     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, parameters):
+#
+#         # Inputs
+#         self.x_train = x_tr
+#         self.y_train = y_tr
+#         self.w_train = w_tr
+#         self.e_train = e_tr
+#         self.x_test = x_te
+#         self.id_test = id_te
+#
+#         # Hyperparameters
+#         self.batch_size = parameters['batch_size']
+#         self.epochs = parameters['epochs']
+#         self.learning_rate = parameters['learning_rate']
+#         self.unit_num = parameters['unit_number']
+#         self.keep_prob = parameters['keep_probability']
+#
+#     def train(self, pred_path, n_valid, n_cv):
+#
+#         model = Sequential()
+#
+#         feature_num = list(self.x_train.shape)[1]
+#
+#         model.add(Dense(self.unit_num[0],
+#                         kernel_initializer=initializers.TruncatedNormal(stddev=0.05),
+#                         bias_initializer='zeros',
+#                         activation='sigmoid',
+#                         input_dim=feature_num))
+#         model.add(Dropout(self.keep_prob))
+#
+#         for i in range(len(self.unit_num)-1):
+#             model.add(Dense(self.unit_num[i+1],
+#                             kernel_initializer=initializers.TruncatedNormal(stddev=0.05),
+#                             bias_initializer='zeros',
+#                             activation='sigmoid'))
+#             model.add(Dropout(self.keep_prob))
+#
+#         model.compile(loss='binary_crossentropy',
+#                       optimizer=optimizers.Adam(self.learning_rate),
+#                       metrics=['accuracy'])
+#
+#         start_time = time.time()
+#
+#         cv_counter = 0
+#
+#         prob_total = []
+#
+#         for x_train, y_train, w_train, \
+#             x_valid, y_valid, w_valid in CrossValidation.era_k_fold_with_weight(self.x_train,
+#                                                                                 self.y_train,
+#                                                                                 self.w_train,
+#                                                                                 self.e_train,
+#                                                                                 n_valid,
+#                                                                                 n_cv):
+#
+#             cv_counter += 1
+#
+#             print('======================================================')
+#             print('Training on the Cross Validation Set: {}'.format(cv_counter))
+#
+#             model.fit(x_train,
+#                       y_train,
+#                       epochs=self.epochs,
+#                       batch_size=self.batch_size,
+#                       verbose=1)
+#
+#             cost_train = model.evaluate(x_train, y_train, verbose=1)
+#             cost_valid = model.evaluate(x_valid, y_valid, verbose=1)
+#
+#             total_time = time.time() - start_time
+#
+#             print('CV: {} |'.format(cv_counter),
+#                   'Time: {:>3.2f}s |'.format(total_time),
+#                   'Train_Loss: {:>.8f} |'.format(cost_train),
+#                   'Valid_Loss: {:>.8f}'.format(cost_valid))
+#
+#             # Prediction
+#             print('Predicting...')
+#
+#             prob_test = model.predict(self.x_test)
+#
+#             prob_total.append(list(prob_test))
+#
+#             utils.save_pred_to_csv(pred_path + 'dnn_keras_cv_{}_'.format(cv_counter), self.id_test, prob_test)
+#
+#         # Final Result
+#         print('======================================================')
+#         print('Calculating final result...')
+#
+#         prob_mean = np.mean(np.array(prob_total), axis=0)
+#
+#         utils.save_pred_to_csv(pred_path + 'final_results/dnn_keras_', self.id_test, prob_mean)
 
 
 # Cross Validation
@@ -2559,7 +2648,7 @@ def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, params, params_g
     grid_search = GridSearchCV(estimator=clf,
                                param_grid=params_grid,
                                scoring='neg_log_loss',
-                               verbose=2,
+                               verbose=1,
                                n_jobs=-1,
                                # cv=CrossValidation.era_k_fold_split(e=tr_e, n_valid=n_valid, n_cv=n_cv),
                                cv=5)

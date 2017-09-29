@@ -27,16 +27,17 @@ class TrainSingleModel:
         lr_parameters = {'C': 1.0,
                          'class_weight': None,
                          'dual': False,
-                         'fit_intercept': 'True',
+                         'fit_intercept': True,
                          'intercept_scaling': 1,
                          'max_iter': 100,
-                         'multi_class': 'multinomial',
+                         # 'multi_class': 'multinomial',
+                         'multi_class': 'ovr',
                          'n_jobs': -1,
                          'penalty': 'l2',
                          'solver': 'sag',
                          'tol': 0.0001,
                          'random_state': 1,
-                         'verbose': 2,
+                         'verbose': 1,
                          'warm_start': False}
 
         LR = models.LRegression(x_train, y_train, w_train, e_train, x_test, id_test)
@@ -237,7 +238,7 @@ class TrainSingleModel:
 
         lgb_parameters = {'application': 'binary',
                           'learning_rate': 0.002,
-                          'num_leaves': 32,               # <2^(max_depth)
+                          'num_leaves': 3,                # <2^(max_depth)
                           'tree_learner': 'serial',
                           'max_depth': 8,                 # default=-1
                           'min_data_in_leaf': 20,         # default=20
@@ -262,23 +263,23 @@ class TrainSingleModel:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
-        lgb_parameters = {'learning_rate': 0.002,
+        lgb_parameters = {'learning_rate': 0.006,
                           'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
                           # 'boosting_type': 'dart',        # Dropouts meet Multiple Additive Regression Trees.
                           # 'boosting_type': 'goss',        # Gradient-based One-Side Sampling.
                           # 'boosting_type': 'rf',          # Random Forest.
-                          'num_leaves': 32,               # <2^(max_depth)
+                          'num_leaves': 3,                # <2^(max_depth)
                           'max_depth': 8,                 # default=-1
-                          'n_estimators': 50,
-                          'max_bin': 255,
-                          'subsample_for_bin': 50000,
+                          'n_estimators': 79,
+                          'max_bin': 1005,
+                          'subsample_for_bin': 1981,
                           'objective': 'binary',
                           'min_split_gain': 0.,
-                          'min_child_weight': 5,
-                          'min_child_samples': 10,
-                          'subsample': 0.6,
-                          'subsample_freq': 5,
-                          'colsample_bytree': 0.5,
+                          'min_child_weight': 1,
+                          'min_child_samples': 0,
+                          'subsample': 0.723,
+                          'subsample_freq': 3,
+                          'colsample_bytree': 0.11,
                           'reg_alpha': 0.,
                           'reg_lambda': 0.,
                           'silent': False}
@@ -297,9 +298,9 @@ class TrainSingleModel:
 
         # HyperParameters
         hyper_parameters = {'version': '1.0',
-                            'epochs': 20,
-                            'unit_number': [48, 24, 12, 6, 3],
-                            'learning_rate': 0.0001,
+                            'epochs': 10,
+                            'unit_number': [48, 24, 12],
+                            'learning_rate': 0.00005,
                             'keep_probability': 0.8,
                             'batch_size': 256,
                             'display_step': 100,
@@ -314,24 +315,24 @@ class TrainSingleModel:
 
         dnn.train(pred_path, n_valid=4, n_cv=20)
 
-    # DNN using Keras
-    @staticmethod
-    def dnn_keras_train():
-
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-
-        # HyperParameters
-        hyper_parameters = {'epochs': 200,
-                            'unit_number': [64, 32, 16, 8, 4, 1],
-                            'learning_rate': 0.00001,
-                            'keep_probability': 0.8,
-                            'batch_size': 256}
-
-        dnn = models.KerasDeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
-
-        print('Start training DNN(Keras)...')
-
-        dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20)
+    # # DNN using Keras
+    # @staticmethod
+    # def dnn_keras_train():
+    #
+    #     x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+    #
+    #     # HyperParameters
+    #     hyper_parameters = {'epochs': 200,
+    #                         'unit_number': [64, 32, 16, 8, 4, 1],
+    #                         'learning_rate': 0.00001,
+    #                         'keep_probability': 0.8,
+    #                         'batch_size': 256}
+    #
+    #     dnn = models.KerasDeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
+    #
+    #     print('Start training DNN(Keras)...')
+    #
+    #     dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20)
 
 
 # Grid Search
@@ -562,21 +563,22 @@ class GridSearch:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
         parameters = {'objective': 'binary:logistic',
-                      'learning_rate': 0.05,
-                      'n_estimators': 1000,
-                      'max_depth': 10,
+                      'learning_rate': 0.002,
+                      'n_estimators': 100,
+                      'max_depth': 9,
+                      'min_child_weight': 5,
+                      'max_delta_step': 0,
+                      'silent': False,
                       'subsample': 0.8,
                       'colsample_bytree': 0.8,
                       'colsample_bylevel': 1,
-                      'gamma': 0,
-                      'min_child_weight': 1,
-                      'max_delta_step': 0,
                       'base_score': 0.5,
+                      'gamma': 0,
                       'reg_alpha': 0,
                       'reg_lambda': 0,
-                      'silent': False,
-                      'seed': 1,
+                      'seed': 1
                       # 'missing': None,
+                      # 'nthread': -1,
                       # 'scale_pos_weight': 1,
                       }
 
@@ -614,23 +616,23 @@ class GridSearch:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
-        parameters = {'learning_rate': 0.002,
+        parameters = {'learning_rate': 0.006,
                       'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
                       # 'boosting_type': 'dart',        # Dropouts meet Multiple Additive Regression Trees.
                       # 'boosting_type': 'goss',        # Gradient-based One-Side Sampling.
                       # 'boosting_type': 'rf',          # Random Forest.
-                      'num_leaves': 32,               # <2^(max_depth)
+                      'num_leaves': 3,                # <2^(max_depth)
                       'max_depth': 8,                 # default=-1
-                      'n_estimators': 50,
-                      'max_bin': 255,
-                      'subsample_for_bin': 50000,
+                      'n_estimators': 79,
+                      'max_bin': 1005,
+                      'subsample_for_bin': 1981,
                       'objective': 'binary',
                       'min_split_gain': 0.,
-                      'min_child_weight': 5,
-                      'min_child_samples': 10,
-                      'subsample': 0.6,
-                      'subsample_freq': 5,
-                      'colsample_bytree': 0.5,
+                      'min_child_weight': 1,
+                      'min_child_samples': 0,
+                      'subsample': 0.723,
+                      'subsample_freq': 3,
+                      'colsample_bytree': 0.11,
                       'reg_alpha': 0.,
                       'reg_lambda': 0.,
                       'silent': False}
@@ -644,10 +646,10 @@ class GridSearch:
         parameters_grid = {
                            'learning_rate': (0.002, 0.005, 0.01),
                            'n_estimators': (30, 60, 90),
-                           'num_leaves': (32, 64, 128),               # <2^(max_depth)
+                           'num_leaves': (32, 64, 128),             # <2^(max_depth)
                            'colsample_bytree': (0.6, 0.8, 0.1),
                            'max_depth': (6, 8, 10),                 # default=-1
-                           # 'min_data_in_leaf': 20,         # default=20
+                           # 'min_data_in_leaf': 20,                  # default=20
                            # 'bagging_fraction': (0.5, 0.7, 0.9),
                            # 'feature_fraction': (0.5, 0.7, 0.9),
                            # 'subsample_for_bin': (50000, 100000, 150000),
@@ -657,6 +659,64 @@ class GridSearch:
                            }
 
         models.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
+                           params=parameters, params_grid=parameters_grid)
+
+        utils.print_grid_info('LightGBM', parameters, parameters_grid)
+
+    # Stacking Layer LightGBM
+    @staticmethod
+    def stack_lgb_grid_search():
+
+        log_path = grid_search_log_path + 'stk_lgb_'
+
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_outputs, test_outputs, x_g_outputs, test_g_outputs = utils.load_stacked_data(stack_output_path + 'l1_')
+
+
+        parameters = {'learning_rate': 0.006,
+                      'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
+                      # 'boosting_type': 'dart',        # Dropouts meet Multiple Additive Regression Trees.
+                      # 'boosting_type': 'goss',        # Gradient-based One-Side Sampling.
+                      # 'boosting_type': 'rf',          # Random Forest.
+                      'num_leaves': 3,  # <2^(max_depth)
+                      'max_depth': 8,  # default=-1
+                      'n_estimators': 79,
+                      'max_bin': 1005,
+                      'subsample_for_bin': 1981,
+                      'objective': 'binary',
+                      'min_split_gain': 0.,
+                      'min_child_weight': 1,
+                      'min_child_samples': 0,
+                      'subsample': 0.723,
+                      'subsample_freq': 3,
+                      'colsample_bytree': 0.11,
+                      'reg_alpha': 0.,
+                      'reg_lambda': 0.,
+                      'silent': False}
+
+        LGB = models.LightGBM(x_outputs, y_train, w_train, e_train,
+                              test_outputs, id_test, x_g_outputs, test_g_outputs)
+
+        clf = LGB.get_clf(parameters)
+
+        # parameters_grid = None
+
+        parameters_grid = {
+            'learning_rate': (0.002, 0.005, 0.01),
+            'n_estimators': (30, 60, 90),
+            'num_leaves': (32, 64, 128),  # <2^(max_depth)
+            'colsample_bytree': (0.6, 0.8, 0.1),
+            'max_depth': (6, 8, 10),  # default=-1
+            # 'min_data_in_leaf': 20,                  # default=20
+            # 'bagging_fraction': (0.5, 0.7, 0.9),
+            # 'feature_fraction': (0.5, 0.7, 0.9),
+            # 'subsample_for_bin': (50000, 100000, 150000),
+            # 'subsample_freq': (4, 6, 8),
+            # 'subsample': (0.6, 0.8, 1.0),
+            # 'max_bin': (255, 355, 455)
+        }
+
+        models.grid_search(log_path, x_outputs, y_train, e_train, clf, n_valid=4, n_cv=20,
                            params=parameters, params_grid=parameters_grid)
 
         utils.print_grid_info('LightGBM', parameters, parameters_grid)
@@ -671,44 +731,44 @@ class ModelStacking:
     def get_layer1_params():
 
         # Parameters of LightGBM
-        lgb_params = {'learning_rate': 0.002,
+        lgb_params = {'learning_rate': 0.006,
                       'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
-                      'num_leaves': 4,                # <2^(max_depth)
-                      'max_depth': 4,                 # default=-1
+                      'num_leaves': 3,                # <2^(max_depth)
+                      'max_depth': 8,                 # default=-1
                       'n_estimators': 79,
                       'max_bin': 1005,
                       'subsample_for_bin': 1981,
                       'objective': 'binary',
                       'min_split_gain': 0.,
-                      'min_child_weight': 5,
-                      'min_child_samples': 10,
+                      'min_child_weight': 1,
+                      'min_child_samples': 0,
                       'subsample': 0.723,
                       'subsample_freq': 3,
-                      'colsample_bytree': 0.5,
+                      'colsample_bytree': 0.11,
                       'reg_alpha': 0.,
                       'reg_lambda': 0.,
                       'silent': False}
 
         # Parameters of XGBoost
-        xgb_params = {'learning_rate': 0.002,
+        xgb_params = {'objective': 'binary:logistic',
+                      'learning_rate': 0.002,
                       'n_estimators': 100,
                       'max_depth': 9,
                       'min_child_weight': 5,
-                      'objective': 'binary:logistic',
-                      # 'eval_metric': 'logloss',
-                      'silent': 1,
+                      'max_delta_step': 0,
+                      'silent': False,
                       'subsample': 0.8,
                       'colsample_bytree': 0.8,
+                      'colsample_bylevel': 1,
                       'gamma': 0,
                       'base_score': 0.5,
-                      # 'max_delta_step': 0,
+                      'reg_alpha': 0,
+                      'reg_lambda': 0,
                       # 'missing': None,
                       # 'nthread': -1,
-                      # 'colsample_bylevel': 1,
-                      # 'reg_alpha': 0,
-                      # 'reg_lambda': 1,
                       # 'scale_pos_weight': 1,
-                      'seed': 1}
+                      'seed': 1
+                      }
 
         # Parameters of AdaBoost
         et_for_ab_params = {'bootstrap': True,
@@ -802,8 +862,9 @@ class ModelStacking:
                       'log_path': './log/'}
 
         # List of parameters for layer1
-        layer1_prams = [lgb_params,
-                        # xgb_params,
+        layer1_prams = [
+                        lgb_params,
+                        xgb_params,
                         # ab_params,
                         # rf_params,
                         # et_params,
@@ -818,20 +879,20 @@ class ModelStacking:
     def get_layer2_params():
 
         # Parameters of LightGBM
-        lgb_params = {'learning_rate': 0.002,
-                      'boosting_type': 'gbdt',  # traditional Gradient Boosting Decision Tree.
-                      'num_leaves': 32,         # <2^(max_depth)
-                      'max_depth': 8,           # default=-1
-                      'n_estimators': 50,
-                      'max_bin': 255,
-                      'subsample_for_bin': 50000,
+        lgb_params = {'learning_rate': 0.006,
+                      'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
+                      'num_leaves': 3,                # <2^(max_depth)
+                      'max_depth': 8,                 # default=-1
+                      'n_estimators': 79,
+                      'max_bin': 1005,
+                      'subsample_for_bin': 1981,
                       'objective': 'binary',
                       'min_split_gain': 0.,
-                      'min_child_weight': 5,
-                      'min_child_samples': 10,
-                      'subsample': 0.6,
-                      'subsample_freq': 5,
-                      'colsample_bytree': 0.5,
+                      'min_child_weight': 1,
+                      'min_child_samples': 0,
+                      'subsample': 0.723,
+                      'subsample_freq': 3,
+                      'colsample_bytree': 0.11,
                       'reg_alpha': 0.,
                       'reg_lambda': 0.,
                       'silent': False}
@@ -848,8 +909,10 @@ class ModelStacking:
                       'log_path': './log/'}
 
         # List of parameters for layer1
-        layer2_prams = [lgb_params,
-                        dnn_params]
+        layer2_prams = [
+                        lgb_params,
+                        # dnn_params
+                        ]
 
         return layer2_prams
 
@@ -876,21 +939,21 @@ class ModelStacking:
     @staticmethod
     def train():
 
-        hyper_params = {'n_valid': (4, 4, 4),
-                        'n_era': (20, 20, 20),
-                        'n_epoch': (2, 2, 1)}
+        hyper_params = {'n_valid': (4, 4),
+                        'n_era': (20, 20),
+                        'n_epoch': (4, 1)}
 
         layer1_prams = ModelStacking.get_layer1_params()
         layer2_prams = ModelStacking.get_layer2_params()
-        layer3_prams = ModelStacking.get_layer3_params()
+        # layer3_prams = ModelStacking.get_layer3_params()
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
-        STK = stacking.Stacking(x_train, y_train, w_train, e_train,
-                                x_test, id_test, x_train_g, x_test_g,
-                                pred_path, stack_output_path,
-                                hyper_params, layer1_prams, layer2_prams, layer3_prams)
+        STK = stacking.DeepStack(x_train, y_train, w_train, e_train,
+                                 x_test, id_test, x_train_g, x_test_g,
+                                 pred_path, stack_output_path,
+                                 hyper_params, layer1_prams, layer2_prams, params_l3=None)
 
         STK.stack()
 
@@ -918,6 +981,9 @@ if __name__ == "__main__":
     print('Start training...')
     print('======================================================')
 
+    # Logistic Regression
+    # TrainSingleModel.lr_train()
+
     # Random Forest
     # TrainSingleModel.rf_train()
 
@@ -939,7 +1005,7 @@ if __name__ == "__main__":
     # TrainSingleModel.lgb_train_sklearn()
 
     # DNN
-    # TrainSingleModel.dnn_tf_train()
+    TrainSingleModel.dnn_tf_train()
     # TrainSingleModel.dnn_keras_train()
 
     # Grid Search
@@ -950,6 +1016,7 @@ if __name__ == "__main__":
     # GridSearch.gb_grid_search()
     GridSearch.xgb_grid_search()
     # GridSearch.lgb_grid_search()
+    # GridSearch.stack_lgb_grid_search()
 
     # Stacking
     # ModelStacking.train()
