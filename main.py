@@ -815,9 +815,9 @@ class ModelStacking:
                         # xgb_params,
                         # ab_params,
                         # rf_params,
-                        et_params,
+                        # et_params,
                         # gb_params,
-                        # dnn_params
+                        dnn_params
                         ]
 
         return layer1_prams

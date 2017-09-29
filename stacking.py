@@ -39,8 +39,8 @@ class Stacking:
                                     self.e_train, self.x_test, self.id_test)
         ET_L1 = models.ExtraTrees(self.x_train, self.y_train, self.w_train,
                                   self.e_train, self.x_test, self.id_test)
-        # GB_L1 = models.GradientBoosting(self.x_train, self.y_train, self.w_train,
-        #                                 self.e_train, self.x_test, self.id_test)
+        GB_L1 = models.GradientBoosting(self.x_train, self.y_train, self.w_train,
+                                        self.e_train, self.x_test, self.id_test)
         DNN_L1 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
                                            self.e_train, self.x_test, self.id_test, dnn_l1_params)
 
@@ -48,9 +48,9 @@ class Stacking:
                      # XGB_L1,
                      # AB_L1,
                      # RF_L1,
-                     ET_L1,
+                     # ET_L1,
                      # GB_L1,
-                     # DNN_L1
+                     DNN_L1
                      ]
 
         return models_l1
