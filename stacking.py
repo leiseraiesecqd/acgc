@@ -109,11 +109,12 @@ class Stacking:
             assert ValueError('n_era must be an integer multiple of n_valid!')
 
         # Stack Reused Features
-        print('------------------------------------------------------')
-        print('Stacking Reused Features...')
-        x_train_inputs = np.concatenate((x_train_inputs, x_train_reuse), axis=1)  # n_sample * (n_feature + n_reuse)
-        x_train_group = x_g_train_inputs[:-1]
-        x_g_train_inputs = np.column_stack((x_train_inputs, x_train_group))       # n_sample * (n_feature + n_reuse + 1)
+        if x_train_reuse is not None:
+            print('------------------------------------------------------')
+            print('Stacking Reused Features...')
+            x_train_inputs = np.concatenate((x_train_inputs, x_train_reuse), axis=1)  # n_sample * (n_feature + n_reuse)
+            x_train_group = x_g_train_inputs[:-1]
+            x_g_train_inputs = np.column_stack((x_train_inputs, x_train_group))       # n_sample * (n_feature + n_reuse + 1)
 
         n_cv = int(n_era // n_valid)
         blender_x_outputs = np.array([])
