@@ -123,12 +123,10 @@ class Stacking:
             x_train_group = x_g_train_inputs[:-1]
             x_g_train_inputs = np.column_stack((x_train_inputs, x_train_group))       # n_sample * (n_feature + n_reuse + 1)
 
-        # TODO: shape
-        print('======================================================')
+        # TODO: Print Shape
         print('======================================================')
         print('x_train_inputs shape:{}'.format(x_train_inputs.shape))
         print('x_test shape:{}'.format(x_test.shape))
-        print('======================================================')
         print('======================================================')
 
         n_cv = int(n_era // n_valid)
@@ -184,12 +182,10 @@ class Stacking:
                     blender_test = np.concatenate((blender_test, blender_test_cv), axis=1)
                     # blender_losses = np.concatenate((blender_losses, blender_losses_cv), axis=1)
 
-            # TODO: shape
-            print('======================================================')
+            # TODO: Print Shape
             print('======================================================')
             print('blender_valid shape:{}'.format(blender_valid.shape))
             print('blender_test shape:{}'.format(blender_test.shape))
-            print('======================================================')
             print('======================================================')
 
             # Sort blender_valid by valid_index
@@ -209,12 +205,10 @@ class Stacking:
             blender_x_e = blender_valid_sorted.transpose()      # n_sample * n_model
             blender_test_e = blender_test_mean.transpose()      # n_test_sample * n_model
 
-            # TODO: shape
-            print('======================================================')
+            # TODO: Print Shape
             print('======================================================')
             print('blender_x_e shape:{}'.format(blender_x_e.shape))
             print('blender_test_e shape:{}'.format(blender_test_e.shape))
-            print('======================================================')
             print('======================================================')
 
             if epoch == 0:
@@ -232,14 +226,12 @@ class Stacking:
         blender_x_g_outputs = np.column_stack((blender_x_outputs, self.g_train))
         blender_test_g_outputs = np.column_stack((blender_test_outputs, self.g_test))
 
-        # TODO: shape
-        print('======================================================')
+        # TODO: Print Shape
         print('======================================================')
         print('blender_x_outputs:{}'.format(blender_x_outputs.shape))
         print('blender_test_outputs:{}'.format(blender_test_outputs.shape))
         print('blender_x_g_outputs:{}'.format(blender_x_g_outputs.shape))
         print('blender_test_g_outputs:{}'.format(blender_test_g_outputs.shape))
-        print('======================================================')
         print('======================================================')
 
         return blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs
