@@ -289,11 +289,13 @@ class DeepStack:
         print('Start training layer 2...')
         models_initializer_l2 = self.init_models_layer2
 
+        x_reuse = self.x_train[:, :88]
+
         x_outputs_l2, test_outputs_l2, x_g_outputs_l2, test_g_outputs_l2 \
             = self.stacker(models_initializer_l2, self.parameters_l2, x_outputs_l1, self.y_train,
                            self.w_train, self.e_train, x_g_outputs_l1, test_outputs_l1, test_g_outputs_l1,
                            cv_stack, n_valid=self.n_valid[1], n_era=self.n_era[1],
-                           n_epoch=self.n_epoch[1], x_train_reuse=None, dnn_param=None)
+                           n_epoch=self.n_epoch[1], x_train_reuse=x_reuse, dnn_param=None)
 
         # Save predicted test prob
         self.save_predict(self.pred_path + 'stack_l2_', test_outputs_l2)
