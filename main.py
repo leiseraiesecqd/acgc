@@ -26,19 +26,19 @@ class TrainSingleModel:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
         lr_parameters = {'C': 1.0,
-                          'class_weight': None,
-                          'dual': False,
-                          'fit_intercept': 'True',
-                          'intercept_scaling': 1,
-                          'max_iter': 100,
-                          'multi_class': 'multinomial',
-                          'n_jobs': -1,
-                          'penalty': 'l2',
-                          'solver': 'sag',
-                          'tol': 0.0001,
-                          'random_state': 1,
-                          'verbose': 2,
-                          'warm_start': False}
+                         'class_weight': None,
+                         'dual': False,
+                         'fit_intercept': 'True',
+                         'intercept_scaling': 1,
+                         'max_iter': 100,
+                         'multi_class': 'multinomial',
+                         'n_jobs': -1,
+                         'penalty': 'l2',
+                         'solver': 'sag',
+                         'tol': 0.0001,
+                         'random_state': 1,
+                         'verbose': 2,
+                         'warm_start': False}
 
         LR = models.LRegression(x_train, y_train, w_train, e_train, x_test, id_test)
 
@@ -206,8 +206,8 @@ class TrainSingleModel:
                           'n_estimators': 100,
                           'silent': True,
                           'objective': "binary:logistic",
-                          'booster': 'gbtree',
-                          'n_jobs':  1,
+                          #  'booster': 'gbtree',
+                          #  'n_jobs':  1,
                           'nthread': None,
                           'gamma': 0,
                           'min_child_weight': 1,
@@ -219,7 +219,7 @@ class TrainSingleModel:
                           'reg_lambda': 1,
                           'scale_pos_weight': 1,
                           'base_score': 0.5,
-                          'random_state': 0,
+                          #  'random_state': 0,
                           'seed': None,
                           'missing': None}
 
@@ -654,7 +654,7 @@ class GridSearch:
                            'learning_rate': (0.002, 0.005, 0.01),
                            'n_estimators': (30, 60, 90),
                            'num_leaves': (32, 64, 128),               # <2^(max_depth)
-                           'colsample_bytree': (0.6,0.8,0.1),
+                           'colsample_bytree': (0.6, 0.8, 0.1),
                            'max_depth': (6, 8, 10),                 # default=-1
                            # 'min_data_in_leaf': 20,         # default=20
                            # 'bagging_fraction': (0.5, 0.7, 0.9),
@@ -738,10 +738,10 @@ class ModelStacking:
                             'warm_start': False}
         clf_et_for_ab = ExtraTreesClassifier(**et_for_ab_params)
         ab_params = {'algorithm': 'SAMME.R',
-                         'base_estimator': clf_et_for_ab,
-                         'learning_rate': 0.0051,
-                         'n_estimators': 9,
-                         'random_state': 1}
+                     'base_estimator': clf_et_for_ab,
+                     'learning_rate': 0.0051,
+                     'n_estimators': 9,
+                     'random_state': 1}
 
         # Parameters of Random Forest
         rf_params = {'bootstrap': True,
@@ -884,7 +884,6 @@ class ModelStacking:
         layer1_prams = ModelStacking.get_layer1_params()
         layer2_prams = ModelStacking.get_layer2_params()
         layer3_prams = ModelStacking.get_layer3_params()
-
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
