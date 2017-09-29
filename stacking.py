@@ -113,7 +113,8 @@ class DeepStack:
 
     def stacker(self, models_initializer, params, x_train_inputs, y_train_inputs, w_train_inputs,
                 e_train_inputs, x_g_train_inputs, x_test, x_g_test,
-                cv, n_valid=4, n_era=20, n_epoch=1, dnn_param=None, x_train_reuse=None):
+                cv, n_valid=4, n_era=20, n_epoch=1,
+                x_train_reuse=None, x_test_reuse=None, dnn_param=None, ):
 
         if n_era%n_valid != 0:
             assert ValueError('n_era must be an integer multiple of n_valid!')
@@ -125,6 +126,13 @@ class DeepStack:
             x_train_inputs = np.concatenate((x_train_inputs, x_train_reuse), axis=1)  # n_sample * (n_feature + n_reuse)
             x_train_group = x_g_train_inputs[:, -1]
             x_g_train_inputs = np.column_stack((x_train_inputs, x_train_group))       # n_sample * (n_feature + n_reuse + 1)
+
+        if x_test_reuse is not None:
+            print('------------------------------------------------------')
+            print('Stacking Reused Features...')
+            x_test = np.concatenate((x_test, x_test_reuse), axis=1)  # n_sample * (n_feature + n_reuse)
+            x_test_group = x_g_test[:, -1]
+            x_g_test = np.column_stack((x_test, x_test_group))       # n_sample * (n_feature + n_reuse + 1)
 
         # TODO: Print Shape
         print('======================================================')
@@ -290,12 +298,13 @@ class DeepStack:
         models_initializer_l2 = self.init_models_layer2
 
         x_reuse = self.x_train[:, :88]
+        x_te_reuse = self.x_test[:, :88]
 
         x_outputs_l2, test_outputs_l2, x_g_outputs_l2, test_g_outputs_l2 \
             = self.stacker(models_initializer_l2, self.parameters_l2, x_outputs_l1, self.y_train,
                            self.w_train, self.e_train, x_g_outputs_l1, test_outputs_l1, test_g_outputs_l1,
                            cv_stack, n_valid=self.n_valid[1], n_era=self.n_era[1],
-                           n_epoch=self.n_epoch[1], x_train_reuse=x_reuse, dnn_param=None)
+                           n_epoch=self.n_epoch[1], x_train_reuse=x_reuse, x_test_reuse=x_te_reuse, dnn_param=None)
 
         # Save predicted test prob
         self.save_predict(self.pred_path + 'stack_l2_', test_outputs_l2)
