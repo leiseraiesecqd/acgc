@@ -12,6 +12,7 @@
 /numerai/
 /loss_logs/
 /grid_search_logs/
+/stacking_outputs/
 *.jpg
 *.ipynb
 *.p
