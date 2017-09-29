@@ -47,11 +47,11 @@ class DeepStack:
         models_l1 = [
                      LGB_L1,
                      XGB_L1,
-                     AB_L1,
-                     RF_L1,
-                     ET_L1,
+                     # AB_L1,
+                     # RF_L1,
+                     # ET_L1,
                      # GB_L1,
-                     # DNN_L1
+                     DNN_L1
                      ]
 
         return models_l1
@@ -65,8 +65,8 @@ class DeepStack:
                                            self.e_train, self.x_test, self.id_test, dnn_l2_params)
 
         models_l2 = [
-                     # LGB_L2,
-                     DNN_L2
+                     LGB_L2,
+                     # DNN_L2
                      ]
 
         return models_l2

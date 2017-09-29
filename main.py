@@ -298,9 +298,9 @@ class TrainSingleModel:
 
         # HyperParameters
         hyper_parameters = {'version': '1.0',
-                            'epochs': 20,
-                            'unit_number': [48, 24, 12, 6, 3],
-                            'learning_rate': 0.0001,
+                            'epochs': 10,
+                            'unit_number': [48, 24, 12],
+                            'learning_rate': 0.00005,
                             'keep_probability': 0.8,
                             'batch_size': 256,
                             'display_step': 100,
@@ -872,7 +872,7 @@ class ModelStacking:
         layer1_prams = [
                         lgb_params,
                         xgb_params,
-                        ab_params,
+                        # ab_params,
                         # rf_params,
                         # et_params,
                         # gb_params,
@@ -989,7 +989,7 @@ if __name__ == "__main__":
     print('======================================================')
 
     # Logistic Regression
-    TrainSingleModel.lr_train()
+    # TrainSingleModel.lr_train()
 
     # Random Forest
     # TrainSingleModel.rf_train()
@@ -1012,7 +1012,7 @@ if __name__ == "__main__":
     # TrainSingleModel.lgb_train_sklearn()
 
     # DNN
-    # TrainSingleModel.dnn_tf_train()
+    TrainSingleModel.dnn_tf_train()
     # TrainSingleModel.dnn_keras_train()
 
     # Grid Search
@@ -1023,7 +1023,7 @@ if __name__ == "__main__":
     # GridSearch.gb_grid_search()
     # GridSearch.xgb_grid_search()
     # GridSearch.lgb_grid_search()
-    GridSearch.stack_lgb_grid_search()
+    # GridSearch.stack_lgb_grid_search()
 
     # Stacking
     # ModelStacking.train()
