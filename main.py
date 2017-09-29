@@ -298,7 +298,7 @@ class TrainSingleModel:
 
         # HyperParameters
         hyper_parameters = {'version': '1.0',
-                            'epochs': 10,
+                            'epochs': 5,
                             'unit_number': [48, 24, 12, 4],
                             'learning_rate': 0.0001,
                             'keep_probability': 0.8,
