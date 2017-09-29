@@ -752,7 +752,7 @@ class ModelStacking:
         # Parameters of XGBoost
         xgb_params = {'objective': 'binary:logistic',
                       'learning_rate': 0.002,
-                      'n_estimators': 100,
+                      'n_estimators': 30,
                       'max_depth': 9,
                       'min_child_weight': 5,
                       'max_delta_step': 0,
@@ -852,10 +852,10 @@ class ModelStacking:
 
         # Parameters of Deep Neural Network
         dnn_params = {'version': '1.0',
-                      'epochs': 5,
-                      'unit_number': [48, 24, 12, 4],
+                      'epochs': 4,
+                      'unit_number': [48, 24, 12],
                       'learning_rate': 0.0001,
-                      'keep_probability': 0.7,
+                      'keep_probability': 0.5,
                       'batch_size': 256,
                       'display_step': 100,
                       'save_path': './checkpoints/',
@@ -879,20 +879,20 @@ class ModelStacking:
     def get_layer2_params():
 
         # Parameters of LightGBM
-        lgb_params = {'learning_rate': 0.006,
+        lgb_params = {'learning_rate': 0.002,
                       'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
-                      'num_leaves': 3,                # <2^(max_depth)
+                      'num_leaves': 128,                # <2^(max_depth)
                       'max_depth': 8,                 # default=-1
-                      'n_estimators': 79,
+                      'n_estimators': 65,
                       'max_bin': 1005,
                       'subsample_for_bin': 1981,
                       'objective': 'binary',
                       'min_split_gain': 0.,
                       'min_child_weight': 1,
                       'min_child_samples': 0,
-                      'subsample': 0.723,
-                      'subsample_freq': 3,
-                      'colsample_bytree': 0.11,
+                      'subsample': 0.8,
+                      'subsample_freq': 5,
+                      'colsample_bytree': 0.8,
                       'reg_alpha': 0.,
                       'reg_lambda': 0.,
                       'silent': False}
@@ -1005,7 +1005,7 @@ if __name__ == "__main__":
     # TrainSingleModel.lgb_train_sklearn()
 
     # DNN
-    TrainSingleModel.dnn_tf_train()
+    # TrainSingleModel.dnn_tf_train()
     # TrainSingleModel.dnn_keras_train()
 
     # Grid Search
@@ -1019,7 +1019,7 @@ if __name__ == "__main__":
     # GridSearch.stack_lgb_grid_search()
 
     # Stacking
-    # ModelStacking.train()
+    ModelStacking.train()
 
     print('======================================================')
     print('Done!')

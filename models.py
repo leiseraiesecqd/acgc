@@ -1263,7 +1263,7 @@ class XGBoost:
 
             clf.fit(x_train, y_train, sample_weight=w_train,
                     eval_set=[(x_train, y_train), (x_valid, y_valid)],
-                    early_stopping_rounds=50, eval_metric='logloss', verbose=True)
+                    early_stopping_rounds=100, eval_metric='logloss', verbose=True)
 
             # Feature Importance
             self.get_importance_sklearn(clf)
@@ -1318,7 +1318,7 @@ class XGBoost:
 
         clf.fit(x_train, y_train, sample_weight=w_train,
                 eval_set=[(x_train, y_train), (x_valid, y_valid)],
-                early_stopping_rounds=50, eval_metric='logloss', verbose=True)
+                early_stopping_rounds=100, eval_metric='logloss', verbose=True)
 
         # Feature Importance
         self.get_importance_sklearn(clf)
@@ -1539,7 +1539,7 @@ class LightGBM:
                     categorical_feature=idx_category,
                     eval_set=[(x_train, y_train), (x_valid, y_valid)],
                     eval_names=['train', 'eval'],
-                    early_stopping_rounds=50,
+                    early_stopping_rounds=100,
                     eval_sample_weight=[w_train, w_valid],
                     eval_metric='logloss', verbose=True)
 
@@ -1601,7 +1601,7 @@ class LightGBM:
                 categorical_feature=idx_category,
                 eval_set=[(x_g_train, y_train), (x_g_valid, y_valid)],
                 eval_names=['train', 'eval'],
-                early_stopping_rounds=50,
+                early_stopping_rounds=100,
                 eval_sample_weight=[w_train, w_valid],
                 eval_metric='logloss', verbose=True)
 
