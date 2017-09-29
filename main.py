@@ -334,6 +334,40 @@ class TrainSingleModel:
     #
     #     dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20)
 
+    @staticmethod
+    def stack_lgb_train():
+
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_outputs, test_outputs, x_g_outputs, test_g_outputs = utils.load_stacked_data(stack_output_path + 'l1_')
+
+        lgb_parameters = {'learning_rate': 0.006,
+                          'boosting_type': 'gbdt',  # traditional Gradient Boosting Decision Tree.
+                          # 'boosting_type': 'dart',        # Dropouts meet Multiple Additive Regression Trees.
+                          # 'boosting_type': 'goss',        # Gradient-based One-Side Sampling.
+                          # 'boosting_type': 'rf',          # Random Forest.
+                          'num_leaves': 3,  # <2^(max_depth)
+                          'max_depth': 8,  # default=-1
+                          'n_estimators': 79,
+                          'max_bin': 1005,
+                          'subsample_for_bin': 1981,
+                          'objective': 'binary',
+                          'min_split_gain': 0.,
+                          'min_child_weight': 1,
+                          'min_child_samples': 0,
+                          'subsample': 0.723,
+                          'subsample_freq': 3,
+                          'colsample_bytree': 0.11,
+                          'reg_alpha': 0.,
+                          'reg_lambda': 0.,
+                          'silent': False}
+
+        LGB = models.LightGBM(x_outputs, y_train, w_train, e_train,
+                              test_outputs, id_test, x_g_outputs, test_g_outputs)
+
+        print('Start training LGBM...')
+
+        LGB.train_sklearn(pred_path, loss_log_path, n_valid=4, n_cv=400, parameters=lgb_parameters)
+
 
 # Grid Search
 class GridSearch:
@@ -1019,7 +1053,8 @@ if __name__ == "__main__":
     # GridSearch.stack_lgb_grid_search()
 
     # Stacking
-    ModelStacking.train()
+    # ModelStacking.train()
+    TrainSingleModel.stack_lgb_train()
 
     print('======================================================')
     print('Done!')

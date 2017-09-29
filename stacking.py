@@ -258,7 +258,7 @@ class DeepStack:
         cv_stack = models.CrossValidation()
 
         dnn_l1_params = self.parameters_l1[-1]
-        dnn_l2_params = self.parameters_l2[-1]
+        # dnn_l2_params = self.parameters_l2[-1]
         # dnn_l3_params = self.parameters_l3[-1]
 
         # Layer 1
@@ -293,7 +293,7 @@ class DeepStack:
             = self.stacker(models_initializer_l2, self.parameters_l2, x_outputs_l1, self.y_train,
                            self.w_train, self.e_train, x_g_outputs_l1, test_outputs_l1, test_g_outputs_l1,
                            cv_stack, n_valid=self.n_valid[1], n_era=self.n_era[1],
-                           n_epoch=self.n_epoch[1], x_train_reuse=None, dnn_param=dnn_l2_params)
+                           n_epoch=self.n_epoch[1], x_train_reuse=None, dnn_param=None)
 
         # Save predicted test prob
         self.save_predict(self.pred_path + 'stack_l2_', test_outputs_l2)
