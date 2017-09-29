@@ -6,7 +6,7 @@ import numpy as np
 class DeepStack:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_tr_g, x_te_g,
-                 pred_path, stack_output_path, hyper_params, params_l1, params_l2, params_l3):
+                 pred_path, stack_output_path, hyper_params, params_l1=None, params_l2=None, params_l3=None):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -44,13 +44,14 @@ class DeepStack:
         DNN_L1 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
                                            self.e_train, self.x_test, self.id_test, dnn_l1_params)
 
-        models_l1 = [LGB_L1,
-                     # XGB_L1,
-                     # AB_L1,
-                     # RF_L1,
-                     # ET_L1,
+        models_l1 = [
+                     LGB_L1,
+                     XGB_L1,
+                     AB_L1,
+                     RF_L1,
+                     ET_L1,
                      # GB_L1,
-                     DNN_L1
+                     # DNN_L1
                      ]
 
         return models_l1
@@ -63,8 +64,10 @@ class DeepStack:
         DNN_L2 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
                                            self.e_train, self.x_test, self.id_test, dnn_l2_params)
 
-        models_l2 = [LGB_L2,
-                     DNN_L2]
+        models_l2 = [
+                     # LGB_L2,
+                     DNN_L2
+                     ]
 
         return models_l2
 
@@ -108,9 +111,9 @@ class DeepStack:
 
         return blender_valid_cv, blender_test_cv, blender_losses_cv
 
-    def stacker(self, models_initializer, dnn_param, params, x_train_inputs, y_train_inputs, w_train_inputs,
+    def stacker(self, models_initializer, params, x_train_inputs, y_train_inputs, w_train_inputs,
                 e_train_inputs, x_g_train_inputs, x_test, x_g_test,
-                cv, n_valid=4, n_era=20, n_epoch=1, x_train_reuse=None):
+                cv, n_valid=4, n_era=20, n_epoch=1, dnn_param=None, x_train_reuse=None):
 
         if n_era%n_valid != 0:
             assert ValueError('n_era must be an integer multiple of n_valid!')
@@ -256,7 +259,7 @@ class DeepStack:
 
         dnn_l1_params = self.parameters_l1[-1]
         dnn_l2_params = self.parameters_l2[-1]
-        dnn_l3_params = self.parameters_l3[-1]
+        # dnn_l3_params = self.parameters_l3[-1]
 
         # Layer 1
         print('------------------------------------------------------')
@@ -264,10 +267,10 @@ class DeepStack:
         models_initializer_l1 = self.init_models_layer1
 
         x_outputs_l1, test_outputs_l1, x_g_outputs_l1, test_g_outputs_l1 \
-            = self.stacker(models_initializer_l1, dnn_l1_params, self.parameters_l1, self.x_train, self.y_train,
+            = self.stacker(models_initializer_l1, self.parameters_l1, self.x_train, self.y_train,
                            self.w_train, self.e_train, self.x_g_train, self.x_test, self.x_g_test,
                            cv_stack, n_valid=self.n_valid[0], n_era=self.n_era[0],
-                           n_epoch=self.n_epoch[0], x_train_reuse=None)
+                           n_epoch=self.n_epoch[0], x_train_reuse=None, dnn_param=dnn_l1_params)
 
         # Save predicted test prob
         self.save_predict(self.pred_path + 'stack_l1_', test_outputs_l1)
@@ -287,10 +290,10 @@ class DeepStack:
         models_initializer_l2 = self.init_models_layer2
 
         x_outputs_l2, test_outputs_l2, x_g_outputs_l2, test_g_outputs_l2 \
-            = self.stacker(models_initializer_l2, dnn_l2_params, self.parameters_l2, x_outputs_l1, self.y_train,
+            = self.stacker(models_initializer_l2, self.parameters_l2, x_outputs_l1, self.y_train,
                            self.w_train, self.e_train, x_g_outputs_l1, test_outputs_l1, test_g_outputs_l1,
                            cv_stack, n_valid=self.n_valid[1], n_era=self.n_era[1],
-                           n_epoch=self.n_epoch[1], x_train_reuse=None)
+                           n_epoch=self.n_epoch[1], x_train_reuse=None, dnn_param=dnn_l2_params)
 
         # Save predicted test prob
         self.save_predict(self.pred_path + 'stack_l2_', test_outputs_l2)
@@ -305,31 +308,31 @@ class DeepStack:
         print('Layer Time: {}s'.format(layer2_time))
         print('======================================================')
 
-        # Layer 3
-        print('Start training layer 3...')
-        models_initializer_l3 = self.init_models_layer3
-
-        x_outputs_l3, test_outputs_l3, x_g_outputs_l3, test_g_outputs_l3 \
-            = self.stacker(models_initializer_l3, dnn_l3_params, self.parameters_l3, x_outputs_l2, self.y_train,
-                           self.w_train, self.e_train, x_g_outputs_l2, test_outputs_l2, test_g_outputs_l2,
-                           cv_stack, n_valid=self.n_valid[2], n_era=self.n_era[2],
-                           n_epoch=self.n_epoch[2], x_train_reuse=None)
+        # # Layer 3
+        # print('Start training layer 3...')
+        # models_initializer_l3 = self.init_models_layer3
+        #
+        # x_outputs_l3, test_outputs_l3, x_g_outputs_l3, test_g_outputs_l3 \
+        #     = self.stacker(models_initializer_l3, self.parameters_l3, x_outputs_l2, self.y_train,
+        #                    self.w_train, self.e_train, x_g_outputs_l2, test_outputs_l2, test_g_outputs_l2,
+        #                    cv_stack, n_valid=self.n_valid[2], n_era=self.n_era[2],
+        #                    n_epoch=self.n_epoch[2], x_train_reuse=None, dnn_param=None)
+        #
+        # # Save predicted test prob
+        # self.save_predict(self.pred_path + 'stack_l3_', test_outputs_l3)
+        #
+        # # Save layer outputs
+        # utils.save_stack_outputs(self.stack_output_path + 'l3_',
+        #                          x_outputs_l3, test_outputs_l3, x_g_outputs_l3, test_g_outputs_l3)
+        #
+        # layer3_time = time.time() - start_time
+        # print('------------------------------------------------------')
+        # print('Layer3 Training Done!')
+        # print('Layer Time: {}s'.format(layer3_time))
+        # print('======================================================')
 
         # Save predicted test prob
-        self.save_predict(self.pred_path + 'stack_l3_', test_outputs_l3)
-
-        # Save layer outputs
-        utils.save_stack_outputs(self.stack_output_path + 'l3_',
-                                 x_outputs_l3, test_outputs_l3, x_g_outputs_l3, test_g_outputs_l3)
-
-        layer3_time = time.time() - start_time
-        print('------------------------------------------------------')
-        print('Layer3 Training Done!')
-        print('Layer Time: {}s'.format(layer3_time))
-        print('======================================================')
-
-        # Save predicted test prob
-        final_result = test_outputs_l3
+        final_result = test_outputs_l2
         self.save_predict(self.pred_path + 'final_results/stack_', final_result)
 
         total_time = time.time() - start_time
@@ -576,6 +579,10 @@ class TreeStack:
         print('======================================================')
 
         return blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs
+
+    def iterator(self):
+
+        pass
 
     def save_predict(self, pred_path, test_outputs):
 

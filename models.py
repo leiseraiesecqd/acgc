@@ -133,7 +133,7 @@ class LRegression:
             self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_test, pred_path + 'lr_cv_{}_'.format(count))
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'lr_cv_{}_'.format(count))
 
             prob_total.append(list(prob_test))
             loss_train_total.append(loss_train)
@@ -360,7 +360,7 @@ class DecisionTree:
             self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_test, pred_path + 'dt_cv_{}_'.format(count))
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'dt_cv_{}_'.format(count))
 
             prob_total.append(list(prob_test))
             loss_train_total.append(loss_train)
@@ -518,7 +518,7 @@ class RandomForest:
             self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_test, pred_path + 'rf_cv_{}_'.format(count))
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'rf_cv_{}_'.format(count))
 
             prob_total.append(list(prob_test))
             loss_train_total.append(loss_train)
@@ -676,7 +676,7 @@ class ExtraTrees:
             self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_test, pred_path + 'et_cv_{}_'.format(count))
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'et_cv_{}_'.format(count))
 
             prob_total.append(list(prob_test))
             loss_train_total.append(loss_train)
@@ -834,7 +834,7 @@ class AdaBoost:
             self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_test, pred_path + 'ab_cv_3_{}_'.format(count))
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'ab_cv_{}_'.format(count))
 
             prob_total.append(list(prob_test))
             loss_train_total.append(loss_train)
@@ -992,7 +992,7 @@ class GradientBoosting:
             self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_test, pred_path + 'gb_cv_{}_'.format(count))
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'gb_cv_{}_'.format(count))
 
             prob_total.append(list(prob_test))
             loss_train_total.append(loss_train)
@@ -1204,7 +1204,7 @@ class XGBoost:
                                                                                  x_valid, y_valid, w_valid)
 
             # Prediction
-            prob_test = self.predict(bst, pred_path + 'xgb_cv_{}_'.format(count))
+            prob_test = self.predict(bst, pred_path=pred_path + 'xgb_cv_{}_'.format(count))
 
             prob_total.append(list(prob_test))
             loss_train_total.append(loss_train)
@@ -1274,7 +1274,7 @@ class XGBoost:
                                                                 x_valid, y_valid, w_valid)
 
             # Prediction
-            prob_test = self.predict_sklearn(clf, self.x_test, pred_path + 'xgb_sk_cv_{}_'.format(count))
+            prob_test = self.predict_sklearn(clf, self.x_test, pred_path=pred_path + 'xgb_sk_cv_{}_'.format(count))
 
             prob_total.append(list(prob_test))
             loss_train_total.append(loss_train)
@@ -1457,8 +1457,9 @@ class LightGBM:
             print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
 
             # Use Category
-            d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=[88])
-            d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=[88])
+            idx_category = [x_train.shape[1] - 1]
+            d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=idx_category)
+            d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
 
             # Booster
             bst = lgb.train(parameters, d_train, num_boost_round=50,
@@ -1531,8 +1532,11 @@ class LightGBM:
 
             clf = self.get_clf(parameters)
 
+            idx_category = [x_train.shape[1] - 1]
+            print('Index of categorical feature: {}'.format(idx_category))
+
             clf.fit(x_train, y_train, sample_weight=w_train,
-                    categorical_feature=[88],
+                    categorical_feature=idx_category,
                     eval_set=[(x_train, y_train), (x_valid, y_valid)],
                     eval_names=['train', 'eval'],
                     early_stopping_rounds=50,
@@ -2644,7 +2648,7 @@ def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, params, params_g
     grid_search = GridSearchCV(estimator=clf,
                                param_grid=params_grid,
                                scoring='neg_log_loss',
-                               verbose=2,
+                               verbose=1,
                                n_jobs=-1,
                                # cv=CrossValidation.era_k_fold_split(e=tr_e, n_valid=n_valid, n_cv=n_cv),
                                cv=5)

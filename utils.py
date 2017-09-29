@@ -112,6 +112,18 @@ def load_pkl_to_np(data_path):
 
     return data
 
+# Load Stacked Layer
+def load_stacked_data(output_path):
+
+    print('Loading Stacked Data...')
+
+    x_outputs = load_pkl_to_np(output_path + 'x_outputs.p')
+    test_outputs = load_pkl_to_np(output_path + 'test_outputs.p')
+    x_g_outputs = load_pkl_to_np(output_path + 'x_g_outputs.p')
+    test_g_outputs = load_pkl_to_np(output_path + 'test_g_outputs.p')
+
+    return x_outputs, test_outputs, x_g_outputs, test_g_outputs
+
 
 # Load Preprocessed Data
 def load_preprocessed_np_data(data_file_path):
