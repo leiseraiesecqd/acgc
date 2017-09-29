@@ -100,11 +100,10 @@ class Stacking:
 
         return blender_valid_cv, blender_test_cv, blender_losses_cv
 
-    def train_layer(self, models_blender, params, x_train_inputs, y_train_inputs, w_train_inputs,
+    def train_layer(self, get_models, dnn_param, params, x_train_inputs, y_train_inputs, w_train_inputs,
                     e_train_inputs, x_g_train_inputs, x_test, x_g_test,
                     cv, n_valid=4, n_era=20, n_epoch=1, x_train_reuse=None):
 
-        n_model = len(models_blender)
         if n_era%n_valid != 0:
             assert ValueError('n_era must be an integer multiple of n_valid!')
 
@@ -124,6 +123,13 @@ class Stacking:
 
             print('======================================================')
             print('Training on Epoch: {}/{}'.format(epoch+1, n_epoch))
+
+            # Init models blender
+            if dnn_param is not None:
+                models_blender = get_models(dnn_param)
+            else:
+                models_blender = get_models()
+            n_model = len(models_blender)
 
             counter_cv = 0
             blender_valid = np.array([])
@@ -209,11 +215,11 @@ class Stacking:
         # Layer 1
         print('----------------------------------------------')
         print('Start training layer 1...')
-        models_l1 = self.init_models_layer1(dnn_l1_params)
+        get_models_l1 = self.init_models_layer1
 
         x_outputs_l1, test_outputs_l1, x_g_outputs_l1, test_g_outputs_l1 \
-            = self.train_layer(models_l1, self.parameters_l1, self.x_train, self.y_train, self.w_train,
-                               self.e_train, self.x_g_train, self.x_test, self.x_g_test,
+            = self.train_layer(get_models_l1, dnn_l1_params, self.parameters_l1, self.x_train, self.y_train,
+                               self.w_train, self.e_train, self.x_g_train, self.x_test, self.x_g_test,
                                cv_stack, n_valid=self.n_valid[0], n_era=self.n_era[0],
                                n_epoch=self.n_epoch[0], x_train_reuse=None)
 
@@ -233,11 +239,11 @@ class Stacking:
 
         # Layer 2
         print('Start training layer 2...')
-        models_l2 = self.init_models_layer2(dnn_l2_params)
+        get_models_l2 = self.init_models_layer2
 
         x_outputs_l2, test_outputs_l2, x_g_outputs_l2, test_g_outputs_l2 \
-            = self.train_layer(models_l2, self.parameters_l2, x_outputs_l1, self.y_train, self.w_train,
-                               self.e_train, x_g_outputs_l1, test_outputs_l1, test_g_outputs_l1,
+            = self.train_layer(get_models_l2, dnn_l2_params, self.parameters_l2, x_outputs_l1, self.y_train,
+                               self.w_train, self.e_train, x_g_outputs_l1, test_outputs_l1, test_g_outputs_l1,
                                cv_stack, n_valid=self.n_valid[1], n_era=self.n_era[1],
                                n_epoch=self.n_epoch[1], x_train_reuse=None)
 
@@ -256,11 +262,11 @@ class Stacking:
 
         # Layer 3
         print('Start training layer 3...')
-        models_l3 = self.init_models_layer3(dnn_l3_params)
+        get_models_l3 = self.init_models_layer3
 
         x_outputs_l3, test_outputs_l3, x_g_outputs_l3, test_g_outputs_l3 \
-            = self.train_layer(models_l3, self.parameters_l3, x_outputs_l2, self.y_train, self.w_train,
-                               self.e_train, x_g_outputs_l2, test_outputs_l2, test_g_outputs_l2,
+            = self.train_layer(get_models_l3, dnn_l3_params, self.parameters_l3, x_outputs_l2, self.y_train,
+                               self.w_train, self.e_train, x_g_outputs_l2, test_outputs_l2, test_g_outputs_l2,
                                cv_stack, n_valid=self.n_valid[2], n_era=self.n_era[2],
                                n_epoch=self.n_epoch[2], x_train_reuse=None)
 
