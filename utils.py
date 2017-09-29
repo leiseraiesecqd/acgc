@@ -156,7 +156,7 @@ def load_preprocessed_pd_data(data_file_path):
     x_test = np.array(x_test_pd, dtype=np.float64)
 
     id_test_pd = pd.read_pickle(data_file_path + 'id_test.p')
-    id_test = np.array(id_test_pd, dtype=np.float64)
+    id_test = np.array(id_test_pd)
 
     return x_train, y_train, w_train, e_train, x_test, id_test
 
