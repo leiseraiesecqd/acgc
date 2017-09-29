@@ -1496,7 +1496,7 @@ class LightGBM:
         print('------------------------------------------------------')
         print('Training LightGBM...')
 
-        idx_category = [len(x_g_test.shape[1])-1]
+        idx_category = [x_g_test.shape[1]-1]
         print('Index of categorical feature: {}'.format(idx_category))
 
         clf = self.get_clf(parameters)
