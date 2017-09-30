@@ -1040,7 +1040,7 @@ if __name__ == "__main__":
 
     # LightGBM
     # TrainSingleModel.lgb_train()
-    # TrainSingleModel.lgb_train_sklearn()
+    TrainSingleModel.lgb_train_sklearn()
 
     # DNN
     # TrainSingleModel.dnn_tf_train()
@@ -1053,7 +1053,7 @@ if __name__ == "__main__":
     # GridSearch.ab_grid_search()
     # GridSearch.gb_grid_search()
     # GridSearch.xgb_grid_search()
-    GridSearch.lgb_grid_search()
+    # GridSearch.lgb_grid_search()
     # GridSearch.stack_lgb_grid_search()
 
     # Stacking
