@@ -130,7 +130,7 @@ class LRegression:
                                                                          n_cv=n_cv):
             count += 1
 
-            print('===========================================')
+            print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
 
             # Classifier
@@ -139,6 +139,7 @@ class LRegression:
             clf.fit(x_train, y_train, sample_weight=w_train)
 
             # Print LogLoss
+            print('------------------------------------------------------')
             print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
@@ -164,7 +165,7 @@ class LRegression:
             loss_train_w_total.append(loss_train_w)
             loss_valid_w_total.append(loss_valid_w)
 
-        print('===========================================')
+        print('======================================================')
         print('Calculating final result...')
 
         prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
@@ -379,7 +380,7 @@ class DecisionTree:
                                                                          n_cv=n_cv):
             count += 1
 
-            print('===========================================')
+            print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
 
             # Classifier
@@ -388,6 +389,7 @@ class DecisionTree:
             clf.fit(x_train, y_train, sample_weight=w_train)
 
             # Print LogLoss
+            print('------------------------------------------------------')
             print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
@@ -413,7 +415,7 @@ class DecisionTree:
             loss_train_w_total.append(loss_train_w)
             loss_valid_w_total.append(loss_valid_w)
 
-        print('===========================================')
+        print('======================================================')
         print('Calculating final result...')
 
         prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
@@ -559,7 +561,7 @@ class RandomForest:
                                                                          n_cv=n_cv):
             count += 1
 
-            print('===========================================')
+            print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
 
             # Classifier
@@ -568,6 +570,7 @@ class RandomForest:
             clf.fit(x_train, y_train, sample_weight=w_train)
 
             # Print LogLoss
+            print('------------------------------------------------------')
             print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
@@ -593,7 +596,7 @@ class RandomForest:
             loss_train_w_total.append(loss_train_w)
             loss_valid_w_total.append(loss_valid_w)
 
-        print('===========================================')
+        print('======================================================')
         print('Calculating final result...')
 
         prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
@@ -739,7 +742,7 @@ class ExtraTrees:
                                                                          n_cv=n_cv):
             count += 1
 
-            print('===========================================')
+            print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
 
             # Classifier
@@ -748,6 +751,7 @@ class ExtraTrees:
             clf.fit(x_train, y_train, sample_weight=w_train)
 
             # Print LogLoss
+            print('------------------------------------------------------')
             print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
@@ -773,7 +777,7 @@ class ExtraTrees:
             loss_train_w_total.append(loss_train_w)
             loss_valid_w_total.append(loss_valid_w)
 
-        print('===========================================')
+        print('======================================================')
         print('Calculating final result...')
 
         prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
@@ -919,7 +923,7 @@ class AdaBoost:
                                                                          n_cv=n_cv):
             count += 1
 
-            print('===========================================')
+            print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
 
             # Classifier
@@ -928,6 +932,7 @@ class AdaBoost:
             clf.fit(x_train, y_train, sample_weight=w_train)
 
             # Print LogLoss
+            print('------------------------------------------------------')
             print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
@@ -953,7 +958,7 @@ class AdaBoost:
             loss_train_w_total.append(loss_train_w)
             loss_valid_w_total.append(loss_valid_w)
 
-        print('===========================================')
+        print('======================================================')
         print('Calculating final result...')
 
         prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
@@ -1099,7 +1104,7 @@ class GradientBoosting:
                                                                          n_cv=n_cv):
             count += 1
 
-            print('===========================================')
+            print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
 
             clf = self.get_clf(parameters)
@@ -1108,6 +1113,7 @@ class GradientBoosting:
             clf.fit(x_train, y_train, sample_weight=w_train)
 
             # Print LogLoss
+            print('------------------------------------------------------')
             print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
@@ -1133,7 +1139,7 @@ class GradientBoosting:
             loss_train_w_total.append(loss_train_w)
             loss_valid_w_total.append(loss_valid_w)
 
-        print('===========================================')
+        print('======================================================')
         print('Calculating final result...')
 
         prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
@@ -1359,6 +1365,7 @@ class XGBoost:
             self.get_importance(bst)
 
             # Print LogLoss
+            print('------------------------------------------------------')
             print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = self.print_loss(bst, x_train, y_train, w_train,
                                                                                  x_valid, y_valid, w_valid)
@@ -1437,6 +1444,7 @@ class XGBoost:
             self.get_importance_sklearn(clf)
 
             # Print LogLoss
+            print('------------------------------------------------------')
             print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, \
                 loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
@@ -1671,6 +1679,7 @@ class LightGBM:
             self.get_importance(bst)
 
             # Print LogLoss
+            print('------------------------------------------------------')
             print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_train, y_train, w_train,
                                                                                   x_valid, y_valid, w_valid)
@@ -1758,6 +1767,7 @@ class LightGBM:
             self.get_importance_sklearn(clf)
 
             # Print LogLoss
+            print('------------------------------------------------------')
             print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, \
                 loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
