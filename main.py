@@ -274,23 +274,23 @@ class TrainSingleModel:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
-        lgb_parameters = {'learning_rate': 0.006,
+        lgb_parameters = {'learning_rate': 0.002,
                           'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
                           # 'boosting_type': 'dart',        # Dropouts meet Multiple Additive Regression Trees.
                           # 'boosting_type': 'goss',        # Gradient-based One-Side Sampling.
                           # 'boosting_type': 'rf',          # Random Forest.
-                          'num_leaves': 3,                # <2^(max_depth)
+                          'num_leaves': 128,                # <2^(max_depth)
                           'max_depth': 8,                 # default=-1
-                          'n_estimators': 79,
+                          'n_estimators': 50,
                           'max_bin': 1005,
                           'subsample_for_bin': 1981,
                           'objective': 'binary',
                           'min_split_gain': 0.,
                           'min_child_weight': 1,
                           'min_child_samples': 0,
-                          'subsample': 0.723,
-                          'subsample_freq': 3,
-                          'colsample_bytree': 0.11,
+                          'subsample': 0.8,
+                          'subsample_freq': 5,
+                          'colsample_bytree': 0.8,
                           'reg_alpha': 0.,
                           'reg_lambda': 0.,
                           'silent': False}
@@ -636,15 +636,15 @@ class GridSearch:
         parameters_grid = {'learning_rate': (0.002,0.005,0.01),
                            'n_estimators': (20,50,100,150),
                            'max_depth': (5,7,9),
-                           #'subsample': 0.8,
-                           #'colsample_bytree': 0.8,
-                           #'colsample_bylevel': 1,
-                           #'gamma': 0,
-                           #'min_child_weight': 1,
-                           #'max_delta_step': 0,
-                           #'base_score': 0.5,
-                           #'reg_alpha': 0,
-                           #'reg_lambda': 0,
+                           # 'subsample': 0.8,
+                           # 'colsample_bytree': 0.8,
+                           # 'colsample_bylevel': 1,
+                           # 'gamma': 0,
+                           # 'min_child_weight': 1,
+                           # 'max_delta_step': 0,
+                           # 'base_score': 0.5,
+                           # 'reg_alpha': 0,
+                           # 'reg_lambda': 0,
                            }
 
         models.grid_search(log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20,
@@ -716,7 +716,6 @@ class GridSearch:
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_outputs, test_outputs, x_g_outputs, test_g_outputs = utils.load_stacked_data(stack_output_path + 'l1_')
-
 
         parameters = {'learning_rate': 0.006,
                       'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
