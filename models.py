@@ -122,12 +122,12 @@ class LRegression:
         loss_valid_w_total = []
 
         for x_train, y_train, w_train, x_valid, y_valid, \
-            w_valid, valid_index in CrossValidation.era_k_fold_with_weight(x=self.x_train,
-                                                                           y=self.y_train,
-                                                                           w=self.w_train,
-                                                                           e=self.e_train,
-                                                                           n_valid=n_valid,
-                                                                           n_cv=n_cv):
+            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+                                                                         y=self.y_train,
+                                                                         w=self.w_train,
+                                                                         e=self.e_train,
+                                                                         n_valid=n_valid,
+                                                                         n_cv=n_cv):
             count += 1
 
             print('===========================================')
@@ -139,12 +139,12 @@ class LRegression:
             clf.fit(x_train, y_train, sample_weight=w_train)
 
             # Print LogLoss
-            print('Validation Set Index: ', valid_index)
+            print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Save Losses to file
-            utils.save_loss_log(loss_log_path + 'lr_', count, parameters, n_valid, n_cv, valid_index,
+            utils.save_loss_log(loss_log_path + 'lr_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w)
 
             # Feature Importance
@@ -371,12 +371,12 @@ class DecisionTree:
         loss_valid_w_total = []
 
         for x_train, y_train, w_train, x_valid, y_valid, \
-            w_valid, valid_index in CrossValidation.era_k_fold_with_weight(x=self.x_train,
-                                                                           y=self.y_train,
-                                                                           w=self.w_train,
-                                                                           e=self.e_train,
-                                                                           n_valid=n_valid,
-                                                                           n_cv=n_cv):
+            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+                                                                         y=self.y_train,
+                                                                         w=self.w_train,
+                                                                         e=self.e_train,
+                                                                         n_valid=n_valid,
+                                                                         n_cv=n_cv):
             count += 1
 
             print('===========================================')
@@ -388,12 +388,12 @@ class DecisionTree:
             clf.fit(x_train, y_train, sample_weight=w_train)
 
             # Print LogLoss
-            print('Validation Set Index: ', valid_index)
+            print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Save Losses to file
-            utils.save_loss_log(loss_log_path + 'dt_', count, parameters, n_valid, n_cv, valid_index,
+            utils.save_loss_log(loss_log_path + 'dt_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w)
 
             # Feature Importance
@@ -551,12 +551,12 @@ class RandomForest:
         loss_valid_w_total = []
 
         for x_train, y_train, w_train, x_valid, y_valid, \
-            w_valid, valid_index in CrossValidation.era_k_fold_with_weight(x=self.x_train,
-                                                                           y=self.y_train,
-                                                                           w=self.w_train,
-                                                                           e=self.e_train,
-                                                                           n_valid=n_valid,
-                                                                           n_cv=n_cv):
+            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+                                                                         y=self.y_train,
+                                                                         w=self.w_train,
+                                                                         e=self.e_train,
+                                                                         n_valid=n_valid,
+                                                                         n_cv=n_cv):
             count += 1
 
             print('===========================================')
@@ -568,12 +568,12 @@ class RandomForest:
             clf.fit(x_train, y_train, sample_weight=w_train)
 
             # Print LogLoss
-            print('Validation Set Index: ', valid_index)
+            print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Save Losses to file
-            utils.save_loss_log(loss_log_path + 'rf_', count, parameters, n_valid, n_cv, valid_index,
+            utils.save_loss_log(loss_log_path + 'rf_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w)
 
             # Feature Importance
@@ -731,12 +731,12 @@ class ExtraTrees:
         loss_valid_w_total = []
 
         for x_train, y_train, w_train, x_valid, y_valid, \
-            w_valid, valid_index in CrossValidation.era_k_fold_with_weight(x=self.x_train,
-                                                                           y=self.y_train,
-                                                                           w=self.w_train,
-                                                                           e=self.e_train,
-                                                                           n_valid=n_valid,
-                                                                           n_cv=n_cv):
+            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+                                                                         y=self.y_train,
+                                                                         w=self.w_train,
+                                                                         e=self.e_train,
+                                                                         n_valid=n_valid,
+                                                                         n_cv=n_cv):
             count += 1
 
             print('===========================================')
@@ -748,12 +748,12 @@ class ExtraTrees:
             clf.fit(x_train, y_train, sample_weight=w_train)
 
             # Print LogLoss
-            print('Validation Set Index: ', valid_index)
+            print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Save Losses to file
-            utils.save_loss_log(loss_log_path + 'et_', count, parameters, n_valid, n_cv, valid_index,
+            utils.save_loss_log(loss_log_path + 'et_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w)
 
             # Feature Importance
@@ -911,12 +911,12 @@ class AdaBoost:
         loss_valid_w_total = []
 
         for x_train, y_train, w_train, x_valid, y_valid, \
-            w_valid, valid_index in CrossValidation.era_k_fold_with_weight(x=self.x_train,
-                                                                           y=self.y_train,
-                                                                           w=self.w_train,
-                                                                           e=self.e_train,
-                                                                           n_valid=n_valid,
-                                                                           n_cv=n_cv):
+            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+                                                                         y=self.y_train,
+                                                                         w=self.w_train,
+                                                                         e=self.e_train,
+                                                                         n_valid=n_valid,
+                                                                         n_cv=n_cv):
             count += 1
 
             print('===========================================')
@@ -928,12 +928,12 @@ class AdaBoost:
             clf.fit(x_train, y_train, sample_weight=w_train)
 
             # Print LogLoss
-            print('Validation Set Index: ', valid_index)
+            print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Save Losses to file
-            utils.save_loss_log(loss_log_path + 'ab_', count, parameters, n_valid, n_cv, valid_index,
+            utils.save_loss_log(loss_log_path + 'ab_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w)
 
             # Feature Importance
@@ -1091,12 +1091,12 @@ class GradientBoosting:
         loss_valid_w_total = []
 
         for x_train, y_train, w_train,  x_valid, y_valid, \
-            w_valid, valid_index in CrossValidation.era_k_fold_with_weight(x=self.x_train,
-                                                                           y=self.y_train,
-                                                                           w=self.w_train,
-                                                                           e=self.e_train,
-                                                                           n_valid=n_valid,
-                                                                           n_cv=n_cv):
+            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+                                                                         y=self.y_train,
+                                                                         w=self.w_train,
+                                                                         e=self.e_train,
+                                                                         n_valid=n_valid,
+                                                                         n_cv=n_cv):
             count += 1
 
             print('===========================================')
@@ -1108,12 +1108,12 @@ class GradientBoosting:
             clf.fit(x_train, y_train, sample_weight=w_train)
 
             # Print LogLoss
-            print('Validation Set Index: ', valid_index)
+            print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Save Losses to file
-            utils.save_loss_log(loss_log_path + 'gb_', count, parameters, n_valid, n_cv, valid_index,
+            utils.save_loss_log(loss_log_path + 'gb_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w)
 
             # Feature Importance
@@ -1335,12 +1335,12 @@ class XGBoost:
         loss_valid_w_total = []
 
         for x_train, y_train, w_train, x_valid, y_valid, \
-            w_valid, valid_index in CrossValidation.era_k_fold_with_weight(x=self.x_train,
-                                                                           y=self.y_train,
-                                                                           w=self.w_train,
-                                                                           e=self.e_train,
-                                                                           n_valid=n_valid,
-                                                                           n_cv=n_cv):
+            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+                                                                         y=self.y_train,
+                                                                         w=self.w_train,
+                                                                         e=self.e_train,
+                                                                         n_valid=n_valid,
+                                                                         n_cv=n_cv):
 
             count += 1
 
@@ -1359,12 +1359,12 @@ class XGBoost:
             self.get_importance(bst)
 
             # Print LogLoss
-            print('Validation Set Index: ', valid_index)
+            print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = self.print_loss(bst, x_train, y_train, w_train,
                                                                                  x_valid, y_valid, w_valid)
 
             # Save Losses to file
-            utils.save_loss_log(loss_log_path + 'xgb_', count, parameters, n_valid, n_cv, valid_index,
+            utils.save_loss_log(loss_log_path + 'xgb_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w)
 
             # Prediction
@@ -1416,12 +1416,12 @@ class XGBoost:
         loss_valid_w_total = []
 
         for x_train, y_train, w_train, x_valid, y_valid, \
-            w_valid, valid_index in CrossValidation.era_k_fold_with_weight(x=self.x_train,
-                                                                           y=self.y_train,
-                                                                           w=self.w_train,
-                                                                           e=self.e_train,
-                                                                           n_valid=n_valid,
-                                                                           n_cv=n_cv):
+            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+                                                                         y=self.y_train,
+                                                                         w=self.w_train,
+                                                                         e=self.e_train,
+                                                                         n_valid=n_valid,
+                                                                         n_cv=n_cv):
             count += 1
 
             print('======================================================')
@@ -1437,13 +1437,13 @@ class XGBoost:
             self.get_importance_sklearn(clf)
 
             # Print LogLoss
-            print('Validation Set Index: ', valid_index)
+            print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, \
                 loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
                                                       x_valid, y_valid, w_valid)
 
             # Save Losses to file
-            utils.save_loss_log(loss_log_path + 'xgb_sk_', count, parameters, n_valid, n_cv, valid_index,
+            utils.save_loss_log(loss_log_path + 'xgb_sk_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train,loss_valid, loss_train_w, loss_valid_w)
 
             # Prediction
@@ -1646,12 +1646,12 @@ class LightGBM:
 
         # Cross Validation
         for x_train, y_train, w_train, x_valid, y_valid, \
-            w_valid, valid_index in CrossValidation.era_k_fold_with_weight(x=self.x_g_train,
-                                                                           y=self.y_train,
-                                                                           w=self.w_train,
-                                                                           e=self.e_train,
-                                                                           n_valid=n_valid,
-                                                                           n_cv=n_cv):
+            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_g_train,
+                                                                         y=self.y_train,
+                                                                         w=self.w_train,
+                                                                         e=self.e_train,
+                                                                         n_valid=n_valid,
+                                                                         n_cv=n_cv):
 
             count += 1
 
@@ -1671,12 +1671,12 @@ class LightGBM:
             self.get_importance(bst)
 
             # Print LogLoss
-            print('Validation Set Index: ', valid_index)
+            print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_train, y_train, w_train,
                                                                                   x_valid, y_valid, w_valid)
 
             # Save Losses to file
-            utils.save_loss_log(loss_log_path + 'lgb_', count, parameters, n_valid, n_cv, valid_index,
+            utils.save_loss_log(loss_log_path + 'lgb_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w)
 
             # Prediction
@@ -1729,12 +1729,12 @@ class LightGBM:
 
         # Use Category
         for x_train, y_train, w_train, x_valid, y_valid, \
-            w_valid, valid_index in CrossValidation.era_k_fold_with_weight(x=self.x_g_train,
-                                                                           y=self.y_train,
-                                                                           w=self.w_train,
-                                                                           e=self.e_train,
-                                                                           n_valid=n_valid,
-                                                                           n_cv=n_cv):
+            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_g_train,
+                                                                         y=self.y_train,
+                                                                         w=self.w_train,
+                                                                         e=self.e_train,
+                                                                         n_valid=n_valid,
+                                                                         n_cv=n_cv):
 
             count += 1
 
@@ -1758,13 +1758,13 @@ class LightGBM:
             self.get_importance_sklearn(clf)
 
             # Print LogLoss
-            print('Validation Set Index: ', valid_index)
+            print('Validation Set Index: ', valid_era)
             loss_train, loss_valid, loss_train_w, \
                 loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
                                                       x_valid, y_valid, w_valid)
 
             # Save Losses to file
-            utils.save_loss_log(loss_log_path + 'lgb_sk_', count, parameters, n_valid, n_cv, valid_index,
+            utils.save_loss_log(loss_log_path + 'lgb_sk_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w)
 
             # Prediction
@@ -2031,18 +2031,18 @@ class DeepNeuralNetworks:
             prob_total = []
 
             for x_train, y_train, w_train, x_valid, y_valid, \
-                w_valid, valid_index in CrossValidation.era_k_fold_with_weight(self.x_train,
-                                                                               self.y_train,
-                                                                               self.w_train,
-                                                                               self.e_train,
-                                                                               n_valid,
-                                                                               n_cv):
+                w_valid, valid_era in CrossValidation.era_k_fold_with_weight(self.x_train,
+                                                                             self.y_train,
+                                                                             self.w_train,
+                                                                             self.e_train,
+                                                                             n_valid,
+                                                                             n_cv):
 
                 cv_counter += 1
 
                 print('======================================================')
                 print('Training on the Cross Validation Set: {}'.format(cv_counter))
-                print('Validation Set Index: ', valid_index)
+                print('Validation Set Index: ', valid_era)
                 print('------------------------------------------------------')
 
                 train_log_path = self.log_path + self.version + '/cv_{}/train'.format(cv_counter)
@@ -2296,12 +2296,12 @@ class DeepNeuralNetworks:
 #         prob_total = []
 #
 #         for x_train, y_train, w_train, x_valid, y_valid, \
-#             w_valid, valid_index in CrossValidation.era_k_fold_with_weight(self.x_train,
-#                                                                            self.y_train,
-#                                                                            self.w_train,
-#                                                                            self.e_train,
-#                                                                            n_valid,
-#                                                                            n_cv):
+#             w_valid, valid_era in CrossValidation.era_k_fold_with_weight(self.x_train,
+#                                                                          self.y_train,
+#                                                                          self.w_train,
+#                                                                          self.e_train,
+#                                                                          n_valid,
+#                                                                          n_cv):
 #
 #             cv_counter += 1
 #
@@ -2622,7 +2622,7 @@ class CrossValidation:
 
                     trained_cv.append(set(valid_era))
 
-                    yield x_train, y_train, w_train, x_valid, y_valid, w_valid, valid_index
+                    yield x_train, y_train, w_train, x_valid, y_valid, w_valid, valid_era
 
             # n_cv is not an integer multiple of n_valid
             else:
@@ -2667,7 +2667,7 @@ class CrossValidation:
 
                         trained_cv.append(set(valid_era))
 
-                        yield x_train, y_train, w_train, x_valid, y_valid, w_valid, valid_index
+                        yield x_train, y_train, w_train, x_valid, y_valid, w_valid, valid_era
 
                     else:
 
@@ -2704,7 +2704,7 @@ class CrossValidation:
 
                         trained_cv.append(set(valid_era))
 
-                        yield x_train, y_train, w_train, x_valid, y_valid, w_valid, valid_index
+                        yield x_train, y_train, w_train, x_valid, y_valid, w_valid, valid_era
 
     def era_k_fold_for_stack(self, x, y, w, e, x_g, n_valid, n_cv):
 
