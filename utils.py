@@ -22,6 +22,16 @@ def save_pred_to_csv(file_path, index, prob):
     df.to_csv(file_path + 'result.csv', sep=',', index=False)
 
 
+# Save probabilities of train set to csv file
+def save_prob_train_to_csv(file_path, prob, label):
+
+    print('Saving probabilities of train set to csv file...')
+
+    df = pd.DataFrame({'prob_train': prob, 'label': label})
+
+    df.to_csv(file_path + 'prob_train.csv', sep=',', index=True)
+
+
 # Save Grid Search Logs
 def seve_grid_search_log(log_path, params, params_grid, best_score, best_parameters, total_time):
 

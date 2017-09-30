@@ -90,6 +90,17 @@ class LRegression:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
+    
+    def get_prob_train(self, clf, x_train, pred_path=None):
+
+        print('Predicting...')
+
+        prob_train = np.array(clf.predict_proba(x_train))[:, 1]
+
+        if pred_path is not None:
+            utils.save_prob_train_to_csv(pred_path, prob_train, self.y_train)
+
+        return prob_train
 
     @staticmethod
     def predict_valid(clf, x_valid):
@@ -103,7 +114,8 @@ class LRegression:
     def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
         count = 0
-        prob_total = []
+        prob_test_total = []
+        prob_train_total = []
         loss_train_total = []
         loss_valid_total = []
         loss_train_w_total = []
@@ -139,9 +151,14 @@ class LRegression:
             self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'lr_cv_{}_'.format(count))
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'cv_results/lr_cv_{}_'.format(count))
+            
+            # Save train prob to csv file
+            prob_train = self.get_prob_train(clf, self.x_train, 
+                                             pred_path=pred_path + 'cv_prob_train/lr_cv_{}_'.format(count))
 
-            prob_total.append(list(prob_test))
+            prob_test_total.append(list(prob_test))
+            prob_train_total.append(list(prob_train))
             loss_train_total.append(loss_train)
             loss_valid_total.append(loss_valid)
             loss_train_w_total.append(loss_train_w)
@@ -150,7 +167,8 @@ class LRegression:
         print('===========================================')
         print('Calculating final result...')
 
-        prob_mean = np.mean(np.array(prob_total), axis=0)
+        prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
+        prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
         loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
         loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
@@ -166,7 +184,8 @@ class LRegression:
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
-        utils.save_pred_to_csv(pred_path + 'final_results/lr_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/lr_', self.id_test, prob_test_mean)
+        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/lr_', prob_train_mean, self.y_train)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train,
                     x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
@@ -329,11 +348,23 @@ class DecisionTree:
         prob_valid = np.array(clf.predict_proba(x_valid))[:, 1]
 
         return prob_valid
+    
+    def get_prob_train(self, clf, x_train, pred_path=None):
+
+        print('Predicting...')
+
+        prob_train = np.array(clf.predict_proba(x_train))[:, 1]
+
+        if pred_path is not None:
+            utils.save_prob_train_to_csv(pred_path, prob_train, self.y_train)
+
+        return prob_train
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
         count = 0
-        prob_total = []
+        prob_test_total = []
+        prob_train_total = []
         loss_train_total = []
         loss_valid_total = []
         loss_train_w_total = []
@@ -369,9 +400,14 @@ class DecisionTree:
             self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'dt_cv_{}_'.format(count))
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'cv_results/dt_cv_{}_'.format(count))
 
-            prob_total.append(list(prob_test))
+            # Save train prob to csv file
+            prob_train = self.get_prob_train(clf, self.x_train, 
+                                             pred_path=pred_path + 'cv_prob_train/dt_cv_{}_'.format(count))
+
+            prob_test_total.append(list(prob_test))
+            prob_train_total.append(list(prob_train))
             loss_train_total.append(loss_train)
             loss_valid_total.append(loss_valid)
             loss_train_w_total.append(loss_train_w)
@@ -380,7 +416,8 @@ class DecisionTree:
         print('===========================================')
         print('Calculating final result...')
 
-        prob_mean = np.mean(np.array(prob_total), axis=0)
+        prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
+        prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
         loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
         loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
@@ -396,7 +433,8 @@ class DecisionTree:
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
-        utils.save_pred_to_csv(pred_path + 'final_results/dt_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/dt_', self.id_test, prob_test_mean)
+        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/dt_', prob_train_mean, self.y_train)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train,
                     x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
@@ -490,11 +528,23 @@ class RandomForest:
         prob_valid = np.array(clf.predict_proba(x_valid))[:, 1]
 
         return prob_valid
+    
+    def get_prob_train(self, clf, x_train, pred_path=None):
+
+        print('Predicting...')
+
+        prob_train = np.array(clf.predict_proba(x_train))[:, 1]
+
+        if pred_path is not None:
+            utils.save_prob_train_to_csv(pred_path, prob_train, self.y_train)
+
+        return prob_train
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
         count = 0
-        prob_total = []
+        prob_test_total = []
+        prob_train_total = []
         loss_train_total = []
         loss_valid_total = []
         loss_train_w_total = []
@@ -530,9 +580,14 @@ class RandomForest:
             self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'rf_cv_{}_'.format(count))
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'cv_results/rf_cv_{}_'.format(count))
 
-            prob_total.append(list(prob_test))
+            # Save train prob to csv file
+            prob_train = self.get_prob_train(clf, self.x_train, 
+                                             pred_path=pred_path + 'cv_prob_train/rf_cv_{}_'.format(count))
+
+            prob_test_total.append(list(prob_test))
+            prob_train_total.append(list(prob_train))
             loss_train_total.append(loss_train)
             loss_valid_total.append(loss_valid)
             loss_train_w_total.append(loss_train_w)
@@ -541,7 +596,8 @@ class RandomForest:
         print('===========================================')
         print('Calculating final result...')
 
-        prob_mean = np.mean(np.array(prob_total), axis=0)
+        prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
+        prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
         loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
         loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
@@ -557,7 +613,8 @@ class RandomForest:
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
-        utils.save_pred_to_csv(pred_path + 'final_results/rf_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/rf_', self.id_test, prob_test_mean)
+        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/rf_', prob_train_mean, self.y_train)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train,
                     x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
@@ -651,11 +708,23 @@ class ExtraTrees:
         prob_valid = np.array(clf.predict_proba(x_valid))[:, 1]
 
         return prob_valid
+    
+    def get_prob_train(self, clf, x_train, pred_path=None):
+
+        print('Predicting...')
+
+        prob_train = np.array(clf.predict_proba(x_train))[:, 1]
+
+        if pred_path is not None:
+            utils.save_prob_train_to_csv(pred_path, prob_train, self.y_train)
+
+        return prob_train
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
         count = 0
-        prob_total = []
+        prob_test_total = []
+        prob_train_total = []
         loss_train_total = []
         loss_valid_total = []
         loss_train_w_total = []
@@ -691,9 +760,14 @@ class ExtraTrees:
             self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'et_cv_{}_'.format(count))
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'cv_results/et_cv_{}_'.format(count))
 
-            prob_total.append(list(prob_test))
+            # Save train prob to csv file
+            prob_train = self.get_prob_train(clf, self.x_train, 
+                                             pred_path=pred_path + 'cv_prob_train/et_cv_{}_'.format(count))
+
+            prob_test_total.append(list(prob_test))
+            prob_train_total.append(list(prob_train))
             loss_train_total.append(loss_train)
             loss_valid_total.append(loss_valid)
             loss_train_w_total.append(loss_train_w)
@@ -702,7 +776,8 @@ class ExtraTrees:
         print('===========================================')
         print('Calculating final result...')
 
-        prob_mean = np.mean(np.array(prob_total), axis=0)
+        prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
+        prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
         loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
         loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
@@ -718,7 +793,8 @@ class ExtraTrees:
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
-        utils.save_pred_to_csv(pred_path + 'final_results/et_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/et_', self.id_test, prob_test_mean)
+        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/et_', prob_train_mean, self.y_train)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train,
                     x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
@@ -812,11 +888,23 @@ class AdaBoost:
         prob_valid = np.array(clf.predict_proba(x_valid))[:, 1]
 
         return prob_valid
+    
+    def get_prob_train(self, clf, x_train, pred_path=None):
+
+        print('Predicting...')
+
+        prob_train = np.array(clf.predict_proba(x_train))[:, 1]
+
+        if pred_path is not None:
+            utils.save_prob_train_to_csv(pred_path, prob_train, self.y_train)
+
+        return prob_train
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
         count = 0
-        prob_total = []
+        prob_test_total = []
+        prob_train_total = []
         loss_train_total = []
         loss_valid_total = []
         loss_train_w_total = []
@@ -852,9 +940,14 @@ class AdaBoost:
             self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'ab_cv_{}_'.format(count))
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'cv_results/ab_cv_{}_'.format(count))
 
-            prob_total.append(list(prob_test))
+            # Save train prob to csv file
+            prob_train = self.get_prob_train(clf, self.x_train, 
+                                             pred_path=pred_path + 'cv_prob_train/ab_cv_{}_'.format(count))
+
+            prob_test_total.append(list(prob_test))
+            prob_train_total.append(list(prob_train))
             loss_train_total.append(loss_train)
             loss_valid_total.append(loss_valid)
             loss_train_w_total.append(loss_train_w)
@@ -863,7 +956,8 @@ class AdaBoost:
         print('===========================================')
         print('Calculating final result...')
 
-        prob_mean = np.mean(np.array(prob_total), axis=0)
+        prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
+        prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
         loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
         loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
@@ -879,7 +973,8 @@ class AdaBoost:
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
-        utils.save_pred_to_csv(pred_path + 'final_results/ab_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/ab_', self.id_test, prob_test_mean)
+        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/ab_', prob_train_mean, self.y_train)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train,
                     x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
@@ -973,11 +1068,23 @@ class GradientBoosting:
         prob_valid = np.array(clf.predict_proba(x_valid))[:, 1]
 
         return prob_valid
+    
+    def get_prob_train(self, clf, x_train, pred_path=None):
+
+        print('Predicting...')
+
+        prob_train = np.array(clf.predict_proba(x_train))[:, 1]
+
+        if pred_path is not None:
+            utils.save_prob_train_to_csv(pred_path, prob_train, self.y_train)
+
+        return prob_train
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
         count = 0
-        prob_total = []
+        prob_test_total = []
+        prob_train_total = []
         loss_train_total = []
         loss_valid_total = []
         loss_train_w_total = []
@@ -1013,9 +1120,14 @@ class GradientBoosting:
             self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'gb_cv_{}_'.format(count))
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'cv_results/gb_cv_{}_'.format(count))
 
-            prob_total.append(list(prob_test))
+            # Save train prob to csv file
+            prob_train = self.get_prob_train(clf, self.x_train, 
+                                             pred_path=pred_path + 'cv_prob_train/gb_cv_{}_'.format(count))
+
+            prob_test_total.append(list(prob_test))
+            prob_train_total.append(list(prob_train))
             loss_train_total.append(loss_train)
             loss_valid_total.append(loss_valid)
             loss_train_w_total.append(loss_train_w)
@@ -1024,7 +1136,8 @@ class GradientBoosting:
         print('===========================================')
         print('Calculating final result...')
 
-        prob_mean = np.mean(np.array(prob_total), axis=0)
+        prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
+        prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
         loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
         loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
@@ -1040,7 +1153,8 @@ class GradientBoosting:
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
-        utils.save_pred_to_csv(pred_path + 'final_results/gb_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/gb_', self.id_test, prob_test_mean)
+        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/gb_', prob_train_mean, self.y_train)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train,
                     x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
@@ -1157,13 +1271,14 @@ class XGBoost:
 
         return prob_valid
 
-    def predict(self, model, pred_path):
+    def predict(self, model, pred_path=None):
 
         print('Predicting...')
 
         prob_test = model.predict(xgb.DMatrix(self.x_test))
-
-        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+        
+        if pred_path is not None:
+            utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
 
@@ -1186,11 +1301,34 @@ class XGBoost:
         prob_valid = np.array(clf.predict_proba(x_valid))[:, 1]
 
         return prob_valid
+    
+    def get_prob_train(self, model, x_train, pred_path=None):
+
+        print('Predicting...')
+
+        prob_train = model.predict(xgb.DMatrix(x_train))
+
+        if pred_path is not None:
+            utils.save_prob_train_to_csv(pred_path, prob_train, self.y_train)
+
+        return prob_train
+    
+    def get_prob_train_sklearn(self, clf, x_train, pred_path=None):
+
+        print('Predicting...')
+
+        prob_train = np.array(clf.predict_proba(x_train))[:, 1]
+
+        if pred_path is not None:
+            utils.save_prob_train_to_csv(pred_path, prob_train, self.y_train)
+
+        return prob_train
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
         count = 0
-        prob_total = []
+        prob_test_total = []
+        prob_train_total = []
         loss_train_total = []
         loss_valid_total = []
         loss_train_w_total = []
@@ -1230,9 +1368,14 @@ class XGBoost:
                                 loss_train, loss_valid, loss_train_w, loss_valid_w)
 
             # Prediction
-            prob_test = self.predict(bst, pred_path=pred_path + 'xgb_cv_{}_'.format(count))
+            prob_test = self.predict(bst, pred_path=pred_path + 'cv_results/xgb_cv_{}_'.format(count))
+            
+            # Save train prob to csv file
+            prob_train = self.get_prob_train(bst, self.x_train,
+                                             pred_path=pred_path + 'cv_prob_train/xgb_sk_cv_{}_'.format(count))
 
-            prob_total.append(list(prob_test))
+            prob_test_total.append(list(prob_test))
+            prob_train_total.append(list(prob_train))
             loss_train_total.append(loss_train)
             loss_valid_total.append(loss_valid)
             loss_train_w_total.append(loss_train_w)
@@ -1241,7 +1384,8 @@ class XGBoost:
         print('======================================================')
         print('Calculating final result...')
 
-        prob_mean = np.mean(np.array(prob_total), axis=0)
+        prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
+        prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
         loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
         loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
@@ -1257,13 +1401,15 @@ class XGBoost:
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
-        utils.save_pred_to_csv(pred_path + 'final_results/xgb_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/xgb_', self.id_test, prob_test_mean)
+        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/xgb_', prob_train_mean, self.y_train)
 
     # Using sk-learn API
     def train_sklearn(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
         count = 0
-        prob_total = []
+        prob_test_total = []
+        prob_train_total = []
         loss_train_total = []
         loss_valid_total = []
         loss_train_w_total = []
@@ -1301,9 +1447,15 @@ class XGBoost:
                                 loss_train,loss_valid, loss_train_w, loss_valid_w)
 
             # Prediction
-            prob_test = self.predict_sklearn(clf, self.x_test, pred_path=pred_path + 'xgb_sk_cv_{}_'.format(count))
+            prob_test = self.predict_sklearn(clf, self.x_test,
+                                             pred_path=pred_path + 'cv_results/xgb_sk_cv_{}_'.format(count))
 
-            prob_total.append(list(prob_test))
+            # Save train prob to csv file
+            prob_train = self.get_prob_train_sklearn(clf, self.x_train, 
+                                                     pred_path=pred_path + 'cv_prob_train/xgb_sk_cv_{}_'.format(count) )
+
+            prob_test_total.append(list(prob_test))
+            prob_train_total.append(list(prob_train))
             loss_train_total.append(loss_train)
             loss_valid_total.append(loss_valid)
             loss_train_w_total.append(loss_train_w)
@@ -1312,7 +1464,8 @@ class XGBoost:
         print('======================================================')
         print('Calculating final result...')
 
-        prob_mean = np.mean(np.array(prob_total), axis=0)
+        prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
+        prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
         loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
         loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
@@ -1328,7 +1481,8 @@ class XGBoost:
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
-        utils.save_pred_to_csv(pred_path + 'final_results/xgb_sk_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/xgb_sk_', self.id_test, prob_test_mean)
+        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/xgb_sk_', prob_train_mean, self.y_train)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train,
                     x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
@@ -1457,11 +1611,34 @@ class LightGBM:
         prob_valid = np.array(clf.predict_proba(x_valid))[:, 1]
 
         return prob_valid
+    
+    def get_prob_train(self, model, x_train, pred_path=None):
+
+        print('Predicting...')
+
+        prob_train = model.predict(x_train)
+
+        if pred_path is not None:
+            utils.save_prob_train_to_csv(pred_path, prob_train, self.y_train)
+
+        return prob_train
+    
+    def get_prob_train_sklearn(self, clf, x_train, pred_path=None):
+
+        print('Predicting...')
+
+        prob_train = np.array(clf.predict_proba(x_train))[:, 1]
+
+        if pred_path is not None:
+            utils.save_prob_train_to_csv(pred_path, prob_train, self.y_train)
+
+        return prob_train
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
         count = 0
-        prob_total = []
+        prob_test_total = []
+        prob_train_total = []
         loss_train_total = []
         loss_valid_total = []
         loss_train_w_total = []
@@ -1503,9 +1680,14 @@ class LightGBM:
                                 loss_train, loss_valid, loss_train_w, loss_valid_w)
 
             # Prediction
-            prob_test = self.predict(bst, pred_path + 'lgb_cv_{}_'.format(count))
+            prob_test = self.predict(bst, pred_path=pred_path + 'cv_results/lgb_cv_{}_'.format(count))
+            
+            # Save train prob to csv file
+            prob_train = self.get_prob_train(bst, self.x_train,
+                                             pred_path=pred_path + 'cv_prob_train/lgb_sk_cv_{}_'.format(count))
 
-            prob_total.append(list(prob_test))
+            prob_test_total.append(list(prob_test))
+            prob_train_total.append(list(prob_train))
             loss_train_total.append(loss_train)
             loss_valid_total.append(loss_valid)
             loss_train_w_total.append(loss_train_w)
@@ -1514,7 +1696,8 @@ class LightGBM:
         print('======================================================')
         print('Calculating final result...')
 
-        prob_mean = np.mean(np.array(prob_total), axis=0)
+        prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
+        prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
         loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
         loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
@@ -1530,13 +1713,15 @@ class LightGBM:
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
-        utils.save_pred_to_csv(pred_path + 'final_results/lgb_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/lgb_', self.id_test, prob_test_mean)
+        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/lgb_', prob_train_mean, self.y_train)
 
     # Using sk-learn API
     def train_sklearn(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
 
         count = 0
-        prob_total = []
+        prob_test_total = []
+        prob_train_total = []
         loss_train_total = []
         loss_valid_total = []
         loss_train_w_total = []
@@ -1583,9 +1768,15 @@ class LightGBM:
                                 loss_train, loss_valid, loss_train_w, loss_valid_w)
 
             # Prediction
-            prob_test = self.predict_sklearn(clf, self.x_g_test, pred_path + 'lgb_sk_cv_{}_'.format(count))
+            prob_test = self.predict_sklearn(clf, self.x_g_test,
+                                             pred_path=pred_path + 'cv_results/lgb_sk_cv_{}_'.format(count))
 
-            prob_total.append(list(prob_test))
+            # Save train prob to csv file
+            prob_train = self.get_prob_train_sklearn(clf, self.x_train, 
+                                                     pred_path=pred_path + 'cv_prob_train/lgb_sk_cv_{}_'.format(count))
+
+            prob_test_total.append(list(prob_test))
+            prob_train_total.append(list(prob_train))
             loss_train_total.append(loss_train)
             loss_valid_total.append(loss_valid)
             loss_train_w_total.append(loss_train_w)
@@ -1594,7 +1785,8 @@ class LightGBM:
         print('======================================================')
         print('Calculating final result...')
 
-        prob_mean = np.mean(np.array(prob_total), axis=0)
+        prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
+        prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
         loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
         loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
@@ -1610,7 +1802,8 @@ class LightGBM:
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Save final result
-        utils.save_pred_to_csv(pred_path + 'final_results/lgb_sk_', self.id_test, prob_mean)
+        utils.save_pred_to_csv(pred_path + 'final_results/lgb_sk_', self.id_test, prob_test_mean)
+        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/lgb_sk_', prob_train_mean, self.y_train)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train,
                     x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
@@ -1937,7 +2130,8 @@ class DeepNeuralNetworks:
                 logits_pred = logits_pred.flatten()
                 prob_test = 1.0 / (1.0 + np.exp(-logits_pred))
                 prob_total.append(prob_test)
-                utils.save_pred_to_csv(pred_path + 'dnn_cv_{}_'.format(cv_counter), self.id_test, prob_test)
+                utils.save_pred_to_csv(pred_path + 'cv_results/dnn_cv_{}_'.format(cv_counter),
+                                       self.id_test, prob_test)
 
             # Final Result
             print('======================================================')
@@ -2137,7 +2331,8 @@ class DeepNeuralNetworks:
 #
 #             prob_total.append(list(prob_test))
 #
-#             utils.save_pred_to_csv(pred_path + 'dnn_keras_cv_{}_'.format(cv_counter), self.id_test, prob_test)
+#             utils.save_pred_to_csv(pred_path + 'cv_results/dnn_keras_cv_{}_'.format(cv_counter),
+#                                    self.id_test, prob_test)
 #
 #         # Final Result
 #         print('======================================================')
@@ -2210,7 +2405,7 @@ class CrossValidation:
             np.random.shuffle(train_index)
             np.random.shuffle(valid_index)
 
-            yield zip(train_index, valid_index)
+            yield train_index, valid_index
 
     @staticmethod
     def era_k_fold_with_weight_all_random(x, y, w, e, n_valid, n_cv):
