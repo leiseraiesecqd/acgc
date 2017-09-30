@@ -132,6 +132,7 @@ class LRegression:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
+            print('------------------------------------------------------')
 
             # Classifier
             clf = self.get_clf(parameters)
@@ -382,6 +383,7 @@ class DecisionTree:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
+            print('------------------------------------------------------')
 
             # Classifier
             clf = self.get_clf(parameters)
@@ -563,6 +565,7 @@ class RandomForest:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
+            print('------------------------------------------------------')
 
             # Classifier
             clf = self.get_clf(parameters)
@@ -744,6 +747,7 @@ class ExtraTrees:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
+            print('------------------------------------------------------')
 
             # Classifier
             clf = self.get_clf(parameters)
@@ -925,6 +929,7 @@ class AdaBoost:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
+            print('------------------------------------------------------')
 
             # Classifier
             clf = self.get_clf(parameters)
@@ -1106,6 +1111,7 @@ class GradientBoosting:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
+            print('------------------------------------------------------')
 
             clf = self.get_clf(parameters)
 
@@ -1352,6 +1358,7 @@ class XGBoost:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
+            print('------------------------------------------------------')
 
             d_train = xgb.DMatrix(x_train, label=y_train, weight=w_train)
             d_valid = xgb.DMatrix(x_valid, label=y_valid, weight=w_valid)
@@ -1433,6 +1440,7 @@ class XGBoost:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
+            print('------------------------------------------------------')
 
             clf = self.get_clf(parameters)
 
@@ -1665,6 +1673,7 @@ class LightGBM:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
+            print('------------------------------------------------------')
 
             # Use Category
             idx_category = [x_train.shape[1] - 1]
@@ -1749,6 +1758,7 @@ class LightGBM:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
+            print('------------------------------------------------------')
 
             clf = self.get_clf(parameters)
 
