@@ -57,6 +57,7 @@ def save_loss_log(log_path, count, parameters, n_valid, n_cv, valid_era,
 
     with open(log_path + 'loss_log.txt', 'a') as f:
 
+        print('------------------------------------------------------')
         print('Saving Losses')
 
         f.write('===================== CV: {}/{} =====================\n'.format(count, n_cv))
@@ -77,6 +78,7 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv,
 
     with open(log_path + 'loss_log.txt', 'a') as f:
 
+        print('------------------------------------------------------')
         print('Saving Final Losses')
 
         f.write('==================== Final Losses ===================\n')
