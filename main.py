@@ -1054,12 +1054,12 @@ if __name__ == "__main__":
     # GridSearch.ab_grid_search()
     # GridSearch.gb_grid_search()
     # GridSearch.xgb_grid_search()
-    # GridSearch.lgb_grid_search()
+    GridSearch.lgb_grid_search()
     # GridSearch.stack_lgb_grid_search()
 
     # Stacking
-    ModelStacking.train()
-    TrainSingleModel.stack_lgb_train()
+    # ModelStacking.train()
+    # TrainSingleModel.stack_lgb_train()
 
     print('======================================================')
     print('Done!')
