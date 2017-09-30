@@ -981,13 +981,15 @@ class ModelStacking:
         layer2_prams = ModelStacking.get_layer2_params()
         # layer3_prams = ModelStacking.get_layer3_params()
 
+        layers_param = [layer1_prams, layer2_prams]
+
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
         STK = stacking.DeepStack(x_train, y_train, w_train, e_train,
                                  x_test, id_test, x_train_g, x_test_g,
-                                 pred_path, stack_output_path,
-                                 hyper_params, layer1_prams, layer2_prams, params_l3=None)
+                                 pred_path, loss_log_path, stack_output_path,
+                                 hyper_params, layers_param)
 
         STK.stack()
 

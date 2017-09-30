@@ -39,7 +39,7 @@ def seve_grid_search_log(log_path, params, params_grid, best_score, best_paramet
 
 
 # Save Final Losses
-def save_loss_log(log_path, count, parameters, n_valid, n_cv,
+def save_loss_log(log_path, count, parameters, n_valid, n_cv, valid_index,
                   loss_train, loss_valid, loss_train_w, loss_valid_w):
 
     with open(log_path + 'loss_log.txt', 'a') as f:
@@ -48,6 +48,7 @@ def save_loss_log(log_path, count, parameters, n_valid, n_cv,
         f.write('===================== CV: {}/{} =====================\n'.format(count, n_cv))
         f.write('Validation Era: {}\n'.format(n_valid))
         f.write('Validation Spilt Number: {}\n'.format(n_cv))
+        f.write('Validation Set Index: ' + str(valid_index) + '\n')
         f.write('Parameters:\n')
         f.write('\t' + str(parameters) + '\n\n')
         f.write('Losses:\n')
