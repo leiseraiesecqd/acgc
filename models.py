@@ -2300,7 +2300,7 @@ class CrossValidation:
                     np.random.shuffle(train_index)
                     np.random.shuffle(valid_index)
 
-                    yield zip(train_index, valid_index)
+                    yield train_index, valid_index
 
             # n_cv is not an integer multiple of n_valid
             else:
@@ -2333,7 +2333,7 @@ class CrossValidation:
                         np.random.shuffle(train_index)
                         np.random.shuffle(valid_index)
 
-                        yield zip(train_index, valid_index)
+                        yield train_index, valid_index
 
                     else:
 
@@ -2358,7 +2358,7 @@ class CrossValidation:
                         np.random.shuffle(train_index)
                         np.random.shuffle(valid_index)
 
-                        yield zip(train_index, valid_index)
+                        yield train_index, valid_index
 
     @staticmethod
     def era_k_fold_with_weight(x, y, w, e, n_valid, n_cv):
