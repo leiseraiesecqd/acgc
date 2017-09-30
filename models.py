@@ -14,6 +14,8 @@ import tensorflow as tf
 # from keras import optimizers
 
 from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import GroupKFold
+from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
 from sklearn.svm import SVC
@@ -23,13 +25,10 @@ from sklearn.ensemble import RandomForestClassifier
 from sklearn.ensemble import ExtraTreesClassifier
 from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
-
 import xgboost as xgb
 from xgboost import XGBClassifier
 import lightgbm as lgb
 from lightgbm import LGBMClassifier
-from sklearn.model_selection import GroupKFold
-from sklearn.model_selection import GridSearchCV
 
 import seaborn as sns
 sns.set(style="whitegrid", color_codes=True)
@@ -64,7 +63,8 @@ class LRegression:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def get_clf(self, parameters):
+    @staticmethod
+    def get_clf(parameters):
 
         clf = LogisticRegression(**parameters)
 
@@ -91,7 +91,8 @@ class LRegression:
 
         return prob_test
 
-    def predict_valid(self, clf, x_valid):
+    @staticmethod
+    def predict_valid(clf, x_valid):
 
         print('Predicting Validation Set...')
 
@@ -183,8 +184,8 @@ class LRegression:
 
         # Print LogLoss
         loss_train, loss_valid, \
-        loss_train_w, loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
-                                                            x_valid, y_valid, w_valid)
+            loss_train_w, loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
+                                                                x_valid, y_valid, w_valid)
 
         losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
 
@@ -281,7 +282,7 @@ class DecisionTree:
         self.importance = np.array([])
         self.indices = np.array([])
 
-    def show(self, parameters):
+    def show(self):
 
         feature_num = self.x_train.shape[1]
 
@@ -292,7 +293,8 @@ class DecisionTree:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def get_clf(self, parameters):
+    @staticmethod
+    def get_clf(parameters):
 
         clf = DecisionTreeClassifier(**parameters)
 
@@ -319,7 +321,8 @@ class DecisionTree:
 
         return prob_test
 
-    def predict_valid(self, clf, x_valid):
+    @staticmethod
+    def predict_valid(clf, x_valid):
 
         print('Predicting Validation Set...')
 
@@ -450,7 +453,8 @@ class RandomForest:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def get_clf(self, parameters):
+    @staticmethod
+    def get_clf(parameters):
 
         clf = RandomForestClassifier(**parameters)
 
@@ -478,7 +482,8 @@ class RandomForest:
 
         return prob_test
 
-    def predict_valid(self, clf, x_valid):
+    @staticmethod
+    def predict_valid(clf, x_valid):
 
         print('Predicting Validation Set...')
 
@@ -609,7 +614,8 @@ class ExtraTrees:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def get_clf(self, parameters):
+    @staticmethod
+    def get_clf(parameters):
 
         clf = ExtraTreesClassifier(**parameters)
 
@@ -637,7 +643,8 @@ class ExtraTrees:
 
         return prob_test
 
-    def predict_valid(self, clf, x_valid):
+    @staticmethod
+    def predict_valid(clf, x_valid):
 
         print('Predicting Validation Set...')
 
@@ -768,7 +775,8 @@ class AdaBoost:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def get_clf(self, parameters):
+    @staticmethod
+    def get_clf(parameters):
 
         clf = AdaBoostClassifier(**parameters)
 
@@ -796,7 +804,8 @@ class AdaBoost:
 
         return prob_test
 
-    def predict_valid(self, clf, x_valid):
+    @staticmethod
+    def predict_valid(clf, x_valid):
 
         print('Predicting Validation Set...')
 
@@ -927,7 +936,8 @@ class GradientBoosting:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def get_clf(self, parameters):
+    @staticmethod
+    def get_clf(parameters):
 
         clf = GradientBoostingClassifier(**parameters)
 
@@ -955,7 +965,8 @@ class GradientBoosting:
 
         return prob_test
 
-    def predict_valid(self, clf, x_valid):
+    @staticmethod
+    def predict_valid(clf, x_valid):
 
         print('Predicting Validation Set...')
 
@@ -1086,7 +1097,8 @@ class XGBoost:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def get_clf(self, parameters=None):
+    @staticmethod
+    def get_clf(parameters=None):
 
         print('Initialize Model...')
 
@@ -1117,7 +1129,8 @@ class XGBoost:
         for f in range(feature_num):
             print("%d | feature %d | %d" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
-    def print_loss(self, model, x_t, y_t, w_t, x_v, y_v, w_v):
+    @staticmethod
+    def print_loss(model, x_t, y_t, w_t, x_v, y_v, w_v):
 
         prob_train = model.predict(xgb.DMatrix(x_t))
         prob_valid = model.predict(xgb.DMatrix(x_v))
@@ -1135,7 +1148,8 @@ class XGBoost:
 
         return loss_train, loss_valid, loss_train_w, loss_valid_w
 
-    def predict_valid(self, model, x_valid):
+    @staticmethod
+    def predict_valid(model, x_valid):
 
         print('Predicting Validation Set...')
 
@@ -1164,7 +1178,8 @@ class XGBoost:
 
         return prob_test
 
-    def predict_valid_sklearn(self, clf, x_valid):
+    @staticmethod
+    def predict_valid_sklearn(clf, x_valid):
 
         print('Predicting Validation Set...')
 
@@ -1374,7 +1389,8 @@ class LightGBM:
         plt.xlim([-1, feature_num])
         plt.show()
 
-    def get_clf(self, parameters=None):
+    @staticmethod
+    def get_clf(parameters=None):
 
         print('Initialize Model...')
 
@@ -1433,7 +1449,8 @@ class LightGBM:
 
         return prob_test
 
-    def predict_valid_sklearn(self, clf, x_valid):
+    @staticmethod
+    def predict_valid_sklearn(clf, x_valid):
 
         print('Predicting Validation Set...')
 
@@ -1657,7 +1674,8 @@ class DeepNeuralNetworks:
         self.log_path = parameters['log_path']
 
     # Input Tensors
-    def input_tensor(self, n_feature):
+    @staticmethod
+    def input_tensor(n_feature):
 
         inputs_ = tf.placeholder(tf.float64, [None, n_feature], name='inputs')
         labels_ = tf.placeholder(tf.float64, None, name='labels')
@@ -1669,7 +1687,8 @@ class DeepNeuralNetworks:
         return inputs_, labels_, loss_weights_, learning_rate_, keep_prob_, is_train_
 
     # Full Connected Layer
-    def fc_layer(self, x_tensor, layer_name, num_outputs, keep_prob, training):
+    @staticmethod
+    def fc_layer(x_tensor, layer_name, num_outputs, keep_prob, training):
 
         with tf.name_scope(layer_name):
 
@@ -1703,7 +1722,8 @@ class DeepNeuralNetworks:
         return fc
 
     # Output Layer
-    def output_layer(self, x_tensor, layer_name, num_outputs):
+    @staticmethod
+    def output_layer(x_tensor, layer_name, num_outputs):
 
         with tf.name_scope(layer_name):
             #  x_shape = x_tensor.get_shape().as_list()
@@ -1735,8 +1755,7 @@ class DeepNeuralNetworks:
 
         #  logit_ = self.output_layer(fc5, 'output', 1)
 
-        fc = []
-        fc.append(x)
+        fc = [x]
 
         for i in range(len(n_unit)):
             fc.append(self.fc_layer(fc[i], 'fc{}'.format(i + 1), n_unit[i], keep_prob, is_training))
@@ -1746,7 +1765,8 @@ class DeepNeuralNetworks:
         return logit_
 
     # LogLoss
-    def log_loss(self, logit, w, y):
+    @staticmethod
+    def log_loss(logit, w, y):
 
         with tf.name_scope('prob'):
             logit = tf.squeeze(logit)
@@ -1765,7 +1785,8 @@ class DeepNeuralNetworks:
         return loss
 
     # Get Batches
-    def get_batches(self, x, y, w, batch_num):
+    @staticmethod
+    def get_batches(x, y, w, batch_num):
 
         n_batches = len(x) // batch_num
 
@@ -2242,15 +2263,14 @@ class CrossValidation:
 
         for epoch in range(n_epoch):
 
-            era_idx = []
-            era_idx.append(list(range(1, n_era + 1)))
+            era_idx = [list(range(1, n_era + 1))]
 
             if n_rest == 0:
 
                 for i in range(n_traverse):
 
                     # Choose eras that have not used
-                    if trained_cv != []:
+                    if trained_cv:
                         valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                         while any(set(valid_era) == i_cv for i_cv in trained_cv):
                             print('This CV split has been chosen, choosing another one...')
@@ -2289,7 +2309,7 @@ class CrossValidation:
 
                     if i != n_traverse - 1:
 
-                        if trained_cv != []:
+                        if trained_cv:
                             valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                             while any(set(valid_era) == i_cv for i_cv in trained_cv):
                                 print('This CV split has been chosen, choosing another one...')
@@ -2319,7 +2339,6 @@ class CrossValidation:
 
                         era_idx_else = [t for t in list(range(1, n_era + 1)) if t not in era_idx[i]]
 
-                        valid_era = []
                         valid_era = era_idx[i] + list(np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
                         while any(set(valid_era) == i_cv for i_cv in trained_cv):
                             print('This CV split has been chosen, choosing another one...')
@@ -2359,15 +2378,14 @@ class CrossValidation:
 
         for epoch in range(n_epoch):
 
-            era_idx = []
-            era_idx.append(list(range(1, n_era+1)))
+            era_idx = [list(range(1, n_era + 1))]
 
             if n_rest == 0:
 
                 for i in range(n_traverse):
 
                     # Choose eras that have not used
-                    if trained_cv != []:
+                    if trained_cv:
                         valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                         while any(set(valid_era) == i_cv for i_cv in trained_cv):
                             print('This CV split has been chosen, choosing another one...')
@@ -2418,7 +2436,7 @@ class CrossValidation:
 
                     if i != n_traverse - 1:
 
-                        if trained_cv != []:
+                        if trained_cv:
                             valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                             while any(set(valid_era) == i_cv for i_cv in trained_cv):
                                 print('This CV split has been chosen, choosing another one...')
@@ -2460,7 +2478,6 @@ class CrossValidation:
 
                         era_idx_else = [t for t in list(range(1, n_era + 1)) if t not in era_idx[i]]
 
-                        valid_era = []
                         valid_era = era_idx[i] + list(np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
                         while any(set(valid_era) == i_cv for i_cv in trained_cv):
                             print('This CV split has been chosen, choosing another one...')
@@ -2510,15 +2527,14 @@ class CrossValidation:
 
         for epoch in range(n_epoch):
 
-            era_idx = []
-            era_idx.append(list(range(1, n_era + 1)))
+            era_idx = [list(range(1, n_era + 1))]
 
             if n_rest == 0:
 
                 for i in range(n_traverse):
 
                     # Choose eras that have not used
-                    if self.trained_cv != []:
+                    if self.trained_cv:
                         valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                         while any(set(valid_era) == i_cv for i_cv in self.trained_cv):
                             print('This CV split has been chosen, choosing another one...')
@@ -2571,7 +2587,7 @@ class CrossValidation:
 
                     if i != n_traverse - 1:
 
-                        if self.trained_cv != []:
+                        if self.trained_cv:
                             valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                             while any(set(valid_era) == i_cv for i_cv in self.trained_cv):
                                 print('This CV split has been chosen, choosing another one...')
@@ -2657,21 +2673,22 @@ def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, params, params_g
 
     start_time = time.time()
 
-    grid_search = GridSearchCV(estimator=clf,
-                               param_grid=params_grid,
-                               scoring='neg_log_loss',
-                               verbose=1,
-                               n_jobs=-1,
-                               # cv=CrossValidation.era_k_fold_split(e=tr_e, n_valid=n_valid, n_cv=n_cv),
-                               cv=5)
+    grid_search_model = GridSearchCV(estimator=clf,
+                                     param_grid=params_grid,
+                                     scoring='neg_log_loss',
+                                     verbose=1,
+                                     n_jobs=-1,
+                                     cv=CrossValidation.era_k_fold_split(e=tr_e, n_valid=n_valid, n_cv=n_cv),
+                                     # cv=5
+                                     )
 
     # Start Grid Search
     print('Grid Searching...')
 
-    grid_search.fit(tr_x, tr_y, tr_e)
+    grid_search_model.fit(tr_x, tr_y, tr_e)
 
-    best_parameters = grid_search.best_estimator_.get_params()
-    best_score = grid_search.best_score_
+    best_parameters = grid_search_model.best_estimator_.get_params()
+    best_score = grid_search_model.best_score_
 
     print('Best score: %0.6f' % best_score)
     print('Best parameters set:')

@@ -13,11 +13,11 @@ def save_np_to_pkl(data, data_path):
 
 
 # Save predictions to csv file
-def save_pred_to_csv(file_path, id, prob):
+def save_pred_to_csv(file_path, index, prob):
 
     print('Saving predictions to csv file...')
 
-    df = pd.DataFrame({'id': id, 'proba': prob})
+    df = pd.DataFrame({'id': index, 'proba': prob})
 
     df.to_csv(file_path + 'result.csv', sep=',', index=False)
 
@@ -26,6 +26,7 @@ def save_pred_to_csv(file_path, id, prob):
 def seve_grid_search_log(log_path, params, params_grid, best_score, best_parameters, total_time):
 
     with open(log_path + 'grid_search_log.txt', 'a') as f:
+
         f.write('=====================================================\n')
         f.write('Total Time: {:.3f}s\n'.format(total_time))
         f.write('Best Score: {:.6f}\n'.format(best_score))
@@ -43,6 +44,7 @@ def save_loss_log(log_path, count, parameters, n_valid, n_cv, valid_index,
                   loss_train, loss_valid, loss_train_w, loss_valid_w):
 
     with open(log_path + 'loss_log.txt', 'a') as f:
+
         print('Saving Losses')
 
         f.write('===================== CV: {}/{} =====================\n'.format(count, n_cv))
@@ -62,6 +64,7 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv,
                         loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean):
 
     with open(log_path + 'loss_log.txt', 'a') as f:
+
         print('Saving Final Losses')
 
         f.write('==================== Final Losses ===================\n')
@@ -78,6 +81,7 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv,
         f.write('=====================================================\n')
 
     with open(log_path + 'final_loss_log.txt', 'a') as f:
+
         print('Saving Final Losses')
 
         f.write('=====================================================\n')
@@ -112,6 +116,7 @@ def load_pkl_to_np(data_path):
         data = pickle.load(f)
 
     return data
+
 
 # Load Stacked Layer
 def load_stacked_data(output_path):

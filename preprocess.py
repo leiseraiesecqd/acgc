@@ -14,22 +14,21 @@ preprocessed_path = './preprocessed_data/'
 
 class DataPreProcess:
 
-    x_train = np.array([])
-    x_train_g = np.array([])
-    y_train = np.array([])
-    w_train = np.array([])
-    g_train = np.array([])
-    e_train = np.array([])
-    x_test = np.array([])
-    x_test_g = np.array([])
-    g_test = np.array([])
-    id_test = np.array([])
-
     def __init__(self, train_path, test_path, prepro_path):
 
         self.train_path = train_path
         self.test_path = test_path
         self.prepro_path = prepro_path
+        self.x_train = np.array([])
+        self.x_train_g = np.array([])
+        self.y_train = np.array([])
+        self.w_train = np.array([])
+        self.g_train = np.array([])
+        self.e_train = np.array([])
+        self.x_test = np.array([])
+        self.x_test_g = np.array([])
+        self.g_test = np.array([])
+        self.id_test = np.array([])
 
     # Load CSV files
     def load_csv_np(self):

@@ -3,6 +3,7 @@ import utils
 import time
 import numpy as np
 
+
 class DeepStack:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_tr_g, x_te_g,
@@ -32,14 +33,14 @@ class DeepStack:
                                  self.x_test, self.id_test, self.x_g_train, self.x_g_test)
         XGB_L1 = models.XGBoost(self.x_train, self.y_train, self.w_train,
                                 self.e_train, self.x_test, self.id_test)
-        AB_L1 = models.AdaBoost(self.x_train, self.y_train, self.w_train,
-                                self.e_train, self.x_test, self.id_test)
-        RF_L1 = models.RandomForest(self.x_train, self.y_train, self.w_train,
-                                    self.e_train, self.x_test, self.id_test)
-        ET_L1 = models.ExtraTrees(self.x_train, self.y_train, self.w_train,
-                                  self.e_train, self.x_test, self.id_test)
-        GB_L1 = models.GradientBoosting(self.x_train, self.y_train, self.w_train,
-                                        self.e_train, self.x_test, self.id_test)
+        # AB_L1 = models.AdaBoost(self.x_train, self.y_train, self.w_train,
+        #                         self.e_train, self.x_test, self.id_test)
+        # RF_L1 = models.RandomForest(self.x_train, self.y_train, self.w_train,
+        #                             self.e_train, self.x_test, self.id_test)
+        # ET_L1 = models.ExtraTrees(self.x_train, self.y_train, self.w_train,
+        #                           self.e_train, self.x_test, self.id_test)
+        # GB_L1 = models.GradientBoosting(self.x_train, self.y_train, self.w_train,
+        #                                 self.e_train, self.x_test, self.id_test)
         DNN_L1 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
                                            self.e_train, self.x_test, self.id_test, dnn_l1_params)
 
@@ -79,7 +80,8 @@ class DeepStack:
 
         return models_l3
 
-    def train_models(self, models_blender, params, x_train, y_train, w_train, x_g_train,
+    @staticmethod
+    def train_models(models_blender, params, x_train, y_train, w_train, x_g_train,
                      x_valid, y_valid, w_valid, x_g_valid, idx_valid, x_test, x_g_test):
 
         # First raw - idx_valid
@@ -133,7 +135,7 @@ class DeepStack:
             x_test_group = x_g_test[:, -1]
             x_g_test = np.column_stack((x_test, x_test_group))       # n_sample * (n_feature + n_reuse + 1)
 
-        # TODO: Print Shape
+        # Print Shape
         print('======================================================')
         print('x_train_inputs shape:{}'.format(x_train_inputs.shape))
         print('x_test shape:{}'.format(x_test.shape))
@@ -193,7 +195,7 @@ class DeepStack:
                     blender_test = np.concatenate((blender_test, blender_test_cv), axis=1)
                     # blender_losses = np.concatenate((blender_losses, blender_losses_cv), axis=1)
 
-            # TODO: Print Shape
+            # Print Shape
             print('======================================================')
             print('blender_valid shape:{}'.format(blender_valid.shape))
             print('blender_test shape:{}'.format(blender_test.shape))
@@ -216,7 +218,7 @@ class DeepStack:
             blender_x_e = blender_valid_sorted.transpose()      # n_sample * n_model
             blender_test_e = blender_test_mean.transpose()      # n_test_sample * n_model
 
-            # TODO: Print Shape
+            # Print Shape
             print('======================================================')
             print('blender_x_e shape:{}'.format(blender_x_e.shape))
             print('blender_test_e shape:{}'.format(blender_test_e.shape))
@@ -242,7 +244,7 @@ class DeepStack:
         blender_x_g_outputs = np.column_stack((blender_x_outputs, self.g_train))
         blender_test_g_outputs = np.column_stack((blender_test_outputs, self.g_test))
 
-        # TODO: Print Shape
+        # Print Shape
         print('======================================================')
         print('blender_x_outputs:{}'.format(blender_x_outputs.shape))
         print('blender_test_outputs:{}'.format(blender_test_outputs.shape))
