@@ -274,7 +274,7 @@ class DeepStack:
 
         print('Start training {}...'.format(model_name))
 
-        model.train_sklearn( self.pred_path,  self.loss_log_path, n_valid=n_valid, n_cv=n_cv, parameters=params)
+        model.train_sklearn(self.pred_path + 'stack_outputs/',  self.loss_log_path, n_valid=n_valid, n_cv=n_cv, parameters=params)
 
     def stack(self):
 

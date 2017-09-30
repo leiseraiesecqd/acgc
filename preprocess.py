@@ -19,16 +19,16 @@ class DataPreProcess:
         self.train_path = train_path
         self.test_path = test_path
         self.prepro_path = prepro_path
-        self.x_train = np.array([])
-        self.x_train_g = np.array([])
-        self.y_train = np.array([])
-        self.w_train = np.array([])
-        self.g_train = np.array([])
-        self.e_train = np.array([])
-        self.x_test = np.array([])
-        self.x_test_g = np.array([])
-        self.g_test = np.array([])
-        self.id_test = np.array([])
+        self.x_train = pd.DataFrame()
+        self.x_train_g = pd.DataFrame()
+        self.y_train = pd.DataFrame()
+        self.w_train = pd.DataFrame()
+        self.g_train = pd.DataFrame()
+        self.e_train = pd.DataFrame()
+        self.x_test = pd.DataFrame()
+        self.x_test_g = pd.DataFrame()
+        self.g_test = pd.DataFrame()
+        self.id_test = pd.DataFrame()
 
     # Load CSV files
     def load_csv_np(self):

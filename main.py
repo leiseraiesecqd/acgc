@@ -3,8 +3,6 @@ import utils
 import models
 import stacking
 import time
-import os
-from os.path import isdir
 from sklearn.ensemble import ExtraTreesClassifier
 
 
@@ -13,6 +11,19 @@ pred_path = './results/'
 grid_search_log_path = './grid_search_logs/'
 loss_log_path = './loss_logs/'
 stack_output_path = './stacking_outputs/'
+
+path_list = [pred_path,
+             pred_path + 'cv_results/',
+             pred_path + 'final_results/',
+             pred_path + 'cv_prob_train/',
+             pred_path + 'final_prob_train/',
+             pred_path + 'stack_results/',
+             pred_path + 'stack_results/final_results/',
+             pred_path + 'stack_outputs/',
+             pred_path + 'stack_outputs/final_results/',
+             grid_search_log_path,
+             loss_log_path,
+             stack_output_path]
 
 
 # Train single model
@@ -991,7 +1002,7 @@ class ModelStacking:
 
         STK = stacking.DeepStack(x_train, y_train, w_train, e_train,
                                  x_test, id_test, x_train_g, x_test_g,
-                                 pred_path, loss_log_path, stack_output_path,
+                                 pred_path + 'stack_results/', loss_log_path, stack_output_path,
                                  hyper_params, layers_param)
 
         STK.stack()
@@ -999,20 +1010,8 @@ class ModelStacking:
 
 if __name__ == "__main__":
 
-    if not isdir(pred_path):
-        os.makedirs(pred_path)
-
-    if not isdir(pred_path + 'final_results/'):
-        os.makedirs(pred_path + 'final_results/')
-
-    if not isdir(grid_search_log_path):
-        os.makedirs(grid_search_log_path)
-
-    if not isdir(loss_log_path):
-        os.makedirs(loss_log_path)
-
-    if not isdir(stack_output_path):
-        os.makedirs(stack_output_path)
+    # Check if directories exit or not
+    utils.check_dir(path_list)
 
     start_time = time.time()
 

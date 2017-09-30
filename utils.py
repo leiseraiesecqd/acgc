@@ -1,6 +1,8 @@
 import pickle
 import pandas as pd
 import numpy as np
+import os
+from os.path import isdir
 
 
 # Save Data
@@ -274,6 +276,14 @@ def print_loss_dnn(prob_train, prob_valid, y_t, w_t, y_v, w_v):
           'Validation LogLoss with Weight: {:>.8f}\n'.format(loss_valid_w))
 
     return loss_train, loss_valid, loss_train_w, loss_valid_w
+
+
+# Check if directories exit or not
+def check_dir(path_list):
+
+    for dir_path in path_list:
+        if not isdir(dir_path):
+            os.makedirs(dir_path)
 
 
 if __name__ == '__main__':
