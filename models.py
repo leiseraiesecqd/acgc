@@ -2676,7 +2676,7 @@ def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, params, params_g
     grid_search_model = GridSearchCV(estimator=clf,
                                      param_grid=params_grid,
                                      scoring='neg_log_loss',
-                                     verbose=1,
+                                     verbose=2,
                                      n_jobs=-1,
                                      cv=CrossValidation.era_k_fold_split(e=tr_e, n_valid=n_valid, n_cv=n_cv),
                                      # cv=5
