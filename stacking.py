@@ -404,15 +404,22 @@ class StackLayer:
         self.x_test_reuse = x_test_reuse
         self.dnn_param = dnn_param
 
+    @staticmethod
+    def save_predict(pred_path, test_outputs):
+
+        test_prob = np.mean(test_outputs, axis=1)
+
+        utils.save_pred_to_csv(pred_path, StackTree.id_test, test_prob)
+
     def train(self, i_epoch=1):
 
         print('======================================================')
         print('Start Training - Layer: {} | Epoch: {}'.format(self.i_layer, i_epoch))
 
-        if self.input_layer is not None:
+        if self.i_layer == 1:
 
-            blender_x_e = np.array([])
-            blender_test_e = np.array([])
+            blender_x_tree = np.array([])
+            blender_test_tree = np.array([])
 
             for epoch in range(self.n_epoch):
 
@@ -422,50 +429,59 @@ class StackLayer:
                 blender_x_e, blender_test_e, _, _ = self.input_layer.train(epoch + 1)
 
                 # Print Shape
-                print('======================================================')
+                print('------------------------------------------------------')
                 print('blender_x_e shape:{}'.format(blender_x_e.shape))
                 print('blender_test_e shape:{}'.format(blender_test_e.shape))
-                print('======================================================')
+                print('------------------------------------------------------')
 
                 if epoch == 0:
-                    blender_x_e = blender_x_e
-                    blender_test_e = blender_test_e
+                    blender_x_tree = blender_x_e
+                    blender_test_tree = blender_test_e
                 else:
                     # n_sample * (n_model x n_epoch)
-                    blender_x_e = np.concatenate((blender_x_e, blender_x_e), axis=1)
+                    blender_x_tree = np.concatenate((blender_x_tree, blender_x_e), axis=1)
                     # n_test_sample * (n_model x n_epoch)
-                    blender_test_e = np.concatenate((blender_test_e, blender_test_e), axis=1)
+                    blender_test_tree = np.concatenate((blender_test_tree, blender_test_e), axis=1)
 
                 epoch_time = time.time() - epoch_start_time
                 print('------------------------------------------------------')
                 print('Epoch Done!')
                 print('Epoch Time: {}s'.format(epoch_time))
+                print('======================================================')
+
+                # Save predicted test prob
+                self.save_predict(StackTree.pred_path + 'stack_l{}_e{}'.format(self.i_layer, epoch+1),
+                                  blender_test_tree)
 
                 # Stack Group Features
             print('------------------------------------------------------')
             print('Stacking Group Features...')
-            blender_x_g_e = np.column_stack((blender_x_e, self.g_train))
-            blender_test_g_e = np.column_stack((blender_test_e, self.g_test))
+            blender_x_g_tree = np.column_stack((blender_x_tree, self.g_train))
+            blender_test_g_tree = np.column_stack((blender_test_tree, self.g_test))
 
             # Print Shape
+            print('------------------------------------------------------')
+            print('blender_x_tree:{}'.format(blender_x_tree.shape))
+            print('blender_test_tree:{}'.format(blender_test_tree.shape))
+            print('blender_x_g_tree:{}'.format(blender_x_g_tree.shape))
+            print('blender_test_g_tree:{}'.format(blender_test_g_tree.shape))
             print('======================================================')
-            print('blender_x_e:{}'.format(blender_x_e.shape))
-            print('blender_test_e:{}'.format(blender_test_e.shape))
-            print('blender_x_g_e:{}'.format(blender_x_g_e.shape))
-            print('blender_test_g_e:{}'.format(blender_test_g_e.shape))
-            print('======================================================')
+
+            # Save layer outputs
+            utils.save_stack_outputs(StackTree.stack_output_path + 'l{}_'.format(self.i_layer),
+                                     blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree)
 
         else:
 
-            blender_x_e = self.x_train
-            blender_x_g_e = self.x_g_train
-            blender_test_e = self.x_test
-            blender_test_g_e = self.x_g_test
+            blender_x_tree = self.x_train
+            blender_test_tree = self.x_g_train
+            blender_x_g_tree = self.x_test
+            blender_test_g_tree = self.x_g_test
 
         # Training Stacker
         blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs \
-            = self.stacker(self.models_initializer, self.params, blender_x_e, self.y_train, self.w_train,
-                           self.e_train, blender_x_g_e, blender_test_e, blender_test_g_e,
+            = self.stacker(self.models_initializer, self.params, blender_x_tree, self.y_train, self.w_train,
+                           self.e_train, blender_test_tree, blender_x_g_tree, blender_test_g_tree,
                            self.g_train, self.g_test, cv=self.cv, n_valid=self.n_valid,
                            n_era=self.n_era, cv_seed=self.cv_seed, i_layer=self.i_layer, i_epoch=i_epoch,
                            x_train_reuse=self.x_train_reuse, x_test_reuse=self.x_test_reuse,
@@ -476,6 +492,10 @@ class StackLayer:
 
 # Stack Tree
 class StackTree:
+
+    id_test = np.array([])
+    pred_path = ''
+    stack_output_path = ''
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_tr_g, x_te_g,
                  pred_path, loss_log_path, stack_output_path, hyper_params, layers_param):
@@ -608,10 +628,10 @@ class StackTree:
             x_g_test = np.column_stack((x_test, x_test_group))       # n_sample * (n_feature + n_reuse + 1)
 
         # Print Shape
-        print('======================================================')
+        print('------------------------------------------------------')
         print('x_train_inputs shape:{}'.format(x_train_inputs.shape))
         print('x_test shape:{}'.format(x_test.shape))
-        print('======================================================')
+        print('------------------------------------------------------')
 
         # Init models blender
         if dnn_param is not None:
@@ -665,7 +685,6 @@ class StackTree:
         print('======================================================')
         print('blender_valid shape:{}'.format(blender_valid.shape))
         print('blender_test shape:{}'.format(blender_test.shape))
-        print('======================================================')
 
         # Sort blender_valid by valid_index
         print('------------------------------------------------------')
@@ -691,7 +710,7 @@ class StackTree:
         blender_test_g_outputs = np.column_stack((blender_test_outputs, g_test))
 
         # Print Shape
-        print('======================================================')
+        print('------------------------------------------------------')
         print('blender_x_outputs:{}'.format(blender_x_outputs.shape))
         print('blender_test_outputs:{}'.format(blender_test_outputs.shape))
         print('blender_x_g_outputs:{}'.format(blender_x_g_outputs.shape))
@@ -706,7 +725,8 @@ class StackTree:
 
         utils.save_pred_to_csv(pred_path, self.id_test, test_prob)
 
-    def stack_outputs_train(self, model_name, params, n_valid, n_cv, x_outputs, test_outputs, x_g_outputs, test_g_outputs):
+    def stack_outputs_train(self, model_name, params, n_valid, n_cv, x_outputs,
+                            test_outputs, x_g_outputs, test_g_outputs):
 
         if model_name == 'LGB':
             model = models.LightGBM(x_outputs, self.y_train,  self.w_train,  self.e_train,
@@ -720,7 +740,20 @@ class StackTree:
 
         print('Start training {}...'.format(model_name))
 
-        model.train_sklearn(self.pred_path + 'stack_outputs/',  self.loss_log_path, n_valid=n_valid, n_cv=n_cv, parameters=params)
+        model.train_sklearn(self.pred_path + 'stack_outputs/',  self.loss_log_path,
+                            n_valid=n_valid, n_cv=n_cv, parameters=params)
+
+    @property
+    def id_test(self):
+        return self.id_test
+
+    @property
+    def pred_path(self):
+        return self.pred_path
+
+    @property
+    def stack_output_path(self):
+        return self.stack_output_path
 
     def stack(self):
 
@@ -732,59 +765,31 @@ class StackTree:
         # dnn_l2_params = self.layers_param[1][-1]
         # dnn_l3_params = self.layers_param[2][-1]
 
+        print('======================================================')
+        print('Start training...')
+
         # Layer 1
-        print('------------------------------------------------------')
-        print('Start training layer 1...')
         models_initializer_l1 = self.init_models_layer1
 
-        stk_l1 = StackLayer(models_initializer_l1, self.stacker, self.layers_param[0], self.x_train, self.y_train, self.w_train,
-                            self.e_train, self.x_g_train, self.x_test, self.x_g_test, cv_stack,
+        stk_l1 = StackLayer(models_initializer_l1, self.stacker, self.layers_param[0], self.x_train, self.y_train,
+                            self.w_train, self.e_train, self.x_g_train, self.x_test, self.x_g_test, cv_stack,
                             n_valid=self.n_valid[0], n_era=self.n_era[0], cv_seed=self.cv_seed,
                             input_layer=None, i_layer=1, n_epoch=self.n_epoch[0],
                             x_train_reuse=None, x_test_reuse=None, dnn_param=dnn_l1_params)
 
-        x_outputs_l1, test_outputs_l1, x_g_outputs_l1, test_g_outputs_l1 = stk_l1.train()
-
-        # Save predicted test prob
-        self.save_predict(self.pred_path + 'stack_l1_', test_outputs_l1)
-
-        # Save layer outputs
-        utils.save_stack_outputs(self.stack_output_path + 'l1_',
-                                 x_outputs_l1, test_outputs_l1, x_g_outputs_l1, test_g_outputs_l1)
-
-        layer1_time = time.time() - start_time
-        print('------------------------------------------------------')
-        print('Layer 1 Training Done!')
-        print('Layer Time: {}s'.format(layer1_time))
-        print('======================================================')
-
         # Layer 2
-        print('Start training layer 2...')
         models_initializer_l2 = self.init_models_layer2
 
         x_tr_reuse = self.x_train[:, :88]
         x_te_reuse = self.x_test[:, :88]
 
-        stk_l2 = StackLayer(models_initializer_l2, self.stacker, self.layers_param[1], x_outputs_l1, self.y_train, self.w_train,
-                            self.e_train, x_g_outputs_l1, test_outputs_l1, test_g_outputs_l1, cv_stack,
+        stk_l2 = StackLayer(models_initializer_l2, self.stacker, self.layers_param[1], self.x_train, self.y_train,
+                            self.w_train, self.e_train, self.x_g_train, self.x_test, self.x_g_test, cv_stack,
                             n_valid=self.n_valid[1], n_era=self.n_era[1], cv_seed=self.cv_seed,
                             input_layer=stk_l1, i_layer=2, n_epoch=self.n_epoch[1],
                             x_train_reuse=x_tr_reuse, x_test_reuse=x_te_reuse)
 
         x_outputs_l2, test_outputs_l2, x_g_outputs_l2, test_g_outputs_l2 = stk_l2.train()
-
-        # Save predicted test prob
-        self.save_predict(self.pred_path + 'stack_l2_', test_outputs_l2)
-
-        # Save layer outputs
-        utils.save_stack_outputs(self.stack_output_path + 'l2_',
-                                 x_outputs_l2, test_outputs_l2, x_g_outputs_l2, test_g_outputs_l2)
-
-        layer2_time = time.time() - start_time
-        print('------------------------------------------------------')
-        print('Layer 2 Training Done!')
-        print('Layer Time: {}s'.format(layer2_time))
-        print('======================================================')
 
         # Save predicted test prob
         final_result = test_outputs_l2
