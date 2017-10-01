@@ -2121,7 +2121,6 @@ class DeepNeuralNetworks:
                                             lr: self.learning_rate,
                                             keep_prob: self.keep_probability,
                                             is_train: True})
-                        print(lo)
 
                         if batch_counter % self.display_step == 0 and batch_i > 0:
 
@@ -2162,7 +2161,7 @@ class DeepNeuralNetworks:
                                   'Batch: {} |'.format(batch_counter),
                                   'Time: {:>3.2f}s |'.format(total_time),
                                   'Train_Loss: {:>.8f} |'.format(cost_train),
-                                  'Valid_Loss: {:>.8f}'.format(cost_valid))
+                                  'Valid_Loss: {:>.8f}'.format(cost_valid), lo)
 
                 # Save Model
                 # print('Saving model...')
