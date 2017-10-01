@@ -1997,13 +1997,9 @@ class DeepNeuralNetworks:
 
         return logit_
 
-    @staticmethod
-    def nan_to_num(n):
-        NEAR_0 = 10e-5
-        return tf.clip_by_value(n, NEAR_0, 0.99999)
-
     # LogLoss
-    def log_loss(self, logit, w, y):
+    @staticmethod
+    def log_loss(logit, w, y):
 
         with tf.name_scope('prob'):
             logit = tf.squeeze(logit)
@@ -2014,8 +2010,7 @@ class DeepNeuralNetworks:
         with tf.name_scope('log_loss'):
             #  loss = tf.losses.log_loss(labels=label, predictions=prob, weights=weight)
             ones = tf.ones_like(y, dtype=tf.float64)
-            loss = - tf.reduce_sum(w * (y * tf.log(self.nan_to_num(prob))
-                                        + (ones-y) * tf.log(self.nan_to_num(ones-prob))))
+            loss = - tf.reduce_sum(w * (y * tf.log(prob) + (ones-y) * tf.log(ones-prob)))
 
         tf.summary.scalar('log_loss', loss)
 
