@@ -2802,9 +2802,6 @@ class CrossValidation:
                     else:
                         valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
 
-                    # TODO
-                    valid_era = [2, 9, 18, 6]
-
                     # Generate era set for next choosing
                     if i != n_traverse - 1:
                         era_next = [rest for rest in era_idx[i] if rest not in valid_era]

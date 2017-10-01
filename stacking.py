@@ -664,6 +664,7 @@ class StackTree:
 
             # TODO:
             print(x_train, y_train)
+            print(x_train.shape, y_train.shape)
 
             counter_cv += 1
 
@@ -676,6 +677,9 @@ class StackTree:
                 blender_losses_cv = self.train_models(models_blender, params, x_train, y_train, w_train,
                                                       x_g_train, x_valid, y_valid, w_valid, x_g_valid,
                                                       valid_index, x_test, x_g_test)
+
+            # TODO
+            print(blender_valid_cv.shape, blender_test_cv.shape)
 
             # Add blenders of one cross validation set to blenders of all CV
             blender_test_cv = blender_test_cv.reshape(n_model, 1, -1)  # n_model * 1 * n_test_sample
@@ -692,6 +696,7 @@ class StackTree:
 
             # TODO:
             print(blender_test)
+            print(blender_test.shape)
 
         # Print Shape
         print('======================================================')
