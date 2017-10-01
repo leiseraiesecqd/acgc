@@ -2238,6 +2238,7 @@ class DeepNeuralNetworks:
                                               is_train: True})
 
                     print(cost_train)
+                    print(type(cost_train))
 
                     if cost_train == np.nan:
                         assert ValueError('NaN BUG!!! Try Another Seed!!!')
