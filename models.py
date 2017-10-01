@@ -2241,8 +2241,10 @@ class DeepNeuralNetworks:
 
                     if batch_counter % self.display_step == 0 and batch_i > 0:
 
-                        print(lo)
-                        print(pro)
+                        if epoch_i == 3:
+                            print(batch_x, batch_y, batch_w)
+                            print(lo)
+                            print(pro)
 
                         cost_valid_all = []
 

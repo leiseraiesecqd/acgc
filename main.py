@@ -1035,7 +1035,7 @@ class ModelStacking:
 
         hyper_params = {'n_valid': (4, 4),
                         'n_era': (20, 20),
-                        'n_epoch': (1, 4),
+                        'n_epoch': (1, 1),
                         'cv_seed': cv_seed}
 
         layer1_prams = ModelStacking.get_layer1_params()
