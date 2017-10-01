@@ -133,6 +133,7 @@ class LRegression:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
+            print('Validation Set Era: ', valid_era)
             print('------------------------------------------------------')
 
             # Classifier
@@ -142,7 +143,7 @@ class LRegression:
 
             # Print LogLoss
             print('------------------------------------------------------')
-            print('Validation Set Index: ', valid_era)
+            print('Validation Set Era: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
@@ -385,6 +386,7 @@ class DecisionTree:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
+            print('Validation Set Era: ', valid_era)
             print('------------------------------------------------------')
 
             # Classifier
@@ -394,7 +396,7 @@ class DecisionTree:
 
             # Print LogLoss
             print('------------------------------------------------------')
-            print('Validation Set Index: ', valid_era)
+            print('Validation Set Era: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
@@ -568,6 +570,7 @@ class RandomForest:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
+            print('Validation Set Era: ', valid_era)
             print('------------------------------------------------------')
 
             # Classifier
@@ -577,7 +580,7 @@ class RandomForest:
 
             # Print LogLoss
             print('------------------------------------------------------')
-            print('Validation Set Index: ', valid_era)
+            print('Validation Set Era: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
@@ -751,6 +754,7 @@ class ExtraTrees:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
+            print('Validation Set Era: ', valid_era)
             print('------------------------------------------------------')
 
             # Classifier
@@ -760,7 +764,7 @@ class ExtraTrees:
 
             # Print LogLoss
             print('------------------------------------------------------')
-            print('Validation Set Index: ', valid_era)
+            print('Validation Set Era: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
@@ -934,6 +938,7 @@ class AdaBoost:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
+            print('Validation Set Era: ', valid_era)
             print('------------------------------------------------------')
 
             # Classifier
@@ -943,7 +948,7 @@ class AdaBoost:
 
             # Print LogLoss
             print('------------------------------------------------------')
-            print('Validation Set Index: ', valid_era)
+            print('Validation Set Era: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
@@ -1117,6 +1122,7 @@ class GradientBoosting:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}'.format(count))
+            print('Validation Set Era: ', valid_era)
             print('------------------------------------------------------')
 
             clf = self.get_clf(parameters)
@@ -1126,7 +1132,7 @@ class GradientBoosting:
 
             # Print LogLoss
             print('------------------------------------------------------')
-            print('Validation Set Index: ', valid_era)
+            print('Validation Set Era: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
@@ -1365,6 +1371,7 @@ class XGBoost:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
+            print('Validation Set Era: ', valid_era)
             print('------------------------------------------------------')
 
             d_train = xgb.DMatrix(x_train, label=y_train, weight=w_train)
@@ -1380,7 +1387,7 @@ class XGBoost:
 
             # Print LogLoss
             print('------------------------------------------------------')
-            print('Validation Set Index: ', valid_era)
+            print('Validation Set Era: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = self.print_loss(bst, x_train, y_train, w_train,
                                                                                  x_valid, y_valid, w_valid)
 
@@ -1448,6 +1455,7 @@ class XGBoost:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
+            print('Validation Set Era: ', valid_era)
             print('------------------------------------------------------')
 
             clf = self.get_clf(parameters)
@@ -1461,7 +1469,7 @@ class XGBoost:
 
             # Print LogLoss
             print('------------------------------------------------------')
-            print('Validation Set Index: ', valid_era)
+            print('Validation Set Era: ', valid_era)
             loss_train, loss_valid, loss_train_w, \
                 loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
                                                       x_valid, y_valid, w_valid)
@@ -1682,6 +1690,7 @@ class LightGBM:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
+            print('Validation Set Era: ', valid_era)
             print('------------------------------------------------------')
 
             # Use Category
@@ -1698,7 +1707,7 @@ class LightGBM:
 
             # Print LogLoss
             print('------------------------------------------------------')
-            print('Validation Set Index: ', valid_era)
+            print('Validation Set Era: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_train, y_train, w_train,
                                                                                   x_valid, y_valid, w_valid)
 
@@ -1768,6 +1777,7 @@ class LightGBM:
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
+            print('Validation Set Era: ', valid_era)
             print('------------------------------------------------------')
 
             clf = self.get_clf(parameters)
@@ -1788,7 +1798,7 @@ class LightGBM:
 
             # Print LogLoss
             print('------------------------------------------------------')
-            print('Validation Set Index: ', valid_era)
+            print('Validation Set Era: ', valid_era)
             loss_train, loss_valid, loss_train_w, \
                 loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
                                                       x_valid, y_valid, w_valid)
@@ -2073,7 +2083,7 @@ class DeepNeuralNetworks:
 
                 print('======================================================')
                 print('Training on the Cross Validation Set: {}'.format(cv_counter))
-                print('Validation Set Index: ', valid_era)
+                print('Validation Set Era: ', valid_era)
                 print('------------------------------------------------------')
 
                 train_log_path = self.log_path + self.version + '/cv_{}/train'.format(cv_counter)

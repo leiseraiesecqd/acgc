@@ -177,7 +177,7 @@ class DeepStack:
 
                 print('======================================================')
                 print('Training on Cross Validation Set: {}/{}'.format(counter_cv, n_cv))
-                print('Validation Set Index: ', valid_era)
+                print('Validation Set Era: ', valid_era)
 
                 # Training on models and get blenders of one cross validation set
                 blender_valid_cv, blender_test_cv, \

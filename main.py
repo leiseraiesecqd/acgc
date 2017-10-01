@@ -1058,7 +1058,7 @@ if __name__ == "__main__":
 
     # XGBoost
     # TrainSingleModel.xgb_train()
-    # TrainSingleModel.xgb_train_sklearn()
+    TrainSingleModel.xgb_train_sklearn()
 
     # LightGBM
     # TrainSingleModel.lgb_train()
@@ -1079,7 +1079,7 @@ if __name__ == "__main__":
     # GridSearch.stack_lgb_grid_search()
 
     # Stacking
-    ModelStacking.train()
+    # ModelStacking.train()
     # TrainSingleModel.stack_lgb_train()
 
     print('======================================================')
