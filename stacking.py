@@ -378,8 +378,9 @@ class DeepStack:
 class StackLayer:
 
     def __init__(self, models_initializer, stacker, params, x_train, y_train, w_train,
-                 e_train, x_g_train, x_test, x_g_test, cv, n_valid=4, n_era=20, cv_seed=None,
-                 input_layer=None, i_layer=1, n_epoch=1, x_train_reuse=None, x_test_reuse=None, dnn_param=None):
+                 e_train, x_g_train, x_test, x_g_test, id_test, cv, n_valid=4, n_era=20, cv_seed=None,
+                 input_layer=None, i_layer=1, n_epoch=1, x_train_reuse=None, x_test_reuse=None, dnn_param=None,
+                 pred_path=None, stack_output_path=None):
 
         self.models_initializer = models_initializer
         self.stacker = stacker
@@ -403,9 +404,9 @@ class StackLayer:
         self.x_train_reuse = x_train_reuse
         self.x_test_reuse = x_test_reuse
         self.dnn_param = dnn_param
-        self.id_test = StackTree.id_test
-        self.pred_path = StackTree.pred_path
-        self.stack_output_path = StackTree.stack_output_path
+        self.id_test = id_test
+        self.pred_path = pred_path
+        self.stack_output_path = stack_output_path
 
     def save_predict(self, pred_path, test_outputs):
 
@@ -452,7 +453,7 @@ class StackLayer:
                 print('======================================================')
 
                 # Save predicted test prob
-                self.save_predict(self.pred_path + 'stack_l{}_e{}'.format(self.i_layer, epoch+1),
+                self.save_predict(self.pred_path + 'epochs_results/stack_l{}_e{}'.format(self.i_layer, epoch+1),
                                   blender_test_tree)
 
                 # Stack Group Features
@@ -762,10 +763,10 @@ class StackTree:
         models_initializer_l1 = self.init_models_layer1
 
         stk_l1 = StackLayer(models_initializer_l1, self.stacker, self.layers_param[0], self.x_train, self.y_train,
-                            self.w_train, self.e_train, self.x_g_train, self.x_test, self.x_g_test, cv_stack,
-                            n_valid=self.n_valid[0], n_era=self.n_era[0], cv_seed=self.cv_seed,
-                            input_layer=None, i_layer=1, n_epoch=self.n_epoch[0],
-                            x_train_reuse=None, x_test_reuse=None, dnn_param=dnn_l1_params)
+                            self.w_train, self.e_train, self.x_g_train, self.x_test, self.x_g_test, self.id_test,
+                            cv_stack, n_valid=self.n_valid[0], n_era=self.n_era[0], cv_seed=self.cv_seed,
+                            i_layer=1, n_epoch=self.n_epoch[0],dnn_param=dnn_l1_params,
+                            pred_path=self.pred_path, stack_output_path=self.stack_output_path)
 
         # Layer 2
         models_initializer_l2 = self.init_models_layer2
@@ -774,10 +775,11 @@ class StackTree:
         x_te_reuse = self.x_test[:, :88]
 
         stk_l2 = StackLayer(models_initializer_l2, self.stacker, self.layers_param[1], self.x_train, self.y_train,
-                            self.w_train, self.e_train, self.x_g_train, self.x_test, self.x_g_test, cv_stack,
-                            n_valid=self.n_valid[1], n_era=self.n_era[1], cv_seed=self.cv_seed,
+                            self.w_train, self.e_train, self.x_g_train, self.x_test, self.x_g_test, self.id_test,
+                            cv_stack, n_valid=self.n_valid[1], n_era=self.n_era[1], cv_seed=self.cv_seed,
                             input_layer=stk_l1, i_layer=2, n_epoch=self.n_epoch[1],
-                            x_train_reuse=x_tr_reuse, x_test_reuse=x_te_reuse)
+                            x_train_reuse=x_tr_reuse, x_test_reuse=x_te_reuse,
+                            pred_path=self.pred_path, stack_output_path=self.stack_output_path)
 
         _, test_outputs, _, _ = stk_l2.train()
 
