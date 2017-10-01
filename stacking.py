@@ -446,9 +446,6 @@ class StackLayer:
                     # n_test_sample * (n_model x n_epoch)
                     blender_test_tree = np.concatenate((blender_test_tree, blender_test_e), axis=1)
 
-                # TODO
-                print(blender_test_tree[:, 2])
-
                 epoch_time = time.time() - epoch_start_time
                 print('------------------------------------------------------')
                 print('Epoch Done!')
@@ -663,10 +660,6 @@ class StackTree:
                                                                                   n_cv=n_cv,
                                                                                   seed=cv_seed):
 
-            # TODO:
-            print(x_train, y_train)
-            print(x_train.shape, y_train.shape)
-
             counter_cv += 1
 
             print('======================================================')
@@ -678,9 +671,6 @@ class StackTree:
                 blender_losses_cv = self.train_models(models_blender, params, x_train, y_train, w_train,
                                                       x_g_train, x_valid, y_valid, w_valid, x_g_valid,
                                                       valid_index, x_test, x_g_test)
-
-            # TODO
-            print(blender_valid_cv.shape, blender_test_cv.shape)
 
             # Add blenders of one cross validation set to blenders of all CV
             blender_test_cv = blender_test_cv.reshape(n_model, 1, -1)  # n_model * 1 * n_test_sample
@@ -694,10 +684,6 @@ class StackTree:
                 # n_model * n_cv * n_test_sample
                 blender_test = np.concatenate((blender_test, blender_test_cv), axis=1)
                 # blender_losses = np.concatenate((blender_losses, blender_losses_cv), axis=1)
-
-            # TODO:
-            print(blender_test)
-            print(blender_test.shape)
 
         # Print Shape
         print('======================================================')
@@ -720,9 +706,6 @@ class StackTree:
         # Transpose blenders
         blender_x_outputs = blender_valid_sorted.transpose()      # n_sample * n_model
         blender_test_outputs = blender_test_mean.transpose()      # n_test_sample * n_model
-
-        # TODO
-        print(blender_x_outputs.shape, g_train.shape)
 
         # Stack Group Features
         print('------------------------------------------------------')
