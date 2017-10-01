@@ -1999,8 +1999,8 @@ class DeepNeuralNetworks:
 
     @staticmethod
     def nan_to_num(n):
-        NEAR_0 = 1e-10
-        return tf.clip_by_value(n, NEAR_0, 1)
+        NEAR_0 = 10e-8
+        return tf.clip_by_value(n, NEAR_0, 1.0)
 
     # LogLoss
     def log_loss(self, logit, w, y):
@@ -2274,9 +2274,6 @@ class DeepNeuralNetworks:
             logits_pred_valid = sess.run(logits, {inputs: x_valid, keep_prob: 1.0, is_train: False})
             logits_pred_test = sess.run(logits, {inputs: x_test, keep_prob: 1.0, is_train: False})
 
-            # TODO
-            print(logits_pred_valid, logits_pred_test)
-
             logits_pred_train = logits_pred_train.flatten()
             logits_pred_valid = logits_pred_valid.flatten()
             logits_pred_test = logits_pred_test.flatten()
@@ -2284,9 +2281,6 @@ class DeepNeuralNetworks:
             prob_train = 1.0 / (1.0 + np.exp(-logits_pred_train))
             prob_valid = 1.0 / (1.0 + np.exp(-logits_pred_valid))
             prob_test = 1.0 / (1.0 + np.exp(-logits_pred_test))
-
-            # TODO
-            print(prob_valid, prob_test)
 
             loss_train, loss_valid, \
                 loss_train_w, loss_valid_w = utils.print_loss_dnn(prob_train, prob_valid,
