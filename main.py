@@ -220,7 +220,7 @@ class TrainSingleModel:
                           'objective': "binary:logistic",
                           #  'booster': 'gbtree',
                           #  'n_jobs':  1,
-                          'nthread': None,
+                          'nthread': -1,
                           'gamma': 0,
                           'min_child_weight': 1,
                           'max_delta_step': 0,
@@ -696,7 +696,7 @@ class GridSearch:
                       'reg_alpha': 0.,
                       'reg_lambda': 0.,
                       'silent': False,
-                      'random_state': random_seed}
+                      'seed': random_seed}
 
         LGB = models.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_train_g, x_test_g)
 
@@ -809,7 +809,7 @@ class ModelStacking:
                       'reg_alpha': 0.,
                       'reg_lambda': 0.,
                       'silent': False,
-                      'random_state': random_seed}
+                      'seed': random_seed}
 
         # Parameters of XGBoost
         xgb_params = {'objective': 'binary:logistic',
@@ -957,7 +957,7 @@ class ModelStacking:
                       'reg_alpha': 0.,
                       'reg_lambda': 0.,
                       'silent': False,
-                      'random_state': random_seed}
+                      'seed': random_seed}
 
         # Parameters of Deep Neural Network
         dnn_params = {'version': '1.0',
@@ -1053,11 +1053,11 @@ if __name__ == "__main__":
 
     # XGBoost
     # TrainSingleModel.xgb_train()
-    # TrainSingleModel.xgb_train_sklearn()
+    TrainSingleModel.xgb_train_sklearn()
 
     # LightGBM
     # TrainSingleModel.lgb_train()
-    TrainSingleModel.lgb_train_sklearn()
+    # TrainSingleModel.lgb_train_sklearn()
 
     # DNN
     # TrainSingleModel.dnn_tf_train()
