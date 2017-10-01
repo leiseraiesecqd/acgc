@@ -25,6 +25,7 @@ path_list = [pred_path,
              loss_log_path,
              stack_output_path]
 
+random_seed = 1
 
 # Train single model
 class TrainSingleModel:
@@ -47,7 +48,7 @@ class TrainSingleModel:
                          'penalty': 'l2',
                          'solver': 'sag',
                          'tol': 0.0001,
-                         'random_state': 1,
+                         'random_state': random_seed,
                          'verbose': 1,
                          'warm_start': False}
 
@@ -76,7 +77,7 @@ class TrainSingleModel:
                          'n_estimators': 32,
                          'n_jobs': -1,
                          'oob_score': True,
-                         'random_state': 1,
+                         'random_state': random_seed,
                          'verbose': 2,
                          'warm_start': False}
 
@@ -105,7 +106,7 @@ class TrainSingleModel:
                          'n_estimators': 20,
                          'n_jobs': -1,
                          'oob_score': True,
-                         'random_state': 1,
+                         'random_state': random_seed,
                          'verbose': 2,
                          'warm_start': False}
 
@@ -134,7 +135,7 @@ class TrainSingleModel:
                          'n_estimators': 20,
                          'n_jobs': -1,
                          'oob_score': True,
-                         'random_state': 1,
+                         'random_state': random_seed,
                          'verbose': 2,
                          'warm_start': False}
 
@@ -144,7 +145,7 @@ class TrainSingleModel:
                          'base_estimator': clf_et,
                          'learning_rate': 0.0051,
                          'n_estimators': 9,
-                         'random_state': 1}
+                         'random_state': random_seed}
 
         AB = models.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
@@ -172,7 +173,7 @@ class TrainSingleModel:
                          'min_weight_fraction_leaf': 0.0,
                          'n_estimators': 200,
                          'presort': 'auto',
-                         'random_state': 1,
+                         'random_state': random_seed,
                          'subsample': 0.8,
                          'verbose': 2,
                          'warm_start': False}
@@ -199,7 +200,7 @@ class TrainSingleModel:
                           'colsample_bytree': 0.8,          # 建立树时对特征随机采样的比例
                           'objective': 'binary:logistic',
                           'eval_metric': 'logloss',
-                          'seed': 1}
+                          'seed': random_seed}
 
         XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
@@ -230,8 +231,8 @@ class TrainSingleModel:
                           'reg_lambda': 1,
                           'scale_pos_weight': 1,
                           'base_score': 0.5,
-                          #  'random_state': 0,
-                          'seed': None,
+                          #  'random_state': random_seed,
+                          'seed': random_seed,
                           'missing': None}
 
         XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
@@ -260,7 +261,8 @@ class TrainSingleModel:
                           'early_stopping_rounds': 50,
                           'max_bin': 255,
                           'metric': 'binary_logloss',
-                          'verbosity': 1}
+                          'verbosity': 1,
+                          'seed': random_seed}
 
         LGBM = models.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_train_g, x_test_g)
 
@@ -293,7 +295,8 @@ class TrainSingleModel:
                           'colsample_bytree': 0.8,
                           'reg_alpha': 0.,
                           'reg_lambda': 0.,
-                          'silent': False}
+                          'silent': False,
+                          'random_state': random_seed}
 
         LGBM = models.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_train_g, x_test_g)
 
@@ -370,7 +373,8 @@ class TrainSingleModel:
                           'colsample_bytree': 0.11,
                           'reg_alpha': 0.,
                           'reg_lambda': 0.,
-                          'silent': False}
+                          'silent': False,
+                          'random_state': random_seed}
 
         LGB = models.LightGBM(x_outputs, y_train, w_train, e_train,
                               test_outputs, id_test, x_g_outputs, test_g_outputs)
@@ -402,7 +406,7 @@ class GridSearch:
                       'penalty': 'l2',
                       'solver': 'sag',
                       'tol': 0.0001,
-                      'random_state': 1,
+                      'random_state': random_seed,
                       'verbose': 2,
                       'warm_start': False}
 
@@ -444,7 +448,7 @@ class GridSearch:
                       'min_weight_fraction_leaf': 0.0,
                       'n_jobs': -1,
                       'oob_score': True,
-                      'random_state': 1,
+                      'random_state': random_seed,
                       'verbose': 2,
                       'warm_start': False}
 
@@ -489,7 +493,7 @@ class GridSearch:
                       'min_weight_fraction_leaf': 0.0,
                       'n_jobs': -1,
                       'oob_score': True,
-                      'random_state': 1,
+                      'random_state': random_seed,
                       'verbose': 2,
                       'warm_start': False}
 
@@ -520,17 +524,29 @@ class GridSearch:
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-        clf_et = ExtraTreesClassifier(n_estimators=100,
-                                      max_depth=7,
-                                      max_features=7,
-                                      min_samples_leaf=500,
-                                      min_samples_split=5000)
+        et_for_ab_params = {'bootstrap': True,
+                            'class_weight': None,
+                            'criterion': 'gini',
+                            'max_depth': 2,
+                            'max_features': 7,
+                            'max_leaf_nodes': None,
+                            'min_impurity_decrease': 0.0,
+                            'min_samples_leaf': 357,
+                            'min_samples_split': 4909,
+                            'min_weight_fraction_leaf': 0.0,
+                            'n_estimators': 20,
+                            'n_jobs': -1,
+                            'oob_score': True,
+                            'random_state': random_seed,
+                            'verbose': 2,
+                            'warm_start': False}
+        clf_et_for_ab = ExtraTreesClassifier(**et_for_ab_params)
 
         parameters = {'algorithm': 'SAMME.R',
-                      'base_estimator': clf_et,
+                      'base_estimator': clf_et_for_ab,
                       'learning_rate': 0.005,
                       'n_estimators': 100,
-                      'random_state': 1}
+                      'random_state': random_seed}
 
         AB = models.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
@@ -541,7 +557,6 @@ class GridSearch:
         parameters_grid = {
                            'learning_rate': (0.002, 0.003, 0.005),
                            'n_estimators': (50, 100),
-                           #  'random_state': 2,
                            #  'algorithm': 'SAMME.R',
                            #  'base_estimator': clf_et,
                            }
@@ -573,7 +588,7 @@ class GridSearch:
                       'min_weight_fraction_leaf': 0.0,
                       'n_estimators': 200,
                       'presort': 'auto',
-                      'random_state': 1,
+                      'random_state': random_seed,
                       'subsample': 0.8,
                       'verbose': 2,
                       'warm_start': False}
@@ -621,7 +636,7 @@ class GridSearch:
                       'gamma': 0,
                       'reg_alpha': 0,
                       'reg_lambda': 0,
-                      'seed': 1
+                      'seed': random_seed
                       # 'missing': None,
                       # 'nthread': -1,
                       # 'scale_pos_weight': 1,
@@ -680,7 +695,8 @@ class GridSearch:
                       'colsample_bytree': 0.11,
                       'reg_alpha': 0.,
                       'reg_lambda': 0.,
-                      'silent': False}
+                      'silent': False,
+                      'random_state': random_seed}
 
         LGB = models.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_train_g, x_test_g)
 
@@ -736,7 +752,8 @@ class GridSearch:
                       'colsample_bytree': 0.11,
                       'reg_alpha': 0.,
                       'reg_lambda': 0.,
-                      'silent': False}
+                      'silent': False,
+                      'random_state': random_seed}
 
         LGB = models.LightGBM(x_outputs, y_train, w_train, e_train,
                               test_outputs, id_test, x_g_outputs, test_g_outputs)
@@ -791,7 +808,8 @@ class ModelStacking:
                       'colsample_bytree': 0.8,
                       'reg_alpha': 0.,
                       'reg_lambda': 0.,
-                      'silent': False}
+                      'silent': False,
+                      'random_state': random_seed}
 
         # Parameters of XGBoost
         xgb_params = {'objective': 'binary:logistic',
@@ -811,8 +829,7 @@ class ModelStacking:
                       # 'missing': None,
                       # 'nthread': -1,
                       # 'scale_pos_weight': 1,
-                      'seed': 1
-                      }
+                      'seed': random_seed}
 
         # Parameters of AdaBoost
         et_for_ab_params = {'bootstrap': True,
@@ -828,7 +845,7 @@ class ModelStacking:
                             'n_estimators': 20,
                             'n_jobs': -1,
                             'oob_score': True,
-                            'random_state': 1,
+                            'random_state': random_seed,
                             'verbose': 2,
                             'warm_start': False}
         clf_et_for_ab = ExtraTreesClassifier(**et_for_ab_params)
@@ -836,7 +853,7 @@ class ModelStacking:
                      'base_estimator': clf_et_for_ab,
                      'learning_rate': 0.0051,
                      'n_estimators': 9,
-                     'random_state': 1}
+                     'random_state': random_seed}
 
         # Parameters of Random Forest
         rf_params = {'bootstrap': True,
@@ -852,7 +869,7 @@ class ModelStacking:
                      'n_estimators': 32,
                      'n_jobs': -1,
                      'oob_score': True,
-                     'random_state': 1,
+                     'random_state': random_seed,
                      'verbose': 2,
                      'warm_start': False}
 
@@ -870,7 +887,7 @@ class ModelStacking:
                      'n_estimators': 20,
                      'n_jobs': -1,
                      'oob_score': True,
-                     'random_state': 1,
+                     'random_state': random_seed,
                      'verbose': 2,
                      'warm_start': False}
 
@@ -889,7 +906,7 @@ class ModelStacking:
                      'min_weight_fraction_leaf': 0.0,
                      'n_estimators': 200,
                      'presort': 'auto',
-                     'random_state': 1,
+                     'random_state': random_seed,
                      'subsample': 0.8,
                      'verbose': 2,
                      'warm_start': False}
@@ -939,7 +956,8 @@ class ModelStacking:
                       'colsample_bytree': 0.8,
                       'reg_alpha': 0.,
                       'reg_lambda': 0.,
-                      'silent': False}
+                      'silent': False,
+                      'random_state': random_seed}
 
         # Parameters of Deep Neural Network
         dnn_params = {'version': '1.0',
