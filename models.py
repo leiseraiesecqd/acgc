@@ -2224,6 +2224,8 @@ class DeepNeuralNetworks:
                                                                                        w_train,
                                                                                        self.batch_size)):
 
+                    print(batch_x, batch_y, batch_w)
+
                     batch_counter += 1
 
                     _, cost_train = sess.run([optimizer, cost_],
@@ -2244,11 +2246,11 @@ class DeepNeuralNetworks:
                                                                                y_valid,
                                                                                w_valid,
                                                                                self.batch_size)):
-                            cost_valid_i = sess.run(cost_,{inputs: valid_batch_x,
-                                                           labels: valid_batch_y,
-                                                           weights: valid_batch_w,
-                                                           keep_prob: 1.0,
-                                                           is_train: False})
+                            cost_valid_i = sess.run(cost_, {inputs: valid_batch_x,
+                                                            labels: valid_batch_y,
+                                                            weights: valid_batch_w,
+                                                            keep_prob: 1.0,
+                                                            is_train: False})
 
                             cost_valid_all.append(cost_valid_i)
 
