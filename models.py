@@ -2019,7 +2019,7 @@ class DeepNeuralNetworks:
 
         tf.summary.scalar('log_loss', loss)
 
-        return loss
+        return loss, prob
 
     # Get Batches
     @staticmethod
@@ -2114,7 +2114,7 @@ class DeepNeuralNetworks:
 
                         batch_counter += 1
 
-                        _, lo, cost = sess.run([optimizer, logits, cost_],
+                        _, cost = sess.run([optimizer, cost_],
                                            {inputs: batch_x,
                                             labels: batch_y,
                                             weights: batch_w,
@@ -2161,7 +2161,7 @@ class DeepNeuralNetworks:
                                   'Batch: {} |'.format(batch_counter),
                                   'Time: {:>3.2f}s |'.format(total_time),
                                   'Train_Loss: {:>.8f} |'.format(cost_train),
-                                  'Valid_Loss: {:>.8f}'.format(cost_valid), lo)
+                                  'Valid_Loss: {:>.8f}'.format(cost_valid))
 
                 # Save Model
                 # print('Saving model...')
@@ -2210,7 +2210,7 @@ class DeepNeuralNetworks:
             # Loss
             with tf.name_scope('Loss'):
                 # cost_ = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels))
-                cost_ = self.log_loss(logits, weights, labels)
+                cost_, probb = self.log_loss(logits, weights, labels)
 
             # Optimizer
             optimizer = tf.train.AdamOptimizer(lr).minimize(cost_)
@@ -2231,13 +2231,15 @@ class DeepNeuralNetworks:
 
                     batch_counter += 1
 
-                    _, cost_train = sess.run([optimizer, cost_],
+                    _, pro, lo, cost_train = sess.run([optimizer, probb, logits, cost_],
                                              {inputs: batch_x,
                                               labels: batch_y,
                                               weights: batch_w,
                                               lr: self.learning_rate,
                                               keep_prob: self.keep_probability,
                                               is_train: True})
+                    print(lo)
+                    print(pro)
 
                     if batch_counter % self.display_step == 0 and batch_i > 0:
 
