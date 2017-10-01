@@ -715,6 +715,9 @@ class StackTree:
         blender_x_outputs = blender_valid_sorted.transpose()      # n_sample * n_model
         blender_test_outputs = blender_test_mean.transpose()      # n_test_sample * n_model
 
+        # TODO
+        print(blender_x_outputs.shape, g_train.shape)
+
         # Stack Group Features
         print('------------------------------------------------------')
         print('Stacking Group Features...')
