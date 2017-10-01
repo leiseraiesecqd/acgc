@@ -2005,13 +2005,14 @@ class DeepNeuralNetworks:
             logit = tf.squeeze(logit)
             prob = tf.nn.sigmoid(logit)
 
-        w = w / tf.reduce_sum(w)
+
 
         with tf.name_scope('log_loss'):
 
-            loss = tf.losses.log_loss(labels=y, predictions=prob, weights=w)
+            # w = w / tf.reduce_sum(w)
             # ones = tf.ones_like(y, dtype=tf.float64)
             # loss = - tf.reduce_sum(w * (y * tf.log(prob) + (ones-y) * tf.log(ones-prob)))
+            loss = tf.losses.log_loss(labels=y, predictions=prob, weights=w)
 
         tf.summary.scalar('log_loss', loss)
 
@@ -2117,6 +2118,9 @@ class DeepNeuralNetworks:
                                             lr: self.learning_rate,
                                             keep_prob: self.keep_probability,
                                             is_train: True})
+
+                        if cost == 'nan':
+                            assert ValueError('NAN BUG!!! Try another seed!')
 
                         if batch_counter % self.display_step == 0 and batch_i > 0:
 
