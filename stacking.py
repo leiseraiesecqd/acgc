@@ -378,7 +378,7 @@ class DeepStack:
 class StackLayer:
 
     def __init__(self, models_initializer, params, x_train, y_train, w_train,
-                 e_train, x_g_train, x_test, x_g_test,cv, n_valid=4, n_era=20, cv_seed=None,
+                 e_train, x_g_train, x_test, x_g_test, cv, n_valid=4, n_era=20, cv_seed=None,
                  input_layer=None, i_layer=1, n_epoch=1, x_train_reuse=None, x_test_reuse=None, dnn_param=None):
 
         self.models_initializer = models_initializer
@@ -463,8 +463,10 @@ class StackLayer:
 
         # Training Stacker
         blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs \
-            = StackTree.stacker(self.models_initializer, self.params, blender_x_e, self.y_train, self.w_train,
-                                self.e_train, blender_x_g_e, blender_test_e, blender_test_g_e,
+            = StackTree.stacker(models_initializer=self.models_initializer, params=self.params,
+                                x_train_inputs=blender_x_e, y_train_inputs=self.y_train, w_train_inputs=self.w_train,
+                                e_train_inputs=self.e_train, x_g_train_inputs=blender_x_g_e,
+                                x_test=blender_test_e, x_g_test=blender_test_g_e,
                                 g_train=self.g_train, g_test=self.g_test, cv=self.cv, n_valid=self.n_valid,
                                 n_era=self.n_era, cv_seed=self.cv_seed, i_layer=self.i_layer, i_epoch=i_epoch,
                                 x_train_reuse=self.x_train_reuse, x_test_reuse=self.x_test_reuse,
