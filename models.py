@@ -1999,8 +1999,8 @@ class DeepNeuralNetworks:
 
     @staticmethod
     def nan_to_num(n):
-        NEAR_0 = 10e-8
-        return tf.clip_by_value(n, NEAR_0, 1.0)
+        NEAR_0 = 10e-5
+        return tf.clip_by_value(n, NEAR_0, 0.99999)
 
     # LogLoss
     def log_loss(self, logit, w, y):
@@ -2019,7 +2019,7 @@ class DeepNeuralNetworks:
 
         tf.summary.scalar('log_loss', loss)
 
-        return loss, prob
+        return loss
 
     # Get Batches
     @staticmethod
@@ -2210,7 +2210,7 @@ class DeepNeuralNetworks:
             # Loss
             with tf.name_scope('Loss'):
                 # cost_ = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels))
-                cost_, probb = self.log_loss(logits, weights, labels)
+                cost_ = self.log_loss(logits, weights, labels)
 
             # Optimizer
             optimizer = tf.train.AdamOptimizer(lr).minimize(cost_)
@@ -2240,10 +2240,6 @@ class DeepNeuralNetworks:
                                               is_train: True})
 
                     if batch_counter % self.display_step == 0 and batch_i > 0:
-
-                        print(batch_x, batch_y, batch_w)
-                        print(lo)
-                        print(pro)
 
                         cost_valid_all = []
 
