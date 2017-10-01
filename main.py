@@ -919,7 +919,7 @@ class ModelStacking:
         # Parameters of Deep Neural Network
         dnn_params = {'version': '1.0',
                       'epochs': 5,
-                      'unit_number': [48, 24, 12],
+                      'unit_number': [56, 28, 14],
                       'learning_rate': 0.0001,
                       'keep_probability': 0.4,
                       'batch_size': 256,

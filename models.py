@@ -2237,11 +2237,8 @@ class DeepNeuralNetworks:
                                               keep_prob: self.keep_probability,
                                               is_train: True})
 
-                    print(cost_train)
-                    print(type(cost_train))
-
                     if cost_train == np.nan:
-                        assert ValueError('NaN BUG!!! Try Another Seed!!!')
+                        raise ValueError('NaN BUG!!! Try Another Seed!!!')
 
                     if batch_counter % self.display_step == 0 and batch_i > 0:
 
