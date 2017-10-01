@@ -1065,7 +1065,7 @@ if __name__ == "__main__":
     start_time = time.time()
 
     print('======================================================')
-    print('Start training...')
+    print('Start Training...')
     print('======================================================')
 
     # Logistic Regression
@@ -1111,6 +1111,6 @@ if __name__ == "__main__":
     # TrainSingleModel.stack_lgb_train()
 
     print('======================================================')
-    print('Done!')
-    print('Time: {}s'.format(time.time() - start_time))
+    print('All Task Done!')
+    print('Total Time: {}s'.format(time.time() - start_time))
     print('======================================================')

@@ -403,13 +403,15 @@ class StackLayer:
         self.x_train_reuse = x_train_reuse
         self.x_test_reuse = x_test_reuse
         self.dnn_param = dnn_param
+        self.id_test = StackTree.id_test
+        self.pred_path = StackTree.pred_path
+        self.stack_output_path = StackTree.stack_output_path
 
-    @staticmethod
-    def save_predict(pred_path, test_outputs):
+    def save_predict(self, pred_path, test_outputs):
 
         test_prob = np.mean(test_outputs, axis=1)
 
-        utils.save_pred_to_csv(pred_path, StackTree.id_test_, test_prob)
+        utils.save_pred_to_csv(pred_path, self.id_test, test_prob)
 
     def train(self, i_epoch=1):
 
@@ -450,7 +452,7 @@ class StackLayer:
                 print('======================================================')
 
                 # Save predicted test prob
-                self.save_predict(StackTree.pred_path_ + 'stack_l{}_e{}'.format(self.i_layer, epoch+1),
+                self.save_predict(self.pred_path + 'stack_l{}_e{}'.format(self.i_layer, epoch+1),
                                   blender_test_tree)
 
                 # Stack Group Features
@@ -468,7 +470,7 @@ class StackLayer:
             print('======================================================')
 
             # Save layer outputs
-            utils.save_stack_outputs(StackTree.stack_output_path_ + 'l{}_'.format(self.i_layer),
+            utils.save_stack_outputs(self.stack_output_path + 'l{}_'.format(self.i_layer),
                                      blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree)
 
         else:
@@ -742,18 +744,6 @@ class StackTree:
 
         model.train_sklearn(self.pred_path + 'stack_outputs/',  self.loss_log_path,
                             n_valid=n_valid, n_cv=n_cv, parameters=params)
-
-    @property
-    def id_test_(self):
-        return self.id_test
-
-    @property
-    def pred_path_(self):
-        return self.pred_path
-
-    @property
-    def stack_output_path_(self):
-        return self.stack_output_path
 
     def stack(self):
 
