@@ -2008,9 +2008,11 @@ class DeepNeuralNetworks:
         w = w / tf.reduce_sum(w)
 
         with tf.name_scope('log_loss'):
-            #  loss = tf.losses.log_loss(labels=label, predictions=prob, weights=weight)
-            ones = tf.ones_like(y, dtype=tf.float64)
-            loss = - tf.reduce_sum(w * (y * tf.log(prob) + (ones-y) * tf.log(ones-prob)))
+            print(y.get_shape().as_list())
+            print(w.get_shape().as_list())
+            loss = tf.losses.log_loss(labels=y, predictions=prob, weights=w)
+            # ones = tf.ones_like(y, dtype=tf.float64)
+            # loss = - tf.reduce_sum(w * (y * tf.log(prob) + (ones-y) * tf.log(ones-prob)))
 
         tf.summary.scalar('log_loss', loss)
 
@@ -2204,8 +2206,8 @@ class DeepNeuralNetworks:
 
             # Loss
             with tf.name_scope('Loss'):
-                cost_ = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels))
-                # cost_ = self.log_loss(logits, weights, labels)
+                # cost_ = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels))
+                cost_ = self.log_loss(logits, weights, labels)
 
             # Optimizer
             optimizer = tf.train.AdamOptimizer(lr).minimize(cost_)
