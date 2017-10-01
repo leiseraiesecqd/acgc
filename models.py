@@ -27,8 +27,8 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 import xgboost as xgb
 from xgboost import XGBClassifier
-# import lightgbm as lgb
-# from lightgbm import LGBMClassifier
+import lightgbm as lgb
+from lightgbm import LGBMClassifier
 
 import seaborn as sns
 sns.set(style="whitegrid", color_codes=True)
@@ -2117,7 +2117,7 @@ class DeepNeuralNetworks:
                                             keep_prob: self.keep_probability,
                                             is_train: True})
 
-                        if cost == np.nan:
+                        if cost is np.nan:
                             assert ValueError('NaN BUG!!! Try Another Seed!!!')
 
                         if batch_counter % self.display_step == 0 and batch_i > 0:
@@ -2237,7 +2237,7 @@ class DeepNeuralNetworks:
                                               keep_prob: self.keep_probability,
                                               is_train: True})
 
-                    if cost_train == np.nan:
+                    if cost_train is np.nan:
                         raise ValueError('NaN BUG!!! Try Another Seed!!!')
 
                     if batch_counter % self.display_step == 0 and batch_i > 0:
