@@ -446,6 +446,8 @@ class StackLayer:
                     # n_test_sample * (n_model x n_epoch)
                     blender_test_tree = np.concatenate((blender_test_tree, blender_test_e), axis=1)
 
+                    print(blender_test_tree)
+
                 epoch_time = time.time() - epoch_start_time
                 print('------------------------------------------------------')
                 print('Epoch Done!')
@@ -453,7 +455,7 @@ class StackLayer:
                 print('======================================================')
 
                 # Save predicted test prob
-                self.save_predict(self.pred_path + 'epochs_results/stack_l{}_e{}'.format(self.i_layer, epoch+1),
+                self.save_predict(self.pred_path + 'epochs_results/stack_l{}_e{}_'.format(self.i_layer, epoch+1),
                                   blender_test_tree)
 
                 # Stack Group Features
