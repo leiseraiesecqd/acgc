@@ -1085,7 +1085,7 @@ if __name__ == "__main__":
 
     # XGBoost
     # TrainSingleModel.xgb_train()
-    TrainSingleModel.xgb_train_sklearn()
+    # TrainSingleModel.xgb_train_sklearn()
 
     # LightGBM
     # TrainSingleModel.lgb_train()
