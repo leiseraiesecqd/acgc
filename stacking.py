@@ -477,8 +477,8 @@ class StackLayer:
         else:
 
             blender_x_tree = self.x_train
-            blender_test_tree = self.x_g_train
-            blender_x_g_tree = self.x_test
+            blender_x_g_tree = self.x_g_train
+            blender_test_tree = self.x_test
             blender_test_g_tree = self.x_g_test
 
         # Training Stacker
