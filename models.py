@@ -510,7 +510,6 @@ class RandomForest:
 
         self.importance = clf.feature_importances_
         self.indices = np.argsort(self.importance)[::-1]
-        self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
 
         feature_num = self.x_train.shape[1]
 
@@ -694,7 +693,6 @@ class ExtraTrees:
 
         self.importance = clf.feature_importances_
         self.indices = np.argsort(self.importance)[::-1]
-        self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
 
         feature_num = self.x_train.shape[1]
 
@@ -878,7 +876,6 @@ class AdaBoost:
 
         self.importance = clf.feature_importances_
         self.indices = np.argsort(self.importance)[::-1]
-        self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
 
         feature_num = self.x_train.shape[1]
 
@@ -1062,7 +1059,6 @@ class GradientBoosting:
 
         self.importance = clf.feature_importances_
         self.indices = np.argsort(self.importance)[::-1]
-        self.std = np.std([clf.feature_importances_ for tree in clf.estimators_], axis=0)
 
         feature_num = self.x_train.shape[1]
 
@@ -1985,7 +1981,6 @@ class DeepNeuralNetworks:
         #  fc3 = fc_layer(fc2, 'fc3', n_unit[2], keep_prob)
         #  fc4 = fc_layer(fc3, 'fc4', n_unit[3], keep_prob)
         #  fc5 = fc_layer(fc4, 'fc5', n_unit[4], keep_prob)
-
         #  logit_ = self.output_layer(fc5, 'output', 1)
 
         fc = [x]
@@ -2117,7 +2112,7 @@ class DeepNeuralNetworks:
                                             keep_prob: self.keep_probability,
                                             is_train: True})
 
-                        if str(cost_train) == 'nan':
+                        if str(cost) == 'nan':
                             assert ValueError('NaN BUG!!! Try Another Seed!!!')
 
                         if batch_counter % self.display_step == 0 and batch_i > 0:
@@ -2236,12 +2231,6 @@ class DeepNeuralNetworks:
                                               lr: self.learning_rate,
                                               keep_prob: self.keep_probability,
                                               is_train: True})
-
-                    print(cost_train is np.float64(np.nan))
-                    print(cost_train == np.float64(np.nan))
-                    print(cost_train is np.float32(np.nan))
-                    print(cost_train is np.nan)
-                    print(cost_train == np.nan)
 
                     if str(cost_train) == 'nan':
                         raise ValueError('NaN BUG!!! Try Another Seed!!!')

@@ -1,4 +1,3 @@
-# import preprocess
 import utils
 import models
 import stacking
@@ -27,7 +26,8 @@ path_list = [pred_path,
              stack_output_path]
 
 train_seed = 1
-cv_seed = 1
+cv_seed = None
+
 
 # Train single model
 class TrainSingleModel:
@@ -652,9 +652,9 @@ class GridSearch:
 
         # parameters_grid = None
 
-        parameters_grid = {'learning_rate': (0.002,0.005,0.01),
-                           'n_estimators': (20,50,100,150),
-                           'max_depth': (5,7,9),
+        parameters_grid = {'learning_rate': (0.002, 0.005, 0.01),
+                           'n_estimators': (20, 50, 100, 150),
+                           'max_depth': (5, 7, 9),
                            # 'subsample': 0.8,
                            # 'colsample_bytree': 0.8,
                            # 'colsample_bylevel': 1,
@@ -929,8 +929,8 @@ class ModelStacking:
 
         # List of parameters for layer1
         layer1_prams = [
-                        # lgb_params,
-                        # xgb_params,
+                        lgb_params,
+                        xgb_params,
                         # ab_params,
                         # rf_params,
                         # et_params,

@@ -540,8 +540,8 @@ class StackTree:
                                            self.e_train, self.x_test, self.id_test, dnn_l1_params)
 
         models_l1 = [
-                     # LGB_L1,
-                     # XGB_L1,
+                     LGB_L1,
+                     XGB_L1,
                      # AB_L1,
                      # RF_L1,
                      # ET_L1,
