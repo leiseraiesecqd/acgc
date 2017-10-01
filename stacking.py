@@ -120,7 +120,7 @@ class DeepStack:
                 x_train_reuse=None, x_test_reuse=None, dnn_param=None, ):
 
         if n_era%n_valid != 0:
-            assert ValueError('n_era must be an integer multiple of n_valid!')
+            raise ValueError('n_era must be an integer multiple of n_valid!')
 
         # Stack Reused Features
         if x_train_reuse is not None:
@@ -274,7 +274,7 @@ class DeepStack:
                                               test_outputs,  self.id_test, params)
         else:
             model = 0
-            assert ValueError('Wrong model name!')
+            raise ValueError('Wrong model name!')
 
         print('Start training {}...'.format(model_name))
 
@@ -613,7 +613,7 @@ class StackTree:
                 x_train_reuse=None, x_test_reuse=None, dnn_param=None):
 
         if n_era%n_valid != 0:
-            assert ValueError('n_era must be an integer multiple of n_valid!')
+            raise ValueError('n_era must be an integer multiple of n_valid!')
 
         # Stack Reused Features
         if x_train_reuse is not None:
@@ -740,7 +740,7 @@ class StackTree:
                                               test_outputs,  self.id_test, params)
         else:
             model = 0
-            assert ValueError('Wrong model name!')
+            raise ValueError('Wrong model name!')
 
         print('Start training {}...'.format(model_name))
 
