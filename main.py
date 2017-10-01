@@ -194,6 +194,7 @@ class TrainSingleModel:
                           'n_estimators': 200,
                           'gamma': 0,                       # 如果loss function小于设定值，停止产生子节点
                           'max_depth': 10,                  # default=6
+                          'nthread': -1,
                           'early_stopping_rounds': 50,
                           'min_child_weight': 5,            # default=1，建立每个模型所需最小样本数
                           'subsample': 0.8,                 # 建立树模型时抽取子样本占整个样本的比例
@@ -636,6 +637,7 @@ class GridSearch:
                       'gamma': 0,
                       'reg_alpha': 0,
                       'reg_lambda': 0,
+                      'nthread': -1,
                       'seed': random_seed
                       # 'missing': None,
                       # 'nthread': -1,
@@ -829,6 +831,7 @@ class ModelStacking:
                       # 'missing': None,
                       # 'nthread': -1,
                       # 'scale_pos_weight': 1,
+                      'nthread': -1,
                       'seed': random_seed}
 
         # Parameters of AdaBoost
