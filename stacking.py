@@ -686,6 +686,8 @@ class StackTree:
                 blender_test = np.concatenate((blender_test, blender_test_cv), axis=1)
                 # blender_losses = np.concatenate((blender_losses, blender_losses_cv), axis=1)
 
+            print(blender_test)
+
         # Print Shape
         print('======================================================')
         print('blender_valid shape:{}'.format(blender_valid.shape))
