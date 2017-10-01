@@ -2269,6 +2269,9 @@ class DeepNeuralNetworks:
             logits_pred_valid = sess.run(logits, {inputs: x_valid, keep_prob: 1.0, is_train: False})
             logits_pred_test = sess.run(logits, {inputs: x_test, keep_prob: 1.0, is_train: False})
 
+            # TODO
+            print(logits_pred_valid, logits_pred_test)
+
             logits_pred_train = logits_pred_train.flatten()
             logits_pred_valid = logits_pred_valid.flatten()
             logits_pred_test = logits_pred_test.flatten()
@@ -2276,6 +2279,9 @@ class DeepNeuralNetworks:
             prob_train = 1.0 / (1.0 + np.exp(-logits_pred_train))
             prob_valid = 1.0 / (1.0 + np.exp(-logits_pred_valid))
             prob_test = 1.0 / (1.0 + np.exp(-logits_pred_test))
+
+            # TODO
+            print(prob_valid, prob_test)
 
             loss_train, loss_valid, \
                 loss_train_w, loss_valid_w = utils.print_loss_dnn(prob_train, prob_valid,
@@ -2795,6 +2801,9 @@ class CrossValidation:
                                 valid_era = np.random.choice(range(1, n_era+1), n_valid, replace=False)
                     else:
                         valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+
+                    # TODO
+                    valid_era = [2, 9, 18, 6]
 
                     # Generate era set for next choosing
                     if i != n_traverse - 1:
