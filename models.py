@@ -111,7 +111,7 @@ class LRegression:
 
         return prob_valid
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, cv_seed, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -127,7 +127,8 @@ class LRegression:
                                                                          w=self.w_train,
                                                                          e=self.e_train,
                                                                          n_valid=n_valid,
-                                                                         n_cv=n_cv):
+                                                                         n_cv=n_cv,
+                                                                         seed=cv_seed):
             count += 1
 
             print('======================================================')
@@ -362,7 +363,7 @@ class DecisionTree:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, cv_seed, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -378,7 +379,8 @@ class DecisionTree:
                                                                          w=self.w_train,
                                                                          e=self.e_train,
                                                                          n_valid=n_valid,
-                                                                         n_cv=n_cv):
+                                                                         n_cv=n_cv,
+                                                                         seed=cv_seed):
             count += 1
 
             print('======================================================')
@@ -544,7 +546,7 @@ class RandomForest:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, cv_seed, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -560,7 +562,8 @@ class RandomForest:
                                                                          w=self.w_train,
                                                                          e=self.e_train,
                                                                          n_valid=n_valid,
-                                                                         n_cv=n_cv):
+                                                                         n_cv=n_cv,
+                                                                         seed=cv_seed):
             count += 1
 
             print('======================================================')
@@ -726,7 +729,7 @@ class ExtraTrees:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, cv_seed, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -742,7 +745,8 @@ class ExtraTrees:
                                                                          w=self.w_train,
                                                                          e=self.e_train,
                                                                          n_valid=n_valid,
-                                                                         n_cv=n_cv):
+                                                                         n_cv=n_cv,
+                                                                         seed=cv_seed):
             count += 1
 
             print('======================================================')
@@ -908,7 +912,7 @@ class AdaBoost:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, cv_seed, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -924,7 +928,8 @@ class AdaBoost:
                                                                          w=self.w_train,
                                                                          e=self.e_train,
                                                                          n_valid=n_valid,
-                                                                         n_cv=n_cv):
+                                                                         n_cv=n_cv,
+                                                                         seed=cv_seed):
             count += 1
 
             print('======================================================')
@@ -1090,7 +1095,7 @@ class GradientBoosting:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, cv_seed, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -1106,7 +1111,8 @@ class GradientBoosting:
                                                                          w=self.w_train,
                                                                          e=self.e_train,
                                                                          n_valid=n_valid,
-                                                                         n_cv=n_cv):
+                                                                         n_cv=n_cv,
+                                                                         seed=cv_seed):
             count += 1
 
             print('======================================================')
@@ -1336,7 +1342,7 @@ class XGBoost:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, cv_seed, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -1352,7 +1358,8 @@ class XGBoost:
                                                                          w=self.w_train,
                                                                          e=self.e_train,
                                                                          n_valid=n_valid,
-                                                                         n_cv=n_cv):
+                                                                         n_cv=n_cv,
+                                                                         seed=cv_seed):
 
             count += 1
 
@@ -1419,7 +1426,7 @@ class XGBoost:
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/xgb_', prob_train_mean, self.y_train)
 
     # Using sk-learn API
-    def train_sklearn(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
+    def train_sklearn(self, pred_path, loss_log_path, n_valid, n_cv, cv_seed, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -1435,7 +1442,8 @@ class XGBoost:
                                                                          w=self.w_train,
                                                                          e=self.e_train,
                                                                          n_valid=n_valid,
-                                                                         n_cv=n_cv):
+                                                                         n_cv=n_cv,
+                                                                         seed=cv_seed):
             count += 1
 
             print('======================================================')
@@ -1650,7 +1658,7 @@ class LightGBM:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, cv_seed, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -1667,7 +1675,8 @@ class LightGBM:
                                                                          w=self.w_train,
                                                                          e=self.e_train,
                                                                          n_valid=n_valid,
-                                                                         n_cv=n_cv):
+                                                                         n_cv=n_cv,
+                                                                         seed=cv_seed):
 
             count += 1
 
@@ -1735,7 +1744,7 @@ class LightGBM:
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/lgb_', prob_train_mean, self.y_train)
 
     # Using sk-learn API
-    def train_sklearn(self, pred_path, loss_log_path, n_valid, n_cv, parameters=None):
+    def train_sklearn(self, pred_path, loss_log_path, n_valid, n_cv, cv_seed, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -1752,7 +1761,8 @@ class LightGBM:
                                                                          w=self.w_train,
                                                                          e=self.e_train,
                                                                          n_valid=n_valid,
-                                                                         n_cv=n_cv):
+                                                                         n_cv=n_cv,
+                                                                         seed=cv_seed):
 
             count += 1
 
@@ -2014,7 +2024,7 @@ class DeepNeuralNetworks:
             yield batch_x, batch_y, batch_w
 
     # Training
-    def train(self, pred_path, n_valid, n_cv):
+    def train(self, pred_path, n_valid, n_cv, cv_seed):
 
         # Build Network
         tf.reset_default_graph()
@@ -2055,8 +2065,9 @@ class DeepNeuralNetworks:
                                                                              self.y_train,
                                                                              self.w_train,
                                                                              self.e_train,
-                                                                             n_valid,
-                                                                             n_cv):
+                                                                             n_valid=n_valid,
+                                                                             n_cv=n_cv,
+                                                                             seed=cv_seed):
 
                 cv_counter += 1
 
@@ -2405,7 +2416,9 @@ class CrossValidation:
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
     @staticmethod
-    def era_k_fold_split_all_random(e, n_valid, n_cv):
+    def era_k_fold_split_all_random(e, n_valid, n_cv, seed):
+
+        np.random.seed(seed)
 
         for i in range(n_cv):
 
@@ -2428,7 +2441,9 @@ class CrossValidation:
             yield train_index, valid_index
 
     @staticmethod
-    def era_k_fold_with_weight_all_random(x, y, w, e, n_valid, n_cv):
+    def era_k_fold_with_weight_all_random(x, y, w, e, n_valid, n_cv, seed=0):
+
+        np.random.seed(seed)
 
         for i in range(n_cv):
 
@@ -2461,7 +2476,9 @@ class CrossValidation:
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
     @staticmethod
-    def era_k_fold_split(e, n_valid, n_cv):
+    def era_k_fold_split(e, n_valid, n_cv, seed=0):
+
+        np.random.seed(seed)
 
         n_era = 20
         n_traverse = n_era // n_valid
@@ -2576,7 +2593,9 @@ class CrossValidation:
                         yield train_index, valid_index
 
     @staticmethod
-    def era_k_fold_with_weight(x, y, w, e, n_valid, n_cv):
+    def era_k_fold_with_weight(x, y, w, e, n_valid, n_cv, seed=0):
+
+        np.random.seed(seed)
 
         n_era = 20
         n_traverse = n_era // n_valid
@@ -2726,7 +2745,9 @@ class CrossValidation:
 
                         yield x_train, y_train, w_train, x_valid, y_valid, w_valid, valid_era
 
-    def era_k_fold_for_stack(self, x, y, w, e, x_g, n_valid, n_cv):
+    def era_k_fold_for_stack(self, x, y, w, e, x_g, n_valid, n_cv, seed=0):
+
+        np.random.seed(seed)
 
         n_era = 20
         n_traverse = n_era // n_valid
@@ -2793,7 +2814,8 @@ class CrossValidation:
 
                     self.trained_cv.append(set(valid_era))
 
-                    yield x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid, valid_index
+                    yield x_train, y_train, w_train, x_g_train, x_valid, \
+                          y_valid, w_valid, x_g_valid, valid_index, valid_era
 
             # n_cv is not an integer multiple of n_valid
             else:
@@ -2840,7 +2862,8 @@ class CrossValidation:
 
                         self.trained_cv.append(set(valid_era))
 
-                        yield x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid, valid_index
+                        yield x_train, y_train, w_train, x_g_train, x_valid, \
+                              y_valid, w_valid, x_g_valid, valid_index, valid_era
 
                     else:
 
@@ -2880,11 +2903,12 @@ class CrossValidation:
 
                         self.trained_cv.append(set(valid_era))
 
-                        yield x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid, valid_index
+                        yield x_train, y_train, w_train, x_g_train, x_valid, \
+                              y_valid, w_valid, x_g_valid, valid_index, valid_era
 
 
 # Grid Search
-def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, params, params_grid):
+def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, cv_seed, params, params_grid):
 
     start_time = time.time()
 
@@ -2893,7 +2917,8 @@ def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, params, params_g
                                      scoring='neg_log_loss',
                                      verbose=1,
                                      n_jobs=-1,
-                                     cv=CrossValidation.era_k_fold_split(e=tr_e, n_valid=n_valid, n_cv=n_cv),
+                                     cv=CrossValidation.era_k_fold_split(e=tr_e, n_valid=n_valid,
+                                                                         n_cv=n_cv, seed=cv_seed),
                                      # cv=5
                                      )
 

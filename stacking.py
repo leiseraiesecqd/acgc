@@ -26,6 +26,7 @@ class DeepStack:
         self.n_valid = hyper_params['n_valid']
         self.n_era = hyper_params['n_era']
         self.n_epoch = hyper_params['n_epoch']
+        self.cv_seed = hyper_params['cv_seed']
 
     def init_models_layer1(self, dnn_l1_params=None):
 
@@ -114,7 +115,7 @@ class DeepStack:
 
     def stacker(self, models_initializer, params, x_train_inputs, y_train_inputs, w_train_inputs,
                 e_train_inputs, x_g_train_inputs, x_test, x_g_test,
-                cv, n_valid=4, n_era=20, n_epoch=1,
+                cv, n_valid=4, n_era=20, cv_seed=0, n_epoch=1,
                 x_train_reuse=None, x_test_reuse=None, dnn_param=None, ):
 
         if n_era%n_valid != 0:
@@ -163,18 +164,20 @@ class DeepStack:
             blender_test = np.array([])
             # blender_losses = np.array([])
 
-            for x_train, y_train, w_train, x_g_train, \
-                x_valid, y_valid, w_valid, x_g_valid, valid_index in cv.era_k_fold_for_stack(x=x_train_inputs,
-                                                                                             y=y_train_inputs,
-                                                                                             w=w_train_inputs,
-                                                                                             e=e_train_inputs,
-                                                                                             x_g=x_g_train_inputs,
-                                                                                             n_valid=n_valid,
-                                                                                             n_cv=n_cv):
+            for x_train, y_train, w_train, x_g_train, x_valid, y_valid, \
+                w_valid, x_g_valid, valid_index, valid_era in cv.era_k_fold_for_stack(x=x_train_inputs,
+                                                                                      y=y_train_inputs,
+                                                                                      w=w_train_inputs,
+                                                                                      e=e_train_inputs,
+                                                                                      x_g=x_g_train_inputs,
+                                                                                      n_valid=n_valid,
+                                                                                      n_cv=n_cv,
+                                                                                      seed=cv_seed):
                 counter_cv += 1
 
                 print('======================================================')
                 print('Training on Cross Validation Set: {}/{}'.format(counter_cv, n_cv))
+                print('Validation Set Index: ', valid_era)
 
                 # Training on models and get blenders of one cross validation set
                 blender_valid_cv, blender_test_cv, \
@@ -294,7 +297,7 @@ class DeepStack:
         x_outputs_l1, test_outputs_l1, x_g_outputs_l1, test_g_outputs_l1 \
             = self.stacker(models_initializer_l1, self.layers_param[0], self.x_train, self.y_train,
                            self.w_train, self.e_train, self.x_g_train, self.x_test, self.x_g_test,
-                           cv_stack, n_valid=self.n_valid[0], n_era=self.n_era[0],
+                           cv_stack, n_valid=self.n_valid[0], n_era=self.n_era[0], cv_seed=self.cv_seed,
                            n_epoch=self.n_epoch[0], dnn_param=dnn_l1_params)
 
         # Save predicted test prob
@@ -320,7 +323,7 @@ class DeepStack:
         x_outputs_l2, test_outputs_l2, x_g_outputs_l2, test_g_outputs_l2 \
             = self.stacker(models_initializer_l2, self.layers_param[1], x_outputs_l1, self.y_train,
                            self.w_train, self.e_train, x_g_outputs_l1, test_outputs_l1, test_g_outputs_l1,
-                           cv_stack, n_valid=self.n_valid[1], n_era=self.n_era[1],
+                           cv_stack, n_valid=self.n_valid[1], n_era=self.n_era[1], cv_seed=self.cv_seed,
                            n_epoch=self.n_epoch[1], x_train_reuse=x_tr_reuse, x_test_reuse=x_te_reuse)
 
         # Save predicted test prob
@@ -343,7 +346,7 @@ class DeepStack:
         # x_outputs_l3, test_outputs_l3, x_g_outputs_l3, test_g_outputs_l3 \
         #     = self.stacker(models_initializer_l3, self.layers_param[1], x_outputs_l2, self.y_train,
         #                    self.w_train, self.e_train, x_g_outputs_l2, test_outputs_l2, test_g_outputs_l2,
-        #                    cv_stack, n_valid=self.n_valid[2], n_era=self.n_era[2],
+        #                    cv_stack, n_valid=self.n_valid[2], n_era=self.n_era[2], cv_seed=self.cv_seed,
         #                    n_epoch=self.n_epoch[2])
         #
         # # Save predicted test prob
