@@ -2008,8 +2008,7 @@ class DeepNeuralNetworks:
         w = w / tf.reduce_sum(w)
 
         with tf.name_scope('log_loss'):
-            print(y.get_shape().as_list())
-            print(w.get_shape().as_list())
+
             loss = tf.losses.log_loss(labels=y, predictions=prob, weights=w)
             # ones = tf.ones_like(y, dtype=tf.float64)
             # loss = - tf.reduce_sum(w * (y * tf.log(prob) + (ones-y) * tf.log(ones-prob)))
