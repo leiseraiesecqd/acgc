@@ -2204,8 +2204,8 @@ class DeepNeuralNetworks:
 
             # Loss
             with tf.name_scope('Loss'):
-                # cost_ = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels))
-                cost_ = self.log_loss(logits, weights, labels)
+                cost_ = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=logits, labels=labels))
+                # cost_ = self.log_loss(logits, weights, labels)
 
             # Optimizer
             optimizer = tf.train.AdamOptimizer(lr).minimize(cost_)
