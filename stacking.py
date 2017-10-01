@@ -661,6 +661,10 @@ class StackTree:
                                                                                   n_valid=n_valid,
                                                                                   n_cv=n_cv,
                                                                                   seed=cv_seed):
+
+            # TODO:
+            print(x_train, y_train)
+
             counter_cv += 1
 
             print('======================================================')
@@ -686,6 +690,7 @@ class StackTree:
                 blender_test = np.concatenate((blender_test, blender_test_cv), axis=1)
                 # blender_losses = np.concatenate((blender_losses, blender_losses_cv), axis=1)
 
+            # TODO:
             print(blender_test)
 
         # Print Shape
