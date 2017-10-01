@@ -2007,7 +2007,7 @@ class DeepNeuralNetworks:
 
         with tf.name_scope('log_loss'):
 
-            # w = w / tf.reduce_sum(w)
+            w = w / tf.reduce_sum(w)
             ones = tf.ones_like(y, dtype=tf.float64)
             loss = - tf.reduce_sum(w * (y * tf.log(prob) + (ones-y) * tf.log(ones-prob)))
             # loss = tf.losses.log_loss(labels=y, predictions=prob, weights=w)
@@ -2241,6 +2241,8 @@ class DeepNeuralNetworks:
                         assert ValueError('NAN BUG!!! Try Another Seed!!!')
 
                     if batch_counter % self.display_step == 0 and batch_i > 0:
+
+                        print(w_train)
 
                         cost_valid_all = []
 
