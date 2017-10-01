@@ -416,7 +416,7 @@ class StackLayer:
         print('======================================================')
         print('Start Training - Layer: {} | Epoch: {}'.format(self.i_layer, i_epoch))
 
-        if self.i_layer == 1:
+        if self.i_layer != 1:
 
             blender_x_tree = np.array([])
             blender_test_tree = np.array([])
@@ -789,11 +789,10 @@ class StackTree:
                             input_layer=stk_l1, i_layer=2, n_epoch=self.n_epoch[1],
                             x_train_reuse=x_tr_reuse, x_test_reuse=x_te_reuse)
 
-        x_outputs_l2, test_outputs_l2, x_g_outputs_l2, test_g_outputs_l2 = stk_l2.train()
+        _, test_outputs, _, _ = stk_l2.train()
 
         # Save predicted test prob
-        final_result = test_outputs_l2
-        self.save_predict(self.pred_path + 'final_results/stack_', final_result)
+        self.save_predict(self.pred_path + 'final_results/stack_', test_outputs)
 
         total_time = time.time() - start_time
         print('======================================================')
