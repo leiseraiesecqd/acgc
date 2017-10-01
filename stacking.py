@@ -446,7 +446,7 @@ class StackLayer:
                     # n_test_sample * (n_model x n_epoch)
                     blender_test_tree = np.concatenate((blender_test_tree, blender_test_e), axis=1)
 
-                    print(blender_test_tree)
+                print(blender_test_tree)
 
                 epoch_time = time.time() - epoch_start_time
                 print('------------------------------------------------------')
