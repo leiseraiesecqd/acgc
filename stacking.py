@@ -729,8 +729,8 @@ class StackTree:
 
         utils.save_pred_to_csv(pred_path, self.id_test, test_prob)
 
-    def stack_outputs_train(self, model_name, params, n_valid, n_cv, x_outputs,
-                            test_outputs, x_g_outputs, test_g_outputs):
+    def stack_final_layer(self, model_name, params, n_valid, n_cv, x_outputs,
+                          test_outputs, x_g_outputs, test_g_outputs):
 
         if model_name == 'LGB':
             model = models.LightGBM(x_outputs, self.y_train,  self.w_train,  self.e_train,
