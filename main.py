@@ -1079,8 +1079,8 @@ if __name__ == "__main__":
     # GridSearch.stack_lgb_grid_search()
 
     # Stacking
-    # ModelStacking.train()
-    TrainSingleModel.stack_lgb_train()
+    ModelStacking.train()
+    # TrainSingleModel.stack_lgb_train()
 
     print('======================================================')
     print('Done!')
