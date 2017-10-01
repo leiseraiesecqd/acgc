@@ -403,7 +403,7 @@ class StackLayer:
         self.x_test_reuse = x_test_reuse
         self.dnn_param = dnn_param
 
-    def train_models(self, i_epoch=1):
+    def train(self, i_epoch=1):
 
         print('======================================================')
         print('Start Training - Layer: {} | Epoch: {}'.format(self.i_layer, i_epoch))
@@ -418,7 +418,7 @@ class StackLayer:
                 epoch_start_time = time.time()
 
                 # Training super layer
-                blender_x_e, blender_test_e, _, _ = self.input_layer.train_models(epoch+1)
+                blender_x_e, blender_test_e, _, _ = self.input_layer.train(epoch + 1)
 
                 # Print Shape
                 print('======================================================')
@@ -466,7 +466,7 @@ class StackLayer:
             = StackTree.stacker(self.models_initializer, self.params, blender_x_e, self.y_train, self.w_train,
                                 self.e_train, blender_x_g_e, blender_test_e, blender_test_g_e,
                                 self.g_train, self.g_test, cv=self.cv, n_valid=self.n_valid, n_era=self.n_era,
-                                cv_seed=None, i_layer=self.i_layer, i_epoch=i_epoch,
+                                cv_seed=self.cv_seed, i_layer=self.i_layer, i_epoch=i_epoch,
                                 x_train_reuse=self.x_train_reuse, x_test_reuse=self.x_test_reuse,
                                 dnn_param=self.dnn_param)
 
@@ -742,7 +742,7 @@ class StackTree:
                             input_layer=None, i_layer=1, n_epoch=self.n_epoch[0],
                             x_train_reuse=None, x_test_reuse=None, dnn_param=dnn_l1_params)
 
-        x_outputs_l1, test_outputs_l1, x_g_outputs_l1, test_g_outputs_l1 = stk_l1.train_models()
+        x_outputs_l1, test_outputs_l1, x_g_outputs_l1, test_g_outputs_l1 = stk_l1.train()
 
         # Save predicted test prob
         self.save_predict(self.pred_path + 'stack_l1_', test_outputs_l1)
@@ -770,7 +770,7 @@ class StackTree:
                             input_layer=stk_l1, i_layer=2, n_epoch=self.n_epoch[1],
                             x_train_reuse=x_tr_reuse, x_test_reuse=x_te_reuse)
 
-        x_outputs_l2, test_outputs_l2, x_g_outputs_l2, test_g_outputs_l2 = stk_l2.train_models()
+        x_outputs_l2, test_outputs_l2, x_g_outputs_l2, test_g_outputs_l2 = stk_l2.train()
 
         # Save predicted test prob
         self.save_predict(self.pred_path + 'stack_l2_', test_outputs_l2)
