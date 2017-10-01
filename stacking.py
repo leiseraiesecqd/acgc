@@ -484,7 +484,7 @@ class StackLayer:
         # Training Stacker
         blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs \
             = self.stacker(self.models_initializer, self.params, blender_x_tree, self.y_train, self.w_train,
-                           self.e_train, blender_test_tree, blender_x_g_tree, blender_test_g_tree,
+                           self.e_train, blender_x_g_tree, blender_test_tree, blender_test_g_tree,
                            self.g_train, self.g_test, cv=self.cv, n_valid=self.n_valid,
                            n_era=self.n_era, cv_seed=self.cv_seed, i_layer=self.i_layer, i_epoch=i_epoch,
                            x_train_reuse=self.x_train_reuse, x_test_reuse=self.x_test_reuse,

@@ -27,7 +27,7 @@ path_list = [pred_path,
              stack_output_path]
 
 train_seed = 1
-cv_seed = 2
+cv_seed = 1
 
 # Train single model
 class TrainSingleModel:
