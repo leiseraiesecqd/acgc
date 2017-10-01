@@ -2238,10 +2238,11 @@ class DeepNeuralNetworks:
                                               lr: self.learning_rate,
                                               keep_prob: self.keep_probability,
                                               is_train: True})
-                    print(lo)
-                    print(pro)
 
                     if batch_counter % self.display_step == 0 and batch_i > 0:
+
+                        print(lo)
+                        print(pro)
 
                         cost_valid_all = []
 
