@@ -241,7 +241,7 @@ class TrainSingleModel:
 
         print('Start training XGBoost...')
 
-        XGB.train_sklearn(pred_path, loss_log_path, n_valid=4, n_cv=400, parameters=xgb_parameters)
+        XGB.train_sklearn(pred_path, loss_log_path, n_valid=4, n_cv=20, cv_seed=cv_seed, parameters=xgb_parameters)
 
     # LightGBM
     @staticmethod
