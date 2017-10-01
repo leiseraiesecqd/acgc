@@ -2117,8 +2117,8 @@ class DeepNeuralNetworks:
                                             keep_prob: self.keep_probability,
                                             is_train: True})
 
-                        if cost == 'nan':
-                            assert ValueError('NAN BUG!!! Try Another Seed!!!')
+                        if cost == np.nan:
+                            assert ValueError('NaN BUG!!! Try Another Seed!!!')
 
                         if batch_counter % self.display_step == 0 and batch_i > 0:
 
@@ -2237,8 +2237,8 @@ class DeepNeuralNetworks:
                                               keep_prob: self.keep_probability,
                                               is_train: True})
 
-                    if cost_train == 'nan':
-                        assert ValueError('NAN BUG!!! Try Another Seed!!!')
+                    if cost_train == np.nan:
+                        assert ValueError('NaN BUG!!! Try Another Seed!!!')
 
                     if batch_counter % self.display_step == 0 and batch_i > 0:
 
