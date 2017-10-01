@@ -2416,9 +2416,10 @@ class CrossValidation:
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
     @staticmethod
-    def era_k_fold_split_all_random(e, n_valid, n_cv, seed):
+    def era_k_fold_split_all_random(e, n_valid, n_cv, seed=None):
 
-        np.random.seed(seed)
+        if seed is not None:
+            np.random.seed(seed)
 
         for i in range(n_cv):
 
@@ -2441,9 +2442,10 @@ class CrossValidation:
             yield train_index, valid_index
 
     @staticmethod
-    def era_k_fold_with_weight_all_random(x, y, w, e, n_valid, n_cv, seed=0):
+    def era_k_fold_with_weight_all_random(x, y, w, e, n_valid, n_cv, seed=None):
 
-        np.random.seed(seed)
+        if seed is not None:
+            np.random.seed(seed)
 
         for i in range(n_cv):
 
@@ -2476,9 +2478,10 @@ class CrossValidation:
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
     @staticmethod
-    def era_k_fold_split(e, n_valid, n_cv, seed=0):
+    def era_k_fold_split(e, n_valid, n_cv, seed=None):
 
-        np.random.seed(seed)
+        if seed is not None:
+            np.random.seed(seed)
 
         n_era = 20
         n_traverse = n_era // n_valid
@@ -2593,9 +2596,10 @@ class CrossValidation:
                         yield train_index, valid_index
 
     @staticmethod
-    def era_k_fold_with_weight(x, y, w, e, n_valid, n_cv, seed=0):
+    def era_k_fold_with_weight(x, y, w, e, n_valid, n_cv, seed=None):
 
-        np.random.seed(seed)
+        if seed is not None:
+            np.random.seed(seed)
 
         n_era = 20
         n_traverse = n_era // n_valid
@@ -2745,9 +2749,10 @@ class CrossValidation:
 
                         yield x_train, y_train, w_train, x_valid, y_valid, w_valid, valid_era
 
-    def era_k_fold_for_stack(self, x, y, w, e, x_g, n_valid, n_cv, seed=0):
+    def era_k_fold_for_stack(self, x, y, w, e, x_g, n_valid, n_cv, seed=None):
 
-        np.random.seed(seed)
+        if seed is not None:
+            np.random.seed(seed)
 
         n_era = 20
         n_traverse = n_era // n_valid

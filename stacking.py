@@ -115,7 +115,7 @@ class DeepStack:
 
     def stacker(self, models_initializer, params, x_train_inputs, y_train_inputs, w_train_inputs,
                 e_train_inputs, x_g_train_inputs, x_test, x_g_test,
-                cv, n_valid=4, n_era=20, cv_seed=0, n_epoch=1,
+                cv, n_valid=4, n_era=20, cv_seed=None, n_epoch=1,
                 x_train_reuse=None, x_test_reuse=None, dnn_param=None, ):
 
         if n_era%n_valid != 0:
