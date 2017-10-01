@@ -376,7 +376,7 @@ class TrainSingleModel:
                           'reg_alpha': 0.,
                           'reg_lambda': 0.,
                           'silent': False,
-                          'random_state': train_seed}
+                          'seed': train_seed}
 
         LGB = models.LightGBM(x_outputs, y_train, w_train, e_train,
                               test_outputs, id_test, x_g_outputs, test_g_outputs)
