@@ -2231,7 +2231,7 @@ class DeepNeuralNetworks:
 
                     batch_counter += 1
 
-                    _, pro, lo, cost_train = sess.run([optimizer, probb, logits, cost_],
+                    _, cost_train = sess.run([optimizer, cost_],
                                              {inputs: batch_x,
                                               labels: batch_y,
                                               weights: batch_w,
