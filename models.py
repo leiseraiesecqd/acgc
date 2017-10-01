@@ -27,8 +27,8 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 import xgboost as xgb
 from xgboost import XGBClassifier
-import lightgbm as lgb
-from lightgbm import LGBMClassifier
+# import lightgbm as lgb
+# from lightgbm import LGBMClassifier
 
 import seaborn as sns
 sns.set(style="whitegrid", color_codes=True)
