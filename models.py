@@ -2005,14 +2005,12 @@ class DeepNeuralNetworks:
             logit = tf.squeeze(logit)
             prob = tf.nn.sigmoid(logit)
 
-
-
         with tf.name_scope('log_loss'):
 
             # w = w / tf.reduce_sum(w)
-            # ones = tf.ones_like(y, dtype=tf.float64)
-            # loss = - tf.reduce_sum(w * (y * tf.log(prob) + (ones-y) * tf.log(ones-prob)))
-            loss = tf.losses.log_loss(labels=y, predictions=prob, weights=w)
+            ones = tf.ones_like(y, dtype=tf.float64)
+            loss = - tf.reduce_sum(w * (y * tf.log(prob) + (ones-y) * tf.log(ones-prob)))
+            # loss = tf.losses.log_loss(labels=y, predictions=prob, weights=w)
 
         tf.summary.scalar('log_loss', loss)
 
