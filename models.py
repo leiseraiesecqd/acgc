@@ -2023,7 +2023,7 @@ class DeepNeuralNetworks:
 
         n_batches = len(x) // batch_num
 
-        for ii in range(0, n_batches * batch_num+1 , batch_num):
+        for ii in range(0, n_batches * batch_num+1, batch_num):
 
             if ii != n_batches * batch_num - 1:
                 batch_x, batch_y, batch_w = x[ii: ii + batch_num], y[ii: ii + batch_num], w[ii: ii + batch_num]
@@ -2214,10 +2214,11 @@ class DeepNeuralNetworks:
         with tf.Session(graph=train_graph) as sess:
 
             start_time = time.time()
-            batch_counter = 0
             sess.run(tf.global_variables_initializer())
 
             for epoch_i in range(self.epochs):
+
+                batch_counter = 0
 
                 for batch_i, (batch_x, batch_y, batch_w) in enumerate(self.get_batches(x_train,
                                                                                        y_train,
@@ -2235,8 +2236,6 @@ class DeepNeuralNetworks:
                                               is_train: True})
 
                     if batch_counter % self.display_step == 0 and batch_i > 0:
-
-                        print(batch_x, batch_y, batch_w)
 
                         cost_valid_all = []
 
