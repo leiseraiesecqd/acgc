@@ -1003,7 +1003,7 @@ class ModelStacking:
         return layer3_prams
 
     @staticmethod
-    def train():
+    def deep_stack_train():
 
         hyper_params = {'n_valid': (4, 4),
                         'n_era': (20, 20),
@@ -1023,6 +1023,33 @@ class ModelStacking:
         x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
         STK = stacking.DeepStack(x_train, y_train, w_train, e_train,
+                                 x_test, id_test, x_train_g, x_test_g,
+                                 pred_path + 'stack_results/', loss_log_path, stack_output_path,
+                                 hyper_params, layers_param)
+
+        STK.stack()
+
+    @staticmethod
+    def stack_tree_train():
+
+        hyper_params = {'n_valid': (4, 4),
+                        'n_era': (20, 20),
+                        'n_epoch': (1, 4),
+                        'cv_seed': cv_seed}
+
+        layer1_prams = ModelStacking.get_layer1_params()
+        layer2_prams = ModelStacking.get_layer2_params()
+        # layer3_prams = ModelStacking.get_layer3_params()
+
+        layers_param = [layer1_prams,
+                        layer2_prams,
+                        # layer3_prams
+                        ]
+
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+
+        STK = stacking.StackTree(x_train, y_train, w_train, e_train,
                                  x_test, id_test, x_train_g, x_test_g,
                                  pred_path + 'stack_results/', loss_log_path, stack_output_path,
                                  hyper_params, layers_param)
@@ -1079,7 +1106,8 @@ if __name__ == "__main__":
     # GridSearch.stack_lgb_grid_search()
 
     # Stacking
-    # ModelStacking.train()
+    # ModelStacking.deep_stack_train()
+    ModelStacking.stack_tree_train()
     # TrainSingleModel.stack_lgb_train()
 
     print('======================================================')
