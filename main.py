@@ -929,8 +929,8 @@ class ModelStacking:
 
         # List of parameters for layer1
         layer1_prams = [
-                        lgb_params,
-                        xgb_params,
+                        # lgb_params,
+                        # xgb_params,
                         # ab_params,
                         # rf_params,
                         # et_params,
@@ -1093,7 +1093,7 @@ if __name__ == "__main__":
     # TrainSingleModel.lgb_train_sklearn()
 
     # DNN
-    TrainSingleModel.dnn_tf_train()
+    # TrainSingleModel.dnn_tf_train()
     # TrainSingleModel.dnn_keras_train()
 
     # Grid Search
@@ -1108,7 +1108,7 @@ if __name__ == "__main__":
 
     # Stacking
     # ModelStacking.deep_stack_train()
-    # ModelStacking.stack_tree_train()
+    ModelStacking.stack_tree_train()
     # TrainSingleModel.stack_lgb_train()
 
     print('======================================================')
