@@ -2224,8 +2224,6 @@ class DeepNeuralNetworks:
                                                                                        w_train,
                                                                                        self.batch_size)):
 
-                    print(batch_x, batch_y, batch_w)
-
                     batch_counter += 1
 
                     _, cost_train = sess.run([optimizer, cost_],
@@ -2237,6 +2235,8 @@ class DeepNeuralNetworks:
                                               is_train: True})
 
                     if batch_counter % self.display_step == 0 and batch_i > 0:
+
+                        print(batch_x, batch_y, batch_w)
 
                         cost_valid_all = []
 
