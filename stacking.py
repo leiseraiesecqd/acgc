@@ -377,11 +377,12 @@ class DeepStack:
 # Iterator for stack tree
 class StackLayer:
 
-    def __init__(self, models_initializer, params, x_train, y_train, w_train,
+    def __init__(self, models_initializer, stacker, params, x_train, y_train, w_train,
                  e_train, x_g_train, x_test, x_g_test, cv, n_valid=4, n_era=20, cv_seed=None,
                  input_layer=None, i_layer=1, n_epoch=1, x_train_reuse=None, x_test_reuse=None, dnn_param=None):
 
         self.models_initializer = models_initializer
+        self.stacker = stacker
         self.params = params
         self.x_train = x_train
         self.y_train = y_train
@@ -463,14 +464,12 @@ class StackLayer:
 
         # Training Stacker
         blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs \
-            = StackTree.stacker(models_initializer=self.models_initializer, params=self.params,
-                                x_train_inputs=blender_x_e, y_train_inputs=self.y_train, w_train_inputs=self.w_train,
-                                e_train_inputs=self.e_train, x_g_train_inputs=blender_x_g_e,
-                                x_test=blender_test_e, x_g_test=blender_test_g_e,
-                                g_train=self.g_train, g_test=self.g_test, cv=self.cv, n_valid=self.n_valid,
-                                n_era=self.n_era, cv_seed=self.cv_seed, i_layer=self.i_layer, i_epoch=i_epoch,
-                                x_train_reuse=self.x_train_reuse, x_test_reuse=self.x_test_reuse,
-                                dnn_param=self.dnn_param)
+            = self.stacker(self.models_initializer, self.params, blender_x_e, self.y_train, self.w_train,
+                           self.e_train, blender_x_g_e, blender_test_e, blender_test_g_e,
+                           self.g_train, self.g_test, cv=self.cv, n_valid=self.n_valid,
+                           n_era=self.n_era, cv_seed=self.cv_seed, i_layer=self.i_layer, i_epoch=i_epoch,
+                           x_train_reuse=self.x_train_reuse, x_test_reuse=self.x_test_reuse,
+                           dnn_param=self.dnn_param)
 
         return blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs
 
@@ -738,7 +737,7 @@ class StackTree:
         print('Start training layer 1...')
         models_initializer_l1 = self.init_models_layer1
 
-        stk_l1 = StackLayer(models_initializer_l1, self.layers_param[0], self.x_train, self.y_train, self.w_train,
+        stk_l1 = StackLayer(models_initializer_l1, self.stacker, self.layers_param[0], self.x_train, self.y_train, self.w_train,
                             self.e_train, self.x_g_train, self.x_test, self.x_g_test, cv_stack,
                             n_valid=self.n_valid[0], n_era=self.n_era[0], cv_seed=self.cv_seed,
                             input_layer=None, i_layer=1, n_epoch=self.n_epoch[0],
@@ -766,7 +765,7 @@ class StackTree:
         x_tr_reuse = self.x_train[:, :88]
         x_te_reuse = self.x_test[:, :88]
 
-        stk_l2 = StackLayer(models_initializer_l2, self.layers_param[1], x_outputs_l1, self.y_train, self.w_train,
+        stk_l2 = StackLayer(models_initializer_l2, self.stacker, self.layers_param[1], x_outputs_l1, self.y_train, self.w_train,
                             self.e_train, x_g_outputs_l1, test_outputs_l1, test_g_outputs_l1, cv_stack,
                             n_valid=self.n_valid[1], n_era=self.n_era[1], cv_seed=self.cv_seed,
                             input_layer=stk_l1, i_layer=2, n_epoch=self.n_epoch[1],
