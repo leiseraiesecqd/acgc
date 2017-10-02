@@ -27,7 +27,7 @@ path_list = [pred_path,
 
 train_seed = 1
 cv_seed = None
-dnn_seed = 1
+dnn_seed = None
 
 
 # Train single model
@@ -316,7 +316,7 @@ class TrainSingleModel:
 
         # HyperParameters
         hyper_parameters = {'version': '1.0',
-                            'epochs': 20,
+                            'epochs': 40,
                             'unit_number': [48, 24, 12],
                             'learning_rate': 0.0001,
                             'keep_probability': 0.5,
