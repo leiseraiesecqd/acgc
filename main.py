@@ -17,6 +17,9 @@ path_list = [pred_path,
              pred_path + 'cv_prob_train/',
              pred_path + 'final_prob_train/',
              pred_path + 'stack_results/',
+             pred_path + 'stack_results/cv_results/',
+             pred_path + 'stack_results/cv_prob_train/',
+             pred_path + 'stack_results/final_prob_train/',
              pred_path + 'stack_results/epochs_results/',
              pred_path + 'stack_results/final_results/',
              pred_path + 'stack_outputs/',
@@ -931,7 +934,7 @@ class ModelStacking:
                       'log_path': './log/'}
 
         # List of parameters for layer1
-        layer1_prams = [
+        layer1_params = [
                         lgb_params,
                         xgb_params,
                         # ab_params,
@@ -941,7 +944,7 @@ class ModelStacking:
                         dnn_params
                         ]
 
-        return layer1_prams
+        return layer1_params
 
     # Parameters for layer2
     @staticmethod
@@ -979,13 +982,13 @@ class ModelStacking:
                       'save_path': './checkpoints/',
                       'log_path': './log/'}
 
-        # List of parameters for layer1
-        layer2_prams = [
+        # List of parameters for layer2
+        layer2_params = [
                         lgb_params,
                         # dnn_params
                         ]
 
-        return layer2_prams
+        return layer2_params
 
     # Parameters for layer3
     @staticmethod
@@ -1003,10 +1006,48 @@ class ModelStacking:
                       'save_path': './checkpoints/',
                       'log_path': './log/'}
 
-        # List of parameters for layer1
-        layer3_prams = [dnn_params]
+        # List of parameters for layer3
+        layer3_params = [dnn_params]
 
-        return layer3_prams
+        return layer3_params
+
+    # Parameters for layer2
+    @staticmethod
+    def get_final_layer_params():
+
+        # Parameters of LightGBM
+        lgb_params = {'learning_rate': 0.002,
+                      'boosting_type': 'gbdt',  # traditional Gradient Boosting Decision Tree.
+                      'num_leaves': 128,        # <2^(max_depth)
+                      'max_depth': 8,           # default=-1
+                      'n_estimators': 65,
+                      'max_bin': 1005,
+                      'subsample_for_bin': 1981,
+                      'objective': 'binary',
+                      'min_split_gain': 0.,
+                      'min_child_weight': 1,
+                      'min_child_samples': 0,
+                      'subsample': 0.8,
+                      'subsample_freq': 5,
+                      'colsample_bytree': 0.8,
+                      'reg_alpha': 0.,
+                      'reg_lambda': 0.,
+                      'silent': False,
+                      'seed': train_seed}
+
+        # Parameters of Deep Neural Network
+        dnn_params = {'version': '1.0',
+                      'epochs': 10,
+                      'unit_number': [4, 2],
+                      'learning_rate': 0.0001,
+                      'keep_probability': 0.8,
+                      'batch_size': 256,
+                      'seed': dnn_seed,
+                      'display_step': 100,
+                      'save_path': './checkpoints/',
+                      'log_path': './log/'}
+
+        return lgb_params
 
     @staticmethod
     def deep_stack_train():
@@ -1038,27 +1079,34 @@ class ModelStacking:
     @staticmethod
     def stack_tree_train():
 
+        stack_pred_path = pred_path + 'stack_results/'
+
         hyper_params = {'n_valid': (4, 4),
                         'n_era': (20, 20),
                         'n_epoch': (1, 8),
                         'cv_seed': cv_seed}
 
-        layer1_prams = ModelStacking.get_layer1_params()
-        layer2_prams = ModelStacking.get_layer2_params()
-        # layer3_prams = ModelStacking.get_layer3_params()
+        layer1_params = ModelStacking.get_layer1_params()
+        # layer2_params = ModelStacking.get_layer2_params()
+        # layer3_params = ModelStacking.get_layer3_params()
 
-        layers_param = [layer1_prams,
-                        layer2_prams,
-                        # layer3_prams
+        layers_params = [layer1_params,
+                        # layer2_params,
+                        # layer3_params
                         ]
+
+        final_layer_params = ModelStacking.get_final_layer_params()
+        final_layer_set = {'model': 'LGBM',
+                           'n_cv': 20}
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_train_g, x_test_g = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
-        STK = stacking.StackTree(x_train, y_train, w_train, e_train,
-                                 x_test, id_test, x_train_g, x_test_g,
-                                 pred_path + 'stack_results/', loss_log_path, stack_output_path,
-                                 hyper_params, layers_param)
+        STK = stacking.StackTree(x_train, y_train, w_train, e_train, x_test, id_test, x_train_g, x_test_g,
+                                 pred_path=stack_pred_path, loss_log_path=loss_log_path,
+                                 stack_output_path=stack_output_path, hyper_params=hyper_params,
+                                 layers_param=layers_params, final_layer_params=final_layer_params,
+                                 final_layer_set=final_layer_set)
 
         STK.stack()
 
@@ -1098,7 +1146,7 @@ if __name__ == "__main__":
     # TrainSingleModel.lgb_train_sklearn()
 
     # DNN
-    TrainSingleModel.dnn_tf_train()
+    # TrainSingleModel.dnn_tf_train()
     # TrainSingleModel.dnn_keras_train()
 
     # Grid Search
@@ -1113,7 +1161,7 @@ if __name__ == "__main__":
 
     # Stacking
     # ModelStacking.deep_stack_train()
-    # ModelStacking.stack_tree_train()
+    ModelStacking.stack_tree_train()
     # TrainSingleModel.stack_lgb_train()
 
     print('======================================================')

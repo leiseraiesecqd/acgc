@@ -264,21 +264,27 @@ class DeepStack:
 
         utils.save_pred_to_csv(pred_path, self.id_test, test_prob)
 
-    def stack_outputs_train(self, model_name, params, n_valid, n_cv, x_outputs, test_outputs, x_g_outputs, test_g_outputs):
+    def stack_final_layer(self, model_name, params, n_valid, n_cv, x_outputs,
+                          test_outputs, x_g_outputs, test_g_outputs):
 
         if model_name == 'LGB':
-            model = models.LightGBM(x_outputs, self.y_train,  self.w_train,  self.e_train,
-                                    test_outputs,  self.id_test, x_g_outputs, test_g_outputs)
+
+            model = models.LightGBM(x_outputs, self.y_train, self.w_train, self.e_train,
+                                    test_outputs, self.id_test, x_g_outputs, test_g_outputs)
+            print('Start training ' + model_name + '...')
+            model.train_sklearn(self.pred_path + 'stack_results/', self.loss_log_path,
+                                n_valid=n_valid, n_cv=n_cv, cv_seed=self.cv_seed, parameters=params)
+
         elif model_name == 'DNN':
-            model = models.DeepNeuralNetworks(x_outputs, self.y_train,  self.w_train,  self.e_train,
-                                              test_outputs,  self.id_test, params)
+
+            model = models.DeepNeuralNetworks(x_outputs, self.y_train, self.w_train, self.e_train,
+                                              test_outputs, self.id_test, params)
+            print('Start training ' + model_name + '...')
+            model.train(self.pred_path + 'stack_results/', self.loss_log_path,
+                        n_valid=n_valid, n_cv=n_cv, cv_seed=self.cv_seed)
+
         else:
-            model = 0
             raise ValueError('Wrong model name!')
-
-        print('Start training {}...'.format(model_name))
-
-        model.train_sklearn(self.pred_path + 'stack_outputs/',  self.loss_log_path, n_valid=n_valid, n_cv=n_cv, parameters=params)
 
     def stack(self):
 
@@ -377,13 +383,11 @@ class DeepStack:
 # Iterator for stack tree
 class StackLayer:
 
-    def __init__(self, models_initializer, stacker, params, x_train, y_train, w_train,
-                 e_train, x_g_train, x_test, x_g_test, id_test, cv, n_valid=4, n_era=20, cv_seed=None,
+    def __init__(self, params, x_train, y_train, w_train, e_train, x_g_train, x_test, x_g_test, id_test,
+                 models_initializer=None, stacker=None, cv=None, n_valid=4, n_era=20, cv_seed=None,
                  input_layer=None, i_layer=1, n_epoch=1, x_train_reuse=None, x_test_reuse=None, dnn_param=None,
-                 pred_path=None, stack_output_path=None):
+                 pred_path=None, loss_log_path=None, stack_output_path=None, final_layer_model=None, n_cv_final=None):
 
-        self.models_initializer = models_initializer
-        self.stacker = stacker
         self.params = params
         self.x_train = x_train
         self.y_train = y_train
@@ -392,11 +396,12 @@ class StackLayer:
         self.x_g_train = x_g_train
         self.x_test = x_test
         self.x_g_test = x_g_test
-        self.g_train = x_g_train[:, -1]
-        self.g_test = x_g_test[:, -1]
+        self.id_test = id_test
         self.cv = cv
         self.n_valid = n_valid
         self.n_era = n_era
+        self.models_initializer = models_initializer
+        self.stacker = stacker
         self.cv_seed = cv_seed
         self.input_layer = input_layer
         self.i_layer = i_layer
@@ -404,9 +409,13 @@ class StackLayer:
         self.x_train_reuse = x_train_reuse
         self.x_test_reuse = x_test_reuse
         self.dnn_param = dnn_param
-        self.id_test = id_test
         self.pred_path = pred_path
+        self.loss_log_path = loss_log_path
         self.stack_output_path = stack_output_path
+        self.final_layer_model = final_layer_model
+        self.n_cv_final = n_cv_final
+        self.g_train = x_g_train[:, -1]
+        self.g_test = x_g_test[:, -1]
 
     def save_predict(self, pred_path, test_outputs):
 
@@ -414,11 +423,51 @@ class StackLayer:
 
         utils.save_pred_to_csv(pred_path, self.id_test, test_prob)
 
+    def stack_final_layer(self, model_name, params, n_valid, n_cv, blender_x_tree, blender_test_tree,
+                          blender_x_g_tree, blender_test_g_tree, x_train_reuse=None, x_test_reuse=None):
+
+        # Stack Reused Features
+        if x_train_reuse is not None:
+            print('------------------------------------------------------')
+            print('Stacking Reused Features...')
+            # n_sample * (n_feature + n_reuse)
+            blender_x_tree = np.concatenate((blender_x_tree, x_train_reuse), axis=1)
+            # n_sample * (n_feature + n_reuse + 1)
+            blender_x_g_tree = np.column_stack((blender_x_tree, self.g_train))
+
+        if x_test_reuse is not None:
+            print('------------------------------------------------------')
+            print('Stacking Reused Features...')
+            # n_sample * (n_feature + n_reuse)
+            blender_test_tree = np.concatenate((blender_test_tree, x_test_reuse), axis=1)
+            # n_sample * (n_feature + n_reuse + 1)
+            blender_test_g_tree = np.column_stack((blender_test_tree, self.g_test))
+
+        if model_name == 'LGB':
+
+            model = models.LightGBM(blender_x_tree, self.y_train,  self.w_train,  self.e_train,
+                                    blender_test_tree,  self.id_test, blender_x_g_tree, blender_test_g_tree)
+            print('Start training ' + model_name + '...')
+            model.train_sklearn(self.pred_path, self.loss_log_path,
+                                n_valid=n_valid, n_cv=n_cv, cv_seed=self.cv_seed, parameters=params)
+
+        elif model_name == 'DNN':
+
+            model = models.DeepNeuralNetworks(blender_x_tree, self.y_train,  self.w_train,  self.e_train,
+                                              blender_test_tree,  self.id_test, params)
+            print('Start training ' + model_name + '...')
+            model.train(self.pred_path, self.loss_log_path,
+                        n_valid=n_valid, n_cv=n_cv, cv_seed=self.cv_seed)
+
+        else:
+            raise ValueError('Wrong model name!')
+
     def train(self, i_epoch=1):
 
         print('======================================================')
         print('Start Training - Layer: {} | Epoch: {}'.format(self.i_layer, i_epoch))
 
+        # Training Lower Layer
         if self.i_layer != 1:
 
             blender_x_tree = np.array([])
@@ -428,7 +477,7 @@ class StackLayer:
 
                 epoch_start_time = time.time()
 
-                # Training super layer
+                # Training Lower layer
                 blender_x_e, blender_test_e, _, _ = self.input_layer.train(epoch + 1)
 
                 # Print Shape
@@ -452,7 +501,7 @@ class StackLayer:
                 print('Epoch Time: {}s'.format(epoch_time))
                 print('======================================================')
 
-                # Save predicted test prob
+                # Save Predicted Test Prob
                 self.save_predict(self.pred_path + 'epochs_results/stack_l{}_e{}_'.format(self.i_layer, epoch+1),
                                   blender_test_tree)
 
@@ -470,7 +519,7 @@ class StackLayer:
             print('blender_test_g_tree:{}'.format(blender_test_g_tree.shape))
             print('======================================================')
 
-            # Save layer outputs
+            # Save Layer Outputs
             utils.save_stack_outputs(self.stack_output_path + 'l{}_'.format(self.i_layer),
                                      blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree)
 
@@ -481,16 +530,24 @@ class StackLayer:
             blender_test_tree = self.x_test
             blender_test_g_tree = self.x_g_test
 
-        # Training Stacker
-        blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs \
-            = self.stacker(self.models_initializer, self.params, blender_x_tree, self.y_train, self.w_train,
-                           self.e_train, blender_x_g_tree, blender_test_tree, blender_test_g_tree,
-                           self.g_train, self.g_test, cv=self.cv, n_valid=self.n_valid,
-                           n_era=self.n_era, cv_seed=self.cv_seed, i_layer=self.i_layer, i_epoch=i_epoch,
-                           x_train_reuse=self.x_train_reuse, x_test_reuse=self.x_test_reuse,
-                           dnn_param=self.dnn_param)
+        if self.final_layer_model is not None:
 
-        return blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs
+            self.stack_final_layer(self.final_layer_model, self.params, self.n_valid, self.n_cv_final, blender_x_tree,
+                                   blender_test_tree, blender_x_g_tree, blender_test_g_tree,
+                                   x_train_reuse=self.x_train_reuse, x_test_reuse=self.x_test_reuse)
+
+        else:
+
+            # Training Stacker
+            blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs \
+                = self.stacker(self.models_initializer, self.params, blender_x_tree, self.y_train, self.w_train,
+                               self.e_train, blender_x_g_tree, blender_test_tree, blender_test_g_tree,
+                               self.g_train, self.g_test, cv=self.cv, n_valid=self.n_valid,
+                               n_era=self.n_era, cv_seed=self.cv_seed, i_layer=self.i_layer, i_epoch=i_epoch,
+                               x_train_reuse=self.x_train_reuse, x_test_reuse=self.x_test_reuse,
+                               dnn_param=self.dnn_param)
+
+            return blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs
 
 
 # Stack Tree
@@ -501,7 +558,8 @@ class StackTree:
     stack_output_path = ''
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_tr_g, x_te_g,
-                 pred_path, loss_log_path, stack_output_path, hyper_params, layers_param):
+                 pred_path=None, loss_log_path=None, stack_output_path=None,
+                 hyper_params=None, layers_param=None,final_layer_params=None, final_layer_set=None):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -521,6 +579,8 @@ class StackTree:
         self.n_era = hyper_params['n_era']
         self.n_epoch = hyper_params['n_epoch']
         self.cv_seed = hyper_params['cv_seed']
+        self.final_layer_params = final_layer_params
+        self.final_layer_set = final_layer_set
 
     def init_models_layer1(self, dnn_l1_params=None):
 
@@ -729,24 +789,6 @@ class StackTree:
 
         utils.save_pred_to_csv(pred_path, self.id_test, test_prob)
 
-    def stack_final_layer(self, model_name, params, n_valid, n_cv, x_outputs,
-                          test_outputs, x_g_outputs, test_g_outputs):
-
-        if model_name == 'LGB':
-            model = models.LightGBM(x_outputs, self.y_train,  self.w_train,  self.e_train,
-                                    test_outputs,  self.id_test, x_g_outputs, test_g_outputs)
-        elif model_name == 'DNN':
-            model = models.DeepNeuralNetworks(x_outputs, self.y_train,  self.w_train,  self.e_train,
-                                              test_outputs,  self.id_test, params)
-        else:
-            model = 0
-            raise ValueError('Wrong model name!')
-
-        print('Start training {}...'.format(model_name))
-
-        model.train_sklearn(self.pred_path + 'stack_outputs/',  self.loss_log_path,
-                            n_valid=n_valid, n_cv=n_cv, parameters=params)
-
     def stack(self):
 
         start_time = time.time()
@@ -756,12 +798,16 @@ class StackTree:
 
         # Initializing models for every layer
         models_initializer_l1 = self.init_models_layer1
-        models_initializer_l2 = self.init_models_layer2
+        # models_initializer_l2 = self.init_models_layer2
 
         # Parameters for DNN models
         dnn_l1_params = self.layers_param[0][-1]
         # dnn_l2_params = self.layers_param[1][-1]
         # dnn_l3_params = self.layers_param[2][-1]
+
+        # Final Layer params
+        final_layer_model = self.final_layer_set['model']
+        final_layer_cv = self.final_layer_set['n_cv']
 
         # Reused features
         x_train_reuse_l2 = self.x_train[:, :88]
@@ -773,25 +819,36 @@ class StackTree:
         # Building Graph
 
         # Layer 1
-        stk_l1 = StackLayer(models_initializer_l1, self.stacker, self.layers_param[0], self.x_train, self.y_train,
-                            self.w_train, self.e_train, self.x_g_train, self.x_test, self.x_g_test, self.id_test,
-                            cv_stack, n_valid=self.n_valid[0], n_era=self.n_era[0], cv_seed=self.cv_seed,
+        stk_l1 = StackLayer(self.layers_param[0], self.x_train, self.y_train, self.w_train, self.e_train,
+                            self.x_g_train, self.x_test, self.x_g_test, self.id_test,
+                            models_initializer=models_initializer_l1, stacker=self.stacker, cv=cv_stack,
+                            n_valid=self.n_valid[0], n_era=self.n_era[0], cv_seed=self.cv_seed,
                             i_layer=1, n_epoch=self.n_epoch[0],dnn_param=dnn_l1_params,
                             pred_path=self.pred_path, stack_output_path=self.stack_output_path)
 
         # Layer 2
-        stk_l2 = StackLayer(models_initializer_l2, self.stacker, self.layers_param[1], self.x_train, self.y_train,
-                            self.w_train, self.e_train, self.x_g_train, self.x_test, self.x_g_test, self.id_test,
-                            cv_stack, n_valid=self.n_valid[1], n_era=self.n_era[1], cv_seed=self.cv_seed,
+        # stk_l2 = StackLayer(self.layers_param[1], self.x_train, self.y_train, self.w_train, self.e_train,
+        #                     self.x_g_train, self.x_test, self.x_g_test, self.id_test,
+        #                     models_initializer=models_initializer_l2, stacker=self.stacker, cv=cv_stack,
+        #                     n_valid=self.n_valid[1], n_era=self.n_era[1], cv_seed=self.cv_seed,
+        #                     input_layer=stk_l1, i_layer=2, n_epoch=self.n_epoch[1],
+        #                     x_train_reuse=x_train_reuse_l2, x_test_reuse=x_test_reuse_l2,
+        #                     pred_path=self.pred_path, stack_output_path=self.stack_output_path)
+
+        # Final Layer
+        stk_l2 = StackLayer(self.final_layer_params, self.x_train, self.y_train, self.w_train, self.e_train,
+                            self.x_g_train, self.x_test, self.x_g_test, self.id_test,
+                            n_valid=self.n_valid[1], cv_seed=self.cv_seed,
                             input_layer=stk_l1, i_layer=2, n_epoch=self.n_epoch[1],
                             x_train_reuse=x_train_reuse_l2, x_test_reuse=x_test_reuse_l2,
-                            pred_path=self.pred_path, stack_output_path=self.stack_output_path)
+                            pred_path=self.pred_path, stack_output_path=self.stack_output_path,
+                            final_layer_model=final_layer_model, n_cv_final=final_layer_cv)
 
         # Training
-        _, test_outputs, _, _ = stk_l2.train()
+        stk_l2.train()
 
-        # Save predicted test prob
-        self.save_predict(self.pred_path + 'final_results/stack_', test_outputs)
+        # # Save predicted test prob
+        # self.save_predict(self.pred_path + 'final_results/stack_', test_outputs)
 
         total_time = time.time() - start_time
         print('======================================================')
