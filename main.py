@@ -332,7 +332,7 @@ class TrainSingleModel:
 
         print('Start training DNN(TensorFlow)...')
 
-        dnn.train(pred_path, n_valid=4, n_cv=20, cv_seed=cv_seed)
+        dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20, cv_seed=cv_seed)
 
     # # DNN using Keras
     # @staticmethod
