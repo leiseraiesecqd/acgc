@@ -1892,6 +1892,7 @@ class DeepNeuralNetworks:
         self.id_test = id_te
 
         # Hyperparameters
+        self.parameters = parameters
         self.version = parameters['version']
         self.epochs = parameters['epochs']
         self.unit_number = parameters['unit_number']
@@ -2029,7 +2030,7 @@ class DeepNeuralNetworks:
             yield batch_x, batch_y, batch_w
 
     # Training
-    def train(self, pred_path, n_valid, n_cv, cv_seed):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, cv_seed):
 
         # Build Network
         tf.reset_default_graph()
@@ -2063,7 +2064,13 @@ class DeepNeuralNetworks:
 
             start_time = time.time()
             cv_counter = 0
-            prob_total = []
+
+            prob_test_total = []
+            prob_train_total = []
+            loss_train_total = []
+            loss_valid_total = []
+            loss_train_w_total = []
+            loss_valid_w_total = []
 
             for x_train, y_train, w_train, x_valid, y_valid, \
                 w_valid, valid_era in CrossValidation.era_k_fold_with_weight(self.x_train,
@@ -2165,10 +2172,28 @@ class DeepNeuralNetworks:
                 # Prediction
                 print('Predicting...')
 
-                logits_pred = sess.run(logits, {inputs: self.x_test, keep_prob: 1.0, is_train: False})
-                logits_pred = logits_pred.flatten()
-                prob_test = 1.0 / (1.0 + np.exp(-logits_pred))
-                prob_total.append(prob_test)
+                logits_pred_train = sess.run(logits, {inputs: x_train, keep_prob: 1.0, is_train: False})
+                logits_pred_valid = sess.run(logits, {inputs: x_valid, keep_prob: 1.0, is_train: False})
+                logits_pred_test = sess.run(logits, {inputs: self.x_test, keep_prob: 1.0, is_train: False})
+
+                logits_pred_train = logits_pred_train.flatten()
+                logits_pred_valid = logits_pred_valid.flatten()
+                logits_pred_test = logits_pred_test.flatten()
+
+                prob_train = 1.0 / (1.0 + np.exp(-logits_pred_train))
+                prob_valid = 1.0 / (1.0 + np.exp(-logits_pred_valid))
+                prob_test = 1.0 / (1.0 + np.exp(-logits_pred_test))
+
+                loss_train, loss_valid, \
+                    loss_train_w, loss_valid_w = utils.print_loss_dnn(prob_train, prob_valid,
+                                                                      y_train, w_train, y_valid, w_valid)
+                prob_test_total.append(prob_test)
+                prob_train_total.append(prob_train)
+                loss_train_total.append(loss_train)
+                loss_valid_total.append(loss_valid)
+                loss_train_w_total.append(loss_train_w)
+                loss_valid_w_total.append(loss_valid_w)
+
                 utils.save_pred_to_csv(pred_path + 'cv_results/dnn_cv_{}_'.format(cv_counter),
                                        self.id_test, prob_test)
 
@@ -2176,9 +2201,24 @@ class DeepNeuralNetworks:
             print('======================================================')
             print('Calculating final result...')
 
-            prob_mean = np.mean(np.array(prob_total), axis=0)
+            prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
+            prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
+            loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
+            loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
+            loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
+            loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-            utils.save_pred_to_csv(pred_path + 'final_results/dnn_', self.id_test, prob_mean)
+            print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
+                  'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
+                  'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
+                  'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
+
+            # Save Final Losses to file
+            utils.save_final_loss_log(loss_log_path + 'dnn_', self.parameters, n_valid, n_cv, loss_train_mean,
+                                      loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+
+            utils.save_pred_to_csv(pred_path + 'final_results/dnn_', self.id_test, prob_test_mean)
+            utils.save_prob_train_to_csv(pred_path + 'final_prob_train/dnn_', prob_train_mean, self.y_train)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train,
                     x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters=None):
