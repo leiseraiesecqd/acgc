@@ -1143,10 +1143,10 @@ if __name__ == "__main__":
 
     # LightGBM
     # TrainSingleModel.lgb_train()
-    TrainSingleModel.lgb_train_sklearn()
+    # TrainSingleModel.lgb_train_sklearn()
 
     # DNN
-    # TrainSingleModel.dnn_tf_train()
+    TrainSingleModel.dnn_tf_train()
     # TrainSingleModel.dnn_keras_train()
 
     # Grid Search
