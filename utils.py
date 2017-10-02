@@ -17,7 +17,7 @@ def save_np_to_pkl(data, data_path):
 # Save predictions to csv file
 def save_pred_to_csv(file_path, index, prob):
 
-    print('Saving predictions to csv file...')
+    print('Saving Predictions To CSV File...')
 
     df = pd.DataFrame({'id': index, 'proba': prob})
 
@@ -27,7 +27,7 @@ def save_pred_to_csv(file_path, index, prob):
 # Save probabilities of train set to csv file
 def save_prob_train_to_csv(file_path, prob, label):
 
-    print('Saving probabilities of train set to csv file...')
+    print('Saving Probabilities of Train Set To CSV File...')
 
     df = pd.DataFrame({'prob_train': prob, 'label': label})
 
@@ -123,7 +123,7 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean, lo
 # Saving stacking outputs of layers
 def save_stack_outputs(output_path, x_outputs, test_outputs, x_g_outputs, test_g_outputs):
 
-    print('Saving stacking outputs of layer...')
+    print('Saving Stacking Outputs of Layer...')
 
     save_np_to_pkl(x_outputs, output_path + 'x_outputs.p')
     save_np_to_pkl(test_outputs, output_path + 'test_outputs.p')
@@ -231,7 +231,7 @@ def print_grid_info(model_name, parameters, parameters_grid):
     print("Parameters:")
     print(parameters)
     print('\n')
-    print("Parameters' grid:")
+    print("Parameters' Grid:")
     print(parameters_grid)
     print('\n')
 
@@ -315,11 +315,11 @@ def get_accuracy(prob, label):
 def print_and_get_accuracy(prob_train_cv, y_train, prob_valid_cv, y_valid):
 
     print('------------------------------------------------------')
-    print('Accurrcy on CV:')
+    print('Accurrcy of CV:')
     acc_train_cv = get_accuracy(prob_train_cv, y_train)
-    print('CV Train Accuracy: {:.3f}%'.format(acc_train_cv * 100))
+    print('Accuracy of Train CV: {:.3f}%'.format(acc_train_cv * 100))
     acc_valid_cv = get_accuracy(prob_valid_cv, y_valid)
-    print('CV Valid Accuracy: {:.3f}%'.format(acc_valid_cv * 100))
+    print('Accuracy of Validation CV: {:.3f}%'.format(acc_valid_cv * 100))
 
     return acc_train_cv, acc_valid_cv
 
@@ -342,20 +342,20 @@ def get_era_accuracy(prob, y, e):
 
     for i, ele in enumerate(e_sorted):
 
-        if ele == iter_era:
-            era_index.append(i)
-        elif i == len(e_sorted)-1:
+        if i == len(e_sorted)-1:
             prob_era = prob_sorted[era_index]
             y_era = y_sorted[era_index]
             acc_era = get_accuracy(prob_era, y_era)
             accuracy_eras[iter_era] = acc_era
-            print('Accuracy on Era {}: {:.3f}%'.format(iter_era, acc_era*100))
+            print('Accuracy of Era-{}: {:.3f}%'.format(iter_era, acc_era * 100))
+        elif ele == iter_era:
+            era_index.append(i)
         else:
             prob_era = prob_sorted[era_index]
             y_era = y_sorted[era_index]
             acc_era = get_accuracy(prob_era, y_era)
             accuracy_eras[iter_era] = acc_era
-            print('Accuracy on Era {}: {:.3f}%'.format(iter_era, acc_era*100))
+            print('Accuracy of Era-{}: {:.3f}%'.format(iter_era, acc_era*100))
             iter_era = ele
             era_index = [i]
 
@@ -369,7 +369,7 @@ def print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid
     print('Accuracies of Train Eras:')
     acc_train_era = get_era_accuracy(prob_train, y_train, e_train)
     print('------------------------------------------------------')
-    print('Accuracies of Valid Eras:')
+    print('Accuracies of Validation Eras:')
     acc_valid_era = get_era_accuracy(prob_valid, y_valid, e_valid)
 
     return acc_train_era, acc_valid_era

@@ -27,8 +27,8 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 import xgboost as xgb
 from xgboost import XGBClassifier
-import lightgbm as lgb
-from lightgbm import LGBMClassifier
+# import lightgbm as lgb
+# from lightgbm import LGBMClassifier
 
 import seaborn as sns
 sns.set(style="whitegrid", color_codes=True)
@@ -183,7 +183,7 @@ class LRegression:
         print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
               'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
               'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
+              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
         acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
         print('------------------------------------------------------')
@@ -443,7 +443,7 @@ class DecisionTree:
         print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
               'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
               'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
+              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
         acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
         print('------------------------------------------------------')
@@ -633,7 +633,7 @@ class RandomForest:
         print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
               'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
               'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
+              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
         acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
         print('------------------------------------------------------')
@@ -823,7 +823,7 @@ class ExtraTrees:
         print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
               'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
               'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
+              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
         acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
         print('------------------------------------------------------')
@@ -1013,7 +1013,7 @@ class AdaBoost:
         print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
               'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
               'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
+              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
         acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
         print('------------------------------------------------------')
@@ -1203,7 +1203,7 @@ class GradientBoosting:
         print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
               'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
               'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
+              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
         acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
         print('------------------------------------------------------')
@@ -1456,7 +1456,7 @@ class XGBoost:
         print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
               'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
               'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
+              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
         acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
         print('------------------------------------------------------')
@@ -1553,7 +1553,7 @@ class XGBoost:
         print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
               'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
               'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
+              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
         acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
         print('------------------------------------------------------')
@@ -1800,7 +1800,7 @@ class LightGBM:
         print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
               'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
               'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
+              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
         acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
         print('------------------------------------------------------')
@@ -1906,7 +1906,7 @@ class LightGBM:
         print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
               'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
               'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
+              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
         acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
         print('------------------------------------------------------')
@@ -2276,12 +2276,11 @@ class DeepNeuralNetworks:
                 # Get Accuracies
                 acc_train_cv = utils.get_accuracy(prob_train, y_train)
                 acc_valid_cv = utils.get_accuracy(prob_valid, y_valid)
-                acc_train_era, acc_valid_era = \
-                    utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
-
                 print('------------------------------------------------------')
                 print('CV Train Accuracy: {:.3f}%'.format(acc_train_cv * 100))
                 print('CV Valid Accuracy: {:.3f}%'.format(acc_valid_cv * 100))
+                acc_train_era, acc_valid_era = \
+                    utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
                 utils.save_loss_log(loss_log_path + 'dnn_', cv_counter, self.parameters, n_valid, n_cv, 
                                     valid_era, loss_train, loss_valid, loss_train_w, loss_valid_w,
@@ -2304,7 +2303,7 @@ class DeepNeuralNetworks:
             print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
                   'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
                   'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-                  'Total Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
+                  'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
             acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
             print('Total Train Accuracy: {:.3f}%'.format(acc_train * 100))
