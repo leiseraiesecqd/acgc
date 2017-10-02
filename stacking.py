@@ -823,7 +823,7 @@ class StackTree:
                             self.x_g_train, self.x_test, self.x_g_test, self.id_test,
                             models_initializer=models_initializer_l1, stacker=self.stacker, cv=cv_stack,
                             n_valid=self.n_valid[0], n_era=self.n_era[0], cv_seed=self.cv_seed,
-                            i_layer=1, n_epoch=self.n_epoch[0],dnn_param=dnn_l1_params,
+                            i_layer=1, n_epoch=self.n_epoch[0], dnn_param=dnn_l1_params,
                             pred_path=self.pred_path, stack_output_path=self.stack_output_path)
 
         # Layer 2
