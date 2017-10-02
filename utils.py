@@ -52,8 +52,8 @@ def seve_grid_search_log(log_path, params, params_grid, best_score, best_paramet
 
 
 # Save Final Losses
-def save_loss_log(log_path, count, parameters, n_valid, n_cv, valid_era,
-                  loss_train, loss_valid, loss_train_w, loss_valid_w):
+def save_loss_log(log_path, count, parameters, n_valid, n_cv, valid_era, loss_train, loss_valid,
+                  loss_train_w, loss_valid_w, acc_train=None, acc_valid=None):
 
     with open(log_path + 'loss_log.txt', 'a') as f:
 
@@ -67,14 +67,17 @@ def save_loss_log(log_path, count, parameters, n_valid, n_cv, valid_era,
         f.write('Parameters:\n')
         f.write('\t' + str(parameters) + '\n\n')
         f.write('Losses:\n')
-        f.write('\tTotal Train LogLoss: {:.6f}\n'.format(loss_train))
-        f.write('\tTotal Validation LogLoss: {:.6f}\n'.format(loss_valid))
-        f.write('\tTotal Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w))
-        f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w))
+        f.write('\tCV Train LogLoss: {:.6f}\n'.format(loss_train))
+        f.write('\tCV Validation LogLoss: {:.6f}\n'.format(loss_valid))
+        f.write('\tCV Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w))
+        f.write('\tCV Validation LogLoss with Weight: {:.6f}\n\n'.format(loss_valid_w))
+        f.write('Accuracies:\n')
+        f.write('\tCV Train Accuracy: {:.3f}%\n'.format(acc_train * 100))
+        f.write('\tCV Valid Accuracy: {:.3f}%\n\n'.format(acc_valid * 100))
 
 
-def save_final_loss_log(log_path, parameters, n_valid, n_cv,
-                        loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean):
+def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean, loss_valid_mean,
+                        loss_train_w_mean, loss_valid_w_mean, acc_train=None):
 
     with open(log_path + 'loss_log.txt', 'a') as f:
 
@@ -90,8 +93,9 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv,
         f.write('\tTotal Train LogLoss: {:.6f}\n'.format(loss_train_mean))
         f.write('\tTotal Validation LogLoss: {:.6f}\n'.format(loss_valid_mean))
         f.write('\tTotal Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean))
-        f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
-        f.write('=====================================================\n')
+        f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n\n'.format(loss_valid_w_mean))
+        f.write('Accuracy:\n')
+        f.write('\tTotal Train Accuracy: {:.3f}%\n\n'.format(acc_train * 100))
         f.write('=====================================================\n')
 
     with open(log_path + 'final_loss_log.txt', 'a') as f:
@@ -107,7 +111,9 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv,
         f.write('\tTotal Train LogLoss: {:.6f}\n'.format(loss_train_mean))
         f.write('\tTotal Validation LogLoss: {:.6f}\n'.format(loss_valid_mean))
         f.write('\tTotal Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean))
-        f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n'.format(loss_valid_w_mean))
+        f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n\n'.format(loss_valid_w_mean))
+        f.write('Accuracy:\n')
+        f.write('\tTotal Train Accuracy: {:.3f}%\n\n'.format(acc_train * 100))
 
 
 # Saving stacking outputs of layers
@@ -293,9 +299,9 @@ def get_accuracy(prob, label):
 
     prediction = [1 if pro > 0.5 else 0 for pro in prob]
     correct_pred = [1 if p == y else 0 for p, y in zip(prediction, label)]
-    acurracy = np.mean(correct_pred)
+    accuracy = np.mean(correct_pred)
 
-    return acurracy
+    return accuracy
 
 
 if __name__ == '__main__':
