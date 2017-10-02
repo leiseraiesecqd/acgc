@@ -304,6 +304,57 @@ def get_accuracy(prob, label):
     return accuracy
 
 
+# Print and Get Accuracy
+def print_and_get_accuracy(prob_train_cv, y_train, prob_valid_cv, y_valid):
+
+    acc_train_cv = get_accuracy(prob_train_cv, y_train)
+    print('Train Accuracy: {:.3f}%'.format(acc_train_cv * 100))
+
+    acc_valid_cv = get_accuracy(prob_valid_cv, y_valid)
+    print('Valid Accuracy: {:.3f}%'.format(acc_valid_cv * 100))
+
+    return acc_train_cv, acc_valid_cv
+
+
+# Get Accuracy of Era
+def get_era_accuracy(prob, y, e):
+
+    prob_sorted = np.zeros_like(prob, dtype=np.float64)
+    y_sorted = np.zeros_like(y, dtype=np.float64)
+    e_sorted = np.zeros_like(e, dtype=int)
+
+    for raw, idx in enumerate(np.argsort(e)):
+        prob_sorted[raw] = prob[idx]
+        y_sorted[raw] = y[idx]
+        e_sorted[raw] = int(e[idx])
+
+    era_index = []
+    accuracy_eras = {}
+
+    iter_era = e_sorted[0]
+
+    for i, ele in enumerate(e_sorted):
+
+        if ele == iter_era:
+            era_index.append(i)
+        elif i == len(e_sorted)-1:
+            prob_era = prob_sorted[era_index]
+            y_era = y_sorted[era_index]
+            acc_era = get_accuracy(prob_era, y_era)
+            accuracy_eras[iter_era] = acc_era
+            print('Accuracy on Era {}: {:.3f}%'.format(iter_era, acc_era*100))
+        else:
+            prob_era = prob_sorted[era_index]
+            y_era = y_sorted[era_index]
+            acc_era = get_accuracy(prob_era, y_era)
+            accuracy_eras[iter_era] = acc_era
+            print('Accuracy on Era {}: {:.3f}%'.format(iter_era, acc_era*100))
+            iter_era = ele
+            era_index = [i]
+
+    return accuracy_eras
+
+
 if __name__ == '__main__':
 
     pass

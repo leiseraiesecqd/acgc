@@ -380,7 +380,7 @@ class DeepStack:
         print('======================================================')
 
 
-# Iterator for stack tree
+# Iterative Layer for Stack Tree
 class StackLayer:
 
     def __init__(self, params, x_train, y_train, w_train, e_train, x_g_train, x_test, x_g_test, id_test,
@@ -428,16 +428,19 @@ class StackLayer:
 
         # Stack Reused Features
         if x_train_reuse is not None:
+
+            if x_test_reuse is None:
+                raise ValueError('x_test_reuse is None!')
+
             print('------------------------------------------------------')
-            print('Stacking Reused Features...')
+            print('Stacking Reused Features of Train Set...')
             # n_sample * (n_feature + n_reuse)
             blender_x_tree = np.concatenate((blender_x_tree, x_train_reuse), axis=1)
             # n_sample * (n_feature + n_reuse + 1)
             blender_x_g_tree = np.column_stack((blender_x_tree, self.g_train))
 
-        if x_test_reuse is not None:
             print('------------------------------------------------------')
-            print('Stacking Reused Features...')
+            print('Stacking Reused Features of Test Set...')
             # n_sample * (n_feature + n_reuse)
             blender_test_tree = np.concatenate((blender_test_tree, x_test_reuse), axis=1)
             # n_sample * (n_feature + n_reuse + 1)
@@ -523,6 +526,7 @@ class StackLayer:
             utils.save_stack_outputs(self.stack_output_path + 'l{}_'.format(self.i_layer),
                                      blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree)
 
+        # For First Layer
         else:
 
             blender_x_tree = self.x_train
@@ -530,10 +534,11 @@ class StackLayer:
             blender_test_tree = self.x_test
             blender_test_g_tree = self.x_g_test
 
+        # For Final Layer
         if self.final_layer_model is not None:
 
-            self.stack_final_layer(self.final_layer_model, self.params, self.n_valid, self.n_cv_final, blender_x_tree,
-                                   blender_test_tree, blender_x_g_tree, blender_test_g_tree,
+            self.stack_final_layer(self.final_layer_model, self.params, self.n_valid, self.n_cv_final,
+                                   blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree,
                                    x_train_reuse=self.x_train_reuse, x_test_reuse=self.x_test_reuse)
 
         else:
@@ -542,10 +547,9 @@ class StackLayer:
             blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs \
                 = self.stacker(self.models_initializer, self.params, blender_x_tree, self.y_train, self.w_train,
                                self.e_train, blender_x_g_tree, blender_test_tree, blender_test_g_tree,
-                               self.g_train, self.g_test, cv=self.cv, n_valid=self.n_valid,
-                               n_era=self.n_era, cv_seed=self.cv_seed, i_layer=self.i_layer, i_epoch=i_epoch,
-                               x_train_reuse=self.x_train_reuse, x_test_reuse=self.x_test_reuse,
-                               dnn_param=self.dnn_param)
+                               cv=self.cv, n_valid=self.n_valid, n_era=self.n_era, cv_seed=self.cv_seed,
+                               i_layer=self.i_layer, i_epoch=i_epoch, x_train_reuse=self.x_train_reuse,
+                               x_test_reuse=self.x_test_reuse, dnn_param=self.dnn_param)
 
             return blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs
 
@@ -668,7 +672,7 @@ class StackTree:
         return blender_valid_cv, blender_test_cv, blender_losses_cv
 
     def stacker(self, models_initializer, params, x_train_inputs, y_train_inputs, w_train_inputs,
-                e_train_inputs, x_g_train_inputs, x_test, x_g_test, g_train, g_test, 
+                e_train_inputs, x_g_train_inputs, x_test, x_g_test,
                 cv, n_valid=4, n_era=20, cv_seed=None, i_layer=1, i_epoch=1,
                 x_train_reuse=None, x_test_reuse=None, dnn_param=None):
 
@@ -677,18 +681,23 @@ class StackTree:
 
         # Stack Reused Features
         if x_train_reuse is not None:
-            print('------------------------------------------------------')
-            print('Stacking Reused Features...')
-            x_train_inputs = np.concatenate((x_train_inputs, x_train_reuse), axis=1)  # n_sample * (n_feature + n_reuse)
-            x_train_group = x_g_train_inputs[:, -1]
-            x_g_train_inputs = np.column_stack((x_train_inputs, x_train_group))       # n_sample * (n_feature + n_reuse + 1)
 
-        if x_test_reuse is not None:
+            if x_test_reuse is None:
+                raise ValueError('x_test_reuse is None!')
+
             print('------------------------------------------------------')
-            print('Stacking Reused Features...')
-            x_test = np.concatenate((x_test, x_test_reuse), axis=1)  # n_sample * (n_feature + n_reuse)
-            x_test_group = x_g_test[:, -1]
-            x_g_test = np.column_stack((x_test, x_test_group))       # n_sample * (n_feature + n_reuse + 1)
+            print('Stacking Reused Features of Train Set...')
+            # n_sample * (n_feature + n_reuse)
+            x_train_inputs = np.concatenate((x_train_inputs, x_train_reuse), axis=1)
+            # n_sample * (n_feature + n_reuse + 1)
+            x_g_train_inputs = np.column_stack((x_train_inputs, self.g_train))
+
+            print('------------------------------------------------------')
+            print('Stacking Reused Features of Test Set...')
+            # n_sample * (n_feature + n_reuse)
+            x_test = np.concatenate((x_test, x_test_reuse), axis=1)
+            # n_sample * (n_feature + n_reuse + 1)
+            x_g_test = np.column_stack((x_test, self.g_test))
 
         # Print Shape
         print('------------------------------------------------------')
@@ -770,8 +779,8 @@ class StackTree:
         # Stack Group Features
         print('------------------------------------------------------')
         print('Stacking Group Features...')
-        blender_x_g_outputs = np.column_stack((blender_x_outputs, g_train))
-        blender_test_g_outputs = np.column_stack((blender_test_outputs, g_test))
+        blender_x_g_outputs = np.column_stack((blender_x_outputs, self.g_train))
+        blender_test_g_outputs = np.column_stack((blender_test_outputs, self.g_test))
 
         # Print Shape
         print('------------------------------------------------------')

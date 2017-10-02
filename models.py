@@ -102,21 +102,6 @@ class LRegression:
 
         return prob_train
 
-    def get_accuracy(self, clf, x_train, y_train, x_valid=None, y_valid=None):
-
-        prob_train_cv = self.predict(clf, x_train)
-        acc_train_cv = utils.get_accuracy(prob_train_cv, y_train)
-        print('Train Accuracy: {:.3f}%'.format(acc_train_cv * 100))
-        
-        if x_valid is not None:
-            prob_valid_cv = self.predict(clf, x_valid)
-            acc_valid_cv = utils.get_accuracy(prob_valid_cv, y_valid)
-            print('Valid Accuracy: {:.3f}%'.format(acc_valid_cv * 100))
-            return acc_train_cv, acc_valid_cv
-        
-        else:
-            return acc_train_cv
-
     def train(self, pred_path, loss_log_path, n_valid, n_cv, cv_seed, parameters=None):
 
         count = 0
@@ -150,9 +135,12 @@ class LRegression:
             # Prediction
             prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'cv_results/lr_cv_{}_'.format(count))
 
-            # Save train prob to csv file
+            # Save Train Probabilities to CSV File
             prob_train = self.get_prob_train(clf, self.x_train,
                                              pred_path=pred_path + 'cv_prob_train/lr_cv_{}_'.format(count))
+            
+            # Get Probabilities of Validation Set
+            prob_valid = self.predict(clf, x_valid)
 
             # Print LogLoss
             print('------------------------------------------------------')
@@ -161,9 +149,9 @@ class LRegression:
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Get Accuracies
-            acc_train_cv, acc_valid_cv = self.get_accuracy(clf, x_train, y_train, x_valid, y_valid)
+            acc_train_cv, acc_valid_cv =utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
 
-            # Save Losses to file
+            # Save Losses to File
             utils.save_loss_log(loss_log_path + 'lr_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
 
@@ -356,21 +344,6 @@ class DecisionTree:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-
-    def get_accuracy(self, clf, x_train, y_train, x_valid=None, y_valid=None):
-
-        prob_train_cv = self.predict(clf, x_train)
-        acc_train_cv = utils.get_accuracy(prob_train_cv, y_train)
-        print('Train Accuracy: {:.3f}%'.format(acc_train_cv * 100))
-
-        if x_valid is not None:
-            prob_valid_cv = self.predict(clf, x_valid)
-            acc_valid_cv = utils.get_accuracy(prob_valid_cv, y_valid)
-            print('Valid Accuracy: {:.3f}%'.format(acc_valid_cv * 100))
-            return acc_train_cv, acc_valid_cv
-
-        else:
-            return acc_train_cv
     
     def get_prob_train(self, clf, x_train, pred_path=None):
 
@@ -416,9 +389,12 @@ class DecisionTree:
             # Prediction
             prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'cv_results/dt_cv_{}_'.format(count))
 
-            # Save train prob to csv file
+            # Save Train Probabilities to CSV File
             prob_train = self.get_prob_train(clf, self.x_train,
                                              pred_path=pred_path + 'cv_prob_train/dt_cv_{}_'.format(count))
+            
+            # Get Probabilities of Validation Set
+            prob_valid = self.predict(clf, x_valid)
 
             # Print LogLoss
             print('------------------------------------------------------')
@@ -427,9 +403,9 @@ class DecisionTree:
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Get Accuracies
-            acc_train_cv, acc_valid_cv = self.get_accuracy(clf, x_train, y_train, x_valid, y_valid)
+            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
 
-            # Save Losses to file
+            # Save Losses to File
             utils.save_loss_log(loss_log_path + 'dt_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
 
@@ -552,21 +528,6 @@ class RandomForest:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-
-    def get_accuracy(self, clf, x_train, y_train, x_valid=None, y_valid=None):
-
-        prob_train_cv = self.predict(clf, x_train)
-        acc_train_cv = utils.get_accuracy(prob_train_cv, y_train)
-        print('Train Accuracy: {:.3f}%'.format(acc_train_cv * 100))
-
-        if x_valid is not None:
-            prob_valid_cv = self.predict(clf, x_valid)
-            acc_valid_cv = utils.get_accuracy(prob_valid_cv, y_valid)
-            print('Valid Accuracy: {:.3f}%'.format(acc_valid_cv * 100))
-            return acc_train_cv, acc_valid_cv
-
-        else:
-            return acc_train_cv
     
     def get_prob_train(self, clf, x_train, pred_path=None):
 
@@ -612,9 +573,12 @@ class RandomForest:
             # Prediction
             prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'cv_results/rf_cv_{}_'.format(count))
 
-            # Save train prob to csv file
+            # Save Train Probabilities to CSV File
             prob_train = self.get_prob_train(clf, self.x_train, 
                                              pred_path=pred_path + 'cv_prob_train/rf_cv_{}_'.format(count))
+            
+            # Get Probabilities of Validation Set
+            prob_valid = self.predict(clf, x_valid)
 
             # Print LogLoss
             print('------------------------------------------------------')
@@ -623,9 +587,9 @@ class RandomForest:
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Get Accuracies
-            acc_train_cv, acc_valid_cv = self.get_accuracy(clf, x_train, y_train, x_valid, y_valid)
+            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
 
-            # Save Losses to file
+            # Save Losses to File
             utils.save_loss_log(loss_log_path + 'rf_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
 
@@ -748,21 +712,6 @@ class ExtraTrees:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-
-    def get_accuracy(self, clf, x_train, y_train, x_valid=None, y_valid=None):
-
-        prob_train_cv = self.predict(clf, x_train)
-        acc_train_cv = utils.get_accuracy(prob_train_cv, y_train)
-        print('Train Accuracy: {:.3f}%'.format(acc_train_cv * 100))
-
-        if x_valid is not None:
-            prob_valid_cv = self.predict(clf, x_valid)
-            acc_valid_cv = utils.get_accuracy(prob_valid_cv, y_valid)
-            print('Valid Accuracy: {:.3f}%'.format(acc_valid_cv * 100))
-            return acc_train_cv, acc_valid_cv
-
-        else:
-            return acc_train_cv
     
     def get_prob_train(self, clf, x_train, pred_path=None):
 
@@ -808,9 +757,12 @@ class ExtraTrees:
             # Prediction
             prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'cv_results/et_cv_{}_'.format(count))
 
-            # Save train prob to csv file
+            # Save Train Probabilities to CSV File
             prob_train = self.get_prob_train(clf, self.x_train,
                                              pred_path=pred_path + 'cv_prob_train/et_cv_{}_'.format(count))
+            
+            # Get Probabilities of Validation Set
+            prob_valid = self.predict(clf, x_valid)
 
             # Print LogLoss
             print('------------------------------------------------------')
@@ -819,9 +771,9 @@ class ExtraTrees:
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Get Accuracies
-            acc_train_cv, acc_valid_cv = self.get_accuracy(clf, x_train, y_train, x_valid, y_valid)
+            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
 
-            # Save Losses to file
+            # Save Losses to File
             utils.save_loss_log(loss_log_path + 'et_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
 
@@ -944,21 +896,6 @@ class AdaBoost:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-
-    def get_accuracy(self, clf, x_train, y_train, x_valid=None, y_valid=None):
-
-        prob_train_cv = self.predict(clf, x_train)
-        acc_train_cv = utils.get_accuracy(prob_train_cv, y_train)
-        print('Train Accuracy: {:.3f}%'.format(acc_train_cv * 100))
-
-        if x_valid is not None:
-            prob_valid_cv = self.predict(clf, x_valid)
-            acc_valid_cv = utils.get_accuracy(prob_valid_cv, y_valid)
-            print('Valid Accuracy: {:.3f}%'.format(acc_valid_cv * 100))
-            return acc_train_cv, acc_valid_cv
-
-        else:
-            return acc_train_cv
         
     def get_prob_train(self, clf, x_train, pred_path=None):
 
@@ -1004,9 +941,12 @@ class AdaBoost:
             # Prediction
             prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'cv_results/ab_cv_{}_'.format(count))
 
-            # Save train prob to csv file
+            # Save Train Probabilities to CSV File
             prob_train = self.get_prob_train(clf, self.x_train, 
                                              pred_path=pred_path + 'cv_prob_train/ab_cv_{}_'.format(count))
+            
+            # Get Probabilities of Validation Set
+            prob_valid = self.predict(clf, x_valid)
 
             # Print LogLoss
             print('------------------------------------------------------')
@@ -1015,9 +955,9 @@ class AdaBoost:
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Get Accuracies
-            acc_train_cv, acc_valid_cv = self.get_accuracy(clf, x_train, y_train, x_valid, y_valid)
+            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
 
-            # Save Losses to file
+            # Save Losses to File
             utils.save_loss_log(loss_log_path + 'ab_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
 
@@ -1140,21 +1080,6 @@ class GradientBoosting:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-
-    def get_accuracy(self, clf, x_train, y_train, x_valid=None, y_valid=None):
-
-        prob_train_cv = self.predict(clf, x_train)
-        acc_train_cv = utils.get_accuracy(prob_train_cv, y_train)
-        print('Train Accuracy: {:.3f}%'.format(acc_train_cv * 100))
-
-        if x_valid is not None:
-            prob_valid_cv = self.predict(clf, x_valid)
-            acc_valid_cv = utils.get_accuracy(prob_valid_cv, y_valid)
-            print('Valid Accuracy: {:.3f}%'.format(acc_valid_cv * 100))
-            return acc_train_cv, acc_valid_cv
-
-        else:
-            return acc_train_cv
     
     def get_prob_train(self, clf, x_train, pred_path=None):
 
@@ -1203,9 +1128,12 @@ class GradientBoosting:
             # Prediction
             prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'cv_results/gb_cv_{}_'.format(count))
 
-            # Save train prob to csv file
+            # Save Train Probabilities to CSV File
             prob_train = self.get_prob_train(clf, self.x_train, 
                                              pred_path=pred_path + 'cv_prob_train/gb_cv_{}_'.format(count))
+
+            # Get Probabilities of Validation Set
+            prob_valid = self.predict(clf, x_valid)
 
             # Print LogLoss
             print('------------------------------------------------------')
@@ -1214,9 +1142,9 @@ class GradientBoosting:
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Get Accuracies
-            acc_train_cv, acc_valid_cv = self.get_accuracy(clf, x_train, y_train, x_valid, y_valid)
+            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
 
-            # Save Losses to file
+            # Save Losses to File
             utils.save_loss_log(loss_log_path + 'gb_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
 
@@ -1350,31 +1278,16 @@ class XGBoost:
 
         return loss_train, loss_valid, loss_train_w, loss_valid_w
 
-    def predict(self, model, pred_path=None):
+    def predict(self, model, x_test, pred_path=None):
 
         print('Predicting...')
 
-        prob_test = model.predict(xgb.DMatrix(self.x_test))
+        prob_test = model.predict(xgb.DMatrix(x_test))
         
         if pred_path is not None:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-
-    def get_accuracy(self, clf, x_train, y_train, x_valid=None, y_valid=None):
-
-        prob_train_cv = self.predict(clf, x_train)
-        acc_train_cv = utils.get_accuracy(prob_train_cv, y_train)
-        print('Train Accuracy: {:.3f}%'.format(acc_train_cv * 100))
-
-        if x_valid is not None:
-            prob_valid_cv = self.predict(clf, x_valid)
-            acc_valid_cv = utils.get_accuracy(prob_valid_cv, y_valid)
-            print('Valid Accuracy: {:.3f}%'.format(acc_valid_cv * 100))
-            return acc_train_cv, acc_valid_cv
-
-        else:
-            return acc_train_cv
 
     def get_prob_train(self, model, x_train, pred_path=None):
 
@@ -1399,7 +1312,7 @@ class XGBoost:
 
     def predict_sklearn(self, clf, x_test, pred_path=None):
 
-        print('Predicting Test Set...')
+        print('Predicting...')
 
         prob_test = np.array(clf.predict_proba(x_test))[:, 1]
 
@@ -1407,21 +1320,6 @@ class XGBoost:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-
-    def get_accuracy_sklearn(self, clf, x_train, y_train, x_valid=None, y_valid=None):
-
-        prob_train_cv = self.predict_sklearn(clf, x_train)
-        acc_train_cv = utils.get_accuracy(prob_train_cv, y_train)
-        print('Train Accuracy: {:.3f}%'.format(acc_train_cv * 100))
-
-        if x_valid is not None:
-            prob_valid_cv = self.predict_sklearn(clf, x_valid)
-            acc_valid_cv = utils.get_accuracy(prob_valid_cv, y_valid)
-            print('Valid Accuracy: {:.3f}%'.format(acc_valid_cv * 100))
-            return acc_train_cv, acc_valid_cv
-
-        else:
-            return acc_train_cv
     
     def get_prob_train_sklearn(self, clf, x_train, pred_path=None):
 
@@ -1472,11 +1370,14 @@ class XGBoost:
             self.get_importance(bst)
 
             # Prediction
-            prob_test = self.predict(bst, pred_path=pred_path + 'cv_results/xgb_cv_{}_'.format(count))
+            prob_test = self.predict(bst, self.x_test, pred_path=pred_path + 'cv_results/xgb_cv_{}_'.format(count))
 
-            # Save train prob to csv file
+            # Save Train Probabilities to CSV File
             prob_train = self.get_prob_train(bst, self.x_train,
                                              pred_path=pred_path + 'cv_prob_train/xgb_sk_cv_{}_'.format(count))
+            
+            # Get Probabilities of Validation Set
+            prob_valid = self.predict(bst, x_valid)
 
             # Print LogLoss
             print('------------------------------------------------------')
@@ -1485,9 +1386,9 @@ class XGBoost:
                                                                                  x_valid, y_valid, w_valid)
             
             # Get Accuracies
-            acc_train_cv, acc_valid_cv = self.get_accuracy(bst, x_train, y_train, x_valid, y_valid)
+            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
 
-            # Save Losses to file
+            # Save Losses to File
             utils.save_loss_log(loss_log_path + 'xgb_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
 
@@ -1564,9 +1465,12 @@ class XGBoost:
             prob_test = self.predict_sklearn(clf, self.x_test,
                                              pred_path=pred_path + 'cv_results/xgb_sk_cv_{}_'.format(count))
 
-            # Save train prob to csv file
+            # Save Train Probabilities to CSV File
             prob_train = self.get_prob_train_sklearn(clf, self.x_train,
                                                      pred_path=pred_path + 'cv_prob_train/xgb_sk_cv_{}_'.format(count))
+
+            # Get Probabilities of Validation Set
+            prob_valid = self.predict_sklearn(clf, x_valid)
 
             # Print LogLoss
             print('------------------------------------------------------')
@@ -1576,9 +1480,9 @@ class XGBoost:
                                                       x_valid, y_valid, w_valid)
 
             # Get Accuracies
-            acc_train_cv, acc_valid_cv = self.get_accuracy_sklearn(clf, x_train, y_train, x_valid, y_valid)
+            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
 
-            # Save Losses to file
+            # Save Losses to File
             utils.save_loss_log(loss_log_path + 'xgb_sk_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train,loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
 
@@ -1704,31 +1608,17 @@ class LightGBM:
 
         print('\n')
 
-    def predict(self, model, pred_path):
+    def predict(self, model, x_test, pred_path=None):
 
-        print('Predicting Test Set...')
+        print('Predicting...')
 
-        prob_test = model.predict(self.x_g_test)
+        prob_test = model.predict(x_test)
 
-        utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+        if pred_path is not None:
+            utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-
-    def get_accuracy(self, clf, x_train, y_train, x_valid=None, y_valid=None):
-
-        prob_train_cv = self.predict(clf, x_train)
-        acc_train_cv = utils.get_accuracy(prob_train_cv, y_train)
-        print('Train Accuracy: {:.3f}%'.format(acc_train_cv * 100))
-
-        if x_valid is not None:
-            prob_valid_cv = self.predict(clf, x_valid)
-            acc_valid_cv = utils.get_accuracy(prob_valid_cv, y_valid)
-            print('Valid Accuracy: {:.3f}%'.format(acc_valid_cv * 100))
-            return acc_train_cv, acc_valid_cv
-
-        else:
-            return acc_train_cv
-
+    
     def get_prob_train(self, model, x_train, pred_path=None):
 
         print('Predicting...')
@@ -1752,7 +1642,7 @@ class LightGBM:
 
     def predict_sklearn(self, clf, x_g_test, pred_path=None):
 
-        print('Predicting Test Set...')
+        print('Predicting...')
 
         prob_test = np.array(clf.predict_proba(x_g_test))[:, 1]
 
@@ -1760,21 +1650,6 @@ class LightGBM:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-
-    def get_accuracy_sklearn(self, clf, x_train, y_train, x_valid=None, y_valid=None):
-
-        prob_train_cv = self.predict_sklearn(clf, x_train)
-        acc_train_cv = utils.get_accuracy(prob_train_cv, y_train)
-        print('Train Accuracy: {:.3f}%'.format(acc_train_cv * 100))
-
-        if x_valid is not None:
-            prob_valid_cv = self.predict_sklearn(clf, x_valid)
-            acc_valid_cv = utils.get_accuracy(prob_valid_cv, y_valid)
-            print('Valid Accuracy: {:.3f}%'.format(acc_valid_cv * 100))
-            return acc_train_cv, acc_valid_cv
-
-        else:
-            return acc_train_cv
     
     def get_prob_train_sklearn(self, clf, x_train, pred_path=None):
 
@@ -1827,11 +1702,14 @@ class LightGBM:
             self.get_importance(bst)
 
             # Prediction
-            prob_test = self.predict(bst, pred_path=pred_path + 'cv_results/lgb_cv_{}_'.format(count))
+            prob_test = self.predict(bst, self.x_g_test, pred_path=pred_path + 'cv_results/lgb_cv_{}_'.format(count))
 
-            # Save train prob to csv file
-            prob_train = self.get_prob_train(bst, self.x_train,
+            # Save Train Probabilities to CSV File
+            prob_train = self.get_prob_train(bst, self.x_g_train,
                                              pred_path=pred_path + 'cv_prob_train/lgb_sk_cv_{}_'.format(count))
+            
+            # Get Probabilities of Validation Set
+            prob_valid = self.predict(bst, x_valid)
 
             # Print LogLoss
             print('------------------------------------------------------')
@@ -1840,9 +1718,9 @@ class LightGBM:
                                                                                   x_valid, y_valid, w_valid)
 
             # Get Accuracies
-            acc_train_cv, acc_valid_cv = self.get_accuracy(bst, x_train, y_train, x_valid, y_valid)
+            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
 
-            # Save Losses to file
+            # Save Losses to File
             utils.save_loss_log(loss_log_path + 'lgb_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
 
@@ -1928,9 +1806,12 @@ class LightGBM:
             prob_test = self.predict_sklearn(clf, self.x_g_test,
                                              pred_path=pred_path + 'cv_results/lgb_sk_cv_{}_'.format(count))
 
-            # Save train prob to csv file
-            prob_train = self.get_prob_train_sklearn(clf, self.x_train, 
+            # Save Train Probabilities to CSV File
+            prob_train = self.get_prob_train_sklearn(clf, self.x_g_train, 
                                                      pred_path=pred_path + 'cv_prob_train/lgb_sk_cv_{}_'.format(count))
+
+            # Get Probabilities of Validation Set
+            prob_valid = self.predict_sklearn(clf, x_valid)
 
             # Print LogLoss
             print('------------------------------------------------------')
@@ -1940,9 +1821,9 @@ class LightGBM:
                                                       x_valid, y_valid, w_valid)
 
             # Get Accuracies
-            acc_train_cv, acc_valid_cv = self.get_accuracy_sklearn(clf, x_train, y_train, x_valid, y_valid)
+            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
 
-            # Save Losses to file
+            # Save Losses to File
             utils.save_loss_log(loss_log_path + 'lgb_sk_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
             
