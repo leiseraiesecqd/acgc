@@ -559,7 +559,7 @@ class StackTree:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_tr_g, x_te_g,
                  pred_path=None, loss_log_path=None, stack_output_path=None,
-                 hyper_params=None, layers_param=None,final_layer_params=None, final_layer_set=None):
+                 hyper_params=None, layers_param=None, final_layer_params=None, final_layer_set=None):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -838,10 +838,10 @@ class StackTree:
         # Final Layer
         stk_l2 = StackLayer(self.final_layer_params, self.x_train, self.y_train, self.w_train, self.e_train,
                             self.x_g_train, self.x_test, self.x_g_test, self.id_test,
-                            n_valid=self.n_valid[1], cv_seed=self.cv_seed,
-                            input_layer=stk_l1, i_layer=2, n_epoch=self.n_epoch[1],
-                            x_train_reuse=x_train_reuse_l2, x_test_reuse=x_test_reuse_l2,
-                            pred_path=self.pred_path, stack_output_path=self.stack_output_path,
+                            n_valid=self.n_valid[1], cv_seed=self.cv_seed, input_layer=stk_l1,
+                            i_layer=2, n_epoch=self.n_epoch[1], x_train_reuse=x_train_reuse_l2,
+                            x_test_reuse=x_test_reuse_l2, pred_path=self.pred_path,
+                            loss_log_path=self.loss_log_path, stack_output_path=self.stack_output_path,
                             final_layer_model=final_layer_model, n_cv_final=final_layer_cv)
 
         # Training
