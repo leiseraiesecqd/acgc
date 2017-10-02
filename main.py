@@ -316,7 +316,7 @@ class TrainSingleModel:
 
         # HyperParameters
         hyper_parameters = {'version': '1.0',
-                            'epochs': 5,
+                            'epochs': 20,
                             'unit_number': [48, 24, 12],
                             'learning_rate': 0.0001,
                             'keep_probability': 0.5,
@@ -1098,7 +1098,7 @@ if __name__ == "__main__":
     # TrainSingleModel.lgb_train_sklearn()
 
     # DNN
-    # TrainSingleModel.dnn_tf_train()
+    TrainSingleModel.dnn_tf_train()
     # TrainSingleModel.dnn_keras_train()
 
     # Grid Search
@@ -1113,7 +1113,7 @@ if __name__ == "__main__":
 
     # Stacking
     # ModelStacking.deep_stack_train()
-    ModelStacking.stack_tree_train()
+    # ModelStacking.stack_tree_train()
     # TrainSingleModel.stack_lgb_train()
 
     print('======================================================')
