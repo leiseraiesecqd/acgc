@@ -27,6 +27,7 @@ path_list = [pred_path,
 
 train_seed = 1
 cv_seed = None
+dnn_seed = 1
 
 
 # Train single model
@@ -320,6 +321,7 @@ class TrainSingleModel:
                             'learning_rate': 0.0001,
                             'keep_probability': 0.5,
                             'batch_size': 256,
+                            'seed': dnn_seed,
                             'display_step': 100,
                             'save_path': './checkpoints/',
                             'log_path': './log/'}
@@ -923,6 +925,7 @@ class ModelStacking:
                       'learning_rate': 0.0001,
                       'keep_probability': 0.4,
                       'batch_size': 256,
+                      'seed': dnn_seed,
                       'display_step': 100,
                       'save_path': './checkpoints/',
                       'log_path': './log/'}
@@ -971,6 +974,7 @@ class ModelStacking:
                       'learning_rate': 0.0001,
                       'keep_probability': 0.8,
                       'batch_size': 256,
+                      'seed': dnn_seed,
                       'display_step': 100,
                       'save_path': './checkpoints/',
                       'log_path': './log/'}
@@ -994,6 +998,7 @@ class ModelStacking:
                       'learning_rate': 0.0001,
                       'keep_probability': 0.8,
                       'batch_size': 256,
+                      'seed': dnn_seed,
                       'display_step': 100,
                       'save_path': './checkpoints/',
                       'log_path': './log/'}

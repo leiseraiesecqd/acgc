@@ -288,6 +288,16 @@ def check_dir(path_list):
             os.makedirs(dir_path)
 
 
+# Get Accuracy
+def get_accuracy(prob, label):
+
+    prediction = [1 if pro > 0.5 else 0 for pro in prob]
+    correct_pred = [1 if p == y else 0 for p, y in zip(prediction, label)]
+    acurracy = np.mean(correct_pred)
+
+    return acurracy
+
+
 if __name__ == '__main__':
 
     pass

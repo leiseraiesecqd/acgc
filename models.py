@@ -1898,6 +1898,7 @@ class DeepNeuralNetworks:
         self.learning_rate = parameters['learning_rate']
         self.keep_probability = parameters['keep_probability']
         self.batch_size = parameters['batch_size']
+        self.dnn_seed = parameters['seed']
         self.display_step = parameters['display_step']
         self.save_path = parameters['save_path']
         self.log_path = parameters['log_path']
@@ -1916,8 +1917,7 @@ class DeepNeuralNetworks:
         return inputs_, labels_, loss_weights_, learning_rate_, keep_prob_, is_train_
 
     # Full Connected Layer
-    @staticmethod
-    def fc_layer(x_tensor, layer_name, num_outputs, keep_prob, training):
+    def fc_layer(self, x_tensor, layer_name, num_outputs, keep_prob, training):
 
         with tf.name_scope(layer_name):
 
@@ -1941,7 +1941,8 @@ class DeepNeuralNetworks:
                                                    activation_fn=tf.nn.sigmoid,
                                                    # weights_initializer=tf.truncated_normal_initializer(
                                                    # stddev=2.0 / math.sqrt(x_shape[1])),
-                                                   weights_initializer=tf.contrib.layers.xavier_initializer(dtype=tf.float64),
+                                                   weights_initializer=tf.contrib.layers.xavier_initializer(dtype=tf.float64,
+                                                                                                            seed=self.dnn_seed),
                                                    biases_initializer=tf.zeros_initializer())
 
             tf.summary.histogram('fc_layer', fc)
@@ -1951,8 +1952,7 @@ class DeepNeuralNetworks:
         return fc
 
     # Output Layer
-    @staticmethod
-    def output_layer(x_tensor, layer_name, num_outputs):
+    def output_layer(self, x_tensor, layer_name, num_outputs):
 
         with tf.name_scope(layer_name):
             #  x_shape = x_tensor.get_shape().as_list()
@@ -1968,7 +1968,8 @@ class DeepNeuralNetworks:
             out = tf.contrib.layers.fully_connected(x_tensor,
                                                     num_outputs,
                                                     activation_fn=None,
-                                                    weights_initializer=tf.contrib.layers.xavier_initializer(dtype=tf.float64),
+                                                    weights_initializer=tf.contrib.layers.xavier_initializer(dtype=tf.float64,
+                                                                                                             seed=self.dnn_seed),
                                                     biases_initializer=tf.zeros_initializer())
 
         return out
