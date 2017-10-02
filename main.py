@@ -1096,7 +1096,7 @@ class ModelStacking:
                         ]
 
         final_layer_params = ModelStacking.get_final_layer_params()
-        final_layer_set = {'model': 'LGBM',
+        final_layer_set = {'model': 'LGB',
                            'n_cv': 20}
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
