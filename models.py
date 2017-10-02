@@ -72,6 +72,8 @@ class LRegression:
 
     def get_importance(self, clf):
 
+        print('------------------------------------------------------')
+        print('Feature Importance')
         self.importance = np.abs(clf.coef_)[0]
         indices = np.argsort(self.importance)[::-1]
 
@@ -112,8 +114,8 @@ class LRegression:
         loss_train_w_total = []
         loss_valid_w_total = []
 
-        for x_train, y_train, w_train, x_valid, y_valid, \
-            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+        for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
+            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
                                                                          y=self.y_train,
                                                                          w=self.w_train,
                                                                          e=self.e_train,
@@ -149,11 +151,14 @@ class LRegression:
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Get Accuracies
-            acc_train_cv, acc_valid_cv =utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
+            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
+            acc_train_era, acc_valid_era = \
+                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'lr_', count, parameters, n_valid, n_cv, valid_era,
-                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
+                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
+                                acc_train_era, acc_valid_era)
 
             # Feature Importance
             self.get_importance(clf)
@@ -326,6 +331,9 @@ class DecisionTree:
 
     def get_importance(self, clf):
 
+        print('------------------------------------------------------')
+        print('Feature Importance')
+
         self.importance = clf.feature_importances_
         self.indices = np.argsort(self.importance)[::-1]
 
@@ -366,8 +374,8 @@ class DecisionTree:
         loss_train_w_total = []
         loss_valid_w_total = []
 
-        for x_train, y_train, w_train, x_valid, y_valid, \
-            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+        for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
+            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
                                                                          y=self.y_train,
                                                                          w=self.w_train,
                                                                          e=self.e_train,
@@ -404,10 +412,13 @@ class DecisionTree:
 
             # Get Accuracies
             acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
+            acc_train_era, acc_valid_era = \
+                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'dt_', count, parameters, n_valid, n_cv, valid_era,
-                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
+                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
+                                acc_train_era, acc_valid_era)
 
             # Feature Importance
             self.get_importance(clf)
@@ -510,6 +521,9 @@ class RandomForest:
 
     def get_importance(self, clf):
 
+        print('------------------------------------------------------')
+        print('Feature Importance')
+
         self.importance = clf.feature_importances_
         self.indices = np.argsort(self.importance)[::-1]
 
@@ -550,8 +564,8 @@ class RandomForest:
         loss_train_w_total = []
         loss_valid_w_total = []
 
-        for x_train, y_train, w_train, x_valid, y_valid, \
-            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+        for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
+            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
                                                                          y=self.y_train,
                                                                          w=self.w_train,
                                                                          e=self.e_train,
@@ -588,10 +602,13 @@ class RandomForest:
 
             # Get Accuracies
             acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
+            acc_train_era, acc_valid_era = \
+                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'rf_', count, parameters, n_valid, n_cv, valid_era,
-                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
+                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
+                                acc_train_era, acc_valid_era)
 
             # Feature Importance
             self.get_importance(clf)
@@ -694,6 +711,9 @@ class ExtraTrees:
 
     def get_importance(self, clf):
 
+        print('------------------------------------------------------')
+        print('Feature Importance')
+
         self.importance = clf.feature_importances_
         self.indices = np.argsort(self.importance)[::-1]
 
@@ -734,8 +754,8 @@ class ExtraTrees:
         loss_train_w_total = []
         loss_valid_w_total = []
 
-        for x_train, y_train, w_train, x_valid, y_valid, \
-            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+        for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
+            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
                                                                          y=self.y_train,
                                                                          w=self.w_train,
                                                                          e=self.e_train,
@@ -772,10 +792,13 @@ class ExtraTrees:
 
             # Get Accuracies
             acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
+            acc_train_era, acc_valid_era = \
+                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'et_', count, parameters, n_valid, n_cv, valid_era,
-                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
+                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
+                                acc_train_era, acc_valid_era)
 
             # Feature Importance
             self.get_importance(clf)
@@ -878,6 +901,9 @@ class AdaBoost:
 
     def get_importance(self, clf):
 
+        print('------------------------------------------------------')
+        print('Feature Importance')
+
         self.importance = clf.feature_importances_
         self.indices = np.argsort(self.importance)[::-1]
 
@@ -918,8 +944,8 @@ class AdaBoost:
         loss_train_w_total = []
         loss_valid_w_total = []
 
-        for x_train, y_train, w_train, x_valid, y_valid, \
-            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+        for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
+            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
                                                                          y=self.y_train,
                                                                          w=self.w_train,
                                                                          e=self.e_train,
@@ -956,10 +982,13 @@ class AdaBoost:
 
             # Get Accuracies
             acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
+            acc_train_era, acc_valid_era = \
+                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'ab_', count, parameters, n_valid, n_cv, valid_era,
-                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
+                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
+                                acc_train_era, acc_valid_era)
 
             # Feature Importance
             self.get_importance(clf)
@@ -1062,6 +1091,9 @@ class GradientBoosting:
 
     def get_importance(self, clf):
 
+        print('------------------------------------------------------')
+        print('Feature Importance')
+
         self.importance = clf.feature_importances_
         self.indices = np.argsort(self.importance)[::-1]
 
@@ -1102,8 +1134,8 @@ class GradientBoosting:
         loss_train_w_total = []
         loss_valid_w_total = []
 
-        for x_train, y_train, w_train,  x_valid, y_valid, \
-            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+        for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
+            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
                                                                          y=self.y_train,
                                                                          w=self.w_train,
                                                                          e=self.e_train,
@@ -1143,10 +1175,13 @@ class GradientBoosting:
 
             # Get Accuracies
             acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
+            acc_train_era, acc_valid_era = \
+                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'gb_', count, parameters, n_valid, n_cv, valid_era,
-                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
+                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
+                                acc_train_era, acc_valid_era)
 
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
@@ -1248,6 +1283,9 @@ class XGBoost:
 
     def get_importance(self, model):
 
+        print('------------------------------------------------------')
+        print('Feature Importance')
+
         self.importance = model.get_fscore()
         sorted_importance = sorted(self.importance.items(), key=lambda d: d[1], reverse=True)
 
@@ -1302,6 +1340,9 @@ class XGBoost:
 
     def get_importance_sklearn(self, clf):
 
+        print('------------------------------------------------------')
+        print('Feature Importance')
+
         self.importance = clf.feature_importances_
         self.indices = np.argsort(self.importance)[::-1]
 
@@ -1342,8 +1383,8 @@ class XGBoost:
         loss_train_w_total = []
         loss_valid_w_total = []
 
-        for x_train, y_train, w_train, x_valid, y_valid, \
-            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+        for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
+            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
                                                                          y=self.y_train,
                                                                          w=self.w_train,
                                                                          e=self.e_train,
@@ -1387,10 +1428,13 @@ class XGBoost:
             
             # Get Accuracies
             acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
+            acc_train_era, acc_valid_era = \
+                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'xgb_', count, parameters, n_valid, n_cv, valid_era,
-                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
+                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
+                                acc_train_era, acc_valid_era)
 
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
@@ -1437,8 +1481,8 @@ class XGBoost:
         loss_train_w_total = []
         loss_valid_w_total = []
 
-        for x_train, y_train, w_train, x_valid, y_valid, \
-            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
+        for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
+            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
                                                                          y=self.y_train,
                                                                          w=self.w_train,
                                                                          e=self.e_train,
@@ -1481,10 +1525,13 @@ class XGBoost:
 
             # Get Accuracies
             acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
+            acc_train_era, acc_valid_era = \
+                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'xgb_sk_', count, parameters, n_valid, n_cv, valid_era,
-                                loss_train,loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
+                                loss_train,loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
+                                acc_train_era, acc_valid_era)
 
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
@@ -1598,6 +1645,9 @@ class LightGBM:
 
     def get_importance(self, model):
 
+        print('------------------------------------------------------')
+        print('Feature Importance')
+
         self.importance = model.feature_importance()
         self.indices = np.argsort(self.importance)[::-1]
 
@@ -1631,6 +1681,9 @@ class LightGBM:
         return prob_train
 
     def get_importance_sklearn(self, clf):
+
+        print('------------------------------------------------------')
+        print('Feature Importance')
 
         self.importance = clf.feature_importances_
         self.indices = np.argsort(self.importance)[::-1]
@@ -1673,8 +1726,8 @@ class LightGBM:
         loss_valid_w_total = []
 
         # Cross Validation
-        for x_train, y_train, w_train, x_valid, y_valid, \
-            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_g_train,
+        for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
+            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_g_train,
                                                                          y=self.y_train,
                                                                          w=self.w_train,
                                                                          e=self.e_train,
@@ -1719,10 +1772,13 @@ class LightGBM:
 
             # Get Accuracies
             acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
+            acc_train_era, acc_valid_era = \
+                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'lgb_', count, parameters, n_valid, n_cv, valid_era,
-                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
+                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
+                                acc_train_era, acc_valid_era)
 
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
@@ -1770,8 +1826,8 @@ class LightGBM:
         loss_valid_w_total = []
 
         # Use Category
-        for x_train, y_train, w_train, x_valid, y_valid, \
-            w_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_g_train,
+        for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
+            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_g_train,
                                                                          y=self.y_train,
                                                                          w=self.w_train,
                                                                          e=self.e_train,
@@ -1822,10 +1878,13 @@ class LightGBM:
 
             # Get Accuracies
             acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
+            acc_train_era, acc_valid_era = \
+                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'lgb_sk_', count, parameters, n_valid, n_cv, valid_era,
-                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv)
+                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
+                                acc_train_era, acc_valid_era)
             
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
@@ -2092,8 +2151,8 @@ class DeepNeuralNetworks:
             loss_train_w_total = []
             loss_valid_w_total = []
 
-            for x_train, y_train, w_train, x_valid, y_valid, \
-                w_valid, valid_era in CrossValidation.era_k_fold_with_weight(self.x_train,
+            for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
+                e_valid, valid_era in CrossValidation.era_k_fold_with_weight(self.x_train,
                                                                              self.y_train,
                                                                              self.w_train,
                                                                              self.e_train,
@@ -2214,14 +2273,19 @@ class DeepNeuralNetworks:
                 loss_train_w_total.append(loss_train_w)
                 loss_valid_w_total.append(loss_valid_w)
 
+                # Get Accuracies
                 acc_train_cv = utils.get_accuracy(prob_train, y_train)
                 acc_valid_cv = utils.get_accuracy(prob_valid, y_valid)
+                acc_train_era, acc_valid_era = \
+                    utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
+
+                print('------------------------------------------------------')
                 print('CV Train Accuracy: {:.3f}%'.format(acc_train_cv * 100))
                 print('CV Valid Accuracy: {:.3f}%'.format(acc_valid_cv * 100))
 
                 utils.save_loss_log(loss_log_path + 'dnn_', cv_counter, self.parameters, n_valid, n_cv, 
                                     valid_era, loss_train, loss_valid, loss_train_w, loss_valid_w,
-                                    acc_train_cv, acc_valid_cv)
+                                    acc_train_cv, acc_valid_cv, acc_train_era, acc_valid_era)
 
                 utils.save_pred_to_csv(pred_path + 'cv_results/dnn_cv_{}_'.format(cv_counter),
                                        self.id_test, prob_test)
@@ -2410,8 +2474,8 @@ class DeepNeuralNetworks:
 #
 #         prob_total = []
 #
-#         for x_train, y_train, w_train, x_valid, y_valid, \
-#             w_valid, valid_era in CrossValidation.era_k_fold_with_weight(self.x_train,
+#         for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
+#             e_valid, valid_era in CrossValidation.era_k_fold_with_weight(self.x_train,
 #                                                                          self.y_train,
 #                                                                          self.w_train,
 #                                                                          self.e_train,
@@ -2741,15 +2805,17 @@ class CrossValidation:
                     x_train = x[train_index]
                     y_train = y[train_index]
                     w_train = w[train_index]
+                    e_train = e[train_index]
 
                     # Validation data
                     x_valid = x[valid_index]
                     y_valid = y[valid_index]
                     w_valid = w[valid_index]
+                    e_valid = e[valid_index]
 
                     trained_cv.append(set(valid_era))
 
-                    yield x_train, y_train, w_train, x_valid, y_valid, w_valid, valid_era
+                    yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
             # n_cv is not an integer multiple of n_valid
             else:
@@ -2786,15 +2852,17 @@ class CrossValidation:
                         x_train = x[train_index]
                         y_train = y[train_index]
                         w_train = w[train_index]
+                        e_train = e[train_index]
 
                         # Validation data
                         x_valid = x[valid_index]
                         y_valid = y[valid_index]
                         w_valid = w[valid_index]
+                        e_valid = e[valid_index]
 
                         trained_cv.append(set(valid_era))
 
-                        yield x_train, y_train, w_train, x_valid, y_valid, w_valid, valid_era
+                        yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
                     else:
 
@@ -2823,15 +2891,17 @@ class CrossValidation:
                         x_train = x[train_index]
                         y_train = y[train_index]
                         w_train = w[train_index]
+                        e_train = e[train_index]
 
                         # Validation data
                         x_valid = x[valid_index]
                         y_valid = y[valid_index]
                         w_valid = w[valid_index]
+                        e_valid = e[valid_index]
 
                         trained_cv.append(set(valid_era))
 
-                        yield x_train, y_train, w_train, x_valid, y_valid, w_valid, valid_era
+                        yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
     def era_k_fold_for_stack(self, x, y, w, e, x_g, n_valid, n_cv, seed=None):
 

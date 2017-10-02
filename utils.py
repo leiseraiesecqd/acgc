@@ -52,8 +52,8 @@ def seve_grid_search_log(log_path, params, params_grid, best_score, best_paramet
 
 
 # Save Final Losses
-def save_loss_log(log_path, count, parameters, n_valid, n_cv, valid_era, loss_train, loss_valid,
-                  loss_train_w, loss_valid_w, acc_train=None, acc_valid=None):
+def save_loss_log(log_path, count, parameters, n_valid, n_cv, valid_era, loss_train, loss_valid, loss_train_w,
+                  loss_valid_w, acc_train=None, acc_valid=None, acc_train_era=None, acc_valid_era=None):
 
     with open(log_path + 'loss_log.txt', 'a') as f:
 
@@ -73,7 +73,11 @@ def save_loss_log(log_path, count, parameters, n_valid, n_cv, valid_era, loss_tr
         f.write('\tCV Validation LogLoss with Weight: {:.6f}\n\n'.format(loss_valid_w))
         f.write('Accuracies:\n')
         f.write('\tCV Train Accuracy: {:.3f}%\n'.format(acc_train * 100))
-        f.write('\tCV Valid Accuracy: {:.3f}%\n\n'.format(acc_valid * 100))
+        f.write('\tCV Valid Accuracy: {:.3f}%\n'.format(acc_valid * 100))
+        f.write('\tTrain Eras Accuracy:\n')
+        f.write('\t\t' + str(acc_train_era) + '\n')
+        f.write('\tValid Eras Accuracy:\n')
+        f.write('\t\t' + str(acc_valid_era) + '\n\n')
 
 
 def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean, loss_valid_mean,
@@ -243,6 +247,7 @@ def print_loss(model, x_t, y_t, w_t, x_v, y_v, w_v):
     loss_train_w = log_loss_with_weight(prob_train, y_t, w_t)
     loss_valid_w = log_loss_with_weight(prob_valid, y_v, w_v)
 
+    print('------------------------------------------------------')
     print('Train LogLoss: {:>.8f}\n'.format(loss_train),
           'Validation LogLoss: {:>.8f}\n'.format(loss_valid),
           'Train LogLoss with Weight: {:>.8f}\n'.format(loss_train_w),
@@ -262,6 +267,7 @@ def print_loss_proba(model, x_t, y_t, w_t, x_v, y_v, w_v):
     loss_train_w = log_loss_with_weight(prob_train, y_t, w_t)
     loss_valid_w = log_loss_with_weight(prob_valid, y_v, w_v)
 
+    print('------------------------------------------------------')
     print('Train LogLoss: {:>.8f}\n'.format(loss_train),
           'Validation LogLoss: {:>.8f}\n'.format(loss_valid),
           'Train LogLoss with Weight: {:>.8f}\n'.format(loss_train_w),
@@ -278,6 +284,7 @@ def print_loss_dnn(prob_train, prob_valid, y_t, w_t, y_v, w_v):
     loss_train_w = log_loss_with_weight(prob_train, y_t, w_t)
     loss_valid_w = log_loss_with_weight(prob_valid, y_v, w_v)
 
+    print('------------------------------------------------------')
     print('Train LogLoss: {:>.8f}\n'.format(loss_train),
           'Validation LogLoss: {:>.8f}\n'.format(loss_valid),
           'Train LogLoss with Weight: {:>.8f}\n'.format(loss_train_w),
@@ -307,11 +314,12 @@ def get_accuracy(prob, label):
 # Print and Get Accuracy
 def print_and_get_accuracy(prob_train_cv, y_train, prob_valid_cv, y_valid):
 
+    print('------------------------------------------------------')
+    print('Accurrcy on CV:')
     acc_train_cv = get_accuracy(prob_train_cv, y_train)
-    print('Train Accuracy: {:.3f}%'.format(acc_train_cv * 100))
-
+    print('CV Train Accuracy: {:.3f}%'.format(acc_train_cv * 100))
     acc_valid_cv = get_accuracy(prob_valid_cv, y_valid)
-    print('Valid Accuracy: {:.3f}%'.format(acc_valid_cv * 100))
+    print('CV Valid Accuracy: {:.3f}%'.format(acc_valid_cv * 100))
 
     return acc_train_cv, acc_valid_cv
 
@@ -330,7 +338,6 @@ def get_era_accuracy(prob, y, e):
 
     era_index = []
     accuracy_eras = {}
-
     iter_era = e_sorted[0]
 
     for i, ele in enumerate(e_sorted):
@@ -353,6 +360,20 @@ def get_era_accuracy(prob, y, e):
             era_index = [i]
 
     return accuracy_eras
+
+
+# Print and Get Accuracy of Eras
+def print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid):
+
+    print('------------------------------------------------------')
+    print('Accuracies of Train Eras:')
+    acc_train_era = get_era_accuracy(prob_train, y_train, e_train)
+    print('------------------------------------------------------')
+    print('Accuracies of Valid Eras:')
+    acc_valid_era = get_era_accuracy(prob_valid, y_valid, e_valid)
+
+    return acc_train_era, acc_valid_era
+
 
 
 if __name__ == '__main__':
