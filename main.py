@@ -322,7 +322,7 @@ class TrainSingleModel:
         
         print('Start training LGBM...')
         
-        LGBM.train_sklearn(pred_path, loss_log_path, n_valid=2, n_cv=6, n_era=20, 
+        LGBM.train_sklearn(pred_path, loss_log_path, n_valid=2, n_cv=6, n_era=6,
                            cv_seed=cv_seed, parameters=lgb_parameters)
 
     # DNN
@@ -1158,10 +1158,10 @@ if __name__ == "__main__":
 
     # LightGBM
     # TrainSingleModel.lgb_train()
-    # TrainSingleModel.lgb_train_sklearn()
+    TrainSingleModel.lgb_train_sklearn()
 
     # DNN
-    TrainSingleModel.dnn_tf_train()
+    # TrainSingleModel.dnn_tf_train()
     # TrainSingleModel.dnn_keras_train()
 
     # Grid Search
