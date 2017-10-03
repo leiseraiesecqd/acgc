@@ -321,7 +321,7 @@ class TrainSingleModel:
         
         print('Start training LGBM...')
         
-        LGBM.train_sklearn(pred_path, loss_log_path, n_valid=2, n_cv=6, n_era=6,
+        LGBM.train_sklearn(pred_path, loss_log_path, n_valid=1, n_cv=6, n_era=6,
                            cv_seed=cv_seed, parameters=lgb_parameters)
 
     # DNN
