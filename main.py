@@ -320,10 +320,10 @@ class TrainSingleModel:
         # HyperParameters
         hyper_parameters = {'version': '1.0',
                             'epochs': 5,
-                            'unit_number': [4096],
+                            'unit_number': [2048],
                             'learning_rate': 0.00001,
-                            'keep_probability': 0.8,
-                            'batch_size': 256,
+                            'keep_probability': 0.6,
+                            'batch_size': 128,
                             'seed': dnn_seed,
                             'display_step': 100,
                             'save_path': './checkpoints/',
