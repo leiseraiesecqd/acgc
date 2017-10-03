@@ -28,7 +28,7 @@ path_list = [pred_path,
              loss_log_path,
              stack_output_path]
 
-train_seed = 1
+train_seed = 2
 cv_seed = None
 dnn_seed = None
 
@@ -285,8 +285,8 @@ class TrainSingleModel:
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
         # x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p \
         #     = utils.load_preprocessed_positive_pd_data(preprocessed_data_path)
-        # x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n \
-        #     = utils.load_preprocessed_negative_pd_data(preprocessed_data_path)
+        x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n \
+            = utils.load_preprocessed_negative_pd_data(preprocessed_data_path)
         
         lgb_parameters = {'learning_rate': 0.002,
                           'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
@@ -310,19 +310,19 @@ class TrainSingleModel:
                           'silent': False,
                           'seed': train_seed}
 
-        LGBM = models.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test)
-
-        print('Start training LGBM...')
-
-        LGBM.train_sklearn(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20,
-                           cv_seed=cv_seed, parameters=lgb_parameters)
-
-        # LGBM = models.LightGBM(x_train_n, y_train_n, w_train_n, e_train_n, x_test, id_test, x_g_train_n, x_g_test)
+        # LGBM = models.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test)
         #
         # print('Start training LGBM...')
         #
-        # LGBM.train_sklearn(pred_path, loss_log_path, n_valid=1, n_cv=6, n_era=6,
+        # LGBM.train_sklearn(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20,
         #                    cv_seed=cv_seed, parameters=lgb_parameters)
+
+        LGBM = models.LightGBM(x_train_n, y_train_n, w_train_n, e_train_n, x_test, id_test, x_g_train_n, x_g_test)
+
+        print('Start training LGBM...')
+
+        LGBM.train_sklearn(pred_path, loss_log_path, n_valid=1, n_cv=6, n_era=6,
+                           cv_seed=cv_seed, parameters=lgb_parameters)
 
     # DNN
     @staticmethod
