@@ -81,7 +81,7 @@ def save_loss_log(log_path, count, parameters, n_valid, n_cv, valid_era, loss_tr
 
 
 def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean, loss_valid_mean,
-                        loss_train_w_mean, loss_valid_w_mean, acc_train=None):
+                        loss_train_w_mean, loss_valid_w_mean, acc_train=None, acc_train_era=None):
 
     with open(log_path + 'loss_log.txt', 'a') as f:
 
@@ -100,6 +100,8 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean, lo
         f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n\n'.format(loss_valid_w_mean))
         f.write('Accuracy:\n')
         f.write('\tTotal Train Accuracy: {:.3f}%\n\n'.format(acc_train * 100))
+        f.write('\tTotal Train Eras Accuracies:\n')
+        f.write('\t\t' + str(acc_train_era) + '\n\n')
         f.write('=====================================================\n')
 
     with open(log_path + 'final_loss_log.txt', 'a') as f:
@@ -203,7 +205,7 @@ def load_preprocessed_pd_data_g(data_file_path):
     return x_train_g, x_test_g
 
 
-# LogLoss without weight
+# Calculate LogLoss without weight
 def log_loss(prob, y):
 
     loss = - np.sum(np.multiply(y, np.log(prob)) +
@@ -214,7 +216,7 @@ def log_loss(prob, y):
     return loss
 
 
-# LogLoss with weight
+# Calculate LogLoss with weight
 def log_loss_with_weight(prob, y, w):
 
     w = w / np.sum(w)
@@ -225,6 +227,7 @@ def log_loss_with_weight(prob, y, w):
     return loss
 
 
+# Print Information of Gridsearch
 def print_grid_info(model_name, parameters, parameters_grid):
 
     print('\nModel: ' + model_name + '\n')
@@ -236,6 +239,7 @@ def print_grid_info(model_name, parameters, parameters_grid):
     print('\n')
 
 
+# Print Losses of CV
 def print_loss(model, x_t, y_t, w_t, x_v, y_v, w_v):
 
     prob_train = model.predict(x_t)
@@ -256,6 +260,7 @@ def print_loss(model, x_t, y_t, w_t, x_v, y_v, w_v):
     return loss_train, loss_valid, loss_train_w, loss_valid_w
 
 
+# Print Losses of CV of sk-learn
 def print_loss_proba(model, x_t, y_t, w_t, x_v, y_v, w_v):
 
     prob_train = np.array(model.predict_proba(x_t))[:, 1]
@@ -276,6 +281,7 @@ def print_loss_proba(model, x_t, y_t, w_t, x_v, y_v, w_v):
     return loss_train, loss_valid, loss_train_w, loss_valid_w
 
 
+# Print DNN Losses
 def print_loss_dnn(prob_train, prob_valid, y_t, w_t, y_v, w_v):
 
     loss_train = log_loss(prob_train, y_t)
@@ -291,6 +297,16 @@ def print_loss_dnn(prob_train, prob_valid, y_t, w_t, y_v, w_v):
           'Validation LogLoss with Weight: {:>.8f}\n'.format(loss_valid_w))
 
     return loss_train, loss_valid, loss_train_w, loss_valid_w
+
+
+# Print Total Losses
+def print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean):
+
+    print('------------------------------------------------------')
+    print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
+          'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
+          'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
+          'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
 
 # Check if directories exit or not
@@ -311,20 +327,7 @@ def get_accuracy(prob, label):
     return accuracy
 
 
-# Print and Get Accuracy
-def print_and_get_accuracy(prob_train_cv, y_train, prob_valid_cv, y_valid):
-
-    print('------------------------------------------------------')
-    print('Accurrcy of CV:')
-    acc_train_cv = get_accuracy(prob_train_cv, y_train)
-    print('Accuracy of Train CV: {:.3f}%'.format(acc_train_cv * 100))
-    acc_valid_cv = get_accuracy(prob_valid_cv, y_valid)
-    print('Accuracy of Validation CV: {:.3f}%'.format(acc_valid_cv * 100))
-
-    return acc_train_cv, acc_valid_cv
-
-
-# Get Accuracy of Era
+# Get Accuracies of Eras
 def get_era_accuracy(prob, y, e):
 
     prob_sorted = np.zeros_like(prob, dtype=np.float64)
@@ -362,18 +365,65 @@ def get_era_accuracy(prob, y, e):
     return accuracy_eras
 
 
-# Print and Get Accuracy of Eras
-def print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid):
+# Get Accuracies of Eras of  Train Probabilities
+def get_train_era_accuracy(prob, y, e):
 
+    era_index = []
+    accuracy_eras = {}
+    iter_era = e[0]
+
+    for i, ele in enumerate(e):
+
+        if i == len(e)-1:
+            prob_era = prob[era_index]
+            y_era = y[era_index]
+            acc_era = get_accuracy(prob_era, y_era)
+            accuracy_eras[iter_era] = acc_era
+            print('Accuracy of Era-{}: {:.3f}%'.format(iter_era, acc_era * 100))
+        elif ele == iter_era:
+            era_index.append(i)
+        else:
+            prob_era = prob[era_index]
+            y_era = y[era_index]
+            acc_era = get_accuracy(prob_era, y_era)
+            accuracy_eras[iter_era] = acc_era
+            print('Accuracy of Era-{}: {:.3f}%'.format(iter_era, acc_era*100))
+            iter_era = ele
+            era_index = [i]
+
+    return accuracy_eras
+
+
+# Print and Get Accuracy of Eras
+def print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid):
+
+    acc_train_cv = get_accuracy(prob_train, y_train)
+    acc_valid_cv = get_accuracy(prob_valid, y_valid)
+    acc_train_era = get_era_accuracy(prob_train, y_train, e_train)
+    acc_valid_era = get_era_accuracy(prob_valid, y_valid, e_valid)
+    print('------------------------------------------------------')
+    print('Accuracies of CV:')
+    print('Accuracy of Train CV: {:.3f}%'.format(acc_train_cv * 100))
+    print('Accuracy of Validation CV: {:.3f}%'.format(acc_valid_cv * 100))
     print('------------------------------------------------------')
     print('Accuracies of Train Eras:')
-    acc_train_era = get_era_accuracy(prob_train, y_train, e_train)
     print('------------------------------------------------------')
     print('Accuracies of Validation Eras:')
-    acc_valid_era = get_era_accuracy(prob_valid, y_valid, e_valid)
 
-    return acc_train_era, acc_valid_era
+    return acc_train_cv, acc_valid_cv, acc_train_era, acc_valid_era
 
+
+# Print and Get Accuracies of Eras of  Train Probabilities
+def print_and_get_train_accuracy(prob_train, y_train, e_train):
+
+    acc_train = get_accuracy(prob_train, y_train)
+    print('------------------------------------------------------')
+    print('Total Train Accuracy: {:.3f}%'.format(acc_train * 100))
+    print('------------------------------------------------------')
+    print('Accuracies of Total Train Eras:')
+    acc_train_era = get_train_era_accuracy(prob_train, y_train, e_train)
+
+    return acc_train, acc_train_era
 
 
 if __name__ == '__main__':

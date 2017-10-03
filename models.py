@@ -150,15 +150,14 @@ class LRegression:
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
-            # Get Accuracies
-            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
-            acc_train_era, acc_valid_era = \
-                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
+            # Print and Get Accuracies of CV
+            acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+                utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'lr_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
-                                acc_train_era, acc_valid_era)
+                                acc_train_cv_era, acc_valid_cv_era)
 
             # Feature Importance
             self.get_importance(clf)
@@ -180,18 +179,15 @@ class LRegression:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        # Print Total Losses
+        utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+        
+        # Print and Get Accuracies of CV of All Train Set
+        acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
 
-        acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
-        print('------------------------------------------------------')
-        print('Total Train Accuracy: {:.3f}%'.format(acc_train * 100))
-
-        # Save Final Losses to file
+        # Save Final Losses to File
         utils.save_final_loss_log(loss_log_path + 'lr_', parameters, n_valid, n_cv, loss_train_mean,
-                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train)
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
         # Save final result
         utils.save_pred_to_csv(pred_path + 'final_results/lr_', self.id_test, prob_test_mean)
@@ -410,15 +406,14 @@ class DecisionTree:
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
-            # Get Accuracies
-            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
-            acc_train_era, acc_valid_era = \
-                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
+            # Print and Get Accuracies of CV
+            acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+                utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'dt_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
-                                acc_train_era, acc_valid_era)
+                                acc_train_cv_era, acc_valid_cv_era)
 
             # Feature Importance
             self.get_importance(clf)
@@ -440,18 +435,15 @@ class DecisionTree:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        # Print Total Losses
+        utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
-        acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
-        print('------------------------------------------------------')
-        print('Total Train Accuracy: {:.3f}%'.format(acc_train * 100))
+        # Print and Get Accuracies of CV of All Train Set
+        acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
 
-        # Save Final Losses to file
+        # Save Final Losses to File
         utils.save_final_loss_log(loss_log_path + 'dt_', parameters, n_valid, n_cv, loss_train_mean,
-                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train)
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
         # Save final result
         utils.save_pred_to_csv(pred_path + 'final_results/dt_', self.id_test, prob_test_mean)
@@ -600,15 +592,14 @@ class RandomForest:
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
-            # Get Accuracies
-            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
-            acc_train_era, acc_valid_era = \
-                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
+            # Print and Get Accuracies of CV
+            acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+                utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'rf_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
-                                acc_train_era, acc_valid_era)
+                                acc_train_cv_era, acc_valid_cv_era)
 
             # Feature Importance
             self.get_importance(clf)
@@ -630,18 +621,15 @@ class RandomForest:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        # Print Total Losses
+        utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
-        acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
-        print('------------------------------------------------------')
-        print('Total Train Accuracy: {:.3f}%'.format(acc_train * 100))
+        # Print and Get Accuracies of CV of All Train Set
+        acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
 
-        # Save Final Losses to file
+        # Save Final Losses to File
         utils.save_final_loss_log(loss_log_path + 'rf_', parameters, n_valid, n_cv, loss_train_mean,
-                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train)
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
         # Save final result
         utils.save_pred_to_csv(pred_path + 'final_results/rf_', self.id_test, prob_test_mean)
@@ -790,15 +778,14 @@ class ExtraTrees:
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
-            # Get Accuracies
-            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
-            acc_train_era, acc_valid_era = \
-                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
+            # Print and Get Accuracies of CV
+            acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+                utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'et_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
-                                acc_train_era, acc_valid_era)
+                                acc_train_cv_era, acc_valid_cv_era)
 
             # Feature Importance
             self.get_importance(clf)
@@ -820,18 +807,15 @@ class ExtraTrees:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        # Print Total Losses
+        utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
-        acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
-        print('------------------------------------------------------')
-        print('Total Train Accuracy: {:.3f}%'.format(acc_train * 100))
-
-        # Save Final Losses to file
+        # Print and Get Accuracies of CV of All Train Set
+        acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
+        
+        # Save Final Losses to File
         utils.save_final_loss_log(loss_log_path + 'et_', parameters, n_valid, n_cv, loss_train_mean,
-                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train)
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
         # Save final result
         utils.save_pred_to_csv(pred_path + 'final_results/et_', self.id_test, prob_test_mean)
@@ -980,15 +964,14 @@ class AdaBoost:
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
-            # Get Accuracies
-            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
-            acc_train_era, acc_valid_era = \
-                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
+            # Print and Get Accuracies of CV
+            acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+                utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'ab_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
-                                acc_train_era, acc_valid_era)
+                                acc_train_cv_era, acc_valid_cv_era)
 
             # Feature Importance
             self.get_importance(clf)
@@ -1010,18 +993,15 @@ class AdaBoost:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        # Print Total Losses
+        utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
-        acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
-        print('------------------------------------------------------')
-        print('Total Train Accuracy: {:.3f}%'.format(acc_train * 100))
+        # Print and Get Accuracies of CV of All Train Set
+        acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
 
-        # Save Final Losses to file
+        # Save Final Losses to File
         utils.save_final_loss_log(loss_log_path + 'ab_', parameters, n_valid, n_cv, loss_train_mean,
-                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train)
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
         # Save final result
         utils.save_pred_to_csv(pred_path + 'final_results/ab_', self.id_test, prob_test_mean)
@@ -1173,15 +1153,14 @@ class GradientBoosting:
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
-            # Get Accuracies
-            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
-            acc_train_era, acc_valid_era = \
-                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
+            # Print and Get Accuracies of CV
+            acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+                utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'gb_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
-                                acc_train_era, acc_valid_era)
+                                acc_train_cv_era, acc_valid_cv_era)
 
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
@@ -1200,18 +1179,15 @@ class GradientBoosting:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        # Print Total Losses
+        utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
-        acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
-        print('------------------------------------------------------')
-        print('Total Train Accuracy: {:.3f}%'.format(acc_train * 100))
+        # Print and Get Accuracies of CV of All Train Set
+        acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
 
-        # Save Final Losses to file
+        # Save Final Losses to File
         utils.save_final_loss_log(loss_log_path + 'gb_', parameters, n_valid, n_cv, loss_train_mean,
-                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train)
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
         # Save final result
         utils.save_pred_to_csv(pred_path + 'final_results/gb_', self.id_test, prob_test_mean)
@@ -1426,15 +1402,14 @@ class XGBoost:
             loss_train, loss_valid, loss_train_w, loss_valid_w = self.print_loss(bst, x_train, y_train, w_train,
                                                                                  x_valid, y_valid, w_valid)
             
-            # Get Accuracies
-            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
-            acc_train_era, acc_valid_era = \
-                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
+            # Print and Get Accuracies of CV
+            acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+                utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'xgb_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
-                                acc_train_era, acc_valid_era)
+                                acc_train_cv_era, acc_valid_cv_era)
 
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
@@ -1453,18 +1428,15 @@ class XGBoost:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        # Print Total Losses
+        utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
-        acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
-        print('------------------------------------------------------')
-        print('Total Train Accuracy: {:.3f}%'.format(acc_train * 100))
+        # Print and Get Accuracies of CV of All Train Set
+        acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
 
-        # Save Final Losses to file
+        # Save Final Losses to File
         utils.save_final_loss_log(loss_log_path + 'xgb_', parameters, n_valid, n_cv, loss_train_mean,
-                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train)
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
         # Save final result
         utils.save_pred_to_csv(pred_path + 'final_results/xgb_', self.id_test, prob_test_mean)
@@ -1523,15 +1495,14 @@ class XGBoost:
                 loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
                                                       x_valid, y_valid, w_valid)
 
-            # Get Accuracies
-            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
-            acc_train_era, acc_valid_era = \
-                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
+            # Print and Get Accuracies of CV
+            acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+                utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'xgb_sk_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train,loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
-                                acc_train_era, acc_valid_era)
+                                acc_train_cv_era, acc_valid_cv_era)
 
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
@@ -1550,18 +1521,15 @@ class XGBoost:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        # Print Total Losses
+        utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
-        acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
-        print('------------------------------------------------------')
-        print('Total Train Accuracy: {:.3f}%'.format(acc_train * 100))
+        # Print and Get Accuracies of CV of All Train Set
+        acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
 
-        # Save Final Losses to file
+        # Save Final Losses to File
         utils.save_final_loss_log(loss_log_path + 'xgb_sk_', parameters, n_valid, n_cv, loss_train_mean,
-                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train)
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
         # Save final result
         utils.save_pred_to_csv(pred_path + 'final_results/xgb_sk_', self.id_test, prob_test_mean)
@@ -1770,15 +1738,14 @@ class LightGBM:
             loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_train, y_train, w_train,
                                                                                   x_valid, y_valid, w_valid)
 
-            # Get Accuracies
-            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
-            acc_train_era, acc_valid_era = \
-                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
+            # Print and Get Accuracies of CV
+            acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+                utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'lgb_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
-                                acc_train_era, acc_valid_era)
+                                acc_train_cv_era, acc_valid_cv_era)
 
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
@@ -1797,18 +1764,15 @@ class LightGBM:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        # Print Total Losses
+        utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
-        acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
-        print('------------------------------------------------------')
-        print('Total Train Accuracy: {:.3f}%'.format(acc_train * 100))
+        # Print and Get Accuracies of CV of All Train Set
+        acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
 
-        # Save Final Losses to file
+        # Save Final Losses to File
         utils.save_final_loss_log(loss_log_path + 'lgb_', parameters, n_valid, n_cv, loss_train_mean,
-                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train)
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
         # Save final result
         utils.save_pred_to_csv(pred_path + 'final_results/lgb_', self.id_test, prob_test_mean)
@@ -1876,15 +1840,14 @@ class LightGBM:
                 loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
                                                       x_valid, y_valid, w_valid)
 
-            # Get Accuracies
-            acc_train_cv, acc_valid_cv = utils.print_and_get_accuracy(prob_train, y_train, prob_valid, y_valid)
-            acc_train_era, acc_valid_era = \
-                utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
+            # Print and Get Accuracies of CV
+            acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+                utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'lgb_sk_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
-                                acc_train_era, acc_valid_era)
+                                acc_train_cv_era, acc_valid_cv_era)
             
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
@@ -1903,18 +1866,15 @@ class LightGBM:
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-        print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
-              'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
-              'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-              'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+        # Print Total Losses
+        utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
-        acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
-        print('------------------------------------------------------')
-        print('Total Train Accuracy: {:.3f}%'.format(acc_train * 100))
+        # Print and Get Accuracies of CV of All Train Set
+        acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
 
-        # Save Final Losses to file
+        # Save Final Losses to File
         utils.save_final_loss_log(loss_log_path + 'lgb_sk_', parameters, n_valid, n_cv, loss_train_mean,
-                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train)
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
         # Save final result
         utils.save_pred_to_csv(pred_path + 'final_results/lgb_sk_', self.id_test, prob_test_mean)
@@ -2273,18 +2233,13 @@ class DeepNeuralNetworks:
                 loss_train_w_total.append(loss_train_w)
                 loss_valid_w_total.append(loss_valid_w)
 
-                # Get Accuracies
-                acc_train_cv = utils.get_accuracy(prob_train, y_train)
-                acc_valid_cv = utils.get_accuracy(prob_valid, y_valid)
-                print('------------------------------------------------------')
-                print('CV Train Accuracy: {:.3f}%'.format(acc_train_cv * 100))
-                print('CV Valid Accuracy: {:.3f}%'.format(acc_valid_cv * 100))
-                acc_train_era, acc_valid_era = \
-                    utils.print_and_get_era_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
+                # Print and Get Accuracies of CV
+                acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+                    utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
                 utils.save_loss_log(loss_log_path + 'dnn_', cv_counter, self.parameters, n_valid, n_cv, 
                                     valid_era, loss_train, loss_valid, loss_train_w, loss_valid_w,
-                                    acc_train_cv, acc_valid_cv, acc_train_era, acc_valid_era)
+                                    acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era)
 
                 utils.save_pred_to_csv(pred_path + 'cv_results/dnn_cv_{}_'.format(cv_counter),
                                        self.id_test, prob_test)
@@ -2300,17 +2255,15 @@ class DeepNeuralNetworks:
             loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
             loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
-            print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
-                  'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
-                  'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-                  'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+            # Print Total Losses
+            utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
-            acc_train = utils.get_accuracy(prob_train_mean, self.y_train)
-            print('Total Train Accuracy: {:.3f}%'.format(acc_train * 100))
+            # Print and Get Accuracies of CV of All Train Set
+            acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
 
-            # Save Final Losses to file
+            # Save Final Losses to File
             utils.save_final_loss_log(loss_log_path + 'dnn_', self.parameters, n_valid, n_cv, loss_train_mean,
-                                      loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train)
+                                      loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
             utils.save_pred_to_csv(pred_path + 'final_results/dnn_', self.id_test, prob_test_mean)
             utils.save_prob_train_to_csv(pred_path + 'final_prob_train/dnn_', prob_train_mean, self.y_train)
