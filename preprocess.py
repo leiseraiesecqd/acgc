@@ -864,6 +864,7 @@ class DataPreProcess:
         self.y_train_p = self.y_train.ix[positive_index]
         self.w_train_p = self.w_train.ix[positive_index]
         self.e_train_p = self.e_train.ix[positive_index]
+        print(self.e_train_p)
 
         # Negative Data
         self.x_train_n = self.x_train.ix[negative_index]
@@ -871,6 +872,7 @@ class DataPreProcess:
         self.y_train_n = self.y_train.ix[negative_index]
         self.w_train_n = self.w_train.ix[negative_index]
         self.e_train_n = self.e_train.ix[negative_index]
+        print(self.e_train_n)
 
     # Shuffle and Split Data Set
     def random_spit_data(self):
