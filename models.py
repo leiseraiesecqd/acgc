@@ -1961,29 +1961,28 @@ class DeepNeuralNetworks:
 
         with tf.name_scope(layer_name):
 
-            #  x_shape = x_tensor.get_shape().as_list()
+            x_shape = x_tensor.get_shape().as_list()
 
-            # weights = tf.Variable(tf.truncated_normal([x_shape[1], num_outputs], stddev=2.0 / math.sqrt(x_shape[1])))
-            #
-            # biases = tf.Variable(tf.zeros([num_outputs]))
+            weights = tf.Variable(tf.truncated_normal([x_shape[1], num_outputs], stddev=2.0 / np.sqrt(x_shape[1])))
 
-            # fc_layer = tf.add(tf.matmul(x_tensor, weights), biases)
-            #
+            biases = tf.Variable(tf.zeros([num_outputs]))
+
+            fc_layer = tf.add(tf.matmul(x_tensor, weights), biases)
+
             # Batch Normalization
-            # fc_layer = tf.layers.batch_normalization(fc_layer, training=training)
-            #
-            # Activate function
-            # fc = tf.nn.relu(fc_layer)
-            # fc = tf.nn.elu(fc_layer)
+            fc_layer = tf.layers.batch_normalization(fc_layer, training=training)
 
-            fc = tf.contrib.layers.fully_connected(x_tensor,
-                                                   num_outputs,
-                                                   activation_fn=tf.nn.sigmoid,
-                                                   # weights_initializer=tf.truncated_normal_initializer(
-                                                   # stddev=2.0 / math.sqrt(x_shape[1])),
-                                                   weights_initializer=tf.contrib.layers.xavier_initializer(dtype=tf.float64,
-                                                                                                            seed=self.dnn_seed),
-                                                   biases_initializer=tf.zeros_initializer())
+            # Activate function
+            fc = tf.sigmoid(fc_layer)
+
+            # fc = tf.contrib.layers.fully_connected(x_tensor,
+            #                                        num_outputs,
+            #                                        activation_fn=tf.nn.sigmoid,
+            #                                        # weights_initializer=tf.truncated_normal_initializer(
+            #                                        # stddev=2.0 / math.sqrt(x_shape[1])),
+            #                                        weights_initializer=tf.contrib.layers.xavier_initializer(dtype=tf.float64,
+            #                                                                                                 seed=self.dnn_seed),
+            #                                        biases_initializer=tf.zeros_initializer())
 
             tf.summary.histogram('fc_layer', fc)
 
