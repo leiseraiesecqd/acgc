@@ -859,18 +859,18 @@ class DataPreProcess:
                 positive_index.append(i)
 
         # Positive Data
-        self.x_train_p = self.x_train[positive_index]
-        self.x_g_train_p = self.x_g_train[positive_index]
-        self.y_train_p = self.y_train[positive_index]
-        self.w_train_p = self.w_train[positive_index]
-        self.e_train_p = self.e_train[positive_index]
+        self.x_train_p = self.x_train.ix[positive_index]
+        self.x_g_train_p = self.x_g_train.ix[positive_index]
+        self.y_train_p = self.y_train.ix[positive_index]
+        self.w_train_p = self.w_train.ix[positive_index]
+        self.e_train_p = self.e_train.ix[positive_index]
 
         # Negative Data
-        self.x_train_n = self.x_train[negative_index]
-        self.x_g_train_n = self.x_g_train[negative_index]
-        self.y_train_n = self.y_train[negative_index]
-        self.w_train_n = self.w_train[negative_index]
-        self.e_train_n = self.e_train[negative_index]
+        self.x_train_n = self.x_train.ix[negative_index]
+        self.x_g_train_n = self.x_g_train.ix[negative_index]
+        self.y_train_n = self.y_train.ix[negative_index]
+        self.w_train_n = self.w_train.ix[negative_index]
+        self.e_train_n = self.e_train.ix[negative_index]
 
     # Shuffle and Split Data Set
     def random_spit_data(self):
