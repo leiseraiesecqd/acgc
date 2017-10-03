@@ -1950,8 +1950,8 @@ class DeepNeuralNetworks:
         inputs_ = tf.placeholder(tf.float64, [None, n_feature], name='inputs')
         labels_ = tf.placeholder(tf.float64, None, name='labels')
         loss_weights_ = tf.placeholder(tf.float64, None, name='loss_weights')
-        learning_rate_ = tf.placeholder(tf.float32, name='learning_rate')
-        keep_prob_ = tf.placeholder(tf.float32, name='keep_prob')
+        learning_rate_ = tf.placeholder(tf.float64, name='learning_rate')
+        keep_prob_ = tf.placeholder(tf.float64, name='keep_prob')
         is_train_ = tf.placeholder(tf.bool, name='is_train')
 
         return inputs_, labels_, loss_weights_, learning_rate_, keep_prob_, is_train_
