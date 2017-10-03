@@ -1990,7 +1990,7 @@ class DeepNeuralNetworks:
                                                    # biases_initializer=tf.zeros_initializer(dtype=tf.float64)
                                                    )
 
-            fc = tf.contrib.layers.batch_normalization(fc, training=training)
+            fc = tf.contrib.layers.batch_norm(fc, training=training)
             fc = tf.sigmoid(fc)
 
             tf.summary.histogram('fc_layer', fc)
