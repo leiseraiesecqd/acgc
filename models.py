@@ -1963,7 +1963,8 @@ class DeepNeuralNetworks:
 
             x_shape = x_tensor.get_shape().as_list()
 
-            weights = tf.Variable(tf.truncated_normal([x_shape[1], num_outputs], stddev=2.0 / np.sqrt(x_shape[1])))
+            weights = tf.Variable(tf.truncated_normal([x_shape[1], num_outputs], dtype=tf.float64,
+                                                      stddev=2.0 / np.sqrt(x_shape[1])))
 
             biases = tf.Variable(tf.zeros([num_outputs], dtype=tf.float64))
 
