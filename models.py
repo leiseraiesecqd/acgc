@@ -1691,7 +1691,7 @@ class LightGBM:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -1710,7 +1710,8 @@ class LightGBM:
                                                                          n_valid=n_valid,
                                                                          n_cv=n_cv,
                                                                          n_era=n_era,
-                                                                         seed=cv_seed):
+                                                                         seed=cv_seed,
+                                                                         era_list=era_list):
 
             count += 1
 
@@ -1788,7 +1789,7 @@ class LightGBM:
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/lgb_', prob_train_mean, self.y_train)
 
     # Using sk-learn API
-    def train_sklearn(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, parameters=None):
+    def train_sklearn(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -1807,7 +1808,8 @@ class LightGBM:
                                                                          n_valid=n_valid,
                                                                          n_cv=n_cv,
                                                                          n_era=n_era,
-                                                                         seed=cv_seed):
+                                                                         seed=cv_seed,
+                                                                         era_list=era_list):
 
             count += 1
 
@@ -2730,7 +2732,7 @@ class CrossValidation:
                         yield train_index, valid_index
 
     @staticmethod
-    def era_k_fold_with_weight(x, y, w, e, n_valid, n_cv, n_era, seed=None):
+    def era_k_fold_with_weight(x, y, w, e, n_valid, n_cv, n_era, seed=None, era_list=None):
 
         if seed is not None:
             np.random.seed(seed)
@@ -2749,7 +2751,10 @@ class CrossValidation:
 
         for epoch in range(n_epoch):
 
-            era_idx = [list(range(1, n_era + 1))]
+            if era_list is None:
+                era_list = range(1, n_era + 1)
+
+            era_idx = [era_list]
 
             if n_rest == 0:
 
@@ -2763,7 +2768,7 @@ class CrossValidation:
                             if set(valid_era) != set(era_idx[i]):
                                 valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                             else:
-                                valid_era = np.random.choice(range(1, n_era+1), n_valid, replace=False)
+                                valid_era = np.random.choice(era_list, n_valid, replace=False)
                     else:
                         valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
 
@@ -2853,7 +2858,7 @@ class CrossValidation:
 
                     else:
 
-                        era_idx_else = [t for t in list(range(1, n_era + 1)) if t not in era_idx[i]]
+                        era_idx_else = [t for t in list(era_list) if t not in era_idx[i]]
 
                         valid_era = era_idx[i] + list(np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
                         while any(set(valid_era) == i_cv for i_cv in trained_cv):

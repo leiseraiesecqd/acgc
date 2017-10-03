@@ -333,7 +333,7 @@ class TrainSingleModel:
         print('Start training LGBM...')
 
         LGBM.train_sklearn(pred_path, loss_log_path, n_valid=1, n_cv=6, n_era=6,
-                           cv_seed=cv_seed, parameters=lgb_parameters)
+                           cv_seed=cv_seed, era_list=[1, 3, 4, 10, 12, 16], parameters=lgb_parameters)
 
     # DNN
     @staticmethod
@@ -1164,11 +1164,11 @@ if __name__ == "__main__":
 
     # XGBoost
     # TrainSingleModel.xgb_train()
-    TrainSingleModel.xgb_train_sklearn()
+    # TrainSingleModel.xgb_train_sklearn()
 
     # LightGBM
     # TrainSingleModel.lgb_train()
-    # TrainSingleModel.lgb_train_sklearn()
+    TrainSingleModel.lgb_train_sklearn()
 
     # DNN
     # TrainSingleModel.dnn_tf_train()
