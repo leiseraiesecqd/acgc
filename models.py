@@ -1947,9 +1947,9 @@ class DeepNeuralNetworks:
     @staticmethod
     def input_tensor(n_feature):
 
-        inputs_ = tf.placeholder(tf.float32, [None, n_feature], name='inputs')
-        labels_ = tf.placeholder(tf.float32, None, name='labels')
-        loss_weights_ = tf.placeholder(tf.float32, None, name='loss_weights')
+        inputs_ = tf.placeholder(tf.float64, [None, n_feature], name='inputs')
+        labels_ = tf.placeholder(tf.float64, None, name='labels')
+        loss_weights_ = tf.placeholder(tf.float64, None, name='loss_weights')
         learning_rate_ = tf.placeholder(tf.float32, name='learning_rate')
         keep_prob_ = tf.placeholder(tf.float32, name='keep_prob')
         is_train_ = tf.placeholder(tf.bool, name='is_train')
@@ -1976,7 +1976,7 @@ class DeepNeuralNetworks:
             # # Activate function
             # fc = tf.sigmoid(fc_layer)
 
-            # x_tensor = tf.cast(x_tensor, tf.float32)
+            x_tensor = tf.cast(x_tensor, tf.float32)
 
             fc = tf.contrib.layers.fully_connected(x_tensor,
                                                    num_outputs,
