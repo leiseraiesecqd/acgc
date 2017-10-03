@@ -1971,7 +1971,7 @@ class DeepNeuralNetworks:
             fc_layer = tf.add(tf.matmul(x_tensor, weights), biases)
 
             # Batch Normalization
-            fc_layer = tf.layers.batch_normalization(fc_layer, training=training)
+            fc_layer = tf.layers.batch_normalization(fc_layer, training=Ture)
 
             # Activate function
             fc = tf.sigmoid(fc_layer)
