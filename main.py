@@ -319,10 +319,10 @@ class TrainSingleModel:
 
         # HyperParameters
         hyper_parameters = {'version': '1.0',
-                            'epochs': 5,
+                            'epochs': 4,
                             'unit_number': [2048],
                             'learning_rate': 0.00001,
-                            'keep_probability': 0.6,
+                            'keep_probability': 0.5,
                             'batch_size': 128,
                             'seed': dnn_seed,
                             'display_step': 100,
