@@ -182,7 +182,7 @@ def load_preprocessed_pd_data(data_file_path):
     w_train = np.array(w_train_pd, dtype=np.float64)
 
     e_train_pd = pd.read_pickle(data_file_path + 'e_train.p')
-    e_train = np.array(e_train_pd, dtype=np.float64)
+    e_train = np.array(e_train_pd, dtype=int)
 
     x_test_pd = pd.read_pickle(data_file_path + 'x_test.p')
     x_test = np.array(x_test_pd, dtype=np.float64)
@@ -196,13 +196,55 @@ def load_preprocessed_pd_data(data_file_path):
 # Load Preprocessed Category Data
 def load_preprocessed_pd_data_g(data_file_path):
 
-    x_train_g_pd = pd.read_pickle(data_file_path + 'x_train_g.p')
-    x_train_g = np.array(x_train_g_pd, dtype=np.float64)
+    x_g_train_pd = pd.read_pickle(data_file_path + 'x_g_train.p')
+    x_g_train = np.array(x_g_train_pd, dtype=np.float64)
 
-    x_test_g_pd = pd.read_pickle(data_file_path + 'x_test_g.p')
-    x_test_g = np.array(x_test_g_pd, dtype=np.float64)
+    x_g_test_pd = pd.read_pickle(data_file_path + 'x_g_test.p')
+    x_g_test = np.array(x_g_test_pd, dtype=np.float64)
 
-    return x_train_g, x_test_g
+    return x_g_train, x_g_test
+
+
+# Load Preprocessed Positive Data
+def load_preprocessed_positive_pd_data(data_file_path):
+
+    x_train_p_pd = pd.read_pickle(data_file_path + 'x_train_p.p')
+    x_train_p = np.array(x_train_p_pd, dtype=np.float64)
+
+    y_train_p_pd = pd.read_pickle(data_file_path + 'y_train_p.p')
+    y_train_p = np.array(y_train_p_pd, dtype=np.float64)
+
+    w_train_p_pd = pd.read_pickle(data_file_path + 'w_train_p.p')
+    w_train_p = np.array(w_train_p_pd, dtype=np.float64)
+
+    e_train_p_pd = pd.read_pickle(data_file_path + 'e_train_p.p')
+    e_train_p = np.array(e_train_p_pd, dtype=int)
+
+    x_g_train_p_pd = pd.read_pickle(data_file_path + 'x_g_train_p.p')
+    x_g_train_p = np.array(x_g_train_p_pd, dtype=np.float64)
+
+    return x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p
+
+
+# Load Preprocessed Negative Data
+def load_preprocessed_negative_pd_data(data_file_path):
+
+    x_train_n_pd = pd.read_pickle(data_file_path + 'x_train_n.p')
+    x_train_n = np.array(x_train_n_pd, dtype=np.float64)
+
+    y_train_n_pd = pd.read_pickle(data_file_path + 'y_train_n.p')
+    y_train_n = np.array(y_train_n_pd, dtype=np.float64)
+
+    w_train_n_pd = pd.read_pickle(data_file_path + 'w_train_n.p')
+    w_train_n = np.array(w_train_n_pd, dtype=np.float64)
+
+    e_train_n_pd = pd.read_pickle(data_file_path + 'e_train_n.p')
+    e_train_n = np.array(e_train_n_pd, dtype=int)
+
+    x_g_train_n_pd = pd.read_pickle(data_file_path + 'x_g_train_n.p')
+    x_g_train_n = np.array(x_g_train_n_pd, dtype=np.float64)
+
+    return x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n
 
 
 # Calculate LogLoss without weight

@@ -20,17 +20,31 @@ class DataPreProcess:
         self.test_path = test_path
         self.prepro_path = prepro_path
         self.x_train = pd.DataFrame()
-        self.x_train_g = pd.DataFrame()
+        self.x_g_train = pd.DataFrame()
         self.y_train = pd.DataFrame()
         self.w_train = pd.DataFrame()
         self.g_train = pd.DataFrame()
         self.e_train = pd.DataFrame()
         self.x_test = pd.DataFrame()
-        self.x_test_g = pd.DataFrame()
+        self.x_g_test = pd.DataFrame()
         self.g_test = pd.DataFrame()
         self.id_test = pd.DataFrame()
 
-    # Load CSV files
+        # Positive Data Set
+        self.x_train_p = pd.DataFrame()
+        self.x_g_train_p = pd.DataFrame()
+        self.y_train_p = pd.DataFrame()
+        self.w_train_p = pd.DataFrame()
+        self.e_train_p = pd.DataFrame()
+
+        # Negative Data Set
+        self.x_train_n = pd.DataFrame()
+        self.x_g_train_n = pd.DataFrame()
+        self.y_train_n = pd.DataFrame()
+        self.w_train_n = pd.DataFrame()
+        self.e_train_n = pd.DataFrame()
+
+    # Load CSV Files
     def load_csv_np(self):
 
         train_f = np.loadtxt(self.train_path, dtype=np.float64, skiprows=1, delimiter=",")
@@ -38,7 +52,7 @@ class DataPreProcess:
 
         return train_f, test_f
 
-    # Load data
+    # Load Data
     def load_data_np(self):
 
         try:
@@ -54,7 +68,7 @@ class DataPreProcess:
         self.y_train = train_f[:, 90]                  # label
         self.x_test = test_f                           # feature + group
 
-    # Load CSV files Using pandas
+    # Load CSV Files Using Pandas
     def load_csv_pd(self):
 
         train_f = pd.read_csv(self.train_path, header=0, dtype=np.float64)
@@ -62,7 +76,7 @@ class DataPreProcess:
 
         return train_f, test_f
 
-    # Load data using pandas
+    # Load Data Using Pandas
     def load_data_pd(self):
 
         try:
@@ -72,7 +86,7 @@ class DataPreProcess:
             print('Unable to read data: ', e)
             raise
 
-        # Drop unnecessary columns
+        # Drop Unnecessary Columns
         self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era'], axis=1)
         self.y_train = train_f['label']
         self.w_train = train_f['weight']
@@ -82,7 +96,7 @@ class DataPreProcess:
         self.id_test = test_f['id']
         self.g_test = test_f['group']
 
-    # Dropping outliers
+    # Dropping Outliers
     def drop_outliers(self):
 
         print('Dropping outliers...')
@@ -799,7 +813,7 @@ class DataPreProcess:
         lower = self.x_test.feature87.quantile(0.001)
         self.x_test['feature87'].loc[self.x_test['feature87'] < lower] = lower
 
-    # Scaling data
+    # Scaling Data
     def scale(self):
 
         print('Scaling data...')
@@ -812,23 +826,53 @@ class DataPreProcess:
             mean, std = self.x_test[each].mean(), self.x_test[each].std()
             self.x_test.loc[:, each] = (self.x_test[each] - mean)/std
 
-    # Convert column 'group' to dummies
+    # Convert Column 'group' to Dummies
     def convert_group_to_dummies(self):
 
         print('Converting groups to dummies...')
 
         group_train_dummies = pd.get_dummies(self.g_train, prefix='group')
-        self.x_train_g = self.x_train.join(self.g_train)
+        self.x_g_train = self.x_train.join(self.g_train)
         self.x_train = self.x_train.join(group_train_dummies)
 
         group_test_dummies = pd.get_dummies(self.g_test, prefix='group')
-        self.x_test_g = self.x_test.join(self.g_test)
+        self.x_g_test = self.x_test.join(self.g_test)
         self.x_test = self.x_test.join(group_test_dummies)
 
         # print('Shape of x_train with group dummies: {}'.format(self.x_train.shape))
         # print('Shape of x_test with group dummies: {}'.format(self.x_test.shape))
 
-    # Shuffle and split dataset
+    # Split Positive and Negative Era Set
+    def split_data_by_era_distribution(self, negative_era):
+
+        print('Splitting Positive and Negative Era Set...')
+        print('Negative Eras: ', negative_era)
+
+        positive_index = []
+        negative_index = []
+
+        for i, ele in enumerate(self.e_train):
+
+            if int(ele) in negative_era:
+                negative_index.append(i)
+            else:
+                positive_index.append(i)
+
+        # Positive Data
+        self.x_train_p = self.x_train[positive_index]
+        self.x_g_train_p = self.x_g_train[positive_index]
+        self.y_train_p = self.y_train[positive_index]
+        self.w_train_p = self.w_train[positive_index]
+        self.e_train_p = self.e_train[positive_index]
+
+        # Negative Data
+        self.x_train_n = self.x_train[negative_index]
+        self.x_g_train_n = self.x_g_train[negative_index]
+        self.y_train_n = self.y_train[negative_index]
+        self.w_train_n = self.w_train[negative_index]
+        self.e_train_n = self.e_train[negative_index]
+
+    # Shuffle and Split Data Set
     def random_spit_data(self):
 
         print('Shuffling and splitting data...')
@@ -855,11 +899,11 @@ class DataPreProcess:
         print('Saving data...')
 
         utils.save_np_to_pkl(self.x_train, self.prepro_path + 'x_train.p')
-        utils.save_np_to_pkl(self.x_train_g, self.prepro_path + 'x_train_g.p')
+        utils.save_np_to_pkl(self.x_g_train, self.prepro_path + 'x_g_train.p')
         utils.save_np_to_pkl(self.y_train, self.prepro_path + 'y_train.p')
         utils.save_np_to_pkl(self.w_train, self.prepro_path + 'w_train.p')
         utils.save_np_to_pkl(self.x_test, self.prepro_path + 'x_test.p')
-        utils.save_np_to_pkl(self.x_test_g, self.prepro_path + 'x_test_g.p')
+        utils.save_np_to_pkl(self.x_g_test, self.prepro_path + 'x_g_test.p')
 
     # Save Data
     def save_data_pd(self):
@@ -870,15 +914,37 @@ class DataPreProcess:
         print('Saving data...')
 
         self.x_train.to_pickle(self.prepro_path + 'x_train.p')
-        self.x_train_g.to_pickle(self.prepro_path + 'x_train_g.p')
+        self.x_g_train.to_pickle(self.prepro_path + 'x_g_train.p')
         self.y_train.to_pickle(self.prepro_path + 'y_train.p')
         self.w_train.to_pickle(self.prepro_path + 'w_train.p')
-        # self.g_train.to_pickle(self.prepro_path + 'g_train.p')
         self.e_train.to_pickle(self.prepro_path + 'e_train.p')
         self.x_test.to_pickle(self.prepro_path + 'x_test.p')
-        self.x_test_g.to_pickle(self.prepro_path + 'x_test_g.p')
-        # self.g_test.to_pickle(self.prepro_path + 'g_test.p')
+        self.x_g_test.to_pickle(self.prepro_path + 'x_g_test.p')
         self.id_test.to_pickle(self.prepro_path + 'id_test.p')
+
+    # Save Data Split by Era Distribution
+    def save_data_by_era_distribution_pd(self):
+
+        if not isdir(self.prepro_path):
+            os.mkdir(self.prepro_path)
+
+        print('Saving data...')
+
+        # Positive Data
+
+        self.x_train_p.to_pickle(self.prepro_path + 'x_train_p.p')
+        self.x_g_train_p.to_pickle(self.prepro_path + 'x_g_train_p.p')
+        self.y_train_p.to_pickle(self.prepro_path + 'y_train_p.p')
+        self.w_train_p.to_pickle(self.prepro_path + 'w_train_p.p')
+        self.e_train_p.to_pickle(self.prepro_path + 'e_train_p.p')
+
+        # Negative Data
+
+        self.x_train_n.to_pickle(self.prepro_path + 'x_train_n.p')
+        self.x_g_train_n.to_pickle(self.prepro_path + 'x_g_train_n.p')
+        self.y_train_n.to_pickle(self.prepro_path + 'y_train_n.p')
+        self.w_train_n.to_pickle(self.prepro_path + 'w_train_n.p')
+        self.e_train_n.to_pickle(self.prepro_path + 'e_train_n.p')
 
     # Preprocessing
     def preprocess_np(self):
@@ -896,8 +962,8 @@ class DataPreProcess:
 
         print('Done!')
         print('Using {:.3}s'.format(total_time))
-
-    # Preprocessing
+        
+    # Preprocess
     def preprocess_pd(self):
 
         start_time = time.time()
@@ -916,6 +982,13 @@ class DataPreProcess:
 
         # Save Data to pickle files
         self.save_data_pd()
+
+        # Split Positive and Negative Era Set
+        negative_era = [1, 3, 4, 10, 12, 16]
+        self.split_data_by_era_distribution(negative_era)
+
+        # Save Data Split by Era Distribution
+        self.save_data_by_era_distribution_pd()
 
         end_time = time.time()
 

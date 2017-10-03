@@ -119,7 +119,7 @@ class DeepStack:
                 cv, n_valid=4, n_era=20, cv_seed=None, n_epoch=1,
                 x_train_reuse=None, x_test_reuse=None, dnn_param=None, ):
 
-        if n_era%n_valid != 0:
+        if n_era % n_valid != 0:
             raise ValueError('n_era must be an integer multiple of n_valid!')
 
         # Stack Reused Features
@@ -127,15 +127,15 @@ class DeepStack:
             print('------------------------------------------------------')
             print('Stacking Reused Features...')
             x_train_inputs = np.concatenate((x_train_inputs, x_train_reuse), axis=1)  # n_sample * (n_feature + n_reuse)
-            x_train_group = x_g_train_inputs[:, -1]
-            x_g_train_inputs = np.column_stack((x_train_inputs, x_train_group))       # n_sample * (n_feature + n_reuse + 1)
+            x_g_trainroup = x_g_train_inputs[:, -1]
+            x_g_train_inputs = np.column_stack((x_train_inputs, x_g_trainroup))       # n_sample * (n_feature + n_reuse + 1)
 
         if x_test_reuse is not None:
             print('------------------------------------------------------')
             print('Stacking Reused Features...')
             x_test = np.concatenate((x_test, x_test_reuse), axis=1)  # n_sample * (n_feature + n_reuse)
-            x_test_group = x_g_test[:, -1]
-            x_g_test = np.column_stack((x_test, x_test_group))       # n_sample * (n_feature + n_reuse + 1)
+            x_g_testroup = x_g_test[:, -1]
+            x_g_test = np.column_stack((x_test, x_g_testroup))       # n_sample * (n_feature + n_reuse + 1)
 
         # Print Shape
         print('======================================================')
@@ -173,6 +173,7 @@ class DeepStack:
                                                                                       x_g=x_g_train_inputs,
                                                                                       n_valid=n_valid,
                                                                                       n_cv=n_cv,
+                                                                                      n_era=n_era,
                                                                                       seed=cv_seed):
                 counter_cv += 1
 
@@ -264,7 +265,7 @@ class DeepStack:
 
         utils.save_pred_to_csv(pred_path, self.id_test, test_prob)
 
-    def stack_final_layer(self, model_name, params, n_valid, n_cv, x_outputs,
+    def stack_final_layer(self, model_name, params, n_valid, n_cv, n_era, x_outputs,
                           test_outputs, x_g_outputs, test_g_outputs):
 
         if model_name == 'LGB':
@@ -273,7 +274,7 @@ class DeepStack:
                                     test_outputs, self.id_test, x_g_outputs, test_g_outputs)
             print('Start training ' + model_name + '...')
             model.train_sklearn(self.pred_path + 'stack_results/', self.loss_log_path,
-                                n_valid=n_valid, n_cv=n_cv, cv_seed=self.cv_seed, parameters=params)
+                                n_valid=n_valid, n_cv=n_cv, n_era=n_era, cv_seed=self.cv_seed, parameters=params)
 
         elif model_name == 'DNN':
 
@@ -281,7 +282,7 @@ class DeepStack:
                                               test_outputs, self.id_test, params)
             print('Start training ' + model_name + '...')
             model.train(self.pred_path + 'stack_results/', self.loss_log_path,
-                        n_valid=n_valid, n_cv=n_cv, cv_seed=self.cv_seed)
+                        n_valid=n_valid, n_cv=n_cv, n_era=n_era, cv_seed=self.cv_seed)
 
         else:
             raise ValueError('Wrong model name!')
@@ -423,7 +424,7 @@ class StackLayer:
 
         utils.save_pred_to_csv(pred_path, self.id_test, test_prob)
 
-    def stack_final_layer(self, model_name, params, n_valid, n_cv, blender_x_tree, blender_test_tree,
+    def stack_final_layer(self, model_name, params, n_valid, n_cv, n_era, blender_x_tree, blender_test_tree,
                           blender_x_g_tree, blender_test_g_tree, x_train_reuse=None, x_test_reuse=None):
 
         # Stack Reused Features
@@ -452,7 +453,7 @@ class StackLayer:
                                     blender_test_tree,  self.id_test, blender_x_g_tree, blender_test_g_tree)
             print('Start training ' + model_name + '...')
             model.train_sklearn(self.pred_path, self.loss_log_path,
-                                n_valid=n_valid, n_cv=n_cv, cv_seed=self.cv_seed, parameters=params)
+                                n_valid=n_valid, n_cv=n_cv, n_era=n_era, cv_seed=self.cv_seed, parameters=params)
 
         elif model_name == 'DNN':
 
@@ -460,7 +461,7 @@ class StackLayer:
                                               blender_test_tree,  self.id_test, params)
             print('Start training ' + model_name + '...')
             model.train(self.pred_path, self.loss_log_path,
-                        n_valid=n_valid, n_cv=n_cv, cv_seed=self.cv_seed)
+                        n_valid=n_valid, n_cv=n_cv, n_era=n_era, cv_seed=self.cv_seed)
 
         else:
             raise ValueError('Wrong model name!')
@@ -537,7 +538,7 @@ class StackLayer:
         # For Final Layer
         if self.final_layer_model is not None:
 
-            self.stack_final_layer(self.final_layer_model, self.params, self.n_valid, self.n_cv_final,
+            self.stack_final_layer(self.final_layer_model, self.params, self.n_valid, self.n_cv_final, self.n_era,
                                    blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree,
                                    x_train_reuse=self.x_train_reuse, x_test_reuse=self.x_test_reuse)
 
@@ -676,7 +677,7 @@ class StackTree:
                 cv, n_valid=4, n_era=20, cv_seed=None, i_layer=1, i_epoch=1,
                 x_train_reuse=None, x_test_reuse=None, dnn_param=None):
 
-        if n_era%n_valid != 0:
+        if n_era % n_valid != 0:
             raise ValueError('n_era must be an integer multiple of n_valid!')
 
         # Stack Reused Features
@@ -727,6 +728,7 @@ class StackTree:
                                                                                   x_g=x_g_train_inputs,
                                                                                   n_valid=n_valid,
                                                                                   n_cv=n_cv,
+                                                                                  n_era=n_era,
                                                                                   seed=cv_seed):
 
             counter_cv += 1
