@@ -104,7 +104,7 @@ class LRegression:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -122,7 +122,8 @@ class LRegression:
                                                                          n_valid=n_valid,
                                                                          n_cv=n_cv,
                                                                          n_era=n_era,
-                                                                         seed=cv_seed):
+                                                                         seed=cv_seed,
+                                                                         era_list=era_list):
             count += 1
 
             print('======================================================')
@@ -361,7 +362,7 @@ class DecisionTree:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -379,7 +380,8 @@ class DecisionTree:
                                                                          n_valid=n_valid,
                                                                          n_cv=n_cv,
                                                                          n_era=n_era,
-                                                                         seed=cv_seed):
+                                                                         seed=cv_seed,
+                                                                         era_list=era_list):
             count += 1
 
             print('======================================================')
@@ -548,7 +550,7 @@ class RandomForest:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -566,7 +568,8 @@ class RandomForest:
                                                                          n_valid=n_valid,
                                                                          n_cv=n_cv,
                                                                          n_era=n_era,
-                                                                         seed=cv_seed):
+                                                                         seed=cv_seed,
+                                                                         era_list=era_list):
             count += 1
 
             print('======================================================')
@@ -735,7 +738,7 @@ class ExtraTrees:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -753,7 +756,8 @@ class ExtraTrees:
                                                                          n_valid=n_valid,
                                                                          n_cv=n_cv,
                                                                          n_era=n_era,
-                                                                         seed=cv_seed):
+                                                                         seed=cv_seed,
+                                                                         era_list=era_list):
             count += 1
 
             print('======================================================')
@@ -922,7 +926,7 @@ class AdaBoost:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -940,7 +944,8 @@ class AdaBoost:
                                                                          n_valid=n_valid,
                                                                          n_cv=n_cv,
                                                                          n_era=n_era,
-                                                                         seed=cv_seed):
+                                                                         seed=cv_seed,
+                                                                         era_list=era_list):
             count += 1
 
             print('======================================================')
@@ -1109,7 +1114,7 @@ class GradientBoosting:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -1127,7 +1132,8 @@ class GradientBoosting:
                                                                          n_valid=n_valid,
                                                                          n_cv=n_cv,
                                                                          n_era=n_era,
-                                                                         seed=cv_seed):
+                                                                         seed=cv_seed,
+                                                                         era_list=era_list):
             count += 1
 
             print('======================================================')
@@ -1355,7 +1361,7 @@ class XGBoost:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -1373,7 +1379,8 @@ class XGBoost:
                                                                          n_valid=n_valid,
                                                                          n_cv=n_cv,
                                                                          n_era=n_era,
-                                                                         seed=cv_seed):
+                                                                         seed=cv_seed,
+                                                                         era_list=era_list):
 
             count += 1
 
@@ -1450,7 +1457,7 @@ class XGBoost:
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/xgb_', prob_train_mean, self.y_train)
 
     # Using sk-learn API
-    def train_sklearn(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, parameters=None):
+    def train_sklearn(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
         count = 0
         prob_test_total = []
@@ -1468,7 +1475,8 @@ class XGBoost:
                                                                          n_valid=n_valid,
                                                                          n_cv=n_cv,
                                                                          n_era=n_era,
-                                                                         seed=cv_seed):
+                                                                         seed=cv_seed,
+                                                                         era_list=era_list):
             count += 1
 
             print('======================================================')
@@ -2112,7 +2120,7 @@ class DeepNeuralNetworks:
         return prob
 
     # Training
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None):
 
         # Build Network
         tf.reset_default_graph()
@@ -2162,7 +2170,8 @@ class DeepNeuralNetworks:
                                                                              n_valid=n_valid,
                                                                              n_cv=n_cv,
                                                                              n_era=n_era,
-                                                                             seed=cv_seed):
+                                                                             seed=cv_seed,
+                                                                             era_list=era_list):
 
                 cv_counter += 1
 
@@ -2469,7 +2478,8 @@ class DeepNeuralNetworks:
 #                                                                          self.e_train,
 #                                                                          n_valid,
 #                                                                          n_era=n_era,
-#                                                                          n_cv):
+#                                                                          n_cv,
+#                                                                          era_list=era_list):
 #
 #             cv_counter += 1
 #
