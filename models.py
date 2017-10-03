@@ -2805,8 +2805,6 @@ class CrossValidation:
 
                     trained_cv.append(set(valid_era))
 
-                    print(x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era)
-
                     yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
             # n_cv is not an integer multiple of n_valid

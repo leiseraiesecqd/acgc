@@ -449,8 +449,8 @@ def print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_
     print('Accuracies of Train Eras:')
     acc_train_era = get_era_accuracy(prob_train, y_train, e_train)
     print('------------------------------------------------------')
-    acc_valid_era = get_era_accuracy(prob_valid, y_valid, e_valid)
     print('Accuracies of Validation Eras:')
+    acc_valid_era = get_era_accuracy(prob_valid, y_valid, e_valid)
 
     return acc_train_cv, acc_valid_cv, acc_train_era, acc_valid_era
 
