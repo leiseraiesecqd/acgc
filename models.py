@@ -2069,7 +2069,7 @@ class DeepNeuralNetworks:
 
             yield batch_x, batch_y, batch_w
 
-    # Get Batches
+    # Get Batches for Prediction
     @staticmethod
     def get_batches_for_predict(x, batch_num):
 
@@ -2084,6 +2084,7 @@ class DeepNeuralNetworks:
 
             yield batch_x
 
+    # Get Probabilities
     def get_prob(self, sess, logits, x, batch_num, inputs, keep_prob, is_train):
 
         logits_pred = np.array([])
@@ -2092,7 +2093,7 @@ class DeepNeuralNetworks:
 
             logits_pred_batch = sess.run(logits, {inputs: x_batch, keep_prob: 1.0, is_train: False})
             logits_pred_batch = logits_pred_batch.flatten()
-            np.concatenate((logits_pred, logits_pred_batch))
+            logits_pred = np.concatenate((logits_pred, logits_pred_batch))
 
         prob = 1.0 / (1.0 + np.exp(-logits_pred))
 
