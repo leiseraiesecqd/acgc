@@ -1965,7 +1965,7 @@ class DeepNeuralNetworks:
 
             weights = tf.Variable(tf.truncated_normal([x_shape[1], num_outputs], stddev=2.0 / np.sqrt(x_shape[1])))
 
-            biases = tf.Variable(tf.zeros([num_outputs]))
+            biases = tf.Variable(tf.zeros([num_outputs], dtype=tf.float64))
 
             fc_layer = tf.add(tf.matmul(x_tensor, weights), biases)
 
@@ -1982,7 +1982,7 @@ class DeepNeuralNetworks:
             #                                        # stddev=2.0 / math.sqrt(x_shape[1])),
             #                                        weights_initializer=tf.contrib.layers.xavier_initializer(dtype=tf.float64,
             #                                                                                                 seed=self.dnn_seed),
-            #                                        biases_initializer=tf.zeros_initializer())
+            #                                        biases_initializer=tf.zeros_initializer(dtype=tf.float64))
 
             tf.summary.histogram('fc_layer', fc)
 
