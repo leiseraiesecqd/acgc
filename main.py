@@ -286,10 +286,7 @@ class TrainSingleModel:
         # x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p \
         #     = utils.load_preprocessed_positive_pd_data(preprocessed_data_path)
         x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n \
-            = utils.load_preprocessed_positive_pd_data(preprocessed_data_path)
-
-        print(e_train_n)
-        
+            = utils.load_preprocessed_negative_pd_data(preprocessed_data_path)
         
         lgb_parameters = {'learning_rate': 0.002,
                           'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
