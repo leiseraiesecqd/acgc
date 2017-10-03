@@ -1980,14 +1980,18 @@ class DeepNeuralNetworks:
 
             fc = tf.contrib.layers.fully_connected(x_tensor,
                                                    num_outputs,
-                                                   activation_fn=tf.nn.sigmoid,
+                                                   activation_fn=None,
                                                    # weights_initializer=tf.truncated_normal_initializer(
                                                    # stddev=2.0 / math.sqrt(x_shape[1])),
                                                    weights_initializer=tf.contrib.layers.xavier_initializer(dtype=tf.float64,
                                                                                                             seed=self.dnn_seed),
-                                                   normalizer_fn=tf.layers.batch_normalization(x_tensor, training=training)
+                                                   # normalizer_fn=tf.layers.batch_normalization(x_tensor, training=training),
+                                                   biases_initializer=None
                                                    # biases_initializer=tf.zeros_initializer(dtype=tf.float64)
                                                    )
+
+            fc = tf.contrib.layers.batch_normalization(fc, training=training)
+            fc = tf.sigmoid(fc)
 
             tf.summary.histogram('fc_layer', fc)
 
