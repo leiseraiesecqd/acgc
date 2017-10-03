@@ -319,10 +319,10 @@ class TrainSingleModel:
 
         # HyperParameters
         hyper_parameters = {'version': '1.0',
-                            'epochs': 5,
-                            'unit_number': [48, 24, 12],
+                            'epochs': 10,
+                            'unit_number': [2048],
                             'learning_rate': 0.0001,
-                            'keep_probability': 0.4,
+                            'keep_probability': 0.9,
                             'batch_size': 256,
                             'seed': dnn_seed,
                             'display_step': 100,
@@ -1126,7 +1126,7 @@ if __name__ == "__main__":
     # TrainSingleModel.lr_train()
 
     # Random Forest
-    TrainSingleModel.rf_train()
+    # TrainSingleModel.rf_train()
 
     # Extra Trees
     # TrainSingleModel.et_train()
@@ -1146,7 +1146,7 @@ if __name__ == "__main__":
     # TrainSingleModel.lgb_train_sklearn()
 
     # DNN
-    # TrainSingleModel.dnn_tf_train()
+    TrainSingleModel.dnn_tf_train()
     # TrainSingleModel.dnn_keras_train()
 
     # Grid Search
