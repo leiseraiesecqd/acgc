@@ -2064,11 +2064,39 @@ class DeepNeuralNetworks:
 
             if ii != n_batches * batch_num - 1:
                 batch_x, batch_y, batch_w = x[ii: ii + batch_num], y[ii: ii + batch_num], w[ii: ii + batch_num]
-
             else:
                 batch_x, batch_y, batch_w = x[ii:], y[ii:], w[ii:]
 
             yield batch_x, batch_y, batch_w
+
+    # Get Batches
+    @staticmethod
+    def get_batches_for_predict(x, batch_num):
+
+        n_batches = len(x) // batch_num
+
+        for ii in range(0, n_batches * batch_num + 1, batch_num):
+
+            if ii != n_batches * batch_num - 1:
+                batch_x = x[ii: ii + batch_num]
+            else:
+                batch_x = x[ii:]
+
+            yield batch_x
+
+    def get_prob(self, sess, logits, x, batch_num, inputs, keep_prob, is_train):
+
+        logits_pred = np.array([])
+
+        for x_batch in self.get_batches_for_predict(x, batch_num):
+
+            logits_pred_batch = sess.run(logits, {inputs: x_batch, keep_prob: 1.0, is_train: False})
+            logits_pred_batch = logits_pred_batch.flatten()
+            np.concatenate((logits_pred, logits_pred_batch))
+
+        prob = 1.0 / (1.0 + np.exp(-logits_pred))
+
+        return prob
 
     # Training
     def train(self, pred_path, loss_log_path, n_valid, n_cv, cv_seed):
@@ -2211,19 +2239,11 @@ class DeepNeuralNetworks:
                 # saver.save(sess, self.save_path + 'model.' + self.version + '.ckpt')
 
                 # Prediction
+                print('------------------------------------------------------')
                 print('Predicting...')
-
-                logits_pred_train = sess.run(logits, {inputs: x_train, keep_prob: 1.0, is_train: False})
-                logits_pred_valid = sess.run(logits, {inputs: x_valid, keep_prob: 1.0, is_train: False})
-                logits_pred_test = sess.run(logits, {inputs: self.x_test, keep_prob: 1.0, is_train: False})
-
-                logits_pred_train = logits_pred_train.flatten()
-                logits_pred_valid = logits_pred_valid.flatten()
-                logits_pred_test = logits_pred_test.flatten()
-
-                prob_train = 1.0 / (1.0 + np.exp(-logits_pred_train))
-                prob_valid = 1.0 / (1.0 + np.exp(-logits_pred_valid))
-                prob_test = 1.0 / (1.0 + np.exp(-logits_pred_test))
+                prob_train = self.get_prob(sess, logits, x_train, self.batch_size, inputs, keep_prob, is_train)
+                prob_valid = self.get_prob(sess, logits, x_valid, self.batch_size, inputs, keep_prob, is_train)
+                prob_test = self.get_prob(sess, logits, self.x_test, self.batch_size, inputs, keep_prob, is_train)
 
                 loss_train, loss_valid, \
                     loss_train_w, loss_valid_w = utils.print_loss_dnn(prob_train, prob_valid,
