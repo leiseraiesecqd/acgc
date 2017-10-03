@@ -2527,9 +2527,9 @@ class CrossValidation:
     trained_cv = []
 
     @staticmethod
-    def sk_group_k_fold(x, y, e):
+    def sk_group_k_fold(x, y, e, n_splits):
 
-        era_k_fold = GroupKFold(n_splits=20)
+        era_k_fold = GroupKFold(n_splits=n_splits)
 
         for train_index, valid_index in era_k_fold.split(x, y, e):
 
@@ -2544,9 +2544,9 @@ class CrossValidation:
             yield x_train, y_train, x_valid, y_valid
 
     @staticmethod
-    def sk_group_k_fold_with_weight(x, y, w, e):
+    def sk_group_k_fold_with_weight(x, y, w, e, n_splits):
 
-        era_k_fold = GroupKFold(n_splits=20)
+        era_k_fold = GroupKFold(n_splits=n_splits)
 
         for train_index, valid_index in era_k_fold.split(x, y, e):
 
@@ -2563,14 +2563,17 @@ class CrossValidation:
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
     @staticmethod
-    def era_k_fold_split_all_random(e, n_valid, n_cv, seed=None):
+    def era_k_fold_split_all_random(e, n_valid, n_cv, n_era, seed=None, era_list=None):
 
         if seed is not None:
             np.random.seed(seed)
 
         for i in range(n_cv):
 
-            era_idx = list(range(1, 21))
+            if era_list is None:
+                era_list = range(1, n_era + 1)
+
+            era_idx = [era_list]
             valid_group = np.random.choice(era_idx, n_valid, replace=False)
 
             train_index = []
@@ -2589,14 +2592,17 @@ class CrossValidation:
             yield train_index, valid_index
 
     @staticmethod
-    def era_k_fold_with_weight_all_random(x, y, w, e, n_valid, n_cv, seed=None):
+    def era_k_fold_with_weight_all_random(x, y, w, e, n_valid, n_cv, n_era, seed=None, era_list=None):
 
         if seed is not None:
             np.random.seed(seed)
 
         for i in range(n_cv):
 
-            era_idx = list(range(1, 21))
+            if era_list is None:
+                era_list = range(1, n_era + 1)
+
+            era_idx = [era_list]
             valid_group = np.random.choice(era_idx, n_valid, replace=False)
 
             train_index = []
@@ -2625,7 +2631,7 @@ class CrossValidation:
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
     @staticmethod
-    def era_k_fold_split(e, n_valid, n_cv, n_era, seed=None):
+    def era_k_fold_split(e, n_valid, n_cv, n_era, seed=None, era_list=None):
 
         if seed is not None:
             np.random.seed(seed)
@@ -2644,7 +2650,10 @@ class CrossValidation:
 
         for epoch in range(n_epoch):
 
-            era_idx = [list(range(1, n_era + 1))]
+            if era_list is None:
+                era_list = range(1, n_era + 1)
+
+            era_idx = [era_list]
 
             if n_rest == 0:
 
