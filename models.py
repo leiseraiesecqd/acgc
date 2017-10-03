@@ -1976,8 +1976,6 @@ class DeepNeuralNetworks:
             # # Activate function
             # fc = tf.sigmoid(fc_layer)
 
-            x_tensor = tf.cast(x_tensor, tf.float64)
-
             fc = tf.contrib.layers.fully_connected(x_tensor,
                                                    num_outputs,
                                                    activation_fn=tf.nn.sigmoid,
@@ -1985,7 +1983,7 @@ class DeepNeuralNetworks:
                                                    # stddev=2.0 / math.sqrt(x_shape[1])),
                                                    weights_initializer=tf.contrib.layers.xavier_initializer(dtype=tf.float64,
                                                                                                             seed=self.dnn_seed),
-                                                   normalizer_fn=tf.layers.batch_normalization(x_tensor, training=training)
+                                                   normalizer_fn=tf.layers.batch_normalization
                                                    # biases_initializer=tf.zeros_initializer(dtype=tf.float64)
                                                    )
 
