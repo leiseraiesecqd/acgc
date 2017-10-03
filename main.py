@@ -287,6 +287,8 @@ class TrainSingleModel:
         #     = utils.load_preprocessed_positive_pd_data(preprocessed_data_path)
         x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n \
             = utils.load_preprocessed_positive_pd_data(preprocessed_data_path)
+
+        print(e_train_n)
         
         
         lgb_parameters = {'learning_rate': 0.002,
