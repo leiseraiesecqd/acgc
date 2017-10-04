@@ -28,7 +28,7 @@ path_list = [pred_path,
              loss_log_path,
              stack_output_path]
 
-train_seed = 2
+train_seed = 15
 cv_seed = None
 dnn_seed = None
 
@@ -219,10 +219,10 @@ class TrainSingleModel:
     def xgb_train_sklearn():
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        # x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p \
+        #  x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p \
         #     = utils.load_preprocessed_positive_pd_data(preprocessed_data_path)
-        x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n \
-            = utils.load_preprocessed_negative_pd_data(preprocessed_data_path)
+        #  x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n \
+        #      = utils.load_preprocessed_negative_pd_data(preprocessed_data_path)
 
         xgb_parameters = {'max_depth': 3,
                           'learning_rate': 0.1,
@@ -246,19 +246,19 @@ class TrainSingleModel:
                           'seed': train_seed,
                           'missing': None}
 
-        # XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
-        #
-        # print('Start training XGBoost...')
-        #
-        # XGB.train_sklearn(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20,
-        #                   cv_seed=cv_seed, parameters=xgb_parameters)
-
-        LGBM = models.XGBoost(x_train_n, y_train_n, w_train_n, e_train_n, x_test, id_test)
+        XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
         print('Start training XGBoost...')
 
-        LGBM.train_sklearn(pred_path, loss_log_path, n_valid=1, n_cv=6, n_era=6,
-                           cv_seed=cv_seed, parameters=xgb_parameters)
+        XGB.train_sklearn(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20,
+                         cv_seed=cv_seed, parameters=xgb_parameters)
+
+        #  LGBM = models.XGBoost(x_train_n, y_train_n, w_train_n, e_train_n, x_test, id_test)
+        #
+        #  print('Start training XGBoost...')
+        #
+        #  LGBM.train_sklearn(pred_path, loss_log_path, n_valid=1, n_cv=6, n_era=6,
+        #                     cv_seed=cv_seed, parameters=xgb_parameters)
 
     # LightGBM
     @staticmethod
@@ -269,16 +269,16 @@ class TrainSingleModel:
 
         lgb_parameters = {'application': 'binary',
                           'learning_rate': 0.002,
-                          'num_leaves': 3,                # <2^(max_depth)
+                          'num_leaves': 80,                # <2^(max_depth)
                           'tree_learner': 'serial',
-                          'max_depth': 8,                 # default=-1
-                          'min_data_in_leaf': 20,         # default=20
+                          'max_depth': 7,                 # default=-1
+                          'min_data_in_leaf': 2000,         # default=20
                           'feature_fraction': 0.5,        # default=1
                           'bagging_fraction': 0.6,        # default=1
                           'bagging_freq': 5,              # default=0 perform bagging every k iteration
                           'bagging_seed': 1,              # default=3
                           'early_stopping_rounds': 50,
-                          'max_bin': 255,
+                          'max_bin': 50,
                           'metric': 'binary_logloss',
                           'verbosity': 1,
                           'seed': train_seed}
@@ -296,16 +296,16 @@ class TrainSingleModel:
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
         # x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p \
         #     = utils.load_preprocessed_positive_pd_data(preprocessed_data_path)
-        x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n \
-            = utils.load_preprocessed_negative_pd_data(preprocessed_data_path)
-        
-        lgb_parameters = {'learning_rate': 0.002,
+        # x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n \
+        #     = utils.load_preprocessed_negative_pd_data(preprocessed_data_path)
+
+        lgb_parameters = {'learning_rate': 0.003,
                           'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
                           # 'boosting_type': 'dart',        # Dropouts meet Multiple Additive Regression Trees.
                           # 'boosting_type': 'goss',        # Gradient-based One-Side Sampling.
                           # 'boosting_type': 'rf',          # Random Forest.
-                          'num_leaves': 128,                # <2^(max_depth)
-                          'max_depth': 8,                 # default=-1
+                          'num_leaves': 80,                # <2^(max_depth)
+                          'max_depth': 7,                 # default=-1
                           'n_estimators': 50,
                           'max_bin': 1005,
                           'subsample_for_bin': 1981,
@@ -316,24 +316,24 @@ class TrainSingleModel:
                           'subsample': 0.8,
                           'subsample_freq': 5,
                           'colsample_bytree': 0.8,
-                          'reg_alpha': 0.,
-                          'reg_lambda': 0.,
+                          'reg_alpha': 0.5,
+                          'reg_lambda': 0.5,
                           'silent': False,
                           'seed': train_seed}
 
-        # LGBM = models.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test)
-        #
-        # print('Start training LGBM...')
-        #
-        # LGBM.train_sklearn(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20,
-        #                    cv_seed=cv_seed, parameters=lgb_parameters)
-
-        LGBM = models.LightGBM(x_train_n, y_train_n, w_train_n, e_train_n, x_test, id_test, x_g_train_n, x_g_test)
+        LGBM = models.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test)
 
         print('Start training LGBM...')
 
-        LGBM.train_sklearn(pred_path, loss_log_path, n_valid=1, n_cv=6, n_era=6,
-                           cv_seed=cv_seed, era_list=[1, 3, 4, 10, 12, 16], parameters=lgb_parameters)
+        LGBM.train_sklearn(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20,
+                          cv_seed=cv_seed, parameters=lgb_parameters)
+
+        # LGBM = models.LightGBM(x_train_n, y_train_n, w_train_n, e_train_n, x_test, id_test, x_g_train_n, x_g_test)
+        #
+        # print('Start training LGBM...')
+        #
+        # LGBM.train_sklearn(pred_path, loss_log_path, n_valid=1, n_cv=6, n_era=6,
+        #                    cv_seed=cv_seed, era_list=[1, 3, 4, 10, 12, 16], parameters=lgb_parameters)
 
     # DNN
     @staticmethod
@@ -413,7 +413,7 @@ class TrainSingleModel:
 
         print('Start training LGBM...')
 
-        LGB.train_sklearn(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, 
+        LGB.train_sklearn(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20,
                           cv_seed=cv_seed, parameters=lgb_parameters)
 
 
@@ -1167,8 +1167,8 @@ if __name__ == "__main__":
     # TrainSingleModel.xgb_train_sklearn()
 
     # LightGBM
-    # TrainSingleModel.lgb_train()
-    TrainSingleModel.lgb_train_sklearn()
+    TrainSingleModel.lgb_train()
+    # TrainSingleModel.lgb_train_sklearn()
 
     # DNN
     # TrainSingleModel.dnn_tf_train()
