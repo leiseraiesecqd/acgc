@@ -813,10 +813,10 @@ class DataPreProcess:
         lower = self.x_test.feature87.quantile(0.001)
         self.x_test['feature87'].loc[self.x_test['feature87'] < lower] = lower
 
-    # Scaling Data
-    def scale(self):
+    # Standard Scale
+    def standard_scale(self):
 
-        print('Scaling data...')
+        print('Standard Scaling Data...')
 
         for each in self.x_train.columns:
             mean, std = self.x_train[each].mean(), self.x_train[each].std()
@@ -826,10 +826,21 @@ class DataPreProcess:
             mean, std = self.x_test[each].mean(), self.x_test[each].std()
             self.x_test.loc[:, each] = (self.x_test[each] - mean)/std
 
+    # Min Max scale
+    def min_max_scale(self):
+
+        for each in self.x_train.columns:
+            x_max, x_min = self.x_train[each].max(),  self.x_train[each].min()
+            self.x_train.loc[:, each] = (self.x_train[each] - x_min)/(x_max - x_min)
+
+        for each in self.x_test.columns:
+            x_max, x_min = self.x_test[each].max(), self.x_test[each].min()
+            self.x_test.loc[:, each] = (self.x_test[each] - x_min)/(x_max - x_min)
+
     # Convert Column 'group' to Dummies
     def convert_group_to_dummies(self):
 
-        print('Converting groups to dummies...')
+        print('Converting Groups to Dummies...')
 
         group_train_dummies = pd.get_dummies(self.g_train, prefix='group')
         self.x_g_train = self.x_train.join(self.g_train)
@@ -974,7 +985,8 @@ class DataPreProcess:
         self.drop_outliers()
 
         # Scale features
-        self.scale()
+        # self.standard_scale()
+        self.min_max_scale()
 
         # Convert column 'group' to dummies
         self.convert_group_to_dummies()
@@ -995,7 +1007,7 @@ class DataPreProcess:
         print('Using {:.3}s'.format(end_time - start_time))
 
 
-if __name__ == "__main__":
+if __name__ == '__main__':
 
     DPP = DataPreProcess(train_csv_path, test_csv_path, preprocessed_path)
     DPP.preprocess_pd()
