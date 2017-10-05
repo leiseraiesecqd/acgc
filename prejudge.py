@@ -171,7 +171,7 @@ class PrejudgeEraSign:
         # era_sign_test = self.predict_era_sign(pred_path, negative_era_list, num_boost_round_e, n_splits_e, n_cv_e, seed,
         #                                       use_weight=False,  force_convert_era=True, parameters_e=parameters_e)
 
-        era_sign_test = self.convert_era_sign('./results/prejudge/pred_era/final_results/')
+        era_sign_test = self.convert_era_sign('./results/prejudge/pred_era/final_results/lgb_result.csv')
 
         # Save era_sign_test to Pickle File
         utils.save_np_to_pkl(era_sign_test, pred_path + 'era_sign_test_pickle/era_sign_test.p')
