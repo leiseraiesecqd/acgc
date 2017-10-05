@@ -14,6 +14,7 @@ import tensorflow as tf
 # from keras import optimizers
 
 from sklearn.model_selection import cross_val_score
+from sklearn.model_selection import RepeatedKFold
 from sklearn.model_selection import GroupKFold
 from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LogisticRegression
@@ -106,6 +107,9 @@ class LRegression:
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
+        # Check if directories exit or not
+        utils.check_dir_model(pred_path, loss_log_path)
+
         count = 0
         prob_test_total = []
         prob_train_total = []
@@ -191,7 +195,7 @@ class LRegression:
         utils.save_final_loss_log(loss_log_path + 'lr_', parameters, n_valid, n_cv, loss_train_mean,
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
-        # Save final result
+        # Save Final Result
         utils.save_pred_to_csv(pred_path + 'final_results/lr_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/lr_', prob_train_mean, self.y_train)
 
@@ -364,6 +368,9 @@ class DecisionTree:
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
+        # Check if directories exit or not
+        utils.check_dir_model(pred_path, loss_log_path)
+
         count = 0
         prob_test_total = []
         prob_train_total = []
@@ -449,7 +456,7 @@ class DecisionTree:
         utils.save_final_loss_log(loss_log_path + 'dt_', parameters, n_valid, n_cv, loss_train_mean,
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
-        # Save final result
+        # Save Final Result
         utils.save_pred_to_csv(pred_path + 'final_results/dt_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/dt_', prob_train_mean, self.y_train)
 
@@ -552,6 +559,9 @@ class RandomForest:
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
+        # Check if directories exit or not
+        utils.check_dir_model(pred_path, loss_log_path)
+
         count = 0
         prob_test_total = []
         prob_train_total = []
@@ -637,7 +647,7 @@ class RandomForest:
         utils.save_final_loss_log(loss_log_path + 'rf_', parameters, n_valid, n_cv, loss_train_mean,
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
-        # Save final result
+        # Save Final Result
         utils.save_pred_to_csv(pred_path + 'final_results/rf_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/rf_', prob_train_mean, self.y_train)
 
@@ -740,6 +750,9 @@ class ExtraTrees:
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
+        # Check if directories exit or not
+        utils.check_dir_model(pred_path, loss_log_path)
+
         count = 0
         prob_test_total = []
         prob_train_total = []
@@ -825,7 +838,7 @@ class ExtraTrees:
         utils.save_final_loss_log(loss_log_path + 'et_', parameters, n_valid, n_cv, loss_train_mean,
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
-        # Save final result
+        # Save Final Result
         utils.save_pred_to_csv(pred_path + 'final_results/et_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/et_', prob_train_mean, self.y_train)
 
@@ -928,6 +941,9 @@ class AdaBoost:
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
+        # Check if directories exit or not
+        utils.check_dir_model(pred_path, loss_log_path)
+
         count = 0
         prob_test_total = []
         prob_train_total = []
@@ -1013,7 +1029,7 @@ class AdaBoost:
         utils.save_final_loss_log(loss_log_path + 'ab_', parameters, n_valid, n_cv, loss_train_mean,
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
-        # Save final result
+        # Save Final Result
         utils.save_pred_to_csv(pred_path + 'final_results/ab_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/ab_', prob_train_mean, self.y_train)
 
@@ -1116,6 +1132,9 @@ class GradientBoosting:
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
+        # Check if directories exit or not
+        utils.check_dir_model(pred_path, loss_log_path)
+
         count = 0
         prob_test_total = []
         prob_train_total = []
@@ -1201,7 +1220,7 @@ class GradientBoosting:
         utils.save_final_loss_log(loss_log_path + 'gb_', parameters, n_valid, n_cv, loss_train_mean,
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
-        # Save final result
+        # Save Final Result
         utils.save_pred_to_csv(pred_path + 'final_results/gb_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/gb_', prob_train_mean, self.y_train)
 
@@ -1363,6 +1382,9 @@ class XGBoost:
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
+        # Check if directories exit or not
+        utils.check_dir_model(pred_path, loss_log_path)
+
         count = 0
         prob_test_total = []
         prob_train_total = []
@@ -1452,12 +1474,15 @@ class XGBoost:
         utils.save_final_loss_log(loss_log_path + 'xgb_', parameters, n_valid, n_cv, loss_train_mean,
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
-        # Save final result
+        # Save Final Result
         utils.save_pred_to_csv(pred_path + 'final_results/xgb_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/xgb_', prob_train_mean, self.y_train)
 
     # Using sk-learn API
     def train_sklearn(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
+
+        # Check if directories exit or not
+        utils.check_dir_model(pred_path, loss_log_path)
 
         count = 0
         prob_test_total = []
@@ -1547,7 +1572,7 @@ class XGBoost:
         utils.save_final_loss_log(loss_log_path + 'xgb_sk_', parameters, n_valid, n_cv, loss_train_mean,
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
-        # Save final result
+        # Save Final Result
         utils.save_pred_to_csv(pred_path + 'final_results/xgb_sk_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/xgb_sk_', prob_train_mean, self.y_train)
 
@@ -1584,7 +1609,7 @@ class XGBoost:
 # LightGBM
 class LightGBM:
 
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_tr_g, x_te_g):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -1592,8 +1617,8 @@ class LightGBM:
         self.e_train = e_tr
         self.x_test = x_te
         self.id_test = id_te
-        self.x_g_train = x_tr_g
-        self.x_g_test = x_te_g
+        self.x_g_train = x_g_tr
+        self.x_g_test = x_g_te
         self.importance = np.array([])
         self.indices = np.array([])
         self.std = np.array([])
@@ -1699,7 +1724,11 @@ class LightGBM:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, 
+              parameters=None, return_prob_test=False):
+
+        # Check if directories exit or not
+        utils.check_dir_model(pred_path, loss_log_path)
 
         count = 0
         prob_test_total = []
@@ -1745,7 +1774,7 @@ class LightGBM:
 
             # Save Train Probabilities to CSV File
             prob_train = self.get_prob_train(bst, self.x_g_train,
-                                             pred_path=pred_path + 'cv_prob_train/lgb_sk_cv_{}_'.format(count))
+                                             pred_path=pred_path + 'cv_prob_train/lgb_cv_{}_'.format(count))
             
             # Get Probabilities of Validation Set
             prob_valid = self.predict(bst, x_valid)
@@ -1792,12 +1821,19 @@ class LightGBM:
         utils.save_final_loss_log(loss_log_path + 'lgb_', parameters, n_valid, n_cv, loss_train_mean,
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
-        # Save final result
+        # Save Final Result
         utils.save_pred_to_csv(pred_path + 'final_results/lgb_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/lgb_', prob_train_mean, self.y_train)
 
+        # Return Probabilities of Test Set
+        if return_prob_test is True:
+            return prob_test_mean
+
     # Using sk-learn API
     def train_sklearn(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
+
+        # Check if directories exit or not
+        utils.check_dir_model(pred_path, loss_log_path)
 
         count = 0
         prob_test_total = []
@@ -1896,7 +1932,7 @@ class LightGBM:
         utils.save_final_loss_log(loss_log_path + 'lgb_sk_', parameters, n_valid, n_cv, loss_train_mean,
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
 
-        # Save final result
+        # Save Final Result
         utils.save_pred_to_csv(pred_path + 'final_results/lgb_sk_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/lgb_sk_', prob_train_mean, self.y_train)
 
@@ -1935,6 +1971,89 @@ class LightGBM:
         prob_test = self.predict_sklearn(clf, x_g_test)
 
         return prob_valid, prob_test, losses
+
+    def era_train(self, pred_path, n_splits, n_cv, cv_seed, use_weight=True, parameters=None):
+
+        # Check if directories exit or not
+        utils.check_dir_model(pred_path)
+
+        count = 0
+        prob_test_total = []
+        prob_train_total = []
+        loss_train_total = []
+        loss_valid_total = []
+        loss_train_w_total = []
+        loss_valid_w_total = []
+
+        # Cross Validation
+        for x_train, y_train, w_train, x_valid, \
+            y_valid, w_valid in CrossValidation.sk_k_fold_with_weight(x=self.x_g_train,
+                                                                      y=self.y_train,
+                                                                      w=self.w_train,
+                                                                      n_splits=n_splits,
+                                                                      n_cv=n_cv,
+                                                                      seed=cv_seed):
+            count += 1
+
+            print('======================================================')
+            print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
+            print('------------------------------------------------------')
+
+            # Use Category
+            idx_category = [x_train.shape[1] - 1]
+            if use_weight is True:
+                d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=idx_category)
+                d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
+            else:
+                d_train = lgb.Dataset(x_train, label=y_train, categorical_feature=idx_category)
+                d_valid = lgb.Dataset(x_valid, label=y_valid, categorical_feature=idx_category)
+
+            # Booster
+            bst = lgb.train(parameters, d_train, num_boost_round=50,
+                            valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
+
+            # Feature Importance
+            self.get_importance(bst)
+
+            # Prediction
+            prob_test = self.predict(bst, self.x_g_test, pred_path=pred_path + 'cv_results/lgb_cv_{}_'.format(count))
+
+            # Save Train Probabilities to CSV File
+            prob_train = self.get_prob_train(bst, self.x_g_train,
+                                             pred_path=pred_path + 'cv_prob_train/lgb_cv_{}_'.format(count))
+
+            # Print LogLoss
+            print('------------------------------------------------------')
+            loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_train, y_train, w_train,
+                                                                                  x_valid, y_valid, w_valid)
+
+            prob_test_total.append(list(prob_test))
+            prob_train_total.append(list(prob_train))
+            loss_train_total.append(loss_train)
+            loss_valid_total.append(loss_valid)
+            loss_train_w_total.append(loss_train_w)
+            loss_valid_w_total.append(loss_valid_w)
+
+        print('======================================================')
+        print('Calculating final result...')
+
+        prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
+        prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
+        loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
+        loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
+        loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
+        loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
+
+        # Print Total Losses
+        utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+
+        # Print and Get Accuracies of CV of All Train Set
+        _, _ = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
+
+        # Save Final Result
+        utils.save_pred_to_csv(pred_path + 'final_results/lgb_', self.id_test, prob_test_mean)
+
+        return prob_test_mean
 
 
 # Deep Neural Networks
@@ -2121,6 +2240,9 @@ class DeepNeuralNetworks:
 
     # Training
     def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None):
+
+        # Check if directories exit or not
+        utils.check_dir_model(pred_path, loss_log_path)
 
         # Build Network
         tf.reset_default_graph()
@@ -2527,9 +2649,39 @@ class CrossValidation:
     trained_cv = []
 
     @staticmethod
-    def sk_group_k_fold(x, y, e, n_splits):
+    def sk_k_fold_with_weight(x, y, w, n_splits, n_cv, seed=None):
+        
+        if seed is not None:
+            np.random.seed(seed)
 
-        era_k_fold = GroupKFold(n_splits=n_splits)
+        if n_cv % n_splits != 0:
+            raise ValueError('n_cv must be an integer multiple of n_splits!')
+
+        n_repeats = n_cv / n_splits
+
+        era_k_fold = RepeatedKFold(n_splits=n_splits, n_repeats=n_repeats, random_state=seed)
+
+        for train_index, valid_index in era_k_fold.split(x, y):
+            
+            np.random.shuffle(train_index)
+            np.random.shuffle(valid_index)
+            
+            # Training data
+            x_train = x[train_index]
+            y_train = y[train_index]
+            w_train = w[train_index]
+
+            # Validation data
+            x_valid = x[valid_index]
+            y_valid = y[valid_index]
+            w_valid = w[valid_index]
+
+            yield x_train, y_train, w_train, x_valid, y_valid, w_valid
+
+    @staticmethod
+    def sk_group_k_fold(x, y, e, n_cv):
+
+        era_k_fold = GroupKFold(n_splits=n_cv)
 
         for train_index, valid_index in era_k_fold.split(x, y, e):
 
@@ -2544,9 +2696,9 @@ class CrossValidation:
             yield x_train, y_train, x_valid, y_valid
 
     @staticmethod
-    def sk_group_k_fold_with_weight(x, y, w, e, n_splits):
+    def sk_group_k_fold_with_weight(x, y, w, e, n_cv):
 
-        era_k_fold = GroupKFold(n_splits=n_splits)
+        era_k_fold = GroupKFold(n_splits=n_cv)
 
         for train_index, valid_index in era_k_fold.split(x, y, e):
 

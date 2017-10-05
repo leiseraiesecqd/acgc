@@ -1,8 +1,9 @@
+import time
 import utils
 import models
 import stacking
-import time
-from sklearn.ensemble import ExtraTreesClassifier
+import prejudge
+import preprocess
 
 
 preprocessed_data_path = './preprocessed_data/'
@@ -12,20 +13,14 @@ loss_log_path = './loss_logs/'
 stack_output_path = './stacking_outputs/'
 
 path_list = [pred_path,
-             pred_path + 'cv_results/',
-             pred_path + 'final_results/',
-             pred_path + 'cv_prob_train/',
-             pred_path + 'final_prob_train/',
              pred_path + 'stack_results/',
-             pred_path + 'stack_results/cv_results/',
-             pred_path + 'stack_results/cv_prob_train/',
-             pred_path + 'stack_results/final_prob_train/',
              pred_path + 'stack_results/epochs_results/',
-             pred_path + 'stack_results/final_results/',
              pred_path + 'stack_outputs/',
              pred_path + 'stack_outputs/final_results/',
+             pred_path + 'prejudge/',
              grid_search_log_path,
              loss_log_path,
+             loss_log_path + 'prejudge/',
              stack_output_path]
 
 train_seed = 15
@@ -145,7 +140,7 @@ class TrainSingleModel:
                          'verbose': 2,
                          'warm_start': False}
 
-        clf_et = ExtraTreesClassifier(**et_parameters)
+        clf_et = models.ExtraTreesClassifier(**et_parameters)
 
         ab_parameters = {'algorithm': 'SAMME.R',
                          'base_estimator': clf_et,
@@ -573,7 +568,7 @@ class GridSearch:
                             'random_state': train_seed,
                             'verbose': 2,
                             'warm_start': False}
-        clf_et_for_ab = ExtraTreesClassifier(**et_for_ab_params)
+        clf_et_for_ab = models.ExtraTreesClassifier(**et_for_ab_params)
 
         parameters = {'algorithm': 'SAMME.R',
                       'base_estimator': clf_et_for_ab,
@@ -817,8 +812,97 @@ class GridSearch:
         utils.print_grid_info('LightGBM', parameters, parameters_grid)
 
 
-# Stacking
+# Training by Split Era sign
+class PrejudgeTraining:
 
+    @staticmethod
+    def get_models_parameters():
+
+        era_training_params = {'application': 'binary',
+                               'learning_rate': 0.002,
+                               'num_leaves': 80,               # <2^(max_depth)
+                               'tree_learner': 'serial',
+                               'max_depth': 7,                 # default=-1
+                               'min_data_in_leaf': 2000,         # default=20
+                               'feature_fraction': 0.5,        # default=1
+                               'bagging_fraction': 0.6,        # default=1
+                               'bagging_freq': 5,              # default=0 perform bagging every k iteration
+                               'bagging_seed': 1,              # default=3
+                               'early_stopping_rounds': 50,
+                               'max_bin': 50,
+                               'metric': 'binary_logloss',
+                               'verbosity': 1,
+                               'seed': train_seed}
+
+        positive_params = {'application': 'binary',
+                           'learning_rate': 0.002,
+                           'num_leaves': 80,               # <2^(max_depth)
+                           'tree_learner': 'serial',
+                           'max_depth': 7,                 # default=-1
+                           'min_data_in_leaf': 2000,         # default=20
+                           'feature_fraction': 0.5,        # default=1
+                           'bagging_fraction': 0.6,        # default=1
+                           'bagging_freq': 5,              # default=0 perform bagging every k iteration
+                           'bagging_seed': 1,              # default=3
+                           'early_stopping_rounds': 50,
+                           'max_bin': 50,
+                           'metric': 'binary_logloss',
+                           'verbosity': 1,
+                           'seed': train_seed}
+
+        negative_params = {'application': 'binary',
+                           'learning_rate': 0.002,
+                           'num_leaves': 80,  # <2^(max_depth)
+                           'tree_learner': 'serial',
+                           'max_depth': 7,  # default=-1
+                           'min_data_in_leaf': 2000,  # default=20
+                           'feature_fraction': 0.5,  # default=1
+                           'bagging_fraction': 0.6,  # default=1
+                           'bagging_freq': 5,  # default=0 perform bagging every k iteration
+                           'bagging_seed': 1,  # default=3
+                           'early_stopping_rounds': 50,
+                           'max_bin': 50,
+                           'metric': 'binary_logloss',
+                           'verbosity': 1,
+                           'seed': train_seed}
+
+        models_parameters = [era_training_params, positive_params, negative_params]
+
+        return models_parameters
+
+    @staticmethod
+    def train():
+
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+        x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p \
+            = utils.load_preprocessed_positive_pd_data(preprocessed_data_path)
+        x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n \
+            = utils.load_preprocessed_negative_pd_data(preprocessed_data_path)
+
+        models_parameters = PrejudgeTraining.get_models_parameters()
+
+        hyper_parameters = {'seed': cv_seed,
+                            'n_splits_e': 5,
+                            'n_cv_e': 20,
+                            'n_valid_p': 3,
+                            'n_cv_p': 20,
+                            'n_era_p': 14,
+                            'n_valid_n': 1,
+                            'n_cv_n': 18,
+                            'n_era_n': 6}
+
+        PES = prejudge.PrejudgeEraSign(x_train, y_train, w_train, e_train, x_g_train,
+                                       x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p,
+                                       x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n,
+                                       x_test, id_test, x_g_test)
+
+        PES.train(pred_path=pred_path + 'prejudge/', loss_log_path=loss_log_path + 'prejudge/',
+                  negative_era_list=preprocess.negative_era_list, model_parameters=models_parameters,
+                  hyper_parameters=hyper_parameters)
+
+
+# Stacking
 class ModelStacking:
 
     # Parameters for layer1
@@ -883,7 +967,7 @@ class ModelStacking:
                             'random_state': train_seed,
                             'verbose': 2,
                             'warm_start': False}
-        clf_et_for_ab = ExtraTreesClassifier(**et_for_ab_params)
+        clf_et_for_ab = models.ExtraTreesClassifier(**et_for_ab_params)
         ab_params = {'algorithm': 'SAMME.R',
                      'base_estimator': clf_et_for_ab,
                      'learning_rate': 0.0051,
@@ -1167,7 +1251,7 @@ if __name__ == "__main__":
     # TrainSingleModel.xgb_train_sklearn()
 
     # LightGBM
-    TrainSingleModel.lgb_train()
+    # TrainSingleModel.lgb_train()
     # TrainSingleModel.lgb_train_sklearn()
 
     # DNN
@@ -1188,6 +1272,9 @@ if __name__ == "__main__":
     # ModelStacking.deep_stack_train()
     # ModelStacking.stack_tree_train()
     # TrainSingleModel.stack_lgb_train()
+
+    # Prejudge
+    PrejudgeTraining.train()
 
     print('======================================================')
     print('All Task Done!')
