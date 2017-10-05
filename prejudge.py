@@ -35,7 +35,7 @@ class PrejudgeEraSign:
         print('======================================================')
         print('Training Era Sign...')
 
-        feature = self.x_train
+        feature = self.x_g_train
         # Convert Eras of Training Data to 0 and 1
         era_sign_train = [0 if era in negative_era_list else 1 for era in self.e_train]
 
@@ -127,6 +127,7 @@ class PrejudgeEraSign:
                      pred_path + 'negative/',
                      pred_path + 'pred_era/',
                      pred_path + 'final_results/',
+                     pred_path + 'era_sign_test_pickle/',
                      loss_log_path,
                      loss_log_path + 'positive/',
                      loss_log_path + 'negative/']
@@ -149,12 +150,17 @@ class PrejudgeEraSign:
         print('======================================================')
         print('Start training...')
 
+        # Training Era Sign
         era_sign_test = self.predict_era_sign(pred_path, negative_era_list, n_splits_e, n_cv_e, seed,
                                               use_weight=False,  force_convert_era=True, parameters_e=parameters_e)
+
+        # Save era_sign_test to Pickle File
+        utils.save_np_to_pkl(era_sign_test, pred_path + 'era_sign_test_pickle/')
 
         x_test_p, x_g_test_p, era_idx_test_p, x_test_n, \
             x_g_test_n, era_idx_test_n = self.split_data_by_era_sign(era_sign_test, seed)
 
+        # Training Models by Era Sign
         prob_test = \
             self.train_models_by_era_sign(x_test_p, x_g_test_p, era_idx_test_p, x_test_n, x_g_test_n,  era_idx_test_n,
                                           pred_path=pred_path, loss_log_path=loss_log_path,
@@ -162,6 +168,7 @@ class PrejudgeEraSign:
                                           parameters_p=parameters_p, n_valid_n=n_valid_n, n_cv_n=n_cv_n,
                                           n_era_n=n_era_n,  parameters_n=parameters_n)
 
+        # Save Predictions
         utils.save_pred_to_csv(pred_path + 'final_results/', self.id_test, prob_test)
 
         total_time = time.time() - start_time
