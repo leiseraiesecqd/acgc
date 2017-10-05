@@ -293,7 +293,8 @@ class TrainSingleModel:
 
         print('Start training LGBM...')
 
-        LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed, parameters=lgb_parameters)
+        LGBM.train(pred_path, loss_log_path, num_boost_round=50, n_valid=4, n_cv=20, n_era=20,
+                   cv_seed=cv_seed, parameters=lgb_parameters)
 
     @staticmethod
     def lgb_train_sklearn():
@@ -895,13 +896,16 @@ class PrejudgeTraining:
 
         hyper_parameters = {'seed': cv_seed,
                             'n_splits_e': 5,
+                            'num_boost_round_e': 3000,
                             'n_cv_e': 20,
                             'n_valid_p': 3,
                             'n_cv_p': 20,
                             'n_era_p': 14,
+                            'num_boost_round_p': 100,
                             'n_valid_n': 1,
                             'n_cv_n': 18,
-                            'n_era_n': 6}
+                            'n_era_n': 6,
+                            'num_boost_round_n': 100}
 
         PES = prejudge.PrejudgeEraSign(x_train, y_train, w_train, e_train, x_g_train,
                                        x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p,

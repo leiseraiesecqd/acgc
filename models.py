@@ -1724,7 +1724,7 @@ class LightGBM:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None,
+    def train(self, pred_path, loss_log_path, num_boost_round, n_valid, n_cv, n_era, cv_seed, era_list=None,
               parameters=None, return_prob_test=False):
 
         # Check if directories exit or not
@@ -1763,7 +1763,7 @@ class LightGBM:
             d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
 
             # Booster
-            bst = lgb.train(parameters, d_train, num_boost_round=65,
+            bst = lgb.train(parameters, d_train, num_boost_round=num_boost_round,
                             valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
 
             # Feature Importance
@@ -1972,7 +1972,7 @@ class LightGBM:
 
         return prob_valid, prob_test, losses
 
-    def era_train(self, pred_path, n_splits, n_cv, cv_seed, use_weight=True, parameters=None):
+    def prejudge_train(self, pred_path, num_boost_round, n_splits, n_cv, cv_seed, use_weight=True, parameters=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path)
@@ -2009,7 +2009,7 @@ class LightGBM:
                 d_valid = lgb.Dataset(x_valid, label=y_valid, categorical_feature=idx_category)
 
             # Booster
-            bst = lgb.train(parameters, d_train, num_boost_round=3000,
+            bst = lgb.train(parameters, d_train, num_boost_round=num_boost_round,
                             valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
 
             # Feature Importance
