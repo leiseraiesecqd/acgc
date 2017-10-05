@@ -1750,6 +1750,8 @@ class LightGBM:
                                                                          seed=cv_seed,
                                                                          era_list=era_list):
 
+            print(x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era)
+
             count += 1
 
             print('======================================================')
