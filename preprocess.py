@@ -876,6 +876,7 @@ class DataPreProcess:
         self.x_g_train_p = self.x_g_train.ix[positive_index]
         self.y_train_p = self.y_train.ix[positive_index]
         self.w_train_p = self.w_train.ix[positive_index]
+        self.e_train_p = self.e_train.ix[positive_index]
 
         # Negative Data
         self.x_train_n = self.x_train.ix[negative_index]
