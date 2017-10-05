@@ -89,24 +89,26 @@ class PrejudgeEraSign:
         # Split Set of Test Set
         x_test_p = self.x_test[era_idx_test_p]
         x_g_test_p = self.x_test[era_idx_test_p]
+        id_test_p = self.id_test[era_idx_test_p]
         x_test_n = self.x_test[era_idx_test_n]
         x_g_test_n = self.x_test[era_idx_test_n]
+        id_test_n = self.id_test[era_idx_test_n]
 
-        return x_test_p, x_g_test_p, era_idx_test_p, x_test_n, x_g_test_n, era_idx_test_n
+        return x_test_p, x_g_test_p, id_test_p, era_idx_test_p, x_test_n, x_g_test_n, id_test_n, era_idx_test_n
 
-    def train_models_by_era_sign(self, x_test_p, x_g_test_p, era_idx_test_p, x_test_n, x_g_test_n, era_idx_test_n,
-                                 pred_path, loss_log_path, cv_seed, num_boost_round_p, n_valid_p, n_cv_p, n_era_p,
-                                 parameters_p, era_list_p, num_boost_round_n, n_valid_n, n_cv_n, n_era_n,
-                                 parameters_n, era_list_n):
+    def train_models_by_era_sign(self, x_test_p, x_g_test_p, id_test_p, era_idx_test_p, x_test_n, x_g_test_n,
+                                 id_test_n, era_idx_test_n, pred_path, loss_log_path, cv_seed, num_boost_round_p,
+                                 n_valid_p, n_cv_p, n_era_p, parameters_p, era_list_p, num_boost_round_n, n_valid_n,
+                                 n_cv_n, n_era_n, parameters_n, era_list_n):
 
         print('======================================================')
         print('Training Models by Era Sign...')
 
         LGBM_P = models.LightGBM(self.x_train_p, self.y_train_p, self.w_train_p, self.e_train_p,
-                                 x_test_p, self.id_test_p, self.x_g_train_p, x_g_test_p)
+                                 x_test_p, id_test_p, self.x_g_train_p, x_g_test_p)
 
         LGBM_N = models.LightGBM(self.x_train_n, self.y_train_n, self.w_train_n, self.e_train_n,
-                                 x_test_n, self.id_test_n, self.x_g_train_n, x_g_test_n)
+                                 x_test_n, id_test_n, self.x_g_train_n, x_g_test_n)
 
         print('======================================================')
         print('Training Models of Positive Era Sign...')
@@ -181,12 +183,13 @@ class PrejudgeEraSign:
         # Save era_sign_test to Pickle File
         utils.save_np_to_pkl(era_sign_test, pred_path + 'era_sign_test_pickle/era_sign_test.p')
 
-        x_test_p, x_g_test_p, era_idx_test_p, x_test_n, \
-            x_g_test_n, era_idx_test_n = self.split_data_by_era_sign(era_sign_test, seed)
+        x_test_p, x_g_test_p, id_test_p, era_idx_test_p, x_test_n, \
+            x_g_test_n, id_test_n, era_idx_test_n = self.split_data_by_era_sign(era_sign_test, seed)
 
         # Training Models by Era Sign
         prob_test = \
-            self.train_models_by_era_sign(x_test_p, x_g_test_p, era_idx_test_p, x_test_n, x_g_test_n,  era_idx_test_n,
+            self.train_models_by_era_sign(x_test_p, x_g_test_p, id_test_p, era_idx_test_p,
+                                          x_test_n, x_g_test_n, id_test_p, era_idx_test_n,
                                           pred_path=pred_path, loss_log_path=loss_log_path, cv_seed=seed,
                                           num_boost_round_p=num_boost_round_p, n_valid_p=n_valid_p, n_cv_p=n_cv_p,
                                           n_era_p=n_era_p, parameters_p=parameters_p, era_list_p=era_list_p,
