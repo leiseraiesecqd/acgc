@@ -23,10 +23,10 @@ path_list = [pred_path,
              loss_log_path + 'prejudge/',
              stack_output_path]
 
-# train_seed = models.np.random.randint(100)
-# cv_seed = models.np.random.randint(100)
-train_seed = 65
-cv_seed = 6
+train_seed = models.np.random.randint(100)
+cv_seed = models.np.random.randint(100)
+# train_seed = 65
+# cv_seed = 6
 dnn_seed = None
 
 
@@ -286,7 +286,7 @@ class TrainSingleModel:
                           'metric': 'binary_logloss',
                           'num_threads': -1,
                           'verbosity': 1,
-                        #'early_stopping_rounds': 50,            #default=0
+                           #'early_stopping_rounds': 50,            #default=0
                           'seed': train_seed}
 
         LGBM = models.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test)
@@ -1287,8 +1287,8 @@ if __name__ == "__main__":
     PrejudgeTraining.train()
 
     print('======================================================')
+    print('All Task Done!')
     print('train_seed: ', train_seed)
     print('cv_seed: ', cv_seed)
-    print('All Task Done!')
     print('Total Time: {}s'.format(time.time() - start_time))
     print('======================================================')
