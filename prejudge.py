@@ -37,7 +37,7 @@ class PrejudgeEraSign:
 
         feature = self.x_train
         # Convert Eras of Training Data to 0 and 1
-        era_sign_train = [0 if era in negative_era_list else 1 for era in self.e_train]
+        era_sign_train = np.array([0 if era in negative_era_list else 1 for era in self.e_train])
 
         # Init Model
         LGB = models.LightGBM(self.x_train, era_sign_train, self.w_train, self.e_train,
@@ -49,7 +49,7 @@ class PrejudgeEraSign:
 
         # Convert Probabilities of Test Era to 0 and 1
         if force_convert_era is True:
-            era_sign_test = [0 if era_prob < 0.5 else 1 for era_prob in era_prob_test]
+            era_sign_test = np.array([0 if era_prob < 0.5 else 1 for era_prob in era_prob_test])
         else:
             era_sign_test = era_prob_test
 
@@ -88,7 +88,7 @@ class PrejudgeEraSign:
         print('======================================================')
         print('Training Models by Era Sign...')
 
-        LGBM_P = models.LightGBM(self.x_train_p,self.y_train_p, self.w_train_p, self.e_train_p,
+        LGBM_P = models.LightGBM(self.x_train_p, self.y_train_p, self.w_train_p, self.e_train_p,
                                  x_test_p, self.id_test, self.x_g_train_p, x_g_test_p)
 
         LGBM_N = models.LightGBM(self.x_train_n, self.y_train_n, self.w_train_n, self.e_train_n,
@@ -126,6 +126,7 @@ class PrejudgeEraSign:
                      pred_path + 'positive/',
                      pred_path + 'negative/',
                      pred_path + 'pred_era/',
+                     pred_path + 'pred_era/final_results/',
                      pred_path + 'final_results/',
                      loss_log_path,
                      loss_log_path + 'positive/',

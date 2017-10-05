@@ -93,7 +93,7 @@ class LRegression:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-    
+
     def get_prob_train(self, clf, x_train, pred_path=None):
 
         print('Predicting...')
@@ -146,7 +146,7 @@ class LRegression:
             # Save Train Probabilities to CSV File
             prob_train = self.get_prob_train(clf, self.x_train,
                                              pred_path=pred_path + 'cv_prob_train/lr_cv_{}_'.format(count))
-            
+
             # Get Probabilities of Validation Set
             prob_valid = self.predict(clf, x_valid)
 
@@ -187,7 +187,7 @@ class LRegression:
 
         # Print Total Losses
         utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
-        
+
         # Print and Get Accuracies of CV of All Train Set
         acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
 
@@ -354,7 +354,7 @@ class DecisionTree:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-    
+
     def get_prob_train(self, clf, x_train, pred_path=None):
 
         print('Predicting...')
@@ -407,7 +407,7 @@ class DecisionTree:
             # Save Train Probabilities to CSV File
             prob_train = self.get_prob_train(clf, self.x_train,
                                              pred_path=pred_path + 'cv_prob_train/dt_cv_{}_'.format(count))
-            
+
             # Get Probabilities of Validation Set
             prob_valid = self.predict(clf, x_valid)
 
@@ -545,7 +545,7 @@ class RandomForest:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-    
+
     def get_prob_train(self, clf, x_train, pred_path=None):
 
         print('Predicting...')
@@ -596,9 +596,9 @@ class RandomForest:
             prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'cv_results/rf_cv_{}_'.format(count))
 
             # Save Train Probabilities to CSV File
-            prob_train = self.get_prob_train(clf, self.x_train, 
+            prob_train = self.get_prob_train(clf, self.x_train,
                                              pred_path=pred_path + 'cv_prob_train/rf_cv_{}_'.format(count))
-            
+
             # Get Probabilities of Validation Set
             prob_valid = self.predict(clf, x_valid)
 
@@ -736,7 +736,7 @@ class ExtraTrees:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-    
+
     def get_prob_train(self, clf, x_train, pred_path=None):
 
         print('Predicting...')
@@ -789,7 +789,7 @@ class ExtraTrees:
             # Save Train Probabilities to CSV File
             prob_train = self.get_prob_train(clf, self.x_train,
                                              pred_path=pred_path + 'cv_prob_train/et_cv_{}_'.format(count))
-            
+
             # Get Probabilities of Validation Set
             prob_valid = self.predict(clf, x_valid)
 
@@ -833,7 +833,7 @@ class ExtraTrees:
 
         # Print and Get Accuracies of CV of All Train Set
         acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
-        
+
         # Save Final Losses to File
         utils.save_final_loss_log(loss_log_path + 'et_', parameters, n_valid, n_cv, loss_train_mean,
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
@@ -927,7 +927,7 @@ class AdaBoost:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-        
+
     def get_prob_train(self, clf, x_train, pred_path=None):
 
         print('Predicting...')
@@ -973,14 +973,14 @@ class AdaBoost:
             clf = self.get_clf(parameters)
 
             clf.fit(x_train, y_train, sample_weight=w_train)
-            
+
             # Prediction
             prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'cv_results/ab_cv_{}_'.format(count))
 
             # Save Train Probabilities to CSV File
-            prob_train = self.get_prob_train(clf, self.x_train, 
+            prob_train = self.get_prob_train(clf, self.x_train,
                                              pred_path=pred_path + 'cv_prob_train/ab_cv_{}_'.format(count))
-            
+
             # Get Probabilities of Validation Set
             prob_valid = self.predict(clf, x_valid)
 
@@ -1118,7 +1118,7 @@ class GradientBoosting:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-    
+
     def get_prob_train(self, clf, x_train, pred_path=None):
 
         print('Predicting...')
@@ -1164,15 +1164,15 @@ class GradientBoosting:
             clf = self.get_clf(parameters)
 
             clf.fit(x_train, y_train, sample_weight=w_train)
-            
+
             # Feature Importance
             self.get_importance(clf)
-            
+
             # Prediction
             prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'cv_results/gb_cv_{}_'.format(count))
 
             # Save Train Probabilities to CSV File
-            prob_train = self.get_prob_train(clf, self.x_train, 
+            prob_train = self.get_prob_train(clf, self.x_train,
                                              pred_path=pred_path + 'cv_prob_train/gb_cv_{}_'.format(count))
 
             # Get Probabilities of Validation Set
@@ -1328,7 +1328,7 @@ class XGBoost:
         print('Predicting...')
 
         prob_test = model.predict(xgb.DMatrix(x_test))
-        
+
         if pred_path is not None:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
@@ -1368,7 +1368,7 @@ class XGBoost:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-    
+
     def get_prob_train_sklearn(self, clf, x_train, pred_path=None):
 
         print('Predicting...')
@@ -1428,7 +1428,7 @@ class XGBoost:
             # Save Train Probabilities to CSV File
             prob_train = self.get_prob_train(bst, self.x_train,
                                              pred_path=pred_path + 'cv_prob_train/xgb_sk_cv_{}_'.format(count))
-            
+
             # Get Probabilities of Validation Set
             prob_valid = self.predict(bst, x_valid)
 
@@ -1437,7 +1437,7 @@ class XGBoost:
             print('Validation Set Era: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = self.print_loss(bst, x_train, y_train, w_train,
                                                                                  x_valid, y_valid, w_valid)
-            
+
             # Print and Get Accuracies of CV
             acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
                 utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
@@ -1542,7 +1542,7 @@ class XGBoost:
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'xgb_sk_', count, parameters, n_valid, n_cv, valid_era,
-                                loss_train,loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
+                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
                                 acc_train_cv_era, acc_valid_cv_era)
 
             prob_test_total.append(list(prob_test))
@@ -1677,7 +1677,7 @@ class LightGBM:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-    
+
     def get_prob_train(self, model, x_train, pred_path=None):
 
         print('Predicting...')
@@ -1712,7 +1712,7 @@ class LightGBM:
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
 
         return prob_test
-    
+
     def get_prob_train_sklearn(self, clf, x_train, pred_path=None):
 
         print('Predicting...')
@@ -1724,7 +1724,7 @@ class LightGBM:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, 
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None,
               parameters=None, return_prob_test=False):
 
         # Check if directories exit or not
@@ -1775,7 +1775,7 @@ class LightGBM:
             # Save Train Probabilities to CSV File
             prob_train = self.get_prob_train(bst, self.x_g_train,
                                              pred_path=pred_path + 'cv_prob_train/lgb_cv_{}_'.format(count))
-            
+
             # Get Probabilities of Validation Set
             prob_valid = self.predict(bst, x_valid)
 
@@ -1883,7 +1883,7 @@ class LightGBM:
                                              pred_path=pred_path + 'cv_results/lgb_sk_cv_{}_'.format(count))
 
             # Save Train Probabilities to CSV File
-            prob_train = self.get_prob_train_sklearn(clf, self.x_g_train, 
+            prob_train = self.get_prob_train_sklearn(clf, self.x_g_train,
                                                      pred_path=pred_path + 'cv_prob_train/lgb_sk_cv_{}_'.format(count))
 
             # Get Probabilities of Validation Set
@@ -1904,7 +1904,7 @@ class LightGBM:
             utils.save_loss_log(loss_log_path + 'lgb_sk_', count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
                                 acc_train_cv_era, acc_valid_cv_era)
-            
+
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
             loss_train_total.append(loss_train)
@@ -2009,7 +2009,7 @@ class LightGBM:
                 d_valid = lgb.Dataset(x_valid, label=y_valid, categorical_feature=idx_category)
 
             # Booster
-            bst = lgb.train(parameters, d_train, num_boost_round=50,
+            bst = lgb.train(parameters, d_train, num_boost_round=3000,
                             valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
 
             # Feature Importance
@@ -2404,7 +2404,7 @@ class DeepNeuralNetworks:
                 acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
                     utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
 
-                utils.save_loss_log(loss_log_path + 'dnn_', cv_counter, self.parameters, n_valid, n_cv, 
+                utils.save_loss_log(loss_log_path + 'dnn_', cv_counter, self.parameters, n_valid, n_cv,
                                     valid_era, loss_train, loss_valid, loss_train_w, loss_valid_w,
                                     acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era)
 
@@ -2650,7 +2650,7 @@ class CrossValidation:
 
     @staticmethod
     def sk_k_fold_with_weight(x, y, w, n_splits, n_cv, seed=None):
-        
+
         if seed is not None:
             np.random.seed(seed)
 
@@ -2662,10 +2662,10 @@ class CrossValidation:
         era_k_fold = RepeatedKFold(n_splits=n_splits, n_repeats=n_repeats, random_state=seed)
 
         for train_index, valid_index in era_k_fold.split(x, y):
-            
+
             np.random.shuffle(train_index)
             np.random.shuffle(valid_index)
-            
+
             # Training data
             x_train = x[train_index]
             y_train = y[train_index]
