@@ -223,10 +223,7 @@ def load_preprocessed_positive_pd_data(data_file_path):
     x_g_train_p_pd = pd.read_pickle(data_file_path + 'x_g_train_p.p')
     x_g_train_p = np.array(x_g_train_p_pd, dtype=np.float64)
 
-    id_test_p_pd = pd.read_pickle(data_file_path + 'id_test_p.p')
-    id_test_p = np.array(id_test_p_pd, dtype=int)
-
-    return x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p, id_test_p
+    return x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p
 
 
 # Load Preprocessed Negative Data
@@ -247,10 +244,7 @@ def load_preprocessed_negative_pd_data(data_file_path):
     x_g_train_n_pd = pd.read_pickle(data_file_path + 'x_g_train_n.p')
     x_g_train_n = np.array(x_g_train_n_pd, dtype=np.float64)
 
-    id_test_n_pd = pd.read_pickle(data_file_path + 'id_test_n.p')
-    id_test_n = np.array(id_test_n_pd, dtype=int)
-
-    return x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n, id_test_n
+    return x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n
 
 
 # Calculate LogLoss without weight

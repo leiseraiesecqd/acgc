@@ -7,8 +7,8 @@ import numpy as np
 # Pre Judge Era Sign
 class PrejudgeEraSign:
 
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_g_tr, x_tr_p, y_tr_p, w_tr_p, e_tr_p, x_g_tr_p, id_test_p,
-                 x_tr_n, y_tr_n, w_tr_n, e_tr_n, x_g_tr_n, id_test_n, x_te, id_te, x_g_te,):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_g_tr, x_tr_p, y_tr_p, w_tr_p, e_tr_p, x_g_tr_p,
+                 x_tr_n, y_tr_n, w_tr_n, e_tr_n, x_g_tr_n, x_te, id_te, x_g_te,):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -20,13 +20,11 @@ class PrejudgeEraSign:
         self.w_train_p = w_tr_p
         self.e_train_p = e_tr_p
         self.x_g_train_p = x_g_tr_p
-        self.id_test_p = id_test_p
         self.x_train_n = x_tr_n
         self.y_train_n = y_tr_n
         self.w_train_n = w_tr_n
         self.e_train_n = e_tr_n
         self.x_g_train_n = x_g_tr_n
-        self.id_test_n = id_test_n
         self.x_test = x_te
         self.id_test = id_te
         self.x_g_test = x_g_te
@@ -189,7 +187,7 @@ class PrejudgeEraSign:
         # Training Models by Era Sign
         prob_test = \
             self.train_models_by_era_sign(x_test_p, x_g_test_p, id_test_p, era_idx_test_p,
-                                          x_test_n, x_g_test_n, id_test_p, era_idx_test_n,
+                                          x_test_n, x_g_test_n, id_test_n, era_idx_test_n,
                                           pred_path=pred_path, loss_log_path=loss_log_path, cv_seed=seed,
                                           num_boost_round_p=num_boost_round_p, n_valid_p=n_valid_p, n_cv_p=n_cv_p,
                                           n_era_p=n_era_p, parameters_p=parameters_p, era_list_p=era_list_p,

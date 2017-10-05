@@ -879,7 +879,6 @@ class DataPreProcess:
         self.y_train_p = self.y_train.ix[positive_index]
         self.w_train_p = self.w_train.ix[positive_index]
         self.e_train_p = self.e_train.ix[positive_index]
-        self.id_test_p = self.id_test.ix[positive_index]
 
         # Negative Data
         self.x_train_n = self.x_train.ix[negative_index]
@@ -887,7 +886,6 @@ class DataPreProcess:
         self.y_train_n = self.y_train.ix[negative_index]
         self.w_train_n = self.w_train.ix[negative_index]
         self.e_train_n = self.e_train.ix[negative_index]
-        self.id_test_n = self.id_test.ix[negative_index]
 
     # Shuffle and Split Data Set
     def random_spit_data(self):
@@ -954,7 +952,6 @@ class DataPreProcess:
         self.y_train_p.to_pickle(self.prepro_path + 'y_train_p.p')
         self.w_train_p.to_pickle(self.prepro_path + 'w_train_p.p')
         self.e_train_p.to_pickle(self.prepro_path + 'e_train_p.p')
-        self.id_test_p.to_pickle(self.prepro_path + 'id_test_p.p')
 
         # Negative Data
 
@@ -963,7 +960,6 @@ class DataPreProcess:
         self.y_train_n.to_pickle(self.prepro_path + 'y_train_n.p')
         self.w_train_n.to_pickle(self.prepro_path + 'w_train_n.p')
         self.e_train_n.to_pickle(self.prepro_path + 'e_train_n.p')
-        self.id_test_n.to_pickle(self.prepro_path + 'id_test_n.p')
 
     # Preprocessing
     def preprocess_np(self):
