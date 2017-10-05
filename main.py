@@ -830,7 +830,7 @@ class PrejudgeTraining:
     def get_models_parameters():
 
         era_training_params = {'application': 'binary',
-                               'learning_rate': 0.002,
+                               'learning_rate': 0.05,
                                'num_leaves': 80,               # <2^(max_depth)
                                'tree_learner': 'serial',
                                'max_depth': 7,                 # default=-1
