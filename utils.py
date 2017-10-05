@@ -359,6 +359,24 @@ def check_dir(path_list):
             os.makedirs(dir_path)
 
 
+# Check if directories exit or not
+def check_dir_model(pred_path, loss_log_path=None):
+
+    if loss_log_path is not None:
+        path_list = [pred_path,
+                     pred_path + 'cv_results/',
+                     pred_path + 'cv_prob_train/',
+                     loss_log_path,
+                     pred_path + 'final_results/',
+                     pred_path + 'final_prob_train/']
+    else:
+        path_list = [pred_path,
+                     pred_path + 'cv_results/',
+                     pred_path + 'cv_prob_train/']
+
+    check_dir(path_list)
+
+
 # Get Accuracy
 def get_accuracy(prob, label):
 

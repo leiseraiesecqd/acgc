@@ -7,7 +7,7 @@ import numpy as np
 # Deep Stack
 class DeepStack:
 
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_tr_g, x_te_g,
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te,
                  pred_path, loss_log_path, stack_output_path, hyper_params, layers_param):
 
         self.x_train = x_tr
@@ -16,14 +16,14 @@ class DeepStack:
         self.e_train = e_tr
         self.x_test = x_te
         self.id_test = id_te
-        self.x_g_train = x_tr_g
-        self.x_g_test = x_te_g
+        self.x_g_train = x_g_tr
+        self.x_g_test = x_g_te
         self.pred_path = pred_path
         self.loss_log_path = loss_log_path
         self.stack_output_path = stack_output_path
         self.layers_param = layers_param
-        self.g_train = x_tr_g[:,-1]
-        self.g_test = x_te_g[:, -1]
+        self.g_train = x_g_tr[:,-1]
+        self.g_test = x_g_te[:, -1]
         self.n_valid = hyper_params['n_valid']
         self.n_era = hyper_params['n_era']
         self.n_epoch = hyper_params['n_epoch']
@@ -562,7 +562,7 @@ class StackTree:
     pred_path = ''
     stack_output_path = ''
 
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_tr_g, x_te_g,
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te,
                  pred_path=None, loss_log_path=None, stack_output_path=None,
                  hyper_params=None, layers_param=None, final_layer_params=None, final_layer_set=None):
 
@@ -572,14 +572,14 @@ class StackTree:
         self.e_train = e_tr
         self.x_test = x_te
         self.id_test = id_te
-        self.x_g_train = x_tr_g
-        self.x_g_test = x_te_g
+        self.x_g_train = x_g_tr
+        self.x_g_test = x_g_te
         self.pred_path = pred_path
         self.loss_log_path = loss_log_path
         self.stack_output_path = stack_output_path
         self.layers_param = layers_param
-        self.g_train = x_tr_g[:,-1]
-        self.g_test = x_te_g[:, -1]
+        self.g_train = x_g_tr[:,-1]
+        self.g_test = x_g_te[:, -1]
         self.n_valid = hyper_params['n_valid']
         self.n_era = hyper_params['n_era']
         self.n_epoch = hyper_params['n_epoch']
