@@ -3001,6 +3001,8 @@ class CrossValidation:
                         train_index = []
                         valid_index = []
 
+                        print(x, y, w, e)
+
                         for ii, ele in enumerate(e):
 
                             if ele in valid_era:
