@@ -2657,7 +2657,7 @@ class CrossValidation:
         if n_cv % n_splits != 0:
             raise ValueError('n_cv must be an integer multiple of n_splits!')
 
-        n_repeats = n_cv / n_splits
+        n_repeats = int(n_cv / n_splits)
 
         era_k_fold = RepeatedKFold(n_splits=n_splits, n_repeats=n_repeats, random_state=seed)
 
