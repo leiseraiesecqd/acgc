@@ -894,6 +894,9 @@ class PrejudgeTraining:
 
         models_parameters = PrejudgeTraining.get_models_parameters()
 
+        positive_era_list = preprocess.positive_era_list
+        negative_era_list = preprocess.negative_era_list
+
         hyper_parameters = {'seed': cv_seed,
                             'n_splits_e': 5,
                             'num_boost_round_e': 3000,
@@ -902,10 +905,12 @@ class PrejudgeTraining:
                             'n_cv_p': 20,
                             'n_era_p': 14,
                             'num_boost_round_p': 100,
+                            'era_list_p': positive_era_list,
                             'n_valid_n': 1,
                             'n_cv_n': 18,
                             'n_era_n': 6,
-                            'num_boost_round_n': 100}
+                            'num_boost_round_n': 100,
+                            'era_list_n': negative_era_list}
 
         PES = prejudge.PrejudgeEraSign(x_train, y_train, w_train, e_train, x_g_train,
                                        x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p,
@@ -913,7 +918,7 @@ class PrejudgeTraining:
                                        x_test, id_test, x_g_test)
 
         PES.train(pred_path=pred_path + 'prejudge/', loss_log_path=loss_log_path + 'prejudge/',
-                  negative_era_list=preprocess.negative_era_list, model_parameters=models_parameters,
+                  negative_era_list=negative_era_list, model_parameters=models_parameters,
                   hyper_parameters=hyper_parameters)
 
 

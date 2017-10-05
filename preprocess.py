@@ -11,6 +11,7 @@ train_csv_path = './inputs/stock_train_data_20170929.csv'
 test_csv_path = './inputs/stock_test_data_20170929.csv'
 preprocessed_path = './preprocessed_data/'
 negative_era_list = [1, 3, 4, 10, 12, 16]
+positive_era_list = [2, 5, 6, 7, 8, 9, 11, 13, 14, 15, 17, 18, 19, 20]
 
 
 class DataPreProcess:

@@ -94,7 +94,8 @@ class PrejudgeEraSign:
 
     def train_models_by_era_sign(self, x_test_p, x_g_test_p, era_idx_test_p, x_test_n, x_g_test_n, era_idx_test_n,
                                  pred_path, loss_log_path, cv_seed, num_boost_round_p, n_valid_p, n_cv_p, n_era_p,
-                                 parameters_p, num_boost_round_n, n_valid_n, n_cv_n, n_era_n, parameters_n):
+                                 parameters_p, era_list_p, num_boost_round_n, n_valid_n, n_cv_n, n_era_n,
+                                 parameters_n, era_list_n):
 
         print('======================================================')
         print('Training Models by Era Sign...')
@@ -111,7 +112,7 @@ class PrejudgeEraSign:
         prob_test_p = LGBM_P.train(pred_path + 'positive/', loss_log_path + 'positive/',
                                    num_boost_round=num_boost_round_p, n_valid=n_valid_p,
                                    n_cv=n_cv_p, n_era=n_era_p,  cv_seed=cv_seed, parameters=parameters_p,
-                                   return_prob_test=True)
+                                   return_prob_test=True, era_list=era_list_p)
 
         print('======================================================')
         print('Training Models of Negative Era Sign...')
@@ -119,7 +120,7 @@ class PrejudgeEraSign:
         prob_test_n = LGBM_N.train(pred_path + 'negative/', loss_log_path + 'negative/',
                                    num_boost_round=num_boost_round_n, n_valid=n_valid_n,
                                    n_cv=n_cv_n, n_era=n_era_n, cv_seed=cv_seed, parameters=parameters_n,
-                                   return_prob_test=True)
+                                   return_prob_test=True, era_list=era_list_n)
 
         prob_test = np.zeros_like(self.id_test, dtype=np.float64)
 
@@ -159,10 +160,12 @@ class PrejudgeEraSign:
         n_cv_p = hyper_parameters['n_cv_p']
         n_era_p = hyper_parameters['n_era_p']
         num_boost_round_p = hyper_parameters['num_boost_round_p']
+        era_list_p = hyper_parameters['era_list_p']
         n_valid_n = hyper_parameters['n_valid_n']
         n_cv_n = hyper_parameters['n_cv_n']
         n_era_n = hyper_parameters['n_era_n']
         num_boost_round_n = hyper_parameters['num_boost_round_n']
+        era_list_n = hyper_parameters['era_list_n']
 
         print('======================================================')
         print('Start training...')
@@ -184,9 +187,9 @@ class PrejudgeEraSign:
             self.train_models_by_era_sign(x_test_p, x_g_test_p, era_idx_test_p, x_test_n, x_g_test_n,  era_idx_test_n,
                                           pred_path=pred_path, loss_log_path=loss_log_path, cv_seed=seed,
                                           num_boost_round_p=num_boost_round_p, n_valid_p=n_valid_p, n_cv_p=n_cv_p,
-                                          n_era_p=n_era_p, parameters_p=parameters_p,
+                                          n_era_p=n_era_p, parameters_p=parameters_p, era_list_p=era_list_p,
                                           num_boost_round_n=num_boost_round_n,n_valid_n=n_valid_n, n_cv_n=n_cv_n,
-                                          n_era_n=n_era_n,  parameters_n=parameters_n)
+                                          n_era_n=n_era_n,  parameters_n=parameters_n, era_list_n=era_list_n,)
 
         # Save Predictions
         utils.save_pred_to_csv(pred_path + 'final_results/', self.id_test, prob_test)
