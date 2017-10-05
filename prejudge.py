@@ -56,6 +56,16 @@ class PrejudgeEraSign:
 
         return era_sign_test
 
+    @staticmethod
+    def convert_era_sign(pred_path):
+
+        f = np.loadtxt(pred_path, dtype=np.float64, skiprows=1, delimiter=",")
+        era_prob_test = f[:, -1]
+
+        era_sign_test = np.array([0 if era_prob < 0.5 else 1 for era_prob in era_prob_test])
+
+        return era_sign_test
+
     def split_data_by_era_sign(self, era_sign_test, seed):
 
         if seed is not None:
@@ -158,11 +168,13 @@ class PrejudgeEraSign:
         print('Start training...')
 
         # Training Era Sign
-        era_sign_test = self.predict_era_sign(pred_path, negative_era_list, num_boost_round_e, n_splits_e, n_cv_e, seed,
-                                              use_weight=False,  force_convert_era=True, parameters_e=parameters_e)
+        # era_sign_test = self.predict_era_sign(pred_path, negative_era_list, num_boost_round_e, n_splits_e, n_cv_e, seed,
+        #                                       use_weight=False,  force_convert_era=True, parameters_e=parameters_e)
+
+        era_sign_test = self.convert_era_sign('./results/prejudge/pred_era/final_results/')
 
         # Save era_sign_test to Pickle File
-        utils.save_np_to_pkl(era_sign_test, pred_path + 'era_sign_test_pickle/')
+        utils.save_np_to_pkl(era_sign_test, pred_path + 'era_sign_test_pickle/era_sign_test.p')
 
         x_test_p, x_g_test_p, era_idx_test_p, x_test_n, \
             x_g_test_n, era_idx_test_n = self.split_data_by_era_sign(era_sign_test, seed)
