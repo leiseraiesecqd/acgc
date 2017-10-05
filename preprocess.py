@@ -982,11 +982,11 @@ class DataPreProcess:
         self.load_data_pd()
 
         # Drop outliers
-        self.drop_outliers()
+        #self.drop_outliers()
 
         # Scale features
-        # self.standard_scale()
-        self.min_max_scale()
+        #self.standard_scale()
+        #self.min_max_scale()
 
         # Convert column 'group' to dummies
         self.convert_group_to_dummies()
@@ -995,11 +995,11 @@ class DataPreProcess:
         self.save_data_pd()
 
         # Split Positive and Negative Era Set
-        negative_era = [1, 3, 4, 10, 12, 16]
-        self.split_data_by_era_distribution(negative_era)
+        #negative_era = [1, 3, 4, 10, 12, 16]
+        #self.split_data_by_era_distribution(negative_era)
 
         # Save Data Split by Era Distribution
-        self.save_data_by_era_distribution_pd()
+        #self.save_data_by_era_distribution_pd()
 
         end_time = time.time()
 

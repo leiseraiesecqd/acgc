@@ -1395,7 +1395,7 @@ class XGBoost:
             eval_list = [(d_valid, 'eval'), (d_train, 'train')]
 
             # Booster
-            bst = xgb.train(parameters, d_train, num_boost_round=30, evals=eval_list)
+            bst = xgb.train(parameters, d_train, num_boost_round=35, evals=eval_list)
 
             # Feature Importance
             self.get_importance(bst)
@@ -1734,7 +1734,7 @@ class LightGBM:
             d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
 
             # Booster
-            bst = lgb.train(parameters, d_train, num_boost_round=50,
+            bst = lgb.train(parameters, d_train, num_boost_round=65,
                             valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
 
             # Feature Importance

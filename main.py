@@ -28,8 +28,10 @@ path_list = [pred_path,
              loss_log_path,
              stack_output_path]
 
-train_seed = 15
-cv_seed = None
+# train_seed = models.np.random.randint(100)
+# cv_seed = models.np.random.randint(100)
+train_seed = 65
+cv_seed = 6
 dnn_seed = None
 
 
@@ -196,15 +198,17 @@ class TrainSingleModel:
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-        xgb_parameters = {'learning_rate': 0.005,
-                          'n_estimators': 200,
+        xgb_parameters = {'eta': 0.008,
                           'gamma': 0,                       # 如果loss function小于设定值，停止产生子节点
-                          'max_depth': 10,                  # default=6
-                          'nthread': -1,
-                          'early_stopping_rounds': 50,
-                          'min_child_weight': 5,            # default=1，建立每个模型所需最小样本数
+                          'max_depth': 7,                  # default=6
+                          'min_child_weight': 15,            # default=1，建立每个模型所需最小样本权重和
                           'subsample': 0.8,                 # 建立树模型时抽取子样本占整个样本的比例
-                          'colsample_bytree': 0.8,          # 建立树时对特征随机采样的比例
+                          'colsample_bytree': 1,          # 建立树时对特征随机采样的比例
+                          'colsample_bylevel': 1,
+                          'lambda': 5000,
+                          'alpha': 0,
+                          'early_stopping_rounds': 30,
+                          'nthread': -1,
                           'objective': 'binary:logistic',
                           'eval_metric': 'logloss',
                           'seed': train_seed}
@@ -268,19 +272,26 @@ class TrainSingleModel:
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
         lgb_parameters = {'application': 'binary',
-                          'learning_rate': 0.002,
-                          'num_leaves': 80,                # <2^(max_depth)
-                          'tree_learner': 'serial',
-                          'max_depth': 7,                 # default=-1
-                          'min_data_in_leaf': 2000,         # default=20
-                          'feature_fraction': 0.5,        # default=1
+                          'boosting': 'gbdt',              #gdbt,rf,dart,goss
+                          'learning_rate': 0.0015,                #default=0.1
+                          'num_leaves': 128,                # default=31     <2^(max_depth)
+                          'max_depth': 8,                 # default=-1
+                          'min_data_in_leaf': 200,         # default=20       reduce over-fit
+                          'min_sum_hessian_in_leaf':1e-3,     #default=1e-3      reduce over-fit
+                          'feature_fraction': 0.6,        # default=1
+                          'feature_fraction_seed':5,     #deafult=2
                           'bagging_fraction': 0.6,        # default=1
-                          'bagging_freq': 5,              # default=0 perform bagging every k iteration
-                          'bagging_seed': 1,              # default=3
-                          'early_stopping_rounds': 50,
-                          'max_bin': 50,
+                          'bagging_freq': 3,              # default=0 perform bagging every k iteration
+                          'bagging_seed': 5,              # default=3
+                          'lambda_l1': 0,            #default=0
+                          'lambda_l2': 0,            #default=0
+                          'min_gain_to_split': 0,         #default=0
+                          'max_bin': 225,                           #default=255
+                          'min_data_in_bin': 5,                 #default=5 min number inside one bin to avoid one-data-one-bin may cause over-fit
                           'metric': 'binary_logloss',
+                          'num_threads': -1,
                           'verbosity': 1,
+                        #'early_stopping_rounds': 50,            #default=0
                           'seed': train_seed}
 
         LGBM = models.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test)
@@ -1146,7 +1157,6 @@ if __name__ == "__main__":
     print('======================================================')
     print('Start Training...')
     print('======================================================')
-
     # Logistic Regression
     # TrainSingleModel.lr_train()
 
@@ -1163,11 +1173,11 @@ if __name__ == "__main__":
     # TrainSingleModel.gb_train()
 
     # XGBoost
-    # TrainSingleModel.xgb_train()
+    TrainSingleModel.xgb_train()
     # TrainSingleModel.xgb_train_sklearn()
 
     # LightGBM
-    TrainSingleModel.lgb_train()
+    # TrainSingleModel.lgb_train()
     # TrainSingleModel.lgb_train_sklearn()
 
     # DNN
@@ -1190,6 +1200,8 @@ if __name__ == "__main__":
     # TrainSingleModel.stack_lgb_train()
 
     print('======================================================')
+    print('train_seed: ', train_seed)
+    print('cv_seed: ', cv_seed)
     print('All Task Done!')
     print('Total Time: {}s'.format(time.time() - start_time))
     print('======================================================')
