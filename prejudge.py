@@ -191,8 +191,8 @@ class PrejudgeEraSign:
                                           pred_path=pred_path, loss_log_path=loss_log_path, cv_seed=seed,
                                           num_boost_round_p=num_boost_round_p, n_valid_p=n_valid_p, n_cv_p=n_cv_p,
                                           n_era_p=n_era_p, parameters_p=parameters_p, era_list_p=era_list_p,
-                                          num_boost_round_n=num_boost_round_n,n_valid_n=n_valid_n, n_cv_n=n_cv_n,
-                                          n_era_n=n_era_n,  parameters_n=parameters_n, era_list_n=era_list_n,)
+                                          num_boost_round_n=num_boost_round_n, n_valid_n=n_valid_n, n_cv_n=n_cv_n,
+                                          n_era_n=n_era_n, parameters_n=parameters_n, era_list_n=era_list_n)
 
         # Save Predictions
         utils.save_pred_to_csv(pred_path + 'final_results/', self.id_test, prob_test)

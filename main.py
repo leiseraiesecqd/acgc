@@ -907,7 +907,7 @@ class PrejudgeTraining:
                             'num_boost_round_p': 100,
                             'era_list_p': positive_era_list,
                             'n_valid_n': 1,
-                            'n_cv_n': 18,
+                            'n_cv_n': 6,
                             'n_era_n': 6,
                             'num_boost_round_n': 100,
                             'era_list_n': negative_era_list}
@@ -1220,9 +1220,9 @@ class ModelStacking:
         # layer3_params = ModelStacking.get_layer3_params()
 
         layers_params = [layer1_params,
-                        # layer2_params,
-                        # layer3_params
-                        ]
+                         # layer2_params,
+                         # layer3_params
+                         ]
 
         final_layer_params = ModelStacking.get_final_layer_params()
         final_layer_set = {'model': 'LGB',
