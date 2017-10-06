@@ -7,8 +7,8 @@ import numpy as np
 # Deep Stack
 class DeepStack:
 
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te,
-                 pred_path, loss_log_path, stack_output_path, hyper_params, layers_param):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te, pred_path=None, loss_log_path=None,
+                 stack_output_path=None, hyper_params=None, layers_params=None, num_boost_round=None):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -21,7 +21,14 @@ class DeepStack:
         self.pred_path = pred_path
         self.loss_log_path = loss_log_path
         self.stack_output_path = stack_output_path
-        self.layers_param = layers_param
+        self.layers_params = layers_params
+        self.dnn_l1_params = self.layers_params[0][-1]
+        # self.dnn_l2_params = self.layers_params[1][-1]
+        # self.dnn_l3_params = self.layers_params[2][-1]
+        self.num_boost_round_lgb_l1 = num_boost_round['num_boost_round_lgb_l1']
+        self.num_boost_round_xgb_l1 = num_boost_round['num_boost_round_xgb_l1']
+        self.num_boost_round_lgb_l2 = num_boost_round['num_boost_round_lgb_l2']
+        self.num_boost_round_final = num_boost_round['num_boost_round_final']
         self.g_train = x_g_tr[:,-1]
         self.g_test = x_g_te[:, -1]
         self.n_valid = hyper_params['n_valid']
@@ -29,12 +36,12 @@ class DeepStack:
         self.n_epoch = hyper_params['n_epoch']
         self.cv_seed = hyper_params['cv_seed']
 
-    def init_models_layer1(self, dnn_l1_params=None):
+    def init_models_layer1(self):
 
         LGB_L1 = models.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
-                                 self.x_test, self.id_test, self.x_g_train, self.x_g_test)
+                                 self.x_test, self.id_test, self.x_g_train, self.x_g_test, self.num_boost_round_lgb_l1)
         XGB_L1 = models.XGBoost(self.x_train, self.y_train, self.w_train,
-                                self.e_train, self.x_test, self.id_test)
+                                self.e_train, self.x_test, self.id_test, self.num_boost_round_xgb_l1)
         # AB_L1 = models.AdaBoost(self.x_train, self.y_train, self.w_train,
         #                         self.e_train, self.x_test, self.id_test)
         # RF_L1 = models.RandomForest(self.x_train, self.y_train, self.w_train,
@@ -44,7 +51,7 @@ class DeepStack:
         # GB_L1 = models.GradientBoosting(self.x_train, self.y_train, self.w_train,
         #                                 self.e_train, self.x_test, self.id_test)
         DNN_L1 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
-                                           self.e_train, self.x_test, self.id_test, dnn_l1_params)
+                                           self.e_train, self.x_test, self.id_test, self.dnn_l1_params)
 
         models_l1 = [
                      LGB_L1,
@@ -58,13 +65,13 @@ class DeepStack:
 
         return models_l1
 
-    def init_models_layer2(self, dnn_l2_params=None):
+    def init_models_layer2(self):
 
         LGB_L2 = models.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
-                                 self.x_test, self.id_test, self.x_g_train, self.x_g_test)
+                                 self.x_test, self.id_test, self.x_g_train, self.x_g_test, self.num_boost_round_lgb_l2)
 
         # DNN_L2 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
-        #                                    self.e_train, self.x_test, self.id_test, dnn_l2_params)
+        #                                    self.e_train, self.x_test, self.id_test, self.dnn_l2_params)
 
         models_l2 = [
                      LGB_L2,
@@ -73,10 +80,10 @@ class DeepStack:
 
         return models_l2
 
-    def init_models_layer3(self, dnn_l3_params=None):
+    def init_models_layer3(self):
 
         DNN_L3 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
-                                           self.e_train, self.x_test, self.id_test, dnn_l3_params)
+                                           self.e_train, self.x_test, self.id_test, self.dnn_l3_params)
 
         models_l3 = [DNN_L3]
 
@@ -115,9 +122,8 @@ class DeepStack:
         return blender_valid_cv, blender_test_cv, blender_losses_cv
 
     def stacker(self, models_initializer, params, x_train_inputs, y_train_inputs, w_train_inputs,
-                e_train_inputs, x_g_train_inputs, x_test, x_g_test,
-                cv, n_valid=4, n_era=20, cv_seed=None, n_epoch=1,
-                x_train_reuse=None, x_test_reuse=None, dnn_param=None, ):
+                e_train_inputs, x_g_train_inputs, x_test, x_g_test, cv, n_valid=4, n_era=20,
+                cv_seed=None, n_epoch=1, x_train_reuse=None, x_test_reuse=None):
 
         if n_era % n_valid != 0:
             raise ValueError('n_era must be an integer multiple of n_valid!')
@@ -153,10 +159,7 @@ class DeepStack:
             print('Training on Epoch: {}/{}'.format(epoch+1, n_epoch))
 
             # Init models blender
-            if dnn_param is not None:
-                models_blender = models_initializer(dnn_param)
-            else:
-                models_blender = models_initializer()
+            models_blender = models_initializer()
             n_model = len(models_blender)
 
             counter_cv = 0
@@ -273,8 +276,8 @@ class DeepStack:
             model = models.LightGBM(x_outputs, self.y_train, self.w_train, self.e_train,
                                     test_outputs, self.id_test, x_g_outputs, test_g_outputs)
             print('Start training ' + model_name + '...')
-            model.train_sklearn(self.pred_path + 'stack_results/', self.loss_log_path,
-                                n_valid=n_valid, n_cv=n_cv, n_era=n_era, cv_seed=self.cv_seed, parameters=params)
+            model.train(self.pred_path + 'stack_results/', self.loss_log_path,
+                        n_valid=n_valid, n_cv=n_cv, n_era=n_era, cv_seed=self.cv_seed, parameters=params)
 
         elif model_name == 'DNN':
 
@@ -293,20 +296,16 @@ class DeepStack:
 
         cv_stack = models.CrossValidation()
 
-        dnn_l1_params = self.layers_param[0][-1]
-        # dnn_l2_params = self.layers_param[1][-1]
-        # dnn_l3_params = self.layers_param[2][-1]
-
         # Layer 1
         print('------------------------------------------------------')
         print('Start training layer 1...')
         models_initializer_l1 = self.init_models_layer1
 
         x_outputs_l1, test_outputs_l1, x_g_outputs_l1, test_g_outputs_l1 \
-            = self.stacker(models_initializer_l1, self.layers_param[0], self.x_train, self.y_train,
+            = self.stacker(models_initializer_l1, self.layers_params[0], self.x_train, self.y_train,
                            self.w_train, self.e_train, self.x_g_train, self.x_test, self.x_g_test,
                            cv_stack, n_valid=self.n_valid[0], n_era=self.n_era[0], cv_seed=self.cv_seed,
-                           n_epoch=self.n_epoch[0], dnn_param=dnn_l1_params)
+                           n_epoch=self.n_epoch[0])
 
         # Save predicted test prob
         self.save_predict(self.pred_path + 'stack_l1_', test_outputs_l1)
@@ -329,7 +328,7 @@ class DeepStack:
         x_te_reuse = self.x_test[:, :88]
 
         x_outputs_l2, test_outputs_l2, x_g_outputs_l2, test_g_outputs_l2 \
-            = self.stacker(models_initializer_l2, self.layers_param[1], x_outputs_l1, self.y_train,
+            = self.stacker(models_initializer_l2, self.layers_params[1], x_outputs_l1, self.y_train,
                            self.w_train, self.e_train, x_g_outputs_l1, test_outputs_l1, test_g_outputs_l1,
                            cv_stack, n_valid=self.n_valid[1], n_era=self.n_era[1], cv_seed=self.cv_seed,
                            n_epoch=self.n_epoch[1], x_train_reuse=x_tr_reuse, x_test_reuse=x_te_reuse)
@@ -352,7 +351,7 @@ class DeepStack:
         # models_initializer_l3 = self.init_models_layer3
         #
         # x_outputs_l3, test_outputs_l3, x_g_outputs_l3, test_g_outputs_l3 \
-        #     = self.stacker(models_initializer_l3, self.layers_param[1], x_outputs_l2, self.y_train,
+        #     = self.stacker(models_initializer_l3, self.layers_params[1], x_outputs_l2, self.y_train,
         #                    self.w_train, self.e_train, x_g_outputs_l2, test_outputs_l2, test_g_outputs_l2,
         #                    cv_stack, n_valid=self.n_valid[2], n_era=self.n_era[2], cv_seed=self.cv_seed,
         #                    n_epoch=self.n_epoch[2])
@@ -385,9 +384,10 @@ class DeepStack:
 class StackLayer:
 
     def __init__(self, params, x_train, y_train, w_train, e_train, x_g_train, x_test, x_g_test, id_test,
-                 models_initializer=None, stacker=None, cv=None, n_valid=4, n_era=20, cv_seed=None,
+                 models_initializer=None, stacker=None, cv=None, n_valid=4, n_era=20, cv_seed=None, 
                  input_layer=None, i_layer=1, n_epoch=1, x_train_reuse=None, x_test_reuse=None, dnn_param=None,
-                 pred_path=None, loss_log_path=None, stack_output_path=None, final_layer_model=None, n_cv_final=None):
+                 pred_path=None, loss_log_path=None, stack_output_path=None, final_layer_model=None,
+                 num_boost_round_final=None, n_cv_final=None):
 
         self.params = params
         self.x_train = x_train
@@ -414,6 +414,7 @@ class StackLayer:
         self.loss_log_path = loss_log_path
         self.stack_output_path = stack_output_path
         self.final_layer_model = final_layer_model
+        self.num_boost_round_final = num_boost_round_final
         self.n_cv_final = n_cv_final
         self.g_train = x_g_train[:, -1]
         self.g_test = x_g_test[:, -1]
@@ -425,7 +426,8 @@ class StackLayer:
         utils.save_pred_to_csv(pred_path, self.id_test, test_prob)
 
     def stack_final_layer(self, model_name, params, n_valid, n_cv, n_era, blender_x_tree, blender_test_tree,
-                          blender_x_g_tree, blender_test_g_tree, x_train_reuse=None, x_test_reuse=None):
+                          blender_x_g_tree, blender_test_g_tree, num_boost_round=None, 
+                          x_train_reuse=None, x_test_reuse=None):
 
         # Stack Reused Features
         if x_train_reuse is not None:
@@ -449,11 +451,12 @@ class StackLayer:
 
         if model_name == 'LGB':
 
-            model = models.LightGBM(blender_x_tree, self.y_train,  self.w_train,  self.e_train,
-                                    blender_test_tree,  self.id_test, blender_x_g_tree, blender_test_g_tree)
+            model = models.LightGBM(blender_x_tree, self.y_train, self.w_train,  self.e_train, blender_test_tree,  
+                                    self.id_test, blender_x_g_tree, blender_test_g_tree, 
+                                    num_boost_round=num_boost_round)
             print('Start training ' + model_name + '...')
-            model.train_sklearn(self.pred_path, self.loss_log_path,
-                                n_valid=n_valid, n_cv=n_cv, n_era=n_era, cv_seed=self.cv_seed, parameters=params)
+            model.train(self.pred_path, self.loss_log_path,
+                        n_valid=n_valid, n_cv=n_cv, n_era=n_era, cv_seed=self.cv_seed, parameters=params)
 
         elif model_name == 'DNN':
 
@@ -540,7 +543,8 @@ class StackLayer:
 
             self.stack_final_layer(self.final_layer_model, self.params, self.n_valid, self.n_cv_final, self.n_era,
                                    blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree,
-                                   x_train_reuse=self.x_train_reuse, x_test_reuse=self.x_test_reuse)
+                                   num_boost_round=self.num_boost_round_final, x_train_reuse=self.x_train_reuse, 
+                                   x_test_reuse=self.x_test_reuse)
 
         else:
 
@@ -562,9 +566,9 @@ class StackTree:
     pred_path = ''
     stack_output_path = ''
 
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te,
-                 pred_path=None, loss_log_path=None, stack_output_path=None,
-                 hyper_params=None, layers_param=None, final_layer_params=None, final_layer_set=None):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te, pred_path=None, loss_log_path=None, 
+                 stack_output_path=None, hyper_params=None, layers_params=None, num_boost_round=None,
+                 final_layer_params=None, final_layer_set=None):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -577,22 +581,32 @@ class StackTree:
         self.pred_path = pred_path
         self.loss_log_path = loss_log_path
         self.stack_output_path = stack_output_path
-        self.layers_param = layers_param
-        self.g_train = x_g_tr[:,-1]
+        self.g_train = x_g_tr[:, -1]
         self.g_test = x_g_te[:, -1]
+        
         self.n_valid = hyper_params['n_valid']
         self.n_era = hyper_params['n_era']
         self.n_epoch = hyper_params['n_epoch']
         self.cv_seed = hyper_params['cv_seed']
+        self.layers_params = layers_params
+        self.num_boost_round_lgb_l1 = num_boost_round['num_boost_round_lgb_l1']
+        self.num_boost_round_xgb_l1 = num_boost_round['num_boost_round_xgb_l1']
+        self.num_boost_round_lgb_l2 = num_boost_round['num_boost_round_lgb_l2']
+        self.num_boost_round_final = num_boost_round['num_boost_round_final']
+        self.dnn_l1_params = layers_params[0][-1]
+        self.dnn_l2_params = layers_params[1][-1]
+
         self.final_layer_params = final_layer_params
         self.final_layer_set = final_layer_set
 
-    def init_models_layer1(self, dnn_l1_params=None):
+    def init_models_layer1(self):
 
         LGB_L1 = models.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
-                                 self.x_test, self.id_test, self.x_g_train, self.x_g_test)
+                                 self.x_test, self.id_test, self.x_g_train, self.x_g_test, 
+                                 num_boost_round=self.num_boost_round_lgb_l1)
         XGB_L1 = models.XGBoost(self.x_train, self.y_train, self.w_train,
-                                self.e_train, self.x_test, self.id_test)
+                                self.e_train, self.x_test, self.id_test,
+                                num_boost_round=self.num_boost_round_xgb_l1)
         # AB_L1 = models.AdaBoost(self.x_train, self.y_train, self.w_train,
         #                         self.e_train, self.x_test, self.id_test)
         # RF_L1 = models.RandomForest(self.x_train, self.y_train, self.w_train,
@@ -602,7 +616,7 @@ class StackTree:
         # GB_L1 = models.GradientBoosting(self.x_train, self.y_train, self.w_train,
         #                                 self.e_train, self.x_test, self.id_test)
         DNN_L1 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
-                                           self.e_train, self.x_test, self.id_test, dnn_l1_params)
+                                           self.e_train, self.x_test, self.id_test, self.dnn_l1_params)
 
         models_l1 = [
                      LGB_L1,
@@ -616,13 +630,14 @@ class StackTree:
 
         return models_l1
 
-    def init_models_layer2(self, dnn_l2_params=None):
+    def init_models_layer2(self):
 
         LGB_L2 = models.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
-                                 self.x_test, self.id_test, self.x_g_train, self.x_g_test)
+                                 self.x_test, self.id_test, self.x_g_train, self.x_g_test,
+                                 num_boost_round=self.num_boost_round_lgb_l2)
 
         # DNN_L2 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
-        #                                    self.e_train, self.x_test, self.id_test, dnn_l2_params)
+        #                                    self.e_train, self.x_test, self.id_test, self.dnn_l2_params)
 
         models_l2 = [
                      LGB_L2,
@@ -630,15 +645,6 @@ class StackTree:
                      ]
 
         return models_l2
-
-    def init_models_layer3(self, dnn_l3_params=None):
-
-        DNN_L3 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
-                                           self.e_train, self.x_test, self.id_test, dnn_l3_params)
-
-        models_l3 = [DNN_L3]
-
-        return models_l3
 
     @staticmethod
     def train_models(models_blender, params, x_train, y_train, w_train, x_g_train,
@@ -675,7 +681,7 @@ class StackTree:
     def stacker(self, models_initializer, params, x_train_inputs, y_train_inputs, w_train_inputs,
                 e_train_inputs, x_g_train_inputs, x_test, x_g_test,
                 cv, n_valid=4, n_era=20, cv_seed=None, i_layer=1, i_epoch=1,
-                x_train_reuse=None, x_test_reuse=None, dnn_param=None):
+                x_train_reuse=None, x_test_reuse=None):
 
         if n_era % n_valid != 0:
             raise ValueError('n_era must be an integer multiple of n_valid!')
@@ -706,11 +712,7 @@ class StackTree:
         print('x_test shape:{}'.format(x_test.shape))
         print('------------------------------------------------------')
 
-        # Init models blender
-        if dnn_param is not None:
-            models_blender = models_initializer(dnn_param)
-        else:
-            models_blender = models_initializer()
+        models_blender = models_initializer()
         n_model = len(models_blender)
 
         blender_valid = np.array([])
@@ -811,11 +813,6 @@ class StackTree:
         models_initializer_l1 = self.init_models_layer1
         # models_initializer_l2 = self.init_models_layer2
 
-        # Parameters for DNN models
-        dnn_l1_params = self.layers_param[0][-1]
-        # dnn_l2_params = self.layers_param[1][-1]
-        # dnn_l3_params = self.layers_param[2][-1]
-
         # Final Layer params
         final_layer_model = self.final_layer_set['model']
         final_layer_cv = self.final_layer_set['n_cv']
@@ -830,15 +827,15 @@ class StackTree:
         # Building Graph
 
         # Layer 1
-        stk_l1 = StackLayer(self.layers_param[0], self.x_train, self.y_train, self.w_train, self.e_train,
+        stk_l1 = StackLayer(self.layers_params[0], self.x_train, self.y_train, self.w_train, self.e_train,
                             self.x_g_train, self.x_test, self.x_g_test, self.id_test,
                             models_initializer=models_initializer_l1, stacker=self.stacker, cv=cv_stack,
                             n_valid=self.n_valid[0], n_era=self.n_era[0], cv_seed=self.cv_seed,
-                            i_layer=1, n_epoch=self.n_epoch[0], dnn_param=dnn_l1_params,
-                            pred_path=self.pred_path, stack_output_path=self.stack_output_path)
+                            i_layer=1, n_epoch=self.n_epoch[0],  pred_path=self.pred_path, 
+                            stack_output_path=self.stack_output_path)
 
         # Layer 2
-        # stk_l2 = StackLayer(self.layers_param[1], self.x_train, self.y_train, self.w_train, self.e_train,
+        # stk_l2 = StackLayer(self.layers_params[1], self.x_train, self.y_train, self.w_train, self.e_train,
         #                     self.x_g_train, self.x_test, self.x_g_test, self.id_test,
         #                     models_initializer=models_initializer_l2, stacker=self.stacker, cv=cv_stack,
         #                     n_valid=self.n_valid[1], n_era=self.n_era[1], cv_seed=self.cv_seed,
@@ -851,9 +848,9 @@ class StackTree:
                             self.x_g_train, self.x_test, self.x_g_test, self.id_test,
                             n_valid=self.n_valid[1], cv_seed=self.cv_seed, input_layer=stk_l1,
                             i_layer=2, n_epoch=self.n_epoch[1], x_train_reuse=x_train_reuse_l2,
-                            x_test_reuse=x_test_reuse_l2, pred_path=self.pred_path,
-                            loss_log_path=self.loss_log_path, stack_output_path=self.stack_output_path,
-                            final_layer_model=final_layer_model, n_cv_final=final_layer_cv)
+                            x_test_reuse=x_test_reuse_l2, pred_path=self.pred_path, loss_log_path=self.loss_log_path, 
+                            stack_output_path=self.stack_output_path, final_layer_model=final_layer_model, 
+                            num_boost_round_final=self.num_boost_round_final, n_cv_final=final_layer_cv)
 
         # Training
         stk_l2.train()

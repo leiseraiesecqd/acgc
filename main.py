@@ -25,9 +25,10 @@ path_list = [pred_path,
 
 train_seed = models.np.random.randint(100)
 cv_seed = models.np.random.randint(100)
+dnn_seed = models.np.random.randint(100)
 # train_seed = 65
 # cv_seed = 6
-dnn_seed = None
+# dnn_seed = 21
 
 
 # Train single model
@@ -208,7 +209,7 @@ class TrainSingleModel:
                           'eval_metric': 'logloss',
                           'seed': train_seed}
 
-        XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+        XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test, num_boost_round=50)
 
         print('Start training XGBoost...')
 
@@ -264,34 +265,34 @@ class TrainSingleModel:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
-        lgb_parameters = {'boosting': 'gbdt',              # gdbt,rf,dart,goss
-                          'learning_rate': 0.002,          # default=0.1
-                          'num_leaves': 128,               # default=31     <2^(max_depth)
-                          'max_depth': 8,                  # default=-1
-                          'min_data_in_leaf': 20,          # default=20       reduce over-fit
-                          'min_sum_hessian_in_leaf': 1e-3, # default=1e-3      reduce over-fit
-                          'feature_fraction': 0.8,         # default=1
-                          'feature_fraction_seed': 5,      # deafult=2
-                          'bagging_fraction': 0.8,         # default=1
-                          'bagging_freq': 5,               # default=0 perform bagging every k iteration
-                          'bagging_seed': 6,               # default=3
-                          'lambda_l1': 0,                  # default=0
-                          'lambda_l2': 0,                  # default=0
-                          'min_gain_to_split': 0,          # default=0
-                          'max_bin': 255,                  # default=255
-                          'min_data_in_bin': 5,            # default=5 min number inside one bin to avoid one-data-one-bin may cause over-fit
+        lgb_parameters = {'boosting': 'gbdt',               # gdbt,rf,dart,goss
+                          'learning_rate': 0.002,           # default=0.1
+                          'num_leaves': 128,                # default=31     <2^(max_depth)
+                          'max_depth': 8,                   # default=-1
+                          'min_data_in_leaf': 20,           # default=20       reduce over-fit
+                          'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3      reduce over-fit
+                          'feature_fraction': 0.8,          # default=1
+                          'feature_fraction_seed': 5,       # default=2
+                          'bagging_fraction': 0.8,          # default=1
+                          'bagging_freq': 5,                # default=0 perform bagging every k iteration
+                          'bagging_seed': 6,                # default=3
+                          'lambda_l1': 0,                   # default=0
+                          'lambda_l2': 0,                   # default=0
+                          'min_gain_to_split': 0,           # default=0
+                          'max_bin': 255,                   # default=255
+                          'min_data_in_bin': 5,             # default=5
                           'metric': 'binary_logloss',
                           'num_threads': -1,
                           'verbosity': 1,
                           'tree_learner': 'serial',
                           'seed': train_seed}
 
-        LGBM = models.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test)
+        LGBM = models.LightGBM(x_train, y_train, w_train, e_train, x_test,
+                               id_test, x_g_train, x_g_test, num_boost_round=65)
 
         print('Start training LGBM...')
 
-        LGBM.train(pred_path, loss_log_path, num_boost_round=65, n_valid=4, n_cv=20, n_era=20,
-                   cv_seed=cv_seed, parameters=lgb_parameters)
+        LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed, parameters=lgb_parameters)
 
     @staticmethod
     def lgb_train_sklearn():
@@ -308,7 +309,7 @@ class TrainSingleModel:
                           # 'boosting_type': 'dart',        # Dropouts meet Multiple Additive Regression Trees.
                           # 'boosting_type': 'goss',        # Gradient-based One-Side Sampling.
                           # 'boosting_type': 'rf',          # Random Forest.
-                          'num_leaves': 80,                # <2^(max_depth)
+                          'num_leaves': 80,               # <2^(max_depth)
                           'max_depth': 7,                 # default=-1
                           'n_estimators': 50,
                           'max_bin': 1005,
@@ -391,7 +392,7 @@ class TrainSingleModel:
         x_outputs, test_outputs, x_g_outputs, test_g_outputs = utils.load_stacked_data(stack_output_path + 'l1_')
 
         lgb_parameters = {'learning_rate': 0.006,
-                          'boosting_type': 'gbdt',  # traditional Gradient Boosting Decision Tree.
+                          'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
                           # 'boosting_type': 'dart',        # Dropouts meet Multiple Additive Regression Trees.
                           # 'boosting_type': 'goss',        # Gradient-based One-Side Sampling.
                           # 'boosting_type': 'rf',          # Random Forest.
@@ -412,13 +413,12 @@ class TrainSingleModel:
                           'silent': False,
                           'seed': train_seed}
 
-        LGB = models.LightGBM(x_outputs, y_train, w_train, e_train,
-                              test_outputs, id_test, x_g_outputs, test_g_outputs)
+        LGB = models.LightGBM(x_outputs, y_train, w_train, e_train, test_outputs, id_test,
+                              x_g_outputs, test_g_outputs, num_boost_round=65)
 
         print('Start training LGBM...')
 
-        LGB.train(pred_path, loss_log_path, num_boost_round=65, n_valid=4, n_cv=20,
-                  n_era=20, cv_seed=cv_seed, parameters=lgb_parameters)
+        LGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed, parameters=lgb_parameters)
 
 
 # Grid Search
@@ -967,85 +967,85 @@ class ModelStacking:
                       'nthread': -1,
                       'seed': train_seed}
 
-        # Parameters of AdaBoost
-        et_for_ab_params = {'bootstrap': True,
-                            'class_weight': None,
-                            'criterion': 'gini',
-                            'max_depth': 2,
-                            'max_features': 7,
-                            'max_leaf_nodes': None,
-                            'min_impurity_decrease': 0.0,
-                            'min_samples_leaf': 357,
-                            'min_samples_split': 4909,
-                            'min_weight_fraction_leaf': 0.0,
-                            'n_estimators': 20,
-                            'n_jobs': -1,
-                            'oob_score': True,
-                            'random_state': train_seed,
-                            'verbose': 2,
-                            'warm_start': False}
-        clf_et_for_ab = models.ExtraTreesClassifier(**et_for_ab_params)
-        ab_params = {'algorithm': 'SAMME.R',
-                     'base_estimator': clf_et_for_ab,
-                     'learning_rate': 0.0051,
-                     'n_estimators': 9,
-                     'random_state': train_seed}
-
-        # Parameters of Random Forest
-        rf_params = {'bootstrap': True,
-                     'class_weight': None,
-                     'criterion': 'gini',
-                     'max_depth': 2,
-                     'max_features': 7,
-                     'max_leaf_nodes': None,
-                     'min_impurity_decrease': 0.0,
-                     'min_samples_leaf': 286,
-                     'min_samples_split': 3974,
-                     'min_weight_fraction_leaf': 0.0,
-                     'n_estimators': 32,
-                     'n_jobs': -1,
-                     'oob_score': True,
-                     'random_state': train_seed,
-                     'verbose': 2,
-                     'warm_start': False}
-
-        # Parameters of Extra Trees
-        et_params = {'bootstrap': True,
-                     'class_weight': None,
-                     'criterion': 'gini',
-                     'max_depth': 2,
-                     'max_features': 7,
-                     'max_leaf_nodes': None,
-                     'min_impurity_decrease': 0.0,
-                     'min_samples_leaf': 357,
-                     'min_samples_split': 4909,
-                     'min_weight_fraction_leaf': 0.0,
-                     'n_estimators': 20,
-                     'n_jobs': -1,
-                     'oob_score': True,
-                     'random_state': train_seed,
-                     'verbose': 2,
-                     'warm_start': False}
-
-        # Parameters of Gradient Boost
-        gb_params = {'criterion': 'friedman_mse',
-                     'init': None,
-                     'learning_rate': 0.002,
-                     'loss': 'deviance',
-                     'max_depth': 5,
-                     'max_features': 'auto',
-                     'max_leaf_nodes': None,
-                     'min_impurity_decrease': 0.0,
-                     'min_impurity_split': None,
-                     'min_samples_leaf': 50,
-                     'min_samples_split': 1000,
-                     'min_weight_fraction_leaf': 0.0,
-                     'n_estimators': 200,
-                     'presort': 'auto',
-                     'random_state': train_seed,
-                     'subsample': 0.8,
-                     'verbose': 2,
-                     'warm_start': False}
+        # # Parameters of AdaBoost
+        # et_for_ab_params = {'bootstrap': True,
+        #                     'class_weight': None,
+        #                     'criterion': 'gini',
+        #                     'max_depth': 2,
+        #                     'max_features': 7,
+        #                     'max_leaf_nodes': None,
+        #                     'min_impurity_decrease': 0.0,
+        #                     'min_samples_leaf': 357,
+        #                     'min_samples_split': 4909,
+        #                     'min_weight_fraction_leaf': 0.0,
+        #                     'n_estimators': 20,
+        #                     'n_jobs': -1,
+        #                     'oob_score': True,
+        #                     'random_state': train_seed,
+        #                     'verbose': 2,
+        #                     'warm_start': False}
+        # clf_et_for_ab = models.ExtraTreesClassifier(**et_for_ab_params)
+        # ab_params = {'algorithm': 'SAMME.R',
+        #              'base_estimator': clf_et_for_ab,
+        #              'learning_rate': 0.0051,
+        #              'n_estimators': 9,
+        #              'random_state': train_seed}
+        #
+        # # Parameters of Random Forest
+        # rf_params = {'bootstrap': True,
+        #              'class_weight': None,
+        #              'criterion': 'gini',
+        #              'max_depth': 2,
+        #              'max_features': 7,
+        #              'max_leaf_nodes': None,
+        #              'min_impurity_decrease': 0.0,
+        #              'min_samples_leaf': 286,
+        #              'min_samples_split': 3974,
+        #              'min_weight_fraction_leaf': 0.0,
+        #              'n_estimators': 32,
+        #              'n_jobs': -1,
+        #              'oob_score': True,
+        #              'random_state': train_seed,
+        #              'verbose': 2,
+        #              'warm_start': False}
+        #
+        # # Parameters of Extra Trees
+        # et_params = {'bootstrap': True,
+        #              'class_weight': None,
+        #              'criterion': 'gini',
+        #              'max_depth': 2,
+        #              'max_features': 7,
+        #              'max_leaf_nodes': None,
+        #              'min_impurity_decrease': 0.0,
+        #              'min_samples_leaf': 357,
+        #              'min_samples_split': 4909,
+        #              'min_weight_fraction_leaf': 0.0,
+        #              'n_estimators': 20,
+        #              'n_jobs': -1,
+        #              'oob_score': True,
+        #              'random_state': train_seed,
+        #              'verbose': 2,
+        #              'warm_start': False}
+        #
+        # # Parameters of Gradient Boost
+        # gb_params = {'criterion': 'friedman_mse',
+        #              'init': None,
+        #              'learning_rate': 0.002,
+        #              'loss': 'deviance',
+        #              'max_depth': 5,
+        #              'max_features': 'auto',
+        #              'max_leaf_nodes': None,
+        #              'min_impurity_decrease': 0.0,
+        #              'min_impurity_split': None,
+        #              'min_samples_leaf': 50,
+        #              'min_samples_split': 1000,
+        #              'min_weight_fraction_leaf': 0.0,
+        #              'n_estimators': 200,
+        #              'presort': 'auto',
+        #              'random_state': train_seed,
+        #              'subsample': 0.8,
+        #              'verbose': 2,
+        #              'warm_start': False}
 
         # Parameters of Deep Neural Network
         dnn_params = {'version': '1.0',
@@ -1097,16 +1097,16 @@ class ModelStacking:
                       'seed': train_seed}
 
         # Parameters of Deep Neural Network
-        dnn_params = {'version': '1.0',
-                      'epochs': 10,
-                      'unit_number': [4, 2],
-                      'learning_rate': 0.0001,
-                      'keep_probability': 0.8,
-                      'batch_size': 256,
-                      'seed': dnn_seed,
-                      'display_step': 100,
-                      'save_path': './checkpoints/',
-                      'log_path': './log/'}
+        # dnn_params = {'version': '1.0',
+        #               'epochs': 10,
+        #               'unit_number': [4, 2],
+        #               'learning_rate': 0.0001,
+        #               'keep_probability': 0.8,
+        #               'batch_size': 256,
+        #               'seed': dnn_seed,
+        #               'display_step': 100,
+        #               'save_path': './checkpoints/',
+        #               'log_path': './log/'}
 
         # List of parameters for layer2
         layer2_params = [
@@ -1162,16 +1162,16 @@ class ModelStacking:
                       'seed': train_seed}
 
         # Parameters of Deep Neural Network
-        dnn_params = {'version': '1.0',
-                      'epochs': 10,
-                      'unit_number': [4, 2],
-                      'learning_rate': 0.0001,
-                      'keep_probability': 0.8,
-                      'batch_size': 256,
-                      'seed': dnn_seed,
-                      'display_step': 100,
-                      'save_path': './checkpoints/',
-                      'log_path': './log/'}
+        # dnn_params = {'version': '1.0',
+        #               'epochs': 10,
+        #               'unit_number': [4, 2],
+        #               'learning_rate': 0.0001,
+        #               'keep_probability': 0.8,
+        #               'batch_size': 256,
+        #               'seed': dnn_seed,
+        #               'display_step': 100,
+        #               'save_path': './checkpoints/',
+        #               'log_path': './log/'}
 
         return lgb_params
 
@@ -1187,18 +1187,23 @@ class ModelStacking:
         layer2_prams = ModelStacking.get_layer2_params()
         # layer3_prams = ModelStacking.get_layer3_params()
 
-        layers_param = [layer1_prams,
-                        layer2_prams,
-                        # layer3_prams
-                        ]
+        layers_params = [layer1_prams,
+                         layer2_prams,
+                         # layer3_prams
+                         ]
+
+        num_boost_round = {'num_boost_round_lgb_l1': 65,
+                           'num_boost_round_xgb_l1': 65,
+                           'num_boost_round_lgb_l2': 65,
+                           'num_boost_round_final': 65}
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
-        STK = stacking.DeepStack(x_train, y_train, w_train, e_train,
-                                 x_test, id_test, x_g_train, x_g_test,
-                                 pred_path + 'stack_results/', loss_log_path, stack_output_path,
-                                 hyper_params, layers_param)
+        STK = stacking.DeepStack(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test,
+                                 pred_path=pred_path + 'stack_results/', loss_log_path=loss_log_path,
+                                 stack_output_path=stack_output_path, hyper_params=hyper_params,
+                                 layers_params=layers_params, num_boost_round=num_boost_round)
 
         STK.stack()
 
@@ -1221,6 +1226,11 @@ class ModelStacking:
                          # layer3_params
                          ]
 
+        num_boost_round = {'num_boost_round_lgb_l1': 65,
+                           'num_boost_round_xgb_l1': 65,
+                           'num_boost_round_lgb_l2': 65,
+                           'num_boost_round_final': 65}
+
         final_layer_params = ModelStacking.get_final_layer_params()
         final_layer_set = {'model': 'LGB',
                            'n_cv': 20}
@@ -1231,8 +1241,8 @@ class ModelStacking:
         STK = stacking.StackTree(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test,
                                  pred_path=stack_pred_path, loss_log_path=loss_log_path,
                                  stack_output_path=stack_output_path, hyper_params=hyper_params,
-                                 layers_param=layers_params, final_layer_params=final_layer_params,
-                                 final_layer_set=final_layer_set)
+                                 layers_params=layers_params, num_boost_round=num_boost_round,
+                                 final_layer_params=final_layer_params, final_layer_set=final_layer_set)
 
         STK.stack()
 
@@ -1267,7 +1277,7 @@ if __name__ == "__main__":
     # TrainSingleModel.xgb_train_sklearn()
 
     # LightGBM
-    TrainSingleModel.lgb_train()
+    # TrainSingleModel.lgb_train()
     # TrainSingleModel.lgb_train_sklearn()
 
     # DNN
@@ -1296,5 +1306,6 @@ if __name__ == "__main__":
     print('All Task Done!')
     print('train_seed: ', train_seed)
     print('cv_seed: ', cv_seed)
+    print('dnn_seed: ', dnn_seed)
     print('Total Time: {}s'.format(time.time() - start_time))
     print('======================================================')

@@ -1255,7 +1255,7 @@ class GradientBoosting:
 # XGBoost
 class XGBoost:
 
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, num_boost_round):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -1263,6 +1263,7 @@ class XGBoost:
         self.e_train = e_tr
         self.x_test = x_te
         self.id_test = id_te
+        self.num_boost_round = num_boost_round
         self.importance = np.array([])
         self.indices = np.array([])
         self.std = np.array([])
@@ -1372,7 +1373,7 @@ class XGBoost:
 
             # Booster
             eval_list = [(d_valid, 'eval'), (d_train, 'train')]
-            bst = xgb.train(parameters, d_train, num_boost_round=35, evals=eval_list)
+            bst = xgb.train(parameters, d_train, num_boost_round=self.num_boost_round, evals=eval_list)
 
             # Feature Importance
             self.get_importance(bst)
@@ -1445,7 +1446,7 @@ class XGBoost:
 
         # Booster
         eval_list = [(d_valid, 'eval'), (d_train, 'train')]
-        bst = xgb.train(parameters, d_train, num_boost_round=35, evals=eval_list)
+        bst = xgb.train(parameters, d_train, num_boost_round=self.num_boost_round, evals=eval_list)
 
         # Feature Importance
         self.get_importance(bst)
@@ -1664,7 +1665,7 @@ class SKLearnXGBoost:
 # LightGBM
 class LightGBM:
 
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te, num_boost_round):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -1674,6 +1675,7 @@ class LightGBM:
         self.id_test = id_te
         self.x_g_train = x_g_tr
         self.x_g_test = x_g_te
+        self.num_boost_round = num_boost_round
         self.importance = np.array([])
         self.indices = np.array([])
         self.std = np.array([])
@@ -1735,7 +1737,7 @@ class LightGBM:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, num_boost_round, n_valid, n_cv, n_era, cv_seed, era_list=None,
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None,
               parameters=None, return_prob_test=False):
 
         # Check if directories exit or not
@@ -1774,7 +1776,7 @@ class LightGBM:
             d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
 
             # Booster
-            bst = lgb.train(parameters, d_train, num_boost_round=num_boost_round,
+            bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
                             valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
 
             # Feature Importance
@@ -1855,7 +1857,7 @@ class LightGBM:
         d_valid = lgb.Dataset(x_g_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
 
         # Booster
-        bst = lgb.train(parameters, d_train, num_boost_round=65,
+        bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
                         valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
 
         # Feature Importance
@@ -1874,7 +1876,7 @@ class LightGBM:
 
         return prob_valid, prob_test, losses
 
-    def prejudge_train(self, pred_path, num_boost_round, n_splits, n_cv, cv_seed, use_weight=True, parameters=None):
+    def prejudge_train(self, pred_path, n_splits, n_cv, cv_seed, use_weight=True, parameters=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path)
@@ -1911,7 +1913,7 @@ class LightGBM:
                 d_valid = lgb.Dataset(x_valid, label=y_valid, categorical_feature=idx_category)
 
             # Booster
-            bst = lgb.train(parameters, d_train, num_boost_round=num_boost_round,
+            bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
                             valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
 
             # Feature Importance

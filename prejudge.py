@@ -41,11 +41,10 @@ class PrejudgeEraSign:
 
         # Init Model
         LGB = models.LightGBM(self.x_train, era_sign_train, self.w_train, self.e_train,
-                              self.x_test, self.id_test, feature, self.x_g_test)
+                              self.x_test, self.id_test, feature, self.x_g_test, num_boost_round=num_boost_round_e)
 
         # Training and Get Probabilities of Test Era Being Positive
-        era_prob_test = LGB.prejudge_train(pred_path + 'pred_era/', num_boost_round=num_boost_round_e,
-                                           n_splits=n_splits_e, n_cv=n_cv_e, cv_seed=cv_seed,
+        era_prob_test = LGB.prejudge_train(pred_path + 'pred_era/', n_splits=n_splits_e, n_cv=n_cv_e, cv_seed=cv_seed,
                                            use_weight=use_weight, parameters=parameters_e)
 
         # Convert Probabilities of Test Era to 0 and 1
@@ -103,24 +102,22 @@ class PrejudgeEraSign:
         print('Training Models by Era Sign...')
 
         LGBM_P = models.LightGBM(self.x_train_p, self.y_train_p, self.w_train_p, self.e_train_p,
-                                 x_test_p, id_test_p, self.x_g_train_p, x_g_test_p)
+                                 x_test_p, id_test_p, self.x_g_train_p, x_g_test_p, num_boost_round=num_boost_round_p)
 
         LGBM_N = models.LightGBM(self.x_train_n, self.y_train_n, self.w_train_n, self.e_train_n,
-                                 x_test_n, id_test_n, self.x_g_train_n, x_g_test_n)
+                                 x_test_n, id_test_n, self.x_g_train_n, x_g_test_n, num_boost_round=num_boost_round_n)
 
         print('======================================================')
         print('Training Models of Positive Era Sign...')
 
-        prob_test_p = LGBM_P.train(pred_path + 'positive/', loss_log_path + 'positive/',
-                                   num_boost_round=num_boost_round_p, n_valid=n_valid_p,
+        prob_test_p = LGBM_P.train(pred_path + 'positive/', loss_log_path + 'positive/', n_valid=n_valid_p,
                                    n_cv=n_cv_p, n_era=n_era_p,  cv_seed=cv_seed, parameters=parameters_p,
                                    return_prob_test=True, era_list=era_list_p)
 
         print('======================================================')
         print('Training Models of Negative Era Sign...')
 
-        prob_test_n = LGBM_N.train(pred_path + 'negative/', loss_log_path + 'negative/',
-                                   num_boost_round=num_boost_round_n, n_valid=n_valid_n,
+        prob_test_n = LGBM_N.train(pred_path + 'negative/', loss_log_path + 'negative/', n_valid=n_valid_n,
                                    n_cv=n_cv_n, n_era=n_era_n, cv_seed=cv_seed, parameters=parameters_n,
                                    return_prob_test=True, era_list=era_list_n)
 
