@@ -390,13 +390,13 @@ class TrainSingleModel:
     def stack_lgb_train():
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        x_outputs, test_outputs, x_g_outputs, test_g_outputs = utils.load_stacked_data(stack_output_path + 'l1_')
+        x_outputs, test_outputs, x_g_outputs, test_g_outputs = utils.load_stacked_data(stack_output_path + 'l2_')
 
         lgb_parameters = {'application': 'binary',
                           'boosting': 'gbdt',               # gdbt,rf,dart,goss
                           'learning_rate': 0.003,           # default=0.1
                           'num_leaves': 88,                 # default=31     <2^(max_depth)
-                          'max_depth': 4,                   # default=-1
+                          'max_depth': 7,                   # default=-1
                           'min_data_in_leaf': 2500,         # default=20       reduce over-fit
                           'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3      reduce over-fit
                           'feature_fraction': 1,            # default=1
@@ -416,7 +416,7 @@ class TrainSingleModel:
                           'seed': train_seed}
 
         LGB = models.LightGBM(x_outputs, y_train, w_train, e_train, test_outputs, id_test,
-                              x_g_outputs, test_g_outputs, num_boost_round=65)
+                              x_g_outputs, test_g_outputs, num_boost_round=80)
 
         print('Start training LGBM...')
 
@@ -846,7 +846,7 @@ class PrejudgeTraining:
                                'seed': train_seed}
 
         positive_params = {'application': 'binary',
-                           'learning_rate': 0.002,
+                           'learning_rate': 0.003,
                            'num_leaves': 80,               # <2^(max_depth)
                            'tree_learner': 'serial',
                            'max_depth': 7,                 # default=-1
@@ -862,7 +862,7 @@ class PrejudgeTraining:
                            'seed': train_seed}
 
         negative_params = {'application': 'binary',
-                           'learning_rate': 0.002,
+                           'learning_rate': 0.003,
                            'num_leaves': 80,  # <2^(max_depth)
                            'tree_learner': 'serial',
                            'max_depth': 7,  # default=-1
@@ -898,7 +898,7 @@ class PrejudgeTraining:
 
         hyper_parameters = {'seed': cv_seed,
                             'n_splits_e': 5,
-                            'num_boost_round_e': 5000,
+                            'num_boost_round_e': 8000,
                             'n_cv_e': 10,
                             'n_valid_p': 3,
                             'n_cv_p': 20,
@@ -1304,8 +1304,8 @@ if __name__ == "__main__":
 
     # Stacking
     # ModelStacking.deep_stack_train()
-    ModelStacking.stack_tree_train()
-    # TrainSingleModel.stack_lgb_train()
+    # ModelStacking.stack_tree_train()
+    TrainSingleModel.stack_lgb_train()
 
     # Prejudge
     # PrejudgeTraining.train()
