@@ -439,7 +439,7 @@ class TrainSingleModel:
                           'seed': train_seed}
 
         LGB = models.LightGBM(blender_x_tree, y_train, w_train, e_train, blender_test_tree, id_test,
-                              blender_x_g_tree, blender_test_g_tree, num_boost_round=70)
+                              blender_x_g_tree, blender_test_g_tree, num_boost_round=65)
 
         print('Start training LGBM...')
 
