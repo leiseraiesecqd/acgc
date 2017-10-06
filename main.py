@@ -927,23 +927,20 @@ class ModelStacking:
     def get_layer1_params():
 
         # Parameters of LightGBM
-        lgb_params = {'learning_rate': 0.002,
-                      'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
-                      'num_leaves': 128,                # <2^(max_depth)
-                      'max_depth': 8,                 # default=-1
-                      'n_estimators': 50,
-                      'max_bin': 1005,
-                      'subsample_for_bin': 1981,
-                      'objective': 'binary',
-                      'min_split_gain': 0.,
-                      'min_child_weight': 1,
-                      'min_child_samples': 0,
-                      'subsample': 0.8,
-                      'subsample_freq': 5,
-                      'colsample_bytree': 0.8,
-                      'reg_alpha': 0.,
-                      'reg_lambda': 0.,
-                      'silent': False,
+        lgb_params = {'application': 'binary',
+                      'learning_rate': 0.002,
+                      'num_leaves': 80,               # <2^(max_depth)
+                      'tree_learner': 'serial',
+                      'max_depth': 7,                 # default=-1
+                      'min_data_in_leaf': 2000,         # default=20
+                      'feature_fraction': 0.5,        # default=1
+                      'bagging_fraction': 0.6,        # default=1
+                      'bagging_freq': 5,              # default=0 perform bagging every k iteration
+                      'bagging_seed': 1,              # default=3
+                      'early_stopping_rounds': 50,
+                      'max_bin': 50,
+                      'metric': 'binary_logloss',
+                      'verbosity': 1,
                       'seed': train_seed}
 
         # Parameters of XGBoost
@@ -1077,23 +1074,20 @@ class ModelStacking:
     def get_layer2_params():
 
         # Parameters of LightGBM
-        lgb_params = {'learning_rate': 0.002,
-                      'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
-                      'num_leaves': 128,                # <2^(max_depth)
-                      'max_depth': 8,                 # default=-1
-                      'n_estimators': 65,
-                      'max_bin': 1005,
-                      'subsample_for_bin': 1981,
-                      'objective': 'binary',
-                      'min_split_gain': 0.,
-                      'min_child_weight': 1,
-                      'min_child_samples': 0,
-                      'subsample': 0.8,
-                      'subsample_freq': 5,
-                      'colsample_bytree': 0.8,
-                      'reg_alpha': 0.,
-                      'reg_lambda': 0.,
-                      'silent': False,
+        lgb_params = {'application': 'binary',
+                      'learning_rate': 0.002,
+                      'num_leaves': 80,               # <2^(max_depth)
+                      'tree_learner': 'serial',
+                      'max_depth': 7,                 # default=-1
+                      'min_data_in_leaf': 2000,         # default=20
+                      'feature_fraction': 0.5,        # default=1
+                      'bagging_fraction': 0.6,        # default=1
+                      'bagging_freq': 5,              # default=0 perform bagging every k iteration
+                      'bagging_seed': 1,              # default=3
+                      'early_stopping_rounds': 50,
+                      'max_bin': 50,
+                      'metric': 'binary_logloss',
+                      'verbosity': 1,
                       'seed': train_seed}
 
         # Parameters of Deep Neural Network
@@ -1142,23 +1136,20 @@ class ModelStacking:
     def get_final_layer_params():
 
         # Parameters of LightGBM
-        lgb_params = {'learning_rate': 0.002,
-                      'boosting_type': 'gbdt',  # traditional Gradient Boosting Decision Tree.
-                      'num_leaves': 128,        # <2^(max_depth)
-                      'max_depth': 8,           # default=-1
-                      'n_estimators': 65,
-                      'max_bin': 1005,
-                      'subsample_for_bin': 1981,
-                      'objective': 'binary',
-                      'min_split_gain': 0.,
-                      'min_child_weight': 1,
-                      'min_child_samples': 0,
-                      'subsample': 0.8,
-                      'subsample_freq': 5,
-                      'colsample_bytree': 0.8,
-                      'reg_alpha': 0.,
-                      'reg_lambda': 0.,
-                      'silent': False,
+        lgb_params = {'application': 'binary',
+                      'learning_rate': 0.002,
+                      'num_leaves': 80,               # <2^(max_depth)
+                      'tree_learner': 'serial',
+                      'max_depth': 7,                 # default=-1
+                      'min_data_in_leaf': 2000,         # default=20
+                      'feature_fraction': 0.5,        # default=1
+                      'bagging_fraction': 0.6,        # default=1
+                      'bagging_freq': 5,              # default=0 perform bagging every k iteration
+                      'bagging_seed': 1,              # default=3
+                      'early_stopping_rounds': 50,
+                      'max_bin': 50,
+                      'metric': 'binary_logloss',
+                      'verbosity': 1,
                       'seed': train_seed}
 
         # Parameters of Deep Neural Network
