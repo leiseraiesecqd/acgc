@@ -196,10 +196,10 @@ class TrainSingleModel:
 
         xgb_parameters = {'eta': 0.008,
                           'gamma': 0,                       # 如果loss function小于设定值，停止产生子节点
-                          'max_depth': 7,                  # default=6
-                          'min_child_weight': 15,            # default=1，建立每个模型所需最小样本权重和
+                          'max_depth': 7,                   # default=6
+                          'min_child_weight': 15,           # default=1，建立每个模型所需最小样本权重和
                           'subsample': 0.8,                 # 建立树模型时抽取子样本占整个样本的比例
-                          'colsample_bytree': 1,          # 建立树时对特征随机采样的比例
+                          'colsample_bytree': 1,            # 建立树时对特征随机采样的比例
                           'colsample_bylevel': 1,
                           'lambda': 5000,
                           'alpha': 0,
@@ -944,24 +944,19 @@ class ModelStacking:
                       'seed': train_seed}
 
         # Parameters of XGBoost
-        xgb_params = {'objective': 'binary:logistic',
-                      'learning_rate': 0.002,
-                      'n_estimators': 30,
-                      'max_depth': 9,
-                      'min_child_weight': 5,
-                      'max_delta_step': 0,
-                      'silent': False,
-                      'subsample': 0.8,
-                      'colsample_bytree': 0.8,
+        xgb_params = {'eta': 0.008,
+                      'gamma': 0,                       # 如果loss function小于设定值，停止产生子节点
+                      'max_depth': 7,                   # default=6
+                      'min_child_weight': 15,           # default=1，建立每个模型所需最小样本权重和
+                      'subsample': 0.8,                 # 建立树模型时抽取子样本占整个样本的比例
+                      'colsample_bytree': 1,            # 建立树时对特征随机采样的比例
                       'colsample_bylevel': 1,
-                      'gamma': 0,
-                      'base_score': 0.5,
-                      'reg_alpha': 0,
-                      'reg_lambda': 0,
-                      # 'missing': None,
-                      # 'nthread': -1,
-                      # 'scale_pos_weight': 1,
+                      'lambda': 5000,
+                      'alpha': 0,
+                      'early_stopping_rounds': 30,
                       'nthread': -1,
+                      'objective': 'binary:logistic',
+                      'eval_metric': 'logloss',
                       'seed': train_seed}
 
         # # Parameters of AdaBoost
