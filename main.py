@@ -1228,7 +1228,6 @@ class ModelStacking:
 
         num_boost_round = {'num_boost_round_lgb_l1': 65,
                            'num_boost_round_xgb_l1': 65,
-                           'num_boost_round_lgb_l2': 65,
                            'num_boost_round_final': 65}
 
         final_layer_params = ModelStacking.get_final_layer_params()

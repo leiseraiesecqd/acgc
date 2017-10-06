@@ -591,10 +591,10 @@ class StackTree:
         self.layers_params = layers_params
         self.num_boost_round_lgb_l1 = num_boost_round['num_boost_round_lgb_l1']
         self.num_boost_round_xgb_l1 = num_boost_round['num_boost_round_xgb_l1']
-        self.num_boost_round_lgb_l2 = num_boost_round['num_boost_round_lgb_l2']
+        # self.num_boost_round_lgb_l2 = num_boost_round['num_boost_round_lgb_l2']
         self.num_boost_round_final = num_boost_round['num_boost_round_final']
         self.dnn_l1_params = layers_params[0][-1]
-        self.dnn_l2_params = layers_params[1][-1]
+        # self.dnn_l2_params = layers_params[1][-1]
 
         self.final_layer_params = final_layer_params
         self.final_layer_set = final_layer_set
@@ -632,15 +632,15 @@ class StackTree:
 
     def init_models_layer2(self):
 
-        LGB_L2 = models.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
-                                 self.x_test, self.id_test, self.x_g_train, self.x_g_test,
-                                 num_boost_round=self.num_boost_round_lgb_l2)
+        # LGB_L2 = models.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
+        #                          self.x_test, self.id_test, self.x_g_train, self.x_g_test,
+        #                          num_boost_round=self.num_boost_round_lgb_l2)
 
         # DNN_L2 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
         #                                    self.e_train, self.x_test, self.id_test, self.dnn_l2_params)
 
         models_l2 = [
-                     LGB_L2,
+                     # LGB_L2,
                      # DNN_L2
                      ]
 
