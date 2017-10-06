@@ -899,17 +899,17 @@ class PrejudgeTraining:
 
         hyper_parameters = {'seed': cv_seed,
                             'n_splits_e': 5,
-                            'num_boost_round_e': 3000,
-                            'n_cv_e': 20,
+                            'num_boost_round_e': 4000,
+                            'n_cv_e': 10,
                             'n_valid_p': 3,
                             'n_cv_p': 20,
                             'n_era_p': 14,
-                            'num_boost_round_p': 100,
+                            'num_boost_round_p': 300,
                             'era_list_p': positive_era_list,
                             'n_valid_n': 1,
                             'n_cv_n': 6,
                             'n_era_n': 6,
-                            'num_boost_round_n': 100,
+                            'num_boost_round_n': 300,
                             'era_list_n': negative_era_list}
 
         PES = prejudge.PrejudgeEraSign(x_train, y_train, w_train, e_train, x_g_train,
