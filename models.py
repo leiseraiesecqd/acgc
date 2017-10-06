@@ -1372,7 +1372,7 @@ class XGBoost:
             d_valid = xgb.DMatrix(x_valid, label=y_valid, weight=w_valid)
 
             # Booster
-            eval_list = [(d_valid, 'eval'), (d_train, 'train')]
+            eval_list = [(d_train, 'Train'), (d_valid, 'Valid')]
             bst = xgb.train(parameters, d_train, num_boost_round=self.num_boost_round, evals=eval_list)
 
             # Feature Importance
