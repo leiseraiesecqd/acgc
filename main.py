@@ -265,26 +265,27 @@ class TrainSingleModel:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
-        lgb_parameters = {'boosting': 'gbdt',               # gdbt,rf,dart,goss
-                          'learning_rate': 0.002,           # default=0.1
-                          'num_leaves': 128,                # default=31     <2^(max_depth)
-                          'max_depth': 8,                   # default=-1
-                          'min_data_in_leaf': 20,           # default=20       reduce over-fit
+        lgb_parameters = {'application': 'binary',
+                          'boosting': 'gbdt',               # gdbt,rf,dart,goss
+                          'learning_rate': 0.003,           # default=0.1
+                          'num_leaves': 88,                 # default=31     <2^(max_depth)
+                          'max_depth': 7,                   # default=-1
+                          'min_data_in_leaf': 2500,         # default=20       reduce over-fit
                           'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3      reduce over-fit
-                          'feature_fraction': 0.8,          # default=1
-                          'feature_fraction_seed': 5,       # default=2
+                          'feature_fraction': 1,            # default=1
+                          'feature_fraction_seed': 10,      # default=2
                           'bagging_fraction': 0.8,          # default=1
-                          'bagging_freq': 5,                # default=0 perform bagging every k iteration
-                          'bagging_seed': 6,                # default=3
+                          'bagging_freq': 1,                # default=0 perform bagging every k iteration
+                          'bagging_seed': 19,               # default=3
                           'lambda_l1': 0,                   # default=0
                           'lambda_l2': 0,                   # default=0
                           'min_gain_to_split': 0,           # default=0
-                          'max_bin': 255,                   # default=255
+                          'max_bin': 2250,                  # default=255
                           'min_data_in_bin': 5,             # default=5
                           'metric': 'binary_logloss',
                           'num_threads': -1,
                           'verbosity': 1,
-                          'tree_learner': 'serial',
+                          'early_stopping_rounds': 50,      # default=0
                           'seed': train_seed}
 
         LGBM = models.LightGBM(x_train, y_train, w_train, e_train, x_test,
@@ -391,26 +392,27 @@ class TrainSingleModel:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_outputs, test_outputs, x_g_outputs, test_g_outputs = utils.load_stacked_data(stack_output_path + 'l1_')
 
-        lgb_parameters = {'learning_rate': 0.006,
-                          'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
-                          # 'boosting_type': 'dart',        # Dropouts meet Multiple Additive Regression Trees.
-                          # 'boosting_type': 'goss',        # Gradient-based One-Side Sampling.
-                          # 'boosting_type': 'rf',          # Random Forest.
-                          'num_leaves': 3,  # <2^(max_depth)
-                          'max_depth': 8,  # default=-1
-                          'n_estimators': 79,
-                          'max_bin': 1005,
-                          'subsample_for_bin': 1981,
-                          'objective': 'binary',
-                          'min_split_gain': 0.,
-                          'min_child_weight': 1,
-                          'min_child_samples': 0,
-                          'subsample': 0.723,
-                          'subsample_freq': 3,
-                          'colsample_bytree': 0.11,
-                          'reg_alpha': 0.,
-                          'reg_lambda': 0.,
-                          'silent': False,
+        lgb_parameters = {'application': 'binary',
+                          'boosting': 'gbdt',               # gdbt,rf,dart,goss
+                          'learning_rate': 0.003,           # default=0.1
+                          'num_leaves': 88,                 # default=31     <2^(max_depth)
+                          'max_depth': 4,                   # default=-1
+                          'min_data_in_leaf': 2500,         # default=20       reduce over-fit
+                          'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3      reduce over-fit
+                          'feature_fraction': 1,            # default=1
+                          'feature_fraction_seed': 10,      # default=2
+                          'bagging_fraction': 0.8,          # default=1
+                          'bagging_freq': 1,                # default=0 perform bagging every k iteration
+                          'bagging_seed': 19,               # default=3
+                          'lambda_l1': 0,                   # default=0
+                          'lambda_l2': 0,                   # default=0
+                          'min_gain_to_split': 0,           # default=0
+                          'max_bin': 2250,                  # default=255
+                          'min_data_in_bin': 5,             # default=5
+                          'metric': 'binary_logloss',
+                          'num_threads': -1,
+                          'verbosity': 1,
+                          'early_stopping_rounds': 50,      # default=0
                           'seed': train_seed}
 
         LGB = models.LightGBM(x_outputs, y_train, w_train, e_train, test_outputs, id_test,
@@ -928,19 +930,26 @@ class ModelStacking:
 
         # Parameters of LightGBM
         lgb_params = {'application': 'binary',
-                      'learning_rate': 0.005,
-                      'num_leaves': 80,               # <2^(max_depth)
-                      'tree_learner': 'serial',
-                      'max_depth': 7,                 # default=-1
-                      'min_data_in_leaf': 2000,         # default=20
-                      'feature_fraction': 0.5,        # default=1
-                      'bagging_fraction': 0.6,        # default=1
-                      'bagging_freq': 5,              # default=0 perform bagging every k iteration
-                      'bagging_seed': 1,              # default=3
-                      'early_stopping_rounds': 50,
-                      'max_bin': 50,
+                      'boosting': 'gbdt',               # gdbt,rf,dart,goss
+                      'learning_rate': 0.003,           # default=0.1
+                      'num_leaves': 88,                 # default=31     <2^(max_depth)
+                      'max_depth': 7,                   # default=-1
+                      'min_data_in_leaf': 2500,         # default=20       reduce over-fit
+                      'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3      reduce over-fit
+                      'feature_fraction': 1,            # default=1
+                      'feature_fraction_seed': 10,      # default=2
+                      'bagging_fraction': 0.8,          # default=1
+                      'bagging_freq': 1,                # default=0 perform bagging every k iteration
+                      'bagging_seed': 19,               # default=3
+                      'lambda_l1': 0,                   # default=0
+                      'lambda_l2': 0,                   # default=0
+                      'min_gain_to_split': 0,           # default=0
+                      'max_bin': 2250,                  # default=255
+                      'min_data_in_bin': 5,             # default=5
                       'metric': 'binary_logloss',
+                      'num_threads': -1,
                       'verbosity': 1,
+                      'early_stopping_rounds': 50,      # default=0
                       'seed': train_seed}
 
         # Parameters of XGBoost
@@ -951,7 +960,7 @@ class ModelStacking:
                       'subsample': 0.8,                 # 建立树模型时抽取子样本占整个样本的比例
                       'colsample_bytree': 1,            # 建立树时对特征随机采样的比例
                       'colsample_bylevel': 1,
-                      'lambda': 5000,
+                      'lambda': 0,
                       'alpha': 0,
                       'early_stopping_rounds': 30,
                       'nthread': -1,
@@ -1070,19 +1079,26 @@ class ModelStacking:
 
         # Parameters of LightGBM
         lgb_params = {'application': 'binary',
-                      'learning_rate': 0.005,
-                      'num_leaves': 80,               # <2^(max_depth)
-                      'tree_learner': 'serial',
-                      'max_depth': 7,                 # default=-1
-                      'min_data_in_leaf': 2000,         # default=20
-                      'feature_fraction': 0.5,        # default=1
-                      'bagging_fraction': 0.6,        # default=1
-                      'bagging_freq': 5,              # default=0 perform bagging every k iteration
-                      'bagging_seed': 1,              # default=3
-                      'early_stopping_rounds': 50,
-                      'max_bin': 50,
+                      'boosting': 'gbdt',               # gdbt,rf,dart,goss
+                      'learning_rate': 0.003,           # default=0.1
+                      'num_leaves': 88,                 # default=31     <2^(max_depth)
+                      'max_depth': 7,                   # default=-1
+                      'min_data_in_leaf': 2500,         # default=20       reduce over-fit
+                      'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3      reduce over-fit
+                      'feature_fraction': 1,            # default=1
+                      'feature_fraction_seed': 10,      # default=2
+                      'bagging_fraction': 0.8,          # default=1
+                      'bagging_freq': 1,                # default=0 perform bagging every k iteration
+                      'bagging_seed': 19,               # default=3
+                      'lambda_l1': 0,                   # default=0
+                      'lambda_l2': 0,                   # default=0
+                      'min_gain_to_split': 0,           # default=0
+                      'max_bin': 2250,                  # default=255
+                      'min_data_in_bin': 5,             # default=5
                       'metric': 'binary_logloss',
+                      'num_threads': -1,
                       'verbosity': 1,
+                      'early_stopping_rounds': 50,      # default=0
                       'seed': train_seed}
 
         # Parameters of Deep Neural Network
@@ -1132,19 +1148,26 @@ class ModelStacking:
 
         # Parameters of LightGBM
         lgb_params = {'application': 'binary',
-                      'learning_rate': 0.002,
-                      'num_leaves': 80,               # <2^(max_depth)
-                      'tree_learner': 'serial',
-                      'max_depth': 7,                 # default=-1
-                      'min_data_in_leaf': 2000,         # default=20
-                      'feature_fraction': 0.5,        # default=1
-                      'bagging_fraction': 0.6,        # default=1
-                      'bagging_freq': 5,              # default=0 perform bagging every k iteration
-                      'bagging_seed': 1,              # default=3
-                      'early_stopping_rounds': 50,
-                      'max_bin': 50,
+                      'boosting': 'gbdt',               # gdbt,rf,dart,goss
+                      'learning_rate': 0.003,           # default=0.1
+                      'num_leaves': 88,                 # default=31     <2^(max_depth)
+                      'max_depth': 7,                   # default=-1
+                      'min_data_in_leaf': 2500,         # default=20       reduce over-fit
+                      'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3      reduce over-fit
+                      'feature_fraction': 1,            # default=1
+                      'feature_fraction_seed': 10,      # default=2
+                      'bagging_fraction': 0.8,          # default=1
+                      'bagging_freq': 1,                # default=0 perform bagging every k iteration
+                      'bagging_seed': 19,               # default=3
+                      'lambda_l1': 0,                   # default=0
+                      'lambda_l2': 0,                   # default=0
+                      'min_gain_to_split': 0,           # default=0
+                      'max_bin': 2250,                  # default=255
+                      'min_data_in_bin': 5,             # default=5
                       'metric': 'binary_logloss',
+                      'num_threads': -1,
                       'verbosity': 1,
+                      'early_stopping_rounds': 50,      # default=0
                       'seed': train_seed}
 
         # Parameters of Deep Neural Network
