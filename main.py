@@ -976,13 +976,13 @@ class ModelStacking:
                       'seed': train_seed}
 
         # Parameters of XGBoost
-        xgb_params = {'eta': 0.008,
+        xgb_params = {'eta': 0.005,
                       'gamma': 0,                       # 如果loss function小于设定值，停止产生子节点
                       'max_depth': 7,                   # default=6
                       'min_child_weight': 15,           # default=1，建立每个模型所需最小样本权重和
-                      'subsample': 0.8,                 # 建立树模型时抽取子样本占整个样本的比例
-                      'colsample_bytree': 1,            # 建立树时对特征随机采样的比例
-                      'colsample_bylevel': 1,
+                      'subsample': 0.9,                 # 建立树模型时抽取子样本占整个样本的比例
+                      'colsample_bytree': 0.7,            # 建立树时对特征随机采样的比例
+                      'colsample_bylevel': 0.6,
                       'lambda': 0,
                       'alpha': 0,
                       'early_stopping_rounds': 30,
@@ -1259,7 +1259,7 @@ class ModelStacking:
                          ]
 
         num_boost_round = {'num_boost_round_lgb_l1': 65,
-                           'num_boost_round_xgb_l1': 30,
+                           'num_boost_round_xgb_l1': 36,
                            'num_boost_round_final': 65}
 
         final_layer_params = ModelStacking.get_final_layer_params()
@@ -1327,11 +1327,11 @@ if __name__ == "__main__":
 
     # Stacking
     # ModelStacking.deep_stack_train()
-    # ModelStacking.stack_tree_train()
+    ModelStacking.stack_tree_train()
     # TrainSingleModel.stack_lgb_train()
 
     # Prejudge
-    PrejudgeTraining.train()
+    # PrejudgeTraining.train()
 
     print('======================================================')
     print('All Task Done!')
