@@ -266,27 +266,26 @@ class TrainSingleModel:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
-        lgb_parameters = {'application': 'binary',
-                          'boosting': 'gbdt',              #gdbt,rf,dart,goss
-                          'learning_rate': 0.0015,                #default=0.1
-                          'num_leaves': 128,                # default=31     <2^(max_depth)
-                          'max_depth': 8,                 # default=-1
-                          'min_data_in_leaf': 200,         # default=20       reduce over-fit
-                          'min_sum_hessian_in_leaf':1e-3,     #default=1e-3      reduce over-fit
-                          'feature_fraction': 0.6,        # default=1
-                          'feature_fraction_seed':5,     #deafult=2
-                          'bagging_fraction': 0.6,        # default=1
-                          'bagging_freq': 3,              # default=0 perform bagging every k iteration
-                          'bagging_seed': 5,              # default=3
-                          'lambda_l1': 0,            #default=0
-                          'lambda_l2': 0,            #default=0
-                          'min_gain_to_split': 0,         #default=0
-                          'max_bin': 225,                           #default=255
-                          'min_data_in_bin': 5,                 #default=5 min number inside one bin to avoid one-data-one-bin may cause over-fit
+        lgb_parameters = {'boosting': 'gbdt',              # gdbt,rf,dart,goss
+                          'learning_rate': 0.002,          # default=0.1
+                          'num_leaves': 128,               # default=31     <2^(max_depth)
+                          'max_depth': 8,                  # default=-1
+                          'min_data_in_leaf': 20,          # default=20       reduce over-fit
+                          'min_sum_hessian_in_leaf': 1e-3, # default=1e-3      reduce over-fit
+                          'feature_fraction': 0.8,         # default=1
+                          'feature_fraction_seed': 5,      # deafult=2
+                          'bagging_fraction': 0.8,         # default=1
+                          'bagging_freq': 5,               # default=0 perform bagging every k iteration
+                          'bagging_seed': 6,               # default=3
+                          'lambda_l1': 0,                  # default=0
+                          'lambda_l2': 0,                  # default=0
+                          'min_gain_to_split': 0,          # default=0
+                          'max_bin': 255,                  # default=255
+                          'min_data_in_bin': 5,            # default=5 min number inside one bin to avoid one-data-one-bin may cause over-fit
                           'metric': 'binary_logloss',
                           'num_threads': -1,
                           'verbosity': 1,
-                           #'early_stopping_rounds': 50,            #default=0
+                          'tree_learner': 'serial',
                           'seed': train_seed}
 
         LGBM = models.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test)
@@ -1270,7 +1269,7 @@ if __name__ == "__main__":
     # TrainSingleModel.xgb_train_sklearn()
 
     # LightGBM
-    # TrainSingleModel.lgb_train()
+    TrainSingleModel.lgb_train()
     # TrainSingleModel.lgb_train_sklearn()
 
     # DNN
@@ -1293,7 +1292,7 @@ if __name__ == "__main__":
     # TrainSingleModel.stack_lgb_train()
 
     # Prejudge
-    PrejudgeTraining.train()
+    # PrejudgeTraining.train()
 
     print('======================================================')
     print('All Task Done!')
