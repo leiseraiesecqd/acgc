@@ -195,14 +195,14 @@ class TrainSingleModel:
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-        xgb_parameters = {'eta': 0.008,
+        xgb_parameters = {'eta': 0.005,
                           'gamma': 0,                       # 如果loss function小于设定值，停止产生子节点
                           'max_depth': 7,                   # default=6
                           'min_child_weight': 15,           # default=1，建立每个模型所需最小样本权重和
-                          'subsample': 0.8,                 # 建立树模型时抽取子样本占整个样本的比例
-                          'colsample_bytree': 1,            # 建立树时对特征随机采样的比例
-                          'colsample_bylevel': 1,
-                          'lambda': 5000,
+                          'subsample': 0.9,                 # 建立树模型时抽取子样本占整个样本的比例
+                          'colsample_bytree': 0.7,            # 建立树时对特征随机采样的比例
+                          'colsample_bylevel': 0.6,
+                          'lambda': 0,
                           'alpha': 0,
                           'early_stopping_rounds': 30,
                           'nthread': -1,
@@ -210,7 +210,7 @@ class TrainSingleModel:
                           'eval_metric': 'logloss',
                           'seed': train_seed}
 
-        XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test, num_boost_round=50)
+        XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test, num_boost_round=35)
 
         print('Start training XGBoost...')
 
@@ -1304,7 +1304,7 @@ if __name__ == "__main__":
     # TrainSingleModel.gb_train()
 
     # XGBoost
-    # TrainSingleModel.xgb_train()
+    TrainSingleModel.xgb_train()
     # TrainSingleModel.xgb_train_sklearn()
 
     # LightGBM
@@ -1328,7 +1328,7 @@ if __name__ == "__main__":
     # Stacking
     # ModelStacking.deep_stack_train()
     # ModelStacking.stack_tree_train()
-    TrainSingleModel.stack_lgb_train()
+    # TrainSingleModel.stack_lgb_train()
 
     # Prejudge
     # PrejudgeTraining.train()
