@@ -292,7 +292,7 @@ class TrainSingleModel:
 
         print('Start training LGBM...')
 
-        LGBM.train(pred_path, loss_log_path, num_boost_round=50, n_valid=4, n_cv=20, n_era=20,
+        LGBM.train(pred_path, loss_log_path, num_boost_round=65, n_valid=4, n_cv=20, n_era=20,
                    cv_seed=cv_seed, parameters=lgb_parameters)
 
     @staticmethod
