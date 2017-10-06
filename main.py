@@ -418,15 +418,15 @@ class TrainSingleModel:
         lgb_parameters = {'application': 'binary',
                           'boosting': 'gbdt',               # gdbt,rf,dart,goss
                           'learning_rate': 0.002,           # default=0.1
-                          'num_leaves': 88,                 # default=31     <2^(max_depth)
+                          'num_leaves': 80,                 # default=31     <2^(max_depth)
                           'max_depth': 7,                   # default=-1
-                          'min_data_in_leaf': 2500,         # default=20       reduce over-fit
+                          'min_data_in_leaf': 2000,         # default=20       reduce over-fit
                           'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3      reduce over-fit
-                          'feature_fraction': 1,            # default=1
+                          'feature_fraction': 0.8,            # default=1
                           'feature_fraction_seed': 10,      # default=2
-                          'bagging_fraction': 0.8,          # default=1
-                          'bagging_freq': 1,                # default=0 perform bagging every k iteration
-                          'bagging_seed': 19,               # default=3
+                          'bagging_fraction': 0.6,          # default=1
+                          'bagging_freq': 5,                # default=0 perform bagging every k iteration
+                          'bagging_seed': 10,               # default=3
                           'lambda_l1': 0,                   # default=0
                           'lambda_l2': 0,                   # default=0
                           'min_gain_to_split': 0,           # default=0
@@ -439,7 +439,7 @@ class TrainSingleModel:
                           'seed': train_seed}
 
         LGB = models.LightGBM(blender_x_tree, y_train, w_train, e_train, blender_test_tree, id_test,
-                              blender_x_g_tree, blender_test_g_tree, num_boost_round=72)
+                              blender_x_g_tree, blender_test_g_tree, num_boost_round=65)
 
         print('Start training LGBM...')
 
@@ -1177,7 +1177,7 @@ class ModelStacking:
                       'max_depth': 7,                   # default=-1
                       'min_data_in_leaf': 2000,         # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3      reduce over-fit
-                      'feature_fraction': 5,            # default=1
+                      'feature_fraction': 0.5,            # default=1
                       'feature_fraction_seed': 10,      # default=2
                       'bagging_fraction': 0.6,          # default=1
                       'bagging_freq': 5,                # default=0 perform bagging every k iteration
@@ -1327,8 +1327,8 @@ if __name__ == "__main__":
 
     # Stacking
     # ModelStacking.deep_stack_train()
-    ModelStacking.stack_tree_train()
-    # TrainSingleModel.stack_lgb_train()
+    # ModelStacking.stack_tree_train()
+    TrainSingleModel.stack_lgb_train()
 
     # Prejudge
     # PrejudgeTraining.train()
