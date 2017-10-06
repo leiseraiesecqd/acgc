@@ -983,7 +983,7 @@ class ModelStacking:
                       'subsample': 0.9,                 # 建立树模型时抽取子样本占整个样本的比例
                       'colsample_bytree': 0.7,            # 建立树时对特征随机采样的比例
                       'colsample_bylevel': 0.6,
-                      'lambda': 0,
+                      'lambda': 2500,
                       'alpha': 0,
                       'early_stopping_rounds': 30,
                       'nthread': -1,
@@ -1104,7 +1104,7 @@ class ModelStacking:
         lgb_params = {'application': 'binary',
                       'boosting': 'gbdt',               # gdbt,rf,dart,goss
                       'learning_rate': 0.003,           # default=0.1
-                      'num_leaves': 88,                 # default=31     <2^(max_depth)
+                      'num_leaves': 80,                 # default=31     <2^(max_depth)
                       'max_depth': 7,                   # default=-1
                       'min_data_in_leaf': 2500,         # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3      reduce over-fit
@@ -1173,7 +1173,7 @@ class ModelStacking:
         lgb_params = {'application': 'binary',
                       'boosting': 'gbdt',               # gdbt,rf,dart,goss
                       'learning_rate': 0.003,           # default=0.1
-                      'num_leaves': 88,                 # default=31     <2^(max_depth)
+                      'num_leaves': 80,                 # default=31     <2^(max_depth)
                       'max_depth': 7,                   # default=-1
                       'min_data_in_leaf': 2500,         # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3      reduce over-fit
@@ -1304,7 +1304,7 @@ if __name__ == "__main__":
     # TrainSingleModel.gb_train()
 
     # XGBoost
-    TrainSingleModel.xgb_train()
+    # TrainSingleModel.xgb_train()
     # TrainSingleModel.xgb_train_sklearn()
 
     # LightGBM
@@ -1327,7 +1327,7 @@ if __name__ == "__main__":
 
     # Stacking
     # ModelStacking.deep_stack_train()
-    # ModelStacking.stack_tree_train()
+    ModelStacking.stack_tree_train()
     # TrainSingleModel.stack_lgb_train()
 
     # Prejudge
