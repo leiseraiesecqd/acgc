@@ -869,7 +869,7 @@ class PrejudgeTraining:
                                'seed': train_seed}
 
         positive_params = {'application': 'binary',
-                           'learning_rate': 0.002,
+                           'learning_rate': 0.003,
                            'num_leaves': 80,                # <2^(max_depth)
                            'tree_learner': 'serial',
                            'max_depth': 7,                  # default=-1
@@ -885,7 +885,7 @@ class PrejudgeTraining:
                            'seed': train_seed}
 
         negative_params = {'application': 'binary',
-                           'learning_rate': 0.002,
+                           'learning_rate': 0.003,
                            'num_leaves': 80,                # <2^(max_depth)
                            'tree_learner': 'serial',
                            'max_depth': 7,                  # default=-1
@@ -941,7 +941,7 @@ class PrejudgeTraining:
 
         PES.train(pred_path=pred_path + 'prejudge/', loss_log_path=loss_log_path + 'prejudge/',
                   negative_era_list=negative_era_list, model_parameters=models_parameters,
-                  hyper_parameters=hyper_parameters, load_pickle=False)
+                  hyper_parameters=hyper_parameters, load_pickle=True)
 
 
 # Stacking
