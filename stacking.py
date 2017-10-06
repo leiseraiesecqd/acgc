@@ -554,7 +554,7 @@ class StackLayer:
                                self.e_train, blender_x_g_tree, blender_test_tree, blender_test_g_tree,
                                cv=self.cv, n_valid=self.n_valid, n_era=self.n_era, cv_seed=self.cv_seed,
                                i_layer=self.i_layer, i_epoch=i_epoch, x_train_reuse=self.x_train_reuse,
-                               x_test_reuse=self.x_test_reuse, dnn_param=self.dnn_param)
+                               x_test_reuse=self.x_test_reuse)
 
             return blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs
 
@@ -679,9 +679,8 @@ class StackTree:
         return blender_valid_cv, blender_test_cv, blender_losses_cv
 
     def stacker(self, models_initializer, params, x_train_inputs, y_train_inputs, w_train_inputs,
-                e_train_inputs, x_g_train_inputs, x_test, x_g_test,
-                cv, n_valid=4, n_era=20, cv_seed=None, i_layer=1, i_epoch=1,
-                x_train_reuse=None, x_test_reuse=None):
+                e_train_inputs, x_g_train_inputs, x_test, x_g_test, cv, n_valid=4, n_era=20, cv_seed=None,
+                i_layer=1, i_epoch=1, x_train_reuse=None, x_test_reuse=None):
 
         if n_era % n_valid != 0:
             raise ValueError('n_era must be an integer multiple of n_valid!')
