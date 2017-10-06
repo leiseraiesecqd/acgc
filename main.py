@@ -4,6 +4,7 @@ import models
 import stacking
 import prejudge
 import preprocess
+import numpy as np
 
 
 preprocessed_data_path = './preprocessed_data/'
@@ -23,9 +24,9 @@ path_list = [pred_path,
              loss_log_path + 'prejudge/',
              stack_output_path]
 
-train_seed = models.np.random.randint(100)
-cv_seed = models.np.random.randint(100)
-dnn_seed = models.np.random.randint(100)
+train_seed = np.random.randint(100)
+cv_seed = np.random.randint(100)
+dnn_seed = np.random.randint(100)
 # train_seed = 65
 # cv_seed = 6
 # dnn_seed = 21
@@ -390,7 +391,29 @@ class TrainSingleModel:
     def stack_lgb_train():
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        x_outputs, test_outputs, x_g_outputs, test_g_outputs = utils.load_stacked_data(stack_output_path + 'l2_')
+        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+        blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree\
+            = utils.load_stacked_data(stack_output_path + 'l2_')
+
+        g_train = x_g_train[:, -1]
+        g_test = x_g_test[:, -1]
+
+        x_train_reuse = x_train[:, :88]
+        x_test_reuse = x_test[:, :88]
+
+        print('------------------------------------------------------')
+        print('Stacking Reused Features of Train Set...')
+        # n_sample * (n_feature + n_reuse)
+        blender_x_tree = np.concatenate((blender_x_tree, x_train_reuse), axis=1)
+        # n_sample * (n_feature + n_reuse + 1)
+        blender_x_g_tree = np.column_stack((blender_x_tree, g_train))
+
+        print('------------------------------------------------------')
+        print('Stacking Reused Features of Test Set...')
+        # n_sample * (n_feature + n_reuse)
+        blender_test_tree = np.concatenate((blender_test_tree, x_test_reuse), axis=1)
+        # n_sample * (n_feature + n_reuse + 1)
+        blender_test_g_tree = np.column_stack((blender_test_tree, g_test))
 
         lgb_parameters = {'application': 'binary',
                           'boosting': 'gbdt',               # gdbt,rf,dart,goss
@@ -415,8 +438,8 @@ class TrainSingleModel:
                           'early_stopping_rounds': 50,      # default=0
                           'seed': train_seed}
 
-        LGB = models.LightGBM(x_outputs, y_train, w_train, e_train, test_outputs, id_test,
-                              x_g_outputs, test_g_outputs, num_boost_round=80)
+        LGB = models.LightGBM(blender_x_tree, y_train, w_train, e_train, blender_test_tree, id_test,
+                              blender_x_g_tree, blender_test_g_tree, num_boost_round=80)
 
         print('Start training LGBM...')
 
