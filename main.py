@@ -245,19 +245,17 @@ class TrainSingleModel:
                           'seed': train_seed,
                           'missing': None}
 
-        XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+        XGB = models.SKLearnXGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
         print('Start training XGBoost...')
 
-        XGB.train_sklearn(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20,
-                         cv_seed=cv_seed, parameters=xgb_parameters)
+        XGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed, parameters=xgb_parameters)
 
-        #  LGBM = models.XGBoost(x_train_n, y_train_n, w_train_n, e_train_n, x_test, id_test)
+        # LGBM = models.SKLearnXGBoost(x_train_n, y_train_n, w_train_n, e_train_n, x_test, id_test)
         #
-        #  print('Start training XGBoost...')
+        # print('Start training XGBoost...')
         #
-        #  LGBM.train_sklearn(pred_path, loss_log_path, n_valid=1, n_cv=6, n_era=6,
-        #                     cv_seed=cv_seed, parameters=xgb_parameters)
+        # LGBM.train(pred_path, loss_log_path, n_valid=1, n_cv=6, n_era=6, cv_seed=cv_seed, parameters=xgb_parameters)
 
     # LightGBM
     @staticmethod
@@ -327,19 +325,19 @@ class TrainSingleModel:
                           'silent': False,
                           'seed': train_seed}
 
-        LGBM = models.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test)
+        LGBM = models.SKLearnLightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test)
 
         print('Start training LGBM...')
 
-        LGBM.train_sklearn(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20,
-                          cv_seed=cv_seed, parameters=lgb_parameters)
+        LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed, parameters=lgb_parameters)
 
-        # LGBM = models.LightGBM(x_train_n, y_train_n, w_train_n, e_train_n, x_test, id_test, x_g_train_n, x_g_test)
+        # LGBM = models.SKLearnLightGBM(x_train_n, y_train_n, w_train_n, e_train_n,
+        #                               x_test, id_test, x_g_train_n, x_g_test)
         #
         # print('Start training LGBM...')
         #
-        # LGBM.train_sklearn(pred_path, loss_log_path, n_valid=1, n_cv=6, n_era=6,
-        #                    cv_seed=cv_seed, era_list=[1, 3, 4, 10, 12, 16], parameters=lgb_parameters)
+        # LGBM.train(pred_path, loss_log_path, n_valid=1, n_cv=6, n_era=6,
+        #            cv_seed=cv_seed, era_list=[1, 3, 4, 10, 12, 16], parameters=lgb_parameters)
 
     # DNN
     @staticmethod
@@ -419,8 +417,8 @@ class TrainSingleModel:
 
         print('Start training LGBM...')
 
-        LGB.train_sklearn(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20,
-                          cv_seed=cv_seed, parameters=lgb_parameters)
+        LGB.train(pred_path, loss_log_path, num_boost_round=65, n_valid=4, n_cv=20,
+                  n_era=20, cv_seed=cv_seed, parameters=lgb_parameters)
 
 
 # Grid Search
@@ -682,7 +680,7 @@ class GridSearch:
                       # 'scale_pos_weight': 1,
                       }
 
-        XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+        XGB = models.SKLearnXGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
         clf = XGB.get_clf(parameters)
 
@@ -738,7 +736,7 @@ class GridSearch:
                       'silent': False,
                       'seed': train_seed}
 
-        LGB = models.LightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test)
+        LGB = models.SKLearnLightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test)
 
         clf = LGB.get_clf(parameters)
 
@@ -795,8 +793,8 @@ class GridSearch:
                       'silent': False,
                       'random_state': train_seed}
 
-        LGB = models.LightGBM(x_outputs, y_train, w_train, e_train,
-                              test_outputs, id_test, x_g_outputs, test_g_outputs)
+        LGB = models.SKLearnLightGBM(x_outputs, y_train, w_train, e_train,
+                                     test_outputs, id_test, x_g_outputs, test_g_outputs)
 
         clf = LGB.get_clf(parameters)
 

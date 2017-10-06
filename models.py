@@ -199,8 +199,8 @@ class LRegression:
         utils.save_pred_to_csv(pred_path + 'final_results/lr_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/lr_', prob_train_mean, self.y_train)
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
+                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
 
         print('------------------------------------------------------')
         print('Training Logistic Regression...')
@@ -460,8 +460,8 @@ class DecisionTree:
         utils.save_pred_to_csv(pred_path + 'final_results/dt_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/dt_', prob_train_mean, self.y_train)
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
+                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
 
         print('------------------------------------------------------')
         print('Training Decision Tree...')
@@ -651,8 +651,8 @@ class RandomForest:
         utils.save_pred_to_csv(pred_path + 'final_results/rf_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/rf_', prob_train_mean, self.y_train)
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
+                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
 
         print('------------------------------------------------------')
         print('Training Random Forest...')
@@ -842,8 +842,8 @@ class ExtraTrees:
         utils.save_pred_to_csv(pred_path + 'final_results/et_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/et_', prob_train_mean, self.y_train)
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
+                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
 
         print('------------------------------------------------------')
         print('Training Extra Trees...')
@@ -1033,8 +1033,8 @@ class AdaBoost:
         utils.save_pred_to_csv(pred_path + 'final_results/ab_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/ab_', prob_train_mean, self.y_train)
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
+                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
 
         print('------------------------------------------------------')
         print('Training AdaBoost...')
@@ -1224,8 +1224,8 @@ class GradientBoosting:
         utils.save_pred_to_csv(pred_path + 'final_results/gb_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/gb_', prob_train_mean, self.y_train)
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
+                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
 
         print('------------------------------------------------------')
         print('Training GradientBoosting...')
@@ -1278,15 +1278,6 @@ class XGBoost:
         plt.xticks(range(feature_num), self.indices)
         plt.xlim([-1, feature_num])
         plt.show()
-
-    @staticmethod
-    def get_clf(parameters=None):
-
-        print('Initialize Model...')
-
-        clf = XGBClassifier(**parameters)
-
-        return clf
 
     def get_importance(self, model):
 
@@ -1345,41 +1336,6 @@ class XGBoost:
 
         return prob_train
 
-    def get_importance_sklearn(self, clf):
-
-        print('------------------------------------------------------')
-        print('Feature Importance')
-
-        self.importance = clf.feature_importances_
-        self.indices = np.argsort(self.importance)[::-1]
-
-        feature_num = len(self.importance)
-
-        for f in range(feature_num):
-            print("%d | feature %d | %d" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
-
-    def predict_sklearn(self, clf, x_test, pred_path=None):
-
-        print('Predicting...')
-
-        prob_test = np.array(clf.predict_proba(x_test))[:, 1]
-
-        if pred_path is not None:
-            utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
-
-        return prob_test
-
-    def get_prob_train_sklearn(self, clf, x_train, pred_path=None):
-
-        print('Predicting...')
-
-        prob_train = np.array(clf.predict_proba(x_train))[:, 1]
-
-        if pred_path is not None:
-            utils.save_prob_train_to_csv(pred_path, prob_train, self.y_train)
-
-        return prob_train
-
     def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
         # Check if directories exit or not
@@ -1414,9 +1370,8 @@ class XGBoost:
             d_train = xgb.DMatrix(x_train, label=y_train, weight=w_train)
             d_valid = xgb.DMatrix(x_valid, label=y_valid, weight=w_valid)
 
-            eval_list = [(d_valid, 'eval'), (d_train, 'train')]
-
             # Booster
+            eval_list = [(d_valid, 'eval'), (d_train, 'train')]
             bst = xgb.train(parameters, d_train, num_boost_round=35, evals=eval_list)
 
             # Feature Importance
@@ -1478,8 +1433,111 @@ class XGBoost:
         utils.save_pred_to_csv(pred_path + 'final_results/xgb_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/xgb_', prob_train_mean, self.y_train)
 
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
+                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+
+        print('------------------------------------------------------')
+        print('Training XGBoost...')
+        print('------------------------------------------------------')
+
+        d_train = xgb.DMatrix(x_train, label=y_train, weight=w_train)
+        d_valid = xgb.DMatrix(x_valid, label=y_valid, weight=w_valid)
+
+        # Booster
+        eval_list = [(d_valid, 'eval'), (d_train, 'train')]
+        bst = xgb.train(parameters, d_train, num_boost_round=35, evals=eval_list)
+
+        # Feature Importance
+        self.get_importance(bst)
+
+        # Print LogLoss
+        # Print LogLoss
+        print('------------------------------------------------------')
+        loss_train, loss_valid, loss_train_w, loss_valid_w = self.print_loss(bst, x_train, y_train, w_train,
+                                                                             x_valid, y_valid, w_valid)
+
+        losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
+
+        # Prediction
+        prob_valid = self.predict(bst, x_valid)
+        prob_test = self.predict(bst, x_test)
+
+        return prob_valid, prob_test, losses
+
+
+# XGBoost sklearn
+class SKLearnXGBoost:
+
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
+
+        self.x_train = x_tr
+        self.y_train = y_tr
+        self.w_train = w_tr
+        self.e_train = e_tr
+        self.x_test = x_te
+        self.id_test = id_te
+        self.importance = np.array([])
+        self.indices = np.array([])
+        self.std = np.array([])
+
+    def show(self):
+
+        feature_num = self.x_train.shape[1]
+
+        plt.figure(figsize=(20, 10))
+        plt.title('Feature Importance in XGBoost')
+        plt.bar(range(feature_num), self.importance[self.indices],
+                color=color[6], yerr=self.std[self.indices], align="center")
+        plt.xticks(range(feature_num), self.indices)
+        plt.xlim([-1, feature_num])
+        plt.show()
+
+    @staticmethod
+    def get_clf(parameters=None):
+
+        print('Initialize Model...')
+
+        clf = XGBClassifier(**parameters)
+
+        return clf
+
+    def get_importance(self, clf):
+
+        print('------------------------------------------------------')
+        print('Feature Importance')
+
+        self.importance = clf.feature_importances_
+        self.indices = np.argsort(self.importance)[::-1]
+
+        feature_num = len(self.importance)
+
+        for f in range(feature_num):
+            print("%d | feature %d | %d" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+
+    def predict(self, clf, x_test, pred_path=None):
+
+        print('Predicting...')
+
+        prob_test = np.array(clf.predict_proba(x_test))[:, 1]
+
+        if pred_path is not None:
+            utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+
+        return prob_test
+
+    def get_prob_train(self, clf, x_train, pred_path=None):
+
+        print('Predicting...')
+
+        prob_train = np.array(clf.predict_proba(x_train))[:, 1]
+
+        if pred_path is not None:
+            utils.save_prob_train_to_csv(pred_path, prob_train, self.y_train)
+
+        return prob_train
+
     # Using sk-learn API
-    def train_sklearn(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -1516,25 +1574,23 @@ class XGBoost:
                     early_stopping_rounds=100, eval_metric='logloss', verbose=True)
 
             # Feature Importance
-            self.get_importance_sklearn(clf)
+            self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict_sklearn(clf, self.x_test,
-                                             pred_path=pred_path + 'cv_results/xgb_sk_cv_{}_'.format(count))
+            prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'cv_results/xgb_sk_cv_{}_'.format(count))
 
             # Save Train Probabilities to CSV File
-            prob_train = self.get_prob_train_sklearn(clf, self.x_train,
-                                                     pred_path=pred_path + 'cv_prob_train/xgb_sk_cv_{}_'.format(count))
+            prob_train = self.get_prob_train(clf, self.x_train,
+                                             pred_path=pred_path + 'cv_prob_train/xgb_sk_cv_{}_'.format(count))
 
             # Get Probabilities of Validation Set
-            prob_valid = self.predict_sklearn(clf, x_valid)
+            prob_valid = self.predict(clf, x_valid)
 
             # Print LogLoss
             print('------------------------------------------------------')
             print('Validation Set Era: ', valid_era)
-            loss_train, loss_valid, loss_train_w, \
-                loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
-                                                      x_valid, y_valid, w_valid)
+            loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
+                                                                                        x_valid, y_valid, w_valid)
 
             # Print and Get Accuracies of CV
             acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
@@ -1576,8 +1632,8 @@ class XGBoost:
         utils.save_pred_to_csv(pred_path + 'final_results/xgb_sk_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/xgb_sk_', prob_train_mean, self.y_train)
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
+                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
 
         print('------------------------------------------------------')
         print('Training XGBoost...')
@@ -1590,18 +1646,17 @@ class XGBoost:
                 early_stopping_rounds=10, eval_metric='logloss', verbose=True)
 
         # Feature Importance
-        self.get_importance_sklearn(clf)
+        self.get_importance(clf)
 
         # Print LogLoss
-        loss_train, loss_valid, \
-            loss_train_w, loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
-                                                                x_valid, y_valid, w_valid)
+        loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
+                                                                                    x_valid, y_valid, w_valid)
 
         losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
 
         # Prediction
-        prob_valid = self.predict_sklearn(clf, x_valid)
-        prob_test = self.predict_sklearn(clf, x_test)
+        prob_valid = self.predict(clf, x_valid)
+        prob_test = self.predict(clf, x_test)
 
         return prob_valid, prob_test, losses
 
@@ -1636,19 +1691,10 @@ class LightGBM:
         plt.show()
 
     @staticmethod
-    def get_clf(parameters=None):
+    def logloss_obj(y, pred):
 
-        print('Initialize Model...')
-
-        clf = LGBMClassifier(**parameters)
-
-        return clf
-
-    @staticmethod
-    def logloss_obj(y, preds):
-
-        grad = (preds-y)/((1-preds)*preds)
-        hess = (preds*preds-2*preds*y+y)/((1-preds)*(1-preds)*preds*preds)
+        grad = (pred - y) / ((1 - pred) * pred)
+        hess = (pred * pred - 2 * pred * y + y) / ((1 - pred) * (1 - pred) * pred * pred)
 
         return grad, hess
 
@@ -1683,41 +1729,6 @@ class LightGBM:
         print('Predicting...')
 
         prob_train = model.predict(x_train)
-
-        if pred_path is not None:
-            utils.save_prob_train_to_csv(pred_path, prob_train, self.y_train)
-
-        return prob_train
-
-    def get_importance_sklearn(self, clf):
-
-        print('------------------------------------------------------')
-        print('Feature Importance')
-
-        self.importance = clf.feature_importances_
-        self.indices = np.argsort(self.importance)[::-1]
-
-        feature_num = len(self.importance)
-
-        for f in range(feature_num):
-            print("%d | feature %d | %d" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
-
-    def predict_sklearn(self, clf, x_g_test, pred_path=None):
-
-        print('Predicting...')
-
-        prob_test = np.array(clf.predict_proba(x_g_test))[:, 1]
-
-        if pred_path is not None:
-            utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
-
-        return prob_test
-
-    def get_prob_train_sklearn(self, clf, x_train, pred_path=None):
-
-        print('Predicting...')
-
-        prob_train = np.array(clf.predict_proba(x_train))[:, 1]
 
         if pred_path is not None:
             utils.save_prob_train_to_csv(pred_path, prob_train, self.y_train)
@@ -1829,115 +1840,8 @@ class LightGBM:
         if return_prob_test is True:
             return prob_test_mean
 
-    # Using sk-learn API
-    def train_sklearn(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
-
-        # Check if directories exit or not
-        utils.check_dir_model(pred_path, loss_log_path)
-
-        count = 0
-        prob_test_total = []
-        prob_train_total = []
-        loss_train_total = []
-        loss_valid_total = []
-        loss_train_w_total = []
-        loss_valid_w_total = []
-
-        # Use Category
-        for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
-            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_g_train,
-                                                                         y=self.y_train,
-                                                                         w=self.w_train,
-                                                                         e=self.e_train,
-                                                                         n_valid=n_valid,
-                                                                         n_cv=n_cv,
-                                                                         n_era=n_era,
-                                                                         seed=cv_seed,
-                                                                         era_list=era_list):
-
-            count += 1
-
-            print('======================================================')
-            print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
-            print('Validation Set Era: ', valid_era)
-            print('------------------------------------------------------')
-
-            clf = self.get_clf(parameters)
-
-            idx_category = [x_train.shape[1] - 1]
-            print('Index of categorical feature: {}'.format(idx_category))
-
-            clf.fit(x_train, y_train, sample_weight=w_train,
-                    categorical_feature=idx_category,
-                    eval_set=[(x_train, y_train), (x_valid, y_valid)],
-                    eval_names=['train', 'eval'],
-                    early_stopping_rounds=100,
-                    eval_sample_weight=[w_train, w_valid],
-                    eval_metric='logloss', verbose=True)
-
-            # Feature Importance
-            self.get_importance_sklearn(clf)
-
-            # Prediction
-            prob_test = self.predict_sklearn(clf, self.x_g_test,
-                                             pred_path=pred_path + 'cv_results/lgb_sk_cv_{}_'.format(count))
-
-            # Save Train Probabilities to CSV File
-            prob_train = self.get_prob_train_sklearn(clf, self.x_g_train,
-                                                     pred_path=pred_path + 'cv_prob_train/lgb_sk_cv_{}_'.format(count))
-
-            # Get Probabilities of Validation Set
-            prob_valid = self.predict_sklearn(clf, x_valid)
-
-            # Print LogLoss
-            print('------------------------------------------------------')
-            print('Validation Set Era: ', valid_era)
-            loss_train, loss_valid, loss_train_w, \
-                loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
-                                                      x_valid, y_valid, w_valid)
-
-            # Print and Get Accuracies of CV
-            acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
-                utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
-
-            # Save Losses to File
-            utils.save_loss_log(loss_log_path + 'lgb_sk_', count, parameters, n_valid, n_cv, valid_era,
-                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
-                                acc_train_cv_era, acc_valid_cv_era)
-
-            prob_test_total.append(list(prob_test))
-            prob_train_total.append(list(prob_train))
-            loss_train_total.append(loss_train)
-            loss_valid_total.append(loss_valid)
-            loss_train_w_total.append(loss_train_w)
-            loss_valid_w_total.append(loss_valid_w)
-
-        print('======================================================')
-        print('Calculating final result...')
-
-        prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
-        prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
-        loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
-        loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
-        loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
-        loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
-
-        # Print Total Losses
-        utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
-
-        # Print and Get Accuracies of CV of All Train Set
-        acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
-
-        # Save Final Losses to File
-        utils.save_final_loss_log(loss_log_path + 'lgb_sk_', parameters, n_valid, n_cv, loss_train_mean,
-                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
-
-        # Save Final Result
-        utils.save_pred_to_csv(pred_path + 'final_results/lgb_sk_', self.id_test, prob_test_mean)
-        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/lgb_sk_', prob_train_mean, self.y_train)
-
-    def stack_train(self, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
+                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
 
         print('------------------------------------------------------')
         print('Training LightGBM...')
@@ -1946,29 +1850,27 @@ class LightGBM:
         idx_category = [x_g_test.shape[1]-1]
         print('Index of categorical feature: {}'.format(idx_category))
 
-        clf = self.get_clf(parameters)
+        # Use Category
+        d_train = lgb.Dataset(x_g_train, label=y_train, weight=w_train, categorical_feature=idx_category)
+        d_valid = lgb.Dataset(x_g_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
 
-        clf.fit(x_g_train, y_train, sample_weight=w_train,
-                categorical_feature=idx_category,
-                eval_set=[(x_g_train, y_train), (x_g_valid, y_valid)],
-                eval_names=['train', 'eval'],
-                early_stopping_rounds=100,
-                eval_sample_weight=[w_train, w_valid],
-                eval_metric='logloss', verbose=True)
+        # Booster
+        bst = lgb.train(parameters, d_train, num_boost_round=65,
+                        valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
 
         # Feature Importance
-        self.get_importance_sklearn(clf)
+        self.get_importance(bst)
 
         # Print LogLoss
-        loss_train, loss_valid, \
-            loss_train_w, loss_valid_w = utils.print_loss_proba(clf, x_g_train, y_train, w_train,
-                                                                x_g_valid, y_valid, w_valid)
+        print('------------------------------------------------------')
+        loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_train, y_train, w_train,
+                                                                              x_valid, y_valid, w_valid)
 
         losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
 
         # Prediction
-        prob_valid = self.predict_sklearn(clf, x_g_valid)
-        prob_test = self.predict_sklearn(clf, x_g_test)
+        prob_valid = self.predict(bst, x_g_valid)
+        prob_test = self.predict(bst, x_g_test)
 
         return prob_valid, prob_test, losses
 
@@ -2054,6 +1956,228 @@ class LightGBM:
         utils.save_pred_to_csv(pred_path + 'final_results/lgb_', self.id_test, prob_test_mean)
 
         return prob_test_mean
+
+
+# LightGBM - sklearn
+class SKLearnLightGBM:
+
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te):
+
+        self.x_train = x_tr
+        self.y_train = y_tr
+        self.w_train = w_tr
+        self.e_train = e_tr
+        self.x_test = x_te
+        self.id_test = id_te
+        self.x_g_train = x_g_tr
+        self.x_g_test = x_g_te
+        self.importance = np.array([])
+        self.indices = np.array([])
+        self.std = np.array([])
+
+    def show(self):
+
+        feature_num = self.x_train.shape[1]
+
+        plt.figure(figsize=(20, 10))
+        plt.title('Feature Importance in XGBoost')
+        plt.bar(range(feature_num), self.importance[self.indices],
+                color=color[6], yerr=self.std[self.indices], align="center")
+        plt.xticks(range(feature_num), self.indices)
+        plt.xlim([-1, feature_num])
+        plt.show()
+
+    @staticmethod
+    def get_clf(parameters=None):
+
+        print('Initialize Model...')
+
+        clf = LGBMClassifier(**parameters)
+
+        return clf
+
+    @staticmethod
+    def logloss_obj(y, preds):
+
+        grad = (preds - y) / ((1 - preds) * preds)
+        hess = (preds * preds - 2 * preds * y + y) / ((1 - preds) * (1 - preds) * preds * preds)
+
+        return grad, hess
+
+    def get_importance(self, clf):
+
+        print('------------------------------------------------------')
+        print('Feature Importance')
+
+        self.importance = clf.feature_importances_
+        self.indices = np.argsort(self.importance)[::-1]
+
+        feature_num = len(self.importance)
+
+        for f in range(feature_num):
+            print("%d | feature %d | %d" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+
+    def predict(self, clf, x_g_test, pred_path=None):
+
+        print('Predicting...')
+
+        prob_test = np.array(clf.predict_proba(x_g_test))[:, 1]
+
+        if pred_path is not None:
+            utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+
+        return prob_test
+
+    def get_prob_train(self, clf, x_train, pred_path=None):
+
+        print('Predicting...')
+
+        prob_train = np.array(clf.predict_proba(x_train))[:, 1]
+
+        if pred_path is not None:
+            utils.save_prob_train_to_csv(pred_path, prob_train, self.y_train)
+
+        return prob_train
+
+    # Using sk-learn API
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
+
+        # Check if directories exit or not
+        utils.check_dir_model(pred_path, loss_log_path)
+
+        count = 0
+        prob_test_total = []
+        prob_train_total = []
+        loss_train_total = []
+        loss_valid_total = []
+        loss_train_w_total = []
+        loss_valid_w_total = []
+
+        # Use Category
+        for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
+            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_g_train,
+                                                                         y=self.y_train,
+                                                                         w=self.w_train,
+                                                                         e=self.e_train,
+                                                                         n_valid=n_valid,
+                                                                         n_cv=n_cv,
+                                                                         n_era=n_era,
+                                                                         seed=cv_seed,
+                                                                         era_list=era_list):
+            count += 1
+
+            print('======================================================')
+            print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
+            print('Validation Set Era: ', valid_era)
+            print('------------------------------------------------------')
+
+            clf = self.get_clf(parameters)
+
+            idx_category = [x_train.shape[1] - 1]
+            print('Index of categorical feature: {}'.format(idx_category))
+
+            clf.fit(x_train, y_train, sample_weight=w_train,
+                    categorical_feature=idx_category,
+                    eval_set=[(x_train, y_train), (x_valid, y_valid)],
+                    eval_names=['train', 'eval'],
+                    early_stopping_rounds=100,
+                    eval_sample_weight=[w_train, w_valid],
+                    eval_metric='logloss', verbose=True)
+
+            # Feature Importance
+            self.get_importance(clf)
+
+            # Prediction
+            prob_test = self.predict(clf, self.x_g_test,
+                                     pred_path=pred_path + 'cv_results/lgb_sk_cv_{}_'.format(count))
+
+            # Save Train Probabilities to CSV File
+            prob_train = self.get_prob_train(clf, self.x_g_train,
+                                             pred_path=pred_path + 'cv_prob_train/lgb_sk_cv_{}_'.format(count))
+
+            # Get Probabilities of Validation Set
+            prob_valid = self.predict(clf, x_valid)
+
+            # Print LogLoss
+            print('------------------------------------------------------')
+            print('Validation Set Era: ', valid_era)
+            loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
+                                                                                        x_valid, y_valid, w_valid)
+
+            # Print and Get Accuracies of CV
+            acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+                utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
+
+            # Save Losses to File
+            utils.save_loss_log(loss_log_path + 'lgb_sk_', count, parameters, n_valid, n_cv, valid_era,
+                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
+                                acc_train_cv_era, acc_valid_cv_era)
+
+            prob_test_total.append(list(prob_test))
+            prob_train_total.append(list(prob_train))
+            loss_train_total.append(loss_train)
+            loss_valid_total.append(loss_valid)
+            loss_train_w_total.append(loss_train_w)
+            loss_valid_w_total.append(loss_valid_w)
+
+        print('======================================================')
+        print('Calculating final result...')
+
+        prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
+        prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
+        loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
+        loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
+        loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
+        loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
+
+        # Print Total Losses
+        utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+
+        # Print and Get Accuracies of CV of All Train Set
+        acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
+
+        # Save Final Losses to File
+        utils.save_final_loss_log(loss_log_path + 'lgb_sk_', parameters, n_valid, n_cv, loss_train_mean,
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
+
+        # Save Final Result
+        utils.save_pred_to_csv(pred_path + 'final_results/lgb_sk_', self.id_test, prob_test_mean)
+        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/lgb_sk_', prob_train_mean, self.y_train)
+
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
+                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+
+        print('------------------------------------------------------')
+        print('Training LightGBM...')
+        print('------------------------------------------------------')
+
+        idx_category = [x_g_test.shape[1] - 1]
+        print('Index of categorical feature: {}'.format(idx_category))
+
+        clf = self.get_clf(parameters)
+
+        clf.fit(x_g_train, y_train, sample_weight=w_train,
+                categorical_feature=idx_category,
+                eval_set=[(x_g_train, y_train), (x_g_valid, y_valid)],
+                eval_names=['train', 'eval'],
+                early_stopping_rounds=100,
+                eval_sample_weight=[w_train, w_valid],
+                eval_metric='logloss', verbose=True)
+
+        # Feature Importance
+        self.get_importance(clf)
+
+        # Print LogLoss
+        loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss_proba(clf, x_g_train, y_train, w_train,
+                                                                                    x_g_valid, y_valid, w_valid)
+
+        losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
+
+        # Prediction
+        prob_valid = self.predict(clf, x_g_valid)
+        prob_test = self.predict(clf, x_g_test)
+
+        return prob_valid, prob_test, losses
 
 
 # Deep Neural Networks
@@ -2435,8 +2559,8 @@ class DeepNeuralNetworks:
             utils.save_pred_to_csv(pred_path + 'final_results/dnn_', self.id_test, prob_test_mean)
             utils.save_prob_train_to_csv(pred_path + 'final_prob_train/dnn_', prob_train_mean, self.y_train)
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train,
-                    x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters=None):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
+                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters=None):
 
         print('------------------------------------------------------')
         print('Training Deep Neural Network...')
