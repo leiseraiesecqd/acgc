@@ -1296,7 +1296,7 @@ if __name__ == "__main__":
 
     # Stacking
     # ModelStacking.deep_stack_train()
-    # ModelStacking.stack_tree_train()
+    ModelStacking.stack_tree_train()
     # TrainSingleModel.stack_lgb_train()
 
     # Prejudge
