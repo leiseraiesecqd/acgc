@@ -340,7 +340,7 @@ class TrainSingleModel:
         # print('Start training LGBM...')
         #
         # LGBM.train(pred_path, loss_log_path, n_valid=1, n_cv=6, n_era=6,
-        #            cv_seed=cv_seed, era_list=[1, 3, 4, 10, 12, 16], parameters=lgb_parameters)
+        #            cv_seed=cv_seed, era_list=[1, 3, 4, 5, 8, 10, 12, 16], parameters=lgb_parameters)
 
     # DNN
     @staticmethod
@@ -1328,10 +1328,10 @@ if __name__ == "__main__":
     # Stacking
     # ModelStacking.deep_stack_train()
     # ModelStacking.stack_tree_train()
-    TrainSingleModel.stack_lgb_train()
+    # TrainSingleModel.stack_lgb_train()
 
     # Prejudge
-    # PrejudgeTraining.train()
+    PrejudgeTraining.train()
 
     print('======================================================')
     print('All Task Done!')
