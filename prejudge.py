@@ -131,7 +131,8 @@ class PrejudgeEraSign:
 
         return prob_test
 
-    def train(self, pred_path, loss_log_path, negative_era_list, model_parameters, hyper_parameters):
+    def train(self, pred_path, loss_log_path, negative_era_list, model_parameters, hyper_parameters,
+              load_pickle=False, pickle_path=None):
 
         start_time = time.time()
 
@@ -169,17 +170,24 @@ class PrejudgeEraSign:
         print('======================================================')
         print('Start training...')
 
-        # Training Era Sign
-        era_sign_test = self.predict_era_sign(pred_path, negative_era_list, num_boost_round_e, n_splits_e, n_cv_e, seed,
-                                              use_weight=False,  force_convert_era=True, parameters_e=parameters_e)
+        if load_pickle is True:
 
-        # era_sign_test = self.convert_era_sign('./results/prejudge/pred_era/final_results/lgb_result.csv')
+            # Load era_sign_test
+            if pickle_path is None:
+                era_sign_test = utils.load_pkl_to_np(pred_path + 'era_sign_test_pickle/era_sign_test.p')
+            else:
+                era_sign_test = utils.load_pkl_to_np(pickle_path)
 
-        # Save era_sign_test to Pickle File
-        utils.save_np_to_pkl(era_sign_test, pred_path + 'era_sign_test_pickle/era_sign_test.p')
+        else:
 
-        # Load era_sign_test
-        # era_sign_test = utils.load_pkl_to_np(pred_path + 'era_sign_test_pickle/era_sign_test.p')
+            # Training Era Sign
+            era_sign_test = self.predict_era_sign(pred_path, negative_era_list, num_boost_round_e, n_splits_e, n_cv_e, seed,
+                                                  use_weight=False,  force_convert_era=True, parameters_e=parameters_e)
+
+            # era_sign_test = self.convert_era_sign('./results/prejudge/pred_era/final_results/lgb_result.csv')
+
+            # Save era_sign_test to Pickle File
+            utils.save_np_to_pkl(era_sign_test, pred_path + 'era_sign_test_pickle/era_sign_test.p')
 
         x_test_p, x_g_test_p, id_test_p, era_idx_test_p, x_test_n, \
             x_g_test_n, id_test_n, era_idx_test_n = self.split_data_by_era_sign(era_sign_test, seed)

@@ -854,14 +854,14 @@ class PrejudgeTraining:
 
         era_training_params = {'application': 'binary',
                                'learning_rate': 0.05,
-                               'num_leaves': 80,               # <2^(max_depth)
+                               'num_leaves': 80,                # <2^(max_depth)
                                'tree_learner': 'serial',
-                               'max_depth': 7,                 # default=-1
-                               'min_data_in_leaf': 2000,         # default=20
-                               'feature_fraction': 0.5,        # default=1
-                               'bagging_fraction': 0.6,        # default=1
-                               'bagging_freq': 5,              # default=0 perform bagging every k iteration
-                               'bagging_seed': 1,              # default=3
+                               'max_depth': 7,                  # default=-1
+                               'min_data_in_leaf': 2000,        # default=20
+                               'feature_fraction': 0.5,         # default=1
+                               'bagging_fraction': 0.6,         # default=1
+                               'bagging_freq': 5,               # default=0 perform bagging every k iteration
+                               'bagging_seed': 1,               # default=3
                                'early_stopping_rounds': 50,
                                'max_bin': 50,
                                'metric': 'binary_logloss',
@@ -869,32 +869,32 @@ class PrejudgeTraining:
                                'seed': train_seed}
 
         positive_params = {'application': 'binary',
-                           'learning_rate': 0.003,
-                           'num_leaves': 80,               # <2^(max_depth)
+                           'learning_rate': 0.002,
+                           'num_leaves': 80,                # <2^(max_depth)
                            'tree_learner': 'serial',
-                           'max_depth': 7,                 # default=-1
-                           'min_data_in_leaf': 2000,         # default=20
-                           'feature_fraction': 0.5,        # default=1
-                           'bagging_fraction': 0.6,        # default=1
-                           'bagging_freq': 5,              # default=0 perform bagging every k iteration
-                           'bagging_seed': 1,              # default=3
-                           'early_stopping_rounds': 50,
+                           'max_depth': 7,                  # default=-1
+                           'min_data_in_leaf': 2000,        # default=20
+                           'feature_fraction': 0.5,         # default=1
+                           'bagging_fraction': 0.6,         # default=1
+                           'bagging_freq': 5,               # default=0 perform bagging every k iteration
+                           'bagging_seed': 1,               # default=3
+                           'early_stopping_rounds': 65,
                            'max_bin': 50,
                            'metric': 'binary_logloss',
                            'verbosity': 1,
                            'seed': train_seed}
 
         negative_params = {'application': 'binary',
-                           'learning_rate': 0.003,
-                           'num_leaves': 80,  # <2^(max_depth)
+                           'learning_rate': 0.002,
+                           'num_leaves': 80,                # <2^(max_depth)
                            'tree_learner': 'serial',
-                           'max_depth': 7,  # default=-1
-                           'min_data_in_leaf': 2000,  # default=20
-                           'feature_fraction': 0.5,  # default=1
-                           'bagging_fraction': 0.6,  # default=1
-                           'bagging_freq': 5,  # default=0 perform bagging every k iteration
-                           'bagging_seed': 1,  # default=3
-                           'early_stopping_rounds': 50,
+                           'max_depth': 7,                  # default=-1
+                           'min_data_in_leaf': 2000,        # default=20
+                           'feature_fraction': 0.5,         # default=1
+                           'bagging_fraction': 0.6,         # default=1
+                           'bagging_freq': 5,               # default=0 perform bagging every k iteration
+                           'bagging_seed': 1,               # default=3
+                           'early_stopping_rounds': 65,
                            'max_bin': 50,
                            'metric': 'binary_logloss',
                            'verbosity': 1,
@@ -921,17 +921,17 @@ class PrejudgeTraining:
 
         hyper_parameters = {'seed': cv_seed,
                             'n_splits_e': 5,
-                            'num_boost_round_e': 8000,
+                            'num_boost_round_e': 5000,
                             'n_cv_e': 10,
                             'n_valid_p': 3,
                             'n_cv_p': 20,
                             'n_era_p': 14,
-                            'num_boost_round_p': 500,
+                            'num_boost_round_p': 50,
                             'era_list_p': positive_era_list,
                             'n_valid_n': 1,
                             'n_cv_n': 6,
                             'n_era_n': 6,
-                            'num_boost_round_n': 500,
+                            'num_boost_round_n': 50,
                             'era_list_n': negative_era_list}
 
         PES = prejudge.PrejudgeEraSign(x_train, y_train, w_train, e_train, x_g_train,
@@ -941,7 +941,7 @@ class PrejudgeTraining:
 
         PES.train(pred_path=pred_path + 'prejudge/', loss_log_path=loss_log_path + 'prejudge/',
                   negative_era_list=negative_era_list, model_parameters=models_parameters,
-                  hyper_parameters=hyper_parameters)
+                  hyper_parameters=hyper_parameters, load_pickle=False)
 
 
 # Stacking
