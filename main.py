@@ -976,7 +976,7 @@ class ModelStacking:
                       'seed': train_seed}
 
         # Parameters of XGBoost
-        xgb_params = {'eta': 0.8,
+        xgb_params = {'eta': 0.008,
                       'gamma': 0,                       # 如果loss function小于设定值，停止产生子节点
                       'max_depth': 7,                   # default=6
                       'min_child_weight': 15,           # default=1，建立每个模型所需最小样本权重和
