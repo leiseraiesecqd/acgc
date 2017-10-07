@@ -361,7 +361,6 @@ class TrainSingleModel:
                          'border_count': 128,
                          'feature_border_type': 'MinEntropy',
                          'fold_permutation_block_size': 1,
-                         'auto_stop_pval': 50,
                          'gradient_iterations': None,           # The number of gradient steps when calculating the values in leaves.
                          'leaf_estimation_method': 'Gradient',  # The method used to calculate the values in leaves.
                          'thread_count': None,                  # The number of threads to use when applying the model.
