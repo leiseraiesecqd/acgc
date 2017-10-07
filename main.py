@@ -350,8 +350,8 @@ class TrainSingleModel:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
-        cb_parameters = {'iterations': 50,
-                         'learning_rate': 0.002,
+        cb_parameters = {'iterations': 500,
+                         'learning_rate': 0.005,
                          'depth': 7,                            # Depth of the tree.
                          'l2_leaf_reg': 3,                      # L2 regularization coefficient.
                          'rsm': 1,                              # The percentage of features to use at each iteration.
