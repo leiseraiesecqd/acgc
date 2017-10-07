@@ -355,23 +355,26 @@ class TrainSingleModel:
                          'depth': 7,                            # Depth of the tree.
                          'l2_leaf_reg': 3,                      # L2 regularization coefficient.
                          'rsm': 1,                              # The percentage of features to use at each iteration.
-                         'bagging_temperature': 1,              # Controls intensity of Bayesian bagging.
+                         'bagging_temperature': 1,              # Controls intensity of Bayesian bagging. The higher the temperature the more aggressive bagging is.
                          'loss_function': 'Logloss',
                          'border': 0.5,
                          'border_count': 128,
                          'feature_border_type': 'MinEntropy',
                          'fold_permutation_block_size': 1,
+                         'od_pval': None,                       # Use overfitting detector to stop training when reaching a specified threshold.
+                         'od_wait': None,                       # Number of iterations which overfitting detector will wait after new best error.
+                         'od_type': 'IncToDec',                 # Type of overfitting detector which will be used in program.
                          'gradient_iterations': None,           # The number of gradient steps when calculating the values in leaves.
                          'leaf_estimation_method': 'Gradient',  # The method used to calculate the values in leaves.
-                         'thread_count': None,                  # The number of threads to use when applying the model.
-                         'seed': train_seed,
-                         'use_best_model': False,
+                         'thread_count': None,                  # Number of parallel threads used to run CatBoost.
+                         'random_seed': train_seed,
+                         'use_best_model': False,               # To limit the number of trees in predict() using information about the optimal value of the error function.
                          'verbose': True,
-                         'ctr_description': None,
-                         'ctr_border_count': 16,
-                         'max_ctr_complexity': 4,
-                         'priors': None,
-                         'has_time': False,
+                         'ctr_description': None,               # Binarization settings for categorical features.
+                         'ctr_border_count': 16,                # The number of partitions for Categ features.
+                         'ctr_leaf_count_limit': None,          # The maximum number of leafs with categorical features.
+                         'priors': None,                        # Use priors when training.
+                         'has_time': False,                     # To use the order in which objects are represented in the input data.
                          'name': 'experiment',
                          'ignored_features': None,
                          'train_dir': None,
