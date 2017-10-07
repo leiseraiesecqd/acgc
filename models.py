@@ -2350,7 +2350,7 @@ class CatBoost:
 
             clf.fit(X=x_train, y=y_train, cat_features=idx_category, sample_weight=None,
                     baseline=None, use_best_model=None, eval_set=(x_valid, y_valid),
-                    verbose=False, plot=False)
+                    verbose=True, plot=False)
 
             # Feature Importance
             if show_importance is True:
