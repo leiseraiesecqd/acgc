@@ -2348,6 +2348,8 @@ class CatBoost:
             idx_category = [x_train.shape[1] - 1]
             print('Index of categorical feature: {}'.format(idx_category))
 
+            w_train = [0.001 if w == 0 else w for w in w_train]
+
             clf.fit(X=x_train, y=y_train, cat_features=idx_category, sample_weight=w_train,
                     baseline=None, use_best_model=None, eval_set=(x_valid, y_valid),
                     verbose=True, plot=False)
