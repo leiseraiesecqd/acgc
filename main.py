@@ -351,7 +351,7 @@ class TrainSingleModel:
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
         cb_parameters = {'iterations': 50,
-                         'learning_rate': 0.01,
+                         'learning_rate': 0.002,
                          'depth': 7,                            # Depth of the tree.
                          'l2_leaf_reg': 3,                      # L2 regularization coefficient.
                          'rsm': 1,                              # The percentage of features to use at each iteration.
@@ -366,7 +366,7 @@ class TrainSingleModel:
                          'od_type': 'IncToDec',                 # Type of overfitting detector which will be used in program.
                          'gradient_iterations': None,           # The number of gradient steps when calculating the values in leaves.
                          'leaf_estimation_method': 'Gradient',  # The method used to calculate the values in leaves.
-                         'thread_count': None,                  # Number of parallel threads used to run CatBoost.
+                         'thread_count': 8,                     # Number of parallel threads used to run CatBoost.
                          'random_seed': train_seed,
                          'use_best_model': False,               # To limit the number of trees in predict() using information about the optimal value of the error function.
                          'verbose': True,
