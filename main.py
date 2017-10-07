@@ -1248,7 +1248,7 @@ class ModelStacking:
                          final_layer_params]
 
         num_boost_round = {'num_boost_round_lgb_l1': 65,
-                           'num_boost_round_xgb_l1': 36,
+                           'num_boost_round_xgb_l1': 5,
                            'num_boost_round_final': 65}
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
