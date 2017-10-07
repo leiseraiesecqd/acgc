@@ -1235,8 +1235,8 @@ class ModelStacking:
 
         hyper_params = {'n_valid': (4, 4),
                         'n_era': (20, 20),
-                        'n_epoch': (1, 8),
-                        'final_n_cv': 20,
+                        'n_epoch': (1, 1),
+                        'final_n_cv': 5,
                         'cv_seed': cv_seed}
 
         layer1_params = ModelStacking.get_layer1_params()
@@ -1311,8 +1311,8 @@ if __name__ == "__main__":
 
     # Stacking
     # ModelStacking.deep_stack_train()
-    # ModelStacking.stack_tree_train()
-    TrainSingleModel.stack_lgb_train()
+    ModelStacking.stack_tree_train()
+    # TrainSingleModel.stack_lgb_train()
 
     # Prejudge
     # PrejudgeTraining.train()
