@@ -2314,7 +2314,7 @@ class CatBoost:
         utils.check_dir_model(pred_path, loss_log_path)
 
         print('------------------------------------------------------')
-        print('Training Logistic CatBoost...')
+        print('Training CatBoost...')
         print('------------------------------------------------------')
 
         count = 0

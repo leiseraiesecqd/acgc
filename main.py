@@ -198,7 +198,7 @@ class TrainSingleModel:
                           'max_depth': 7,                   # default=6
                           'min_child_weight': 15,           # default=1，建立每个模型所需最小样本权重和
                           'subsample': 0.9,                 # 建立树模型时抽取子样本占整个样本的比例
-                          'colsample_bytree': 0.7,            # 建立树时对特征随机采样的比例
+                          'colsample_bytree': 0.7,          # 建立树时对特征随机采样的比例
                           'colsample_bylevel': 0.6,
                           'lambda': 0,
                           'alpha': 0,
@@ -269,14 +269,14 @@ class TrainSingleModel:
         lgb_parameters = {'application': 'binary',
                           'boosting': 'gbdt',               # gdbt,rf,dart,goss
                           'learning_rate': 0.003,           # default=0.1
-                          'num_leaves': 88,                 # default=31     <2^(max_depth)
+                          'num_leaves': 88,                 # default=31       <2^(max_depth)
                           'max_depth': 7,                   # default=-1
                           'min_data_in_leaf': 2500,         # default=20       reduce over-fit
-                          'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3      reduce over-fit
+                          'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
                           'feature_fraction': 1,            # default=1
                           'feature_fraction_seed': 10,      # default=2
                           'bagging_fraction': 0.8,          # default=1
-                          'bagging_freq': 1,                # default=0 perform bagging every k iteration
+                          'bagging_freq': 1,                # default=0        perform bagging every k iteration
                           'bagging_seed': 19,               # default=3
                           'lambda_l1': 0,                   # default=0
                           'lambda_l2': 0,                   # default=0
@@ -343,6 +343,49 @@ class TrainSingleModel:
         #
         # LGBM.train(pred_path, loss_log_path, n_valid=1, n_cv=6, n_era=6,
         #            cv_seed=cv_seed, era_list=[1, 3, 4, 5, 8, 10, 12, 16], parameters=lgb_parameters)
+
+    @staticmethod
+    def cb_train():
+
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+
+        cb_parameters = {'iterations': 500,
+                         'learning_rate': 0.003,
+                         'depth': 7,                            # Depth of the tree.
+                         'l2_leaf_reg': 3,                      # L2 regularization coefficient.
+                         'rsm': 1,                              # The percentage of features to use at each iteration.
+                         'bagging_temperature': 1,              # Controls intensity of Bayesian bagging.
+                         'loss_function': 'Logloss',
+                         'border': 0.5,
+                         'border_count': 128,
+                         'feature_border_type': 'MinEntropy',
+                         'fold_permutation_block_size': 1,
+                         'auto_stop_pval': 0,
+                         'gradient_iterations': None,           # The number of gradient steps when calculating the values in leaves.
+                         'leaf_estimation_method': 'Gradient',  # The method used to calculate the values in leaves.
+                         'thread_count': None,                  # The number of threads to use when applying the model.
+                         'partition_random_seed': train_seed,
+                         'use_best_model': False,
+                         'verbose': True,
+                         'ctr_description': None,
+                         'ctr_border_count': 16,
+                         'max_ctr_complexity': 4,
+                         'priors': None,
+                         'has_time': False,
+                         'name': 'experiment',
+                         'ignored_features': None,
+                         'train_dir': None,
+                         'custom_loss': None,
+                         'eval_metric': 'Logloss',
+                         'class_weights': None}
+
+        CB = models.CatBoost(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test)
+
+        print('Start training LGBM...')
+
+        CB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
+                 parameters=cb_parameters, show_importance=True)
 
     # DNN
     @staticmethod
@@ -420,14 +463,14 @@ class TrainSingleModel:
         lgb_parameters = {'application': 'binary',
                           'boosting': 'gbdt',               # gdbt,rf,dart,goss
                           'learning_rate': 0.002,           # default=0.1
-                          'num_leaves': 80,                 # default=31     <2^(max_depth)
+                          'num_leaves': 80,                 # default=31       <2^(max_depth)
                           'max_depth': 7,                   # default=-1
                           'min_data_in_leaf': 2000,         # default=20       reduce over-fit
-                          'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3      reduce over-fit
-                          'feature_fraction': 0.8,            # default=1
+                          'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
+                          'feature_fraction': 0.8,          # default=1
                           'feature_fraction_seed': 10,      # default=2
                           'bagging_fraction': 0.6,          # default=1
-                          'bagging_freq': 5,                # default=0 perform bagging every k iteration
+                          'bagging_freq': 5,                # default=0        perform bagging every k iteration
                           'bagging_seed': 10,               # default=3
                           'lambda_l1': 0,                   # default=0
                           'lambda_l2': 0,                   # default=0
@@ -831,9 +874,9 @@ class GridSearch:
         parameters_grid = {
             'learning_rate': (0.002, 0.005, 0.01),
             'n_estimators': (30, 60, 90),
-            'num_leaves': (32, 64, 128),  # <2^(max_depth)
+            'num_leaves': (32, 64, 128),             # <2^(max_depth)
             'colsample_bytree': (0.6, 0.8, 0.1),
-            'max_depth': (6, 8, 10),  # default=-1
+            'max_depth': (6, 8, 10),                 # default=-1
             # 'min_data_in_leaf': 20,                  # default=20
             # 'bagging_fraction': (0.5, 0.7, 0.9),
             # 'feature_fraction': (0.5, 0.7, 0.9),
@@ -958,19 +1001,19 @@ class ModelStacking:
         lgb_params = {'application': 'binary',
                       'boosting': 'gbdt',               # gdbt,rf,dart,goss
                       'learning_rate': 0.005,           # default=0.1
-                      'num_leaves': 80,                 # default=31     <2^(max_depth)
+                      'num_leaves': 80,                 # default=31       <2^(max_depth)
                       'max_depth': 7,                   # default=-1
                       'min_data_in_leaf': 2000,         # default=20       reduce over-fit
-                      'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3      reduce over-fit
+                      'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
                       'feature_fraction': 1,            # default=1
                       'feature_fraction_seed': 10,      # default=2
                       'bagging_fraction': 0.6,          # default=1
-                      'bagging_freq': 5,                # default=0 perform bagging every k iteration
-                      'bagging_seed': 1,               # default=3
+                      'bagging_freq': 5,                # default=0        perform bagging every k iteration
+                      'bagging_seed': 1,                # default=3
                       'lambda_l1': 0,                   # default=0
                       'lambda_l2': 0,                   # default=0
                       'min_gain_to_split': 0,           # default=0
-                      'max_bin': 50,                  # default=255
+                      'max_bin': 50,                    # default=255
                       'min_data_in_bin': 5,             # default=5
                       'metric': 'binary_logloss',
                       'num_threads': -1,
@@ -984,7 +1027,7 @@ class ModelStacking:
                       'max_depth': 7,                   # default=6
                       'min_child_weight': 15,           # default=1，建立每个模型所需最小样本权重和
                       'subsample': 0.8,                 # 建立树模型时抽取子样本占整个样本的比例
-                      'colsample_bytree': 0.7,            # 建立树时对特征随机采样的比例
+                      'colsample_bytree': 0.7,          # 建立树时对特征随机采样的比例
                       'colsample_bylevel': 0.6,
                       'lambda': 2500,
                       'alpha': 0,
@@ -1107,15 +1150,15 @@ class ModelStacking:
         lgb_params = {'application': 'binary',
                       'boosting': 'gbdt',               # gdbt,rf,dart,goss
                       'learning_rate': 0.005,           # default=0.1
-                      'num_leaves': 80,                 # default=31     <2^(max_depth)
+                      'num_leaves': 80,                 # default=31       <2^(max_depth)
                       'max_depth': 7,                   # default=-1
                       'min_data_in_leaf': 2000,         # default=20       reduce over-fit
-                      'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3      reduce over-fit
-                      'feature_fraction': 0.5,            # default=1
+                      'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
+                      'feature_fraction': 0.5,          # default=1
                       'feature_fraction_seed': 10,      # default=2
                       'bagging_fraction': 0.6,          # default=1
-                      'bagging_freq': 5,                # default=0 perform bagging every k iteration
-                      'bagging_seed': 1,               # default=3
+                      'bagging_freq': 5,                # default=0        perform bagging every k iteration
+                      'bagging_seed': 1,                # default=3
                       'lambda_l1': 0,                   # default=0
                       'lambda_l2': 0,                   # default=0
                       'min_gain_to_split': 0,           # default=0
@@ -1155,19 +1198,19 @@ class ModelStacking:
         lgb_params = {'application': 'binary',
                       'boosting': 'gbdt',               # gdbt,rf,dart,goss
                       'learning_rate': 0.002,           # default=0.1
-                      'num_leaves': 80,                 # default=31     <2^(max_depth)
+                      'num_leaves': 80,                 # default=31       <2^(max_depth)
                       'max_depth': 7,                   # default=-1
                       'min_data_in_leaf': 2000,         # default=20       reduce over-fit
-                      'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3      reduce over-fit
-                      'feature_fraction': 0.5,            # default=1
+                      'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
+                      'feature_fraction': 0.5,          # default=1
                       'feature_fraction_seed': 10,      # default=2
                       'bagging_fraction': 0.6,          # default=1
-                      'bagging_freq': 5,                # default=0 perform bagging every k iteration
+                      'bagging_freq': 5,                # default=0        perform bagging every k iteration
                       'bagging_seed': 19,               # default=3
                       'lambda_l1': 0,                   # default=0
                       'lambda_l2': 0,                   # default=0
                       'min_gain_to_split': 0,           # default=0
-                      'max_bin': 50,                  # default=255
+                      'max_bin': 50,                    # default=255
                       'min_data_in_bin': 5,             # default=5
                       'metric': 'binary_logloss',
                       'num_threads': -1,
@@ -1288,6 +1331,9 @@ if __name__ == "__main__":
     # TrainSingleModel.lgb_train()
     # TrainSingleModel.lgb_train_sklearn()
 
+    # CatBoost
+    TrainSingleModel.cb_train()
+
     # DNN
     # TrainSingleModel.dnn_tf_train()
     # TrainSingleModel.dnn_keras_train()
@@ -1308,7 +1354,7 @@ if __name__ == "__main__":
     # TrainSingleModel.stack_lgb_train()
 
     # Prejudge
-    PrejudgeTraining.train()
+    # PrejudgeTraining.train()
 
     print('======================================================')
     print('All Task Done!')
