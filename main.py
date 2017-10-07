@@ -364,7 +364,7 @@ class TrainSingleModel:
                          'gradient_iterations': None,           # The number of gradient steps when calculating the values in leaves.
                          'leaf_estimation_method': 'Gradient',  # The method used to calculate the values in leaves.
                          'thread_count': None,                  # The number of threads to use when applying the model.
-                         'partition_random_seed': train_seed,
+                         'seed': train_seed,
                          'use_best_model': False,
                          'verbose': True,
                          'ctr_description': None,
