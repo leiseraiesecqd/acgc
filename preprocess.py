@@ -16,11 +16,11 @@ positive_era_list = [2, 6, 7, 9, 11, 13, 14, 15, 17, 18, 19, 20]
 
 class DataPreProcess:
 
-    def __init__(self, train_path, test_path, prepro_path):
+    def __init__(self, train_path, test_path, preprocess_path):
 
         self.train_path = train_path
         self.test_path = test_path
-        self.prepro_path = prepro_path
+        self.preprocess_path = preprocess_path
         self.x_train = pd.DataFrame()
         self.x_g_train = pd.DataFrame()
         self.y_train = pd.DataFrame()
@@ -309,58 +309,56 @@ class DataPreProcess:
     # Save Data
     def save_data_np(self):
 
-        if not isdir(self.prepro_path):
-            os.mkdir(self.prepro_path)
+        if not isdir(self.preprocess_path):
+            os.mkdir(self.preprocess_path)
 
         print('Saving data...')
 
-        utils.save_np_to_pkl(self.x_train, self.prepro_path + 'x_train.p')
-        utils.save_np_to_pkl(self.x_g_train, self.prepro_path + 'x_g_train.p')
-        utils.save_np_to_pkl(self.y_train, self.prepro_path + 'y_train.p')
-        utils.save_np_to_pkl(self.w_train, self.prepro_path + 'w_train.p')
-        utils.save_np_to_pkl(self.x_test, self.prepro_path + 'x_test.p')
-        utils.save_np_to_pkl(self.x_g_test, self.prepro_path + 'x_g_test.p')
+        utils.save_np_to_pkl(self.x_train, self.preprocess_path + 'x_train.p')
+        utils.save_np_to_pkl(self.x_g_train, self.preprocess_path + 'x_g_train.p')
+        utils.save_np_to_pkl(self.y_train, self.preprocess_path + 'y_train.p')
+        utils.save_np_to_pkl(self.w_train, self.preprocess_path + 'w_train.p')
+        utils.save_np_to_pkl(self.x_test, self.preprocess_path + 'x_test.p')
+        utils.save_np_to_pkl(self.x_g_test, self.preprocess_path + 'x_g_test.p')
 
     # Save Data
     def save_data_pd(self):
 
-        if not isdir(self.prepro_path):
-            os.mkdir(self.prepro_path)
+        if not isdir(self.preprocess_path):
+            os.mkdir(self.preprocess_path)
 
         print('Saving data...')
 
-        self.x_train.to_pickle(self.prepro_path + 'x_train.p')
-        self.x_g_train.to_pickle(self.prepro_path + 'x_g_train.p')
-        self.y_train.to_pickle(self.prepro_path + 'y_train.p')
-        self.w_train.to_pickle(self.prepro_path + 'w_train.p')
-        self.e_train.to_pickle(self.prepro_path + 'e_train.p')
-        self.x_test.to_pickle(self.prepro_path + 'x_test.p')
-        self.x_g_test.to_pickle(self.prepro_path + 'x_g_test.p')
-        self.id_test.to_pickle(self.prepro_path + 'id_test.p')
+        self.x_train.to_pickle(self.preprocess_path + 'x_train.p')
+        self.x_g_train.to_pickle(self.preprocess_path + 'x_g_train.p')
+        self.y_train.to_pickle(self.preprocess_path + 'y_train.p')
+        self.w_train.to_pickle(self.preprocess_path + 'w_train.p')
+        self.e_train.to_pickle(self.preprocess_path + 'e_train.p')
+        self.x_test.to_pickle(self.preprocess_path + 'x_test.p')
+        self.x_g_test.to_pickle(self.preprocess_path + 'x_g_test.p')
+        self.id_test.to_pickle(self.preprocess_path + 'id_test.p')
 
     # Save Data Split by Era Distribution
     def save_data_by_era_distribution_pd(self):
 
-        if not isdir(self.prepro_path):
-            os.mkdir(self.prepro_path)
-
-        print('Saving data...')
+        if not isdir(self.preprocess_path):
+            os.mkdir(self.preprocess_path)
 
         # Positive Data
-
-        self.x_train_p.to_pickle(self.prepro_path + 'x_train_p.p')
-        self.x_g_train_p.to_pickle(self.prepro_path + 'x_g_train_p.p')
-        self.y_train_p.to_pickle(self.prepro_path + 'y_train_p.p')
-        self.w_train_p.to_pickle(self.prepro_path + 'w_train_p.p')
-        self.e_train_p.to_pickle(self.prepro_path + 'e_train_p.p')
+        print('Saving Positive Data...')
+        self.x_train_p.to_pickle(self.preprocess_path + 'x_train_p.p')
+        self.x_g_train_p.to_pickle(self.preprocess_path + 'x_g_train_p.p')
+        self.y_train_p.to_pickle(self.preprocess_path + 'y_train_p.p')
+        self.w_train_p.to_pickle(self.preprocess_path + 'w_train_p.p')
+        self.e_train_p.to_pickle(self.preprocess_path + 'e_train_p.p')
 
         # Negative Data
-
-        self.x_train_n.to_pickle(self.prepro_path + 'x_train_n.p')
-        self.x_g_train_n.to_pickle(self.prepro_path + 'x_g_train_n.p')
-        self.y_train_n.to_pickle(self.prepro_path + 'y_train_n.p')
-        self.w_train_n.to_pickle(self.prepro_path + 'w_train_n.p')
-        self.e_train_n.to_pickle(self.prepro_path + 'e_train_n.p')
+        print('Saving Negative Data...')
+        self.x_train_n.to_pickle(self.preprocess_path + 'x_train_n.p')
+        self.x_g_train_n.to_pickle(self.preprocess_path + 'x_g_train_n.p')
+        self.y_train_n.to_pickle(self.preprocess_path + 'y_train_n.p')
+        self.w_train_n.to_pickle(self.preprocess_path + 'w_train_n.p')
+        self.e_train_n.to_pickle(self.preprocess_path + 'e_train_n.p')
 
     # Preprocessing
     def preprocess_np(self):

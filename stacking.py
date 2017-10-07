@@ -124,7 +124,7 @@ class DeepStack:
         return blender_valid_cv, blender_test_cv, blender_losses_cv
 
     def stacker(self, models_initializer, params, x_train_inputs, y_train_inputs, w_train_inputs,
-                e_train_inputs, x_g_train_inputs, x_test, x_g_test, cv, n_valid=4, n_era=20,
+                e_train_inputs, x_g_train_inputs, x_test, x_g_test, cv_generator, n_valid=4, n_era=20,
                 cv_seed=None, n_epoch=1, x_train_reuse=None, x_test_reuse=None, show_importance=False):
 
         if n_era % n_valid != 0:
@@ -136,9 +136,8 @@ class DeepStack:
             print('Stacking Reused Features...')
             # n_sample * (n_feature + n_reuse)
             x_train_inputs = np.concatenate((x_train_inputs, x_train_reuse), axis=1)
-            x_g_trainroup = x_g_train_inputs[:, -1]
             # n_sample * (n_feature + n_reuse + 1)
-            x_g_train_inputs = np.column_stack((x_train_inputs, x_g_trainroup))
+            x_g_train_inputs = np.column_stack((x_train_inputs, self.g_train))
 
         if x_test_reuse is not None:
             print('------------------------------------------------------')
@@ -166,16 +165,16 @@ class DeepStack:
             blender_test = np.array([])
             # blender_losses = np.array([])
 
-            for x_train, y_train, w_train, x_g_train, x_valid, y_valid, \
-                w_valid, x_g_valid, valid_index, valid_era in cv.era_k_fold_for_stack(x=x_train_inputs,
-                                                                                      y=y_train_inputs,
-                                                                                      w=w_train_inputs,
-                                                                                      e=e_train_inputs,
-                                                                                      x_g=x_g_train_inputs,
-                                                                                      n_valid=n_valid,
-                                                                                      n_cv=n_cv,
-                                                                                      n_era=n_era,
-                                                                                      seed=cv_seed):
+            for x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid, \
+                valid_index, valid_era in cv_generator.era_k_fold_for_stack(x=x_train_inputs,
+                                                                            y=y_train_inputs,
+                                                                            w=w_train_inputs,
+                                                                            e=e_train_inputs,
+                                                                            x_g=x_g_train_inputs,
+                                                                            n_valid=n_valid,
+                                                                            n_cv=n_cv,
+                                                                            n_era=n_era,
+                                                                            seed=cv_seed):
                 counter_cv += 1
 
                 print('======================================================')
@@ -273,6 +272,13 @@ class DeepStack:
 
         start_time = time.time()
 
+        # Check if directories exit or not
+        path_list = [self.pred_path,
+                     self.pred_path + 'epochs_results/',
+                     self.stack_output_path]
+        utils.check_dir(path_list)
+
+        # Create a CrossValidation Generator
         cv_stack = models.CrossValidation()
 
         # Layer 1
@@ -363,8 +369,8 @@ class DeepStack:
 class StackLayer:
 
     def __init__(self, params, x_train, y_train, w_train, e_train, x_g_train, x_test, x_g_test, id_test,
-                 models_initializer=None, cv=None, n_valid=4, n_era=20, cv_seed=None,  input_layer=None,
-                 i_layer=1, n_epoch=1, x_train_reuse=None, x_test_reuse=None, dnn_param=None,
+                 models_initializer=None, input_layer=None, cv_generator=None, n_valid=4, n_era=20,
+                 cv_seed=None, i_layer=1, n_epoch=1, x_train_reuse=None, x_test_reuse=None, dnn_param=None,
                  pred_path=None, loss_log_path=None, stack_output_path=None, show_importance=False,
                  is_final_layer=False, n_cv_final=None):
 
@@ -377,12 +383,12 @@ class StackLayer:
         self.x_test = x_test
         self.x_g_test = x_g_test
         self.id_test = id_test
-        self.cv = cv
+        self.models_initializer = models_initializer
+        self.input_layer = input_layer
+        self.cv_generator = cv_generator
         self.n_valid = n_valid
         self.n_era = n_era
-        self.models_initializer = models_initializer
         self.cv_seed = cv_seed
-        self.input_layer = input_layer
         self.i_layer = i_layer
         self.n_epoch = n_epoch
         self.x_train_reuse = x_train_reuse
@@ -474,16 +480,16 @@ class StackLayer:
         n_cv = int(self.n_era // self.n_valid)
         counter_cv = 0
 
-        for x_train, y_train, w_train, x_g_train, x_valid, y_valid, \
-            w_valid, x_g_valid, valid_index, valid_era in self.cv.era_k_fold_for_stack(x=x_train_inputs,
-                                                                                       y=self.y_train,
-                                                                                       w=self.w_train,
-                                                                                       e=self.e_train,
-                                                                                       x_g=x_g_train_inputs,
-                                                                                       n_valid=self.n_valid,
-                                                                                       n_cv=n_cv,
-                                                                                       n_era=self.n_era,
-                                                                                       seed=self.cv_seed):
+        for x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid, \
+            valid_index, valid_era in self.cv_generator.era_k_fold_for_stack(x=x_train_inputs,
+                                                                             y=self.y_train,
+                                                                             w=self.w_train,
+                                                                             e=self.e_train,
+                                                                             x_g=x_g_train_inputs,
+                                                                             n_valid=self.n_valid,
+                                                                             n_cv=n_cv,
+                                                                             n_era=self.n_era,
+                                                                             seed=self.cv_seed):
 
             counter_cv += 1
 
@@ -769,7 +775,13 @@ class StackTree:
 
         start_time = time.time()
 
-        # Create a CV
+        # Check if directories exit or not
+        path_list = [self.pred_path,
+                     self.pred_path + 'epochs_results/',
+                     self.stack_output_path]
+        utils.check_dir(path_list)
+
+        # Create a CrossValidation Generator
         cv_stack = models.CrossValidation()
 
         # Initializing models for every layer
@@ -789,10 +801,10 @@ class StackTree:
         # Layer 1
         stk_l1 = StackLayer(self.layers_params[0], self.x_train, self.y_train, self.w_train, self.e_train,
                             self.x_g_train, self.x_test, self.x_g_test, self.id_test,
-                            models_initializer=models_initializer_l1, cv=cv_stack, n_valid=self.n_valid[0],
-                            n_era=self.n_era[0], cv_seed=self.cv_seed, i_layer=1, n_epoch=self.n_epoch[0],
-                            pred_path=self.pred_path, stack_output_path=self.stack_output_path,
-                            show_importance=self.show_importance)
+                            models_initializer=models_initializer_l1, cv_generator=cv_stack,
+                            n_valid=self.n_valid[0], n_era=self.n_era[0], cv_seed=self.cv_seed,
+                            i_layer=1, n_epoch=self.n_epoch[0], pred_path=self.pred_path,
+                            stack_output_path=self.stack_output_path, show_importance=self.show_importance)
 
         # Layer 2
         # stk_l2 = StackLayer(self.layers_params[1], self.x_train, self.y_train, self.w_train, self.e_train,

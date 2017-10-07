@@ -14,15 +14,8 @@ loss_log_path = './loss_logs/'
 stack_output_path = './stacking_outputs/'
 
 path_list = [pred_path,
-             pred_path + 'stack_results/',
-             pred_path + 'stack_results/epochs_results/',
-             pred_path + 'stack_outputs/',
-             pred_path + 'stack_outputs/final_results/',
-             pred_path + 'prejudge/',
              grid_search_log_path,
-             loss_log_path,
-             loss_log_path + 'prejudge/',
-             stack_output_path]
+             loss_log_path]
 
 train_seed = np.random.randint(100)
 cv_seed = np.random.randint(100)
