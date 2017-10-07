@@ -366,7 +366,7 @@ class TrainSingleModel:
                          'od_type': 'IncToDec',                 # Type of overfitting detector which will be used in program.
                          'gradient_iterations': None,           # The number of gradient steps when calculating the values in leaves.
                          'leaf_estimation_method': 'Gradient',  # The method used to calculate the values in leaves.
-                         'thread_count': 8,                     # Number of parallel threads used to run CatBoost.
+                         'thread_count': None,                     # Number of parallel threads used to run CatBoost.
                          'random_seed': train_seed,
                          'use_best_model': False,               # To limit the number of trees in predict() using information about the optimal value of the error function.
                          'verbose': True,
