@@ -804,16 +804,17 @@ class StackTree:
         #                     pred_path=self.pred_path, stack_output_path=self.stack_output_path)
 
         # Final Layer
-        stk_l2 = StackLayer(self.layers_params[1], self.x_train, self.y_train, self.w_train, self.e_train,
-                            self.x_g_train, self.x_test, self.x_g_test, self.id_test,
-                            models_initializer=models_initializer_final, n_valid=self.n_valid[1],
-                            cv_seed=self.cv_seed, input_layer=stk_l1, i_layer=2, n_epoch=self.n_epoch[1],
-                            x_train_reuse=x_train_reuse_l2, x_test_reuse=x_test_reuse_l2, pred_path=self.pred_path,
-                            loss_log_path=self.loss_log_path, stack_output_path=self.stack_output_path,
-                            show_importance=self.show_importance, is_final_layer=True, n_cv_final=self.final_layer_cv)
+        stk_final = StackLayer(self.layers_params[1], self.x_train, self.y_train, self.w_train,
+                               self.e_train, self.x_g_train, self.x_test, self.x_g_test, self.id_test,
+                               input_layer=stk_l1, models_initializer=models_initializer_final,
+                               n_valid=self.n_valid[1], cv_seed=self.cv_seed, i_layer=2, n_epoch=self.n_epoch[1],
+                               x_train_reuse=x_train_reuse_l2, x_test_reuse=x_test_reuse_l2,
+                               pred_path=self.pred_path, loss_log_path=self.loss_log_path,
+                               stack_output_path=self.stack_output_path, show_importance=self.show_importance,
+                               is_final_layer=True, n_cv_final=self.final_layer_cv)
 
         # Training
-        stk_l2.train()
+        stk_final.train()
 
         # # Save predicted test prob
         # self.save_predict(self.pred_path + 'final_results/stack_', test_outputs)

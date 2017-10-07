@@ -1235,8 +1235,8 @@ class ModelStacking:
 
         hyper_params = {'n_valid': (4, 4),
                         'n_era': (20, 20),
-                        'n_epoch': (1, 1),
-                        'final_n_cv': 5,
+                        'n_epoch': (1, 8),
+                        'final_n_cv': 20,
                         'cv_seed': cv_seed}
 
         layer1_params = ModelStacking.get_layer1_params()
@@ -1248,7 +1248,7 @@ class ModelStacking:
                          final_layer_params]
 
         num_boost_round = {'num_boost_round_lgb_l1': 65,
-                           'num_boost_round_xgb_l1': 5,
+                           'num_boost_round_xgb_l1': 36,
                            'num_boost_round_final': 65}
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
@@ -1311,11 +1311,11 @@ if __name__ == "__main__":
 
     # Stacking
     # ModelStacking.deep_stack_train()
-    ModelStacking.stack_tree_train()
+    # ModelStacking.stack_tree_train()
     # TrainSingleModel.stack_lgb_train()
 
     # Prejudge
-    # PrejudgeTraining.train()
+    PrejudgeTraining.train()
 
     print('======================================================')
     print('All Task Done!')
