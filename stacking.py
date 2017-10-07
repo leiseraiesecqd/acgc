@@ -30,7 +30,7 @@ class DeepStack:
         self.num_boost_round_xgb_l1 = num_boost_round['num_boost_round_xgb_l1']
         self.num_boost_round_lgb_l2 = num_boost_round['num_boost_round_lgb_l2']
         self.num_boost_round_final = num_boost_round['num_boost_round_final']
-        self.g_train = x_g_tr[:,-1]
+        self.g_train = x_g_tr[:, -1]
         self.g_test = x_g_te[:, -1]
         self.n_valid = hyper_params['n_valid']
         self.n_era = hyper_params['n_era']

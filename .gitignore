@@ -9,6 +9,8 @@
 /results/
 /inputs/
 /other/
+/train/
+/test/
 /numerai/
 /54wy/
 /loss_logs/
@@ -19,4 +21,5 @@
 *.p
 *.csv
 *.html
-
+*.txt
+*.tsv

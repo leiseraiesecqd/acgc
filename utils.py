@@ -297,8 +297,7 @@ def print_loss(model, x_t, y_t, w_t, x_v, y_v, w_v):
     print('Train LogLoss: {:>.8f}\n'.format(loss_train),
           'Validation LogLoss: {:>.8f}\n'.format(loss_valid),
           'Train LogLoss with Weight: {:>.8f}\n'.format(loss_train_w),
-          'Validation LogLoss with Weight: {:>.8f}\n'.format(loss_valid_w))
-    print('------------------------------------------------------')
+          'Validation LogLoss with Weight: {:>.8f}'.format(loss_valid_w))
 
     return loss_train, loss_valid, loss_train_w, loss_valid_w
 
@@ -319,8 +318,7 @@ def print_loss_proba(model, x_t, y_t, w_t, x_v, y_v, w_v):
     print('Train LogLoss: {:>.8f}\n'.format(loss_train),
           'Validation LogLoss: {:>.8f}\n'.format(loss_valid),
           'Train LogLoss with Weight: {:>.8f}\n'.format(loss_train_w),
-          'Validation LogLoss with Weight: {:>.8f}\n'.format(loss_valid_w))
-    print('------------------------------------------------------')
+          'Validation LogLoss with Weight: {:>.8f}'.format(loss_valid_w))
 
     return loss_train, loss_valid, loss_train_w, loss_valid_w
 
@@ -338,8 +336,7 @@ def print_loss_dnn(prob_train, prob_valid, y_t, w_t, y_v, w_v):
     print('Train LogLoss: {:>.8f}\n'.format(loss_train),
           'Validation LogLoss: {:>.8f}\n'.format(loss_valid),
           'Train LogLoss with Weight: {:>.8f}\n'.format(loss_train_w),
-          'Validation LogLoss with Weight: {:>.8f}\n'.format(loss_valid_w))
-    print('------------------------------------------------------')
+          'Validation LogLoss with Weight: {:>.8f}'.format(loss_valid_w))
 
     return loss_train, loss_valid, loss_train_w, loss_valid_w
 
@@ -352,7 +349,6 @@ def print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_v
           'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
           'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
           'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
-    print('------------------------------------------------------')
 
 
 # Check if directories exit or not

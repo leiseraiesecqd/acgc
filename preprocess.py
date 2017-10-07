@@ -100,722 +100,123 @@ class DataPreProcess:
         self.id_test = test_f['id']
         self.g_test = test_f['group']
 
+    # Drop Outlier of a Feature
+    def drop_outliers_of_feature(self, feature, upper_quantile_train, lower_quantile_train,
+                                 upper_quantile_test, lower_quantile_test):
+
+        # Drop upper outliers in self.x_train
+        upper_train = self.x_train[feature].quantile(upper_quantile_train)
+        self.x_train[feature].loc[self.x_train[feature] > upper_train] = upper_train
+
+        # Drop lower outlines in self.x_train
+        lower_train = self.x_train[feature].quantile(lower_quantile_train)
+        self.x_train[feature].loc[self.x_train[feature] < lower_train] = lower_train
+
+        # Drop upper outlines in self.x_test
+        upper_test = self.x_test[feature].quantile(upper_quantile_test)
+        self.x_test[feature].loc[self.x_test[feature] > upper_test] = upper_test
+
+        lower_test = self.x_test[feature].quantile(lower_quantile_test)
+        self.x_test[feature].loc[self.x_test[feature] < lower_test] = lower_test
+
     # Dropping Outliers
     def drop_outliers(self):
 
         print('Dropping outliers...')
 
-        # Drop upper outlines in self.x_train
-        upper = self.x_train.feature0.quantile(0.9995)
-        self.x_train['feature0'].loc[self.x_train['feature0'] > upper] = upper
-        upper = self.x_train.feature1.quantile(0.9995)
-        self.x_train['feature1'].loc[self.x_train['feature1'] > upper] = upper
-        upper = self.x_train.feature2.quantile(0.9995)
-        self.x_train['feature2'].loc[self.x_train['feature2'] > upper] = upper
-        upper = self.x_train.feature3.quantile(0.9995)
-        self.x_train['feature3'].loc[self.x_train['feature3'] > upper] = upper
-        upper = self.x_train.feature4.quantile(0.9995)
-        self.x_train['feature4'].loc[self.x_train['feature4'] > upper] = upper
-        upper = self.x_train.feature5.quantile(0.9995)
-        self.x_train['feature5'].loc[self.x_train['feature5'] > upper] = upper
-        upper = self.x_train.feature6.quantile(0.9995)
-        self.x_train['feature6'].loc[self.x_train['feature6'] > upper] = upper
-        upper = self.x_train.feature7.quantile(0.9995)
-        self.x_train['feature7'].loc[self.x_train['feature7'] > upper] = upper
-        upper = self.x_train.feature8.quantile(0.9995)
-        self.x_train['feature8'].loc[self.x_train['feature8'] > upper] = upper
-        upper = self.x_train.feature9.quantile(0.9995)
-        self.x_train['feature9'].loc[self.x_train['feature9'] > upper] = upper
-        upper = self.x_train.feature10.quantile(0.9995)
-        self.x_train['feature10'].loc[self.x_train['feature10'] > upper] = upper
-        upper = self.x_train.feature11.quantile(0.9995)
-        self.x_train['feature11'].loc[self.x_train['feature11'] > upper] = upper
-        upper = self.x_train.feature12.quantile(0.9995)
-        self.x_train['feature12'].loc[self.x_train['feature12'] > upper] = upper
-        upper = self.x_train.feature13.quantile(0.9995)
-        self.x_train['feature13'].loc[self.x_train['feature13'] > upper] = upper
-        upper = self.x_train.feature14.quantile(0.9995)
-        self.x_train['feature14'].loc[self.x_train['feature14'] > upper] = upper
-        upper = self.x_train.feature15.quantile(0.9995)
-        self.x_train['feature15'].loc[self.x_train['feature15'] > upper] = upper
-        upper = self.x_train.feature16.quantile(0.9995)
-        self.x_train['feature16'].loc[self.x_train['feature16'] > upper] = upper
-        upper = self.x_train.feature17.quantile(0.9995)
-        self.x_train['feature17'].loc[self.x_train['feature17'] > upper] = upper
-        upper = self.x_train.feature18.quantile(0.9995)
-        self.x_train['feature18'].loc[self.x_train['feature18'] > upper] = upper
-        upper = self.x_train.feature19.quantile(0.9995)
-        self.x_train['feature19'].loc[self.x_train['feature19'] > upper] = upper
-        upper = self.x_train.feature20.quantile(0.9995)
-        self.x_train['feature20'].loc[self.x_train['feature20'] > upper] = upper
-        upper = self.x_train.feature21.quantile(0.9995)
-        self.x_train['feature21'].loc[self.x_train['feature21'] > upper] = upper
-        upper = self.x_train.feature22.quantile(0.9995)
-        self.x_train['feature22'].loc[self.x_train['feature22'] > upper] = upper
-        upper = self.x_train.feature23.quantile(0.9995)
-        self.x_train['feature23'].loc[self.x_train['feature23'] > upper] = upper
-        upper = self.x_train.feature24.quantile(0.9995)
-        self.x_train['feature24'].loc[self.x_train['feature24'] > upper] = upper
-        upper = self.x_train.feature25.quantile(0.9995)
-        self.x_train['feature25'].loc[self.x_train['feature25'] > upper] = upper
-        upper = self.x_train.feature26.quantile(0.9995)
-        self.x_train['feature26'].loc[self.x_train['feature26'] > upper] = upper
-        upper = self.x_train.feature27.quantile(0.9995)
-        self.x_train['feature27'].loc[self.x_train['feature27'] > upper] = upper
-        upper = self.x_train.feature28.quantile(0.9995)
-        self.x_train['feature28'].loc[self.x_train['feature28'] > upper] = upper
-        upper = self.x_train.feature29.quantile(0.9995)
-        self.x_train['feature29'].loc[self.x_train['feature29'] > upper] = upper
-        upper = self.x_train.feature30.quantile(0.9995)
-        self.x_train['feature30'].loc[self.x_train['feature30'] > upper] = upper
-        upper = self.x_train.feature31.quantile(0.9995)
-        self.x_train['feature31'].loc[self.x_train['feature31'] > upper] = upper
-        upper = self.x_train.feature32.quantile(0.9995)
-        self.x_train['feature32'].loc[self.x_train['feature32'] > upper] = upper
-        upper = self.x_train.feature33.quantile(0.9995)
-        self.x_train['feature33'].loc[self.x_train['feature33'] > upper] = upper
-        upper = self.x_train.feature34.quantile(0.9995)
-        self.x_train['feature34'].loc[self.x_train['feature34'] > upper] = upper
-        upper = self.x_train.feature35.quantile(0.9995)
-        self.x_train['feature35'].loc[self.x_train['feature35'] > upper] = upper
-        upper = self.x_train.feature36.quantile(0.9995)
-        self.x_train['feature36'].loc[self.x_train['feature36'] > upper] = upper
-        upper = self.x_train.feature37.quantile(0.9995)
-        self.x_train['feature37'].loc[self.x_train['feature37'] > upper] = upper
-        upper = self.x_train.feature38.quantile(0.9995)
-        self.x_train['feature38'].loc[self.x_train['feature38'] > upper] = upper
-        upper = self.x_train.feature39.quantile(0.9995)
-        self.x_train['feature39'].loc[self.x_train['feature39'] > upper] = upper
-        upper = self.x_train.feature40.quantile(0.9995)
-        self.x_train['feature40'].loc[self.x_train['feature40'] > upper] = upper
-        upper = self.x_train.feature41.quantile(0.9995)
-        self.x_train['feature41'].loc[self.x_train['feature41'] > upper] = upper
-        upper = self.x_train.feature42.quantile(0.9995)
-        self.x_train['feature42'].loc[self.x_train['feature42'] > upper] = upper
-        upper = self.x_train.feature43.quantile(0.9995)
-        self.x_train['feature43'].loc[self.x_train['feature43'] > upper] = upper
-        upper = self.x_train.feature44.quantile(0.9995)
-        self.x_train['feature44'].loc[self.x_train['feature44'] > upper] = upper
-        upper = self.x_train.feature45.quantile(0.9995)
-        self.x_train['feature45'].loc[self.x_train['feature45'] > upper] = upper
-        upper = self.x_train.feature46.quantile(0.9995)
-        self.x_train['feature46'].loc[self.x_train['feature46'] > upper] = upper
-        upper = self.x_train.feature47.quantile(0.9995)
-        self.x_train['feature47'].loc[self.x_train['feature47'] > upper] = upper
-        upper = self.x_train.feature48.quantile(0.9995)
-        self.x_train['feature48'].loc[self.x_train['feature48'] > upper] = upper
-        upper = self.x_train.feature49.quantile(0.9995)
-        self.x_train['feature49'].loc[self.x_train['feature49'] > upper] = upper
-        upper = self.x_train.feature50.quantile(0.9995)
-        self.x_train['feature50'].loc[self.x_train['feature50'] > upper] = upper
-        upper = self.x_train.feature51.quantile(0.9995)
-        self.x_train['feature51'].loc[self.x_train['feature51'] > upper] = upper
-        upper = self.x_train.feature52.quantile(0.9995)
-        self.x_train['feature52'].loc[self.x_train['feature52'] > upper] = upper
-        upper = self.x_train.feature53.quantile(0.9995)
-        self.x_train['feature53'].loc[self.x_train['feature53'] > upper] = upper
-        upper = self.x_train.feature54.quantile(0.9995)
-        self.x_train['feature54'].loc[self.x_train['feature54'] > upper] = upper
-        upper = self.x_train.feature55.quantile(0.9995)
-        self.x_train['feature55'].loc[self.x_train['feature55'] > upper] = upper
-        upper = self.x_train.feature56.quantile(0.9995)
-        self.x_train['feature56'].loc[self.x_train['feature56'] > upper] = upper
-        upper = self.x_train.feature57.quantile(0.9995)
-        self.x_train['feature57'].loc[self.x_train['feature57'] > upper] = upper
-        upper = self.x_train.feature58.quantile(0.9995)
-        self.x_train['feature58'].loc[self.x_train['feature58'] > upper] = upper
-        upper = self.x_train.feature59.quantile(0.9995)
-        self.x_train['feature59'].loc[self.x_train['feature59'] > upper] = upper
-        upper = self.x_train.feature60.quantile(0.9995)
-        self.x_train['feature60'].loc[self.x_train['feature60'] > upper] = upper
-        upper = self.x_train.feature61.quantile(0.9995)
-        self.x_train['feature61'].loc[self.x_train['feature61'] > upper] = upper
-        upper = self.x_train.feature62.quantile(0.9995)
-        self.x_train['feature62'].loc[self.x_train['feature62'] > upper] = upper
-        upper = self.x_train.feature63.quantile(0.9995)
-        self.x_train['feature63'].loc[self.x_train['feature63'] > upper] = upper
-        upper = self.x_train.feature64.quantile(0.9995)
-        self.x_train['feature64'].loc[self.x_train['feature64'] > upper] = upper
-        upper = self.x_train.feature65.quantile(0.9995)
-        self.x_train['feature65'].loc[self.x_train['feature65'] > upper] = upper
-        upper = self.x_train.feature66.quantile(0.9995)
-        self.x_train['feature66'].loc[self.x_train['feature66'] > upper] = upper
-        upper = self.x_train.feature67.quantile(0.9995)
-        self.x_train['feature67'].loc[self.x_train['feature67'] > upper] = upper
-        upper = self.x_train.feature68.quantile(0.9995)
-        self.x_train['feature68'].loc[self.x_train['feature68'] > upper] = upper
-        upper = self.x_train.feature69.quantile(0.9995)
-        self.x_train['feature69'].loc[self.x_train['feature69'] > upper] = upper
-        upper = self.x_train.feature70.quantile(0.9995)
-        self.x_train['feature70'].loc[self.x_train['feature70'] > upper] = upper
-        upper = self.x_train.feature71.quantile(0.9995)
-        self.x_train['feature71'].loc[self.x_train['feature71'] > upper] = upper
-        upper = self.x_train.feature72.quantile(0.9995)
-        self.x_train['feature72'].loc[self.x_train['feature72'] > upper] = upper
-        upper = self.x_train.feature73.quantile(0.9995)
-        self.x_train['feature73'].loc[self.x_train['feature73'] > upper] = upper
-        upper = self.x_train.feature74.quantile(0.9995)
-        self.x_train['feature74'].loc[self.x_train['feature74'] > upper] = upper
-        upper = self.x_train.feature75.quantile(0.9995)
-        self.x_train['feature75'].loc[self.x_train['feature75'] > upper] = upper
-        upper = self.x_train.feature76.quantile(0.9995)
-        self.x_train['feature76'].loc[self.x_train['feature76'] > upper] = upper
-        upper = self.x_train.feature77.quantile(0.9995)
-        self.x_train['feature77'].loc[self.x_train['feature77'] > upper] = upper
-        upper = self.x_train.feature78.quantile(0.9995)
-        self.x_train['feature78'].loc[self.x_train['feature78'] > upper] = upper
-        upper = self.x_train.feature79.quantile(0.9995)
-        self.x_train['feature79'].loc[self.x_train['feature79'] > upper] = upper
-        upper = self.x_train.feature80.quantile(0.9995)
-        self.x_train['feature80'].loc[self.x_train['feature80'] > upper] = upper
-        upper = self.x_train.feature81.quantile(0.9995)
-        self.x_train['feature81'].loc[self.x_train['feature81'] > upper] = upper
-        upper = self.x_train.feature82.quantile(0.9995)
-        self.x_train['feature82'].loc[self.x_train['feature82'] > upper] = upper
-        upper = self.x_train.feature83.quantile(0.9995)
-        self.x_train['feature83'].loc[self.x_train['feature83'] > upper] = upper
-        upper = self.x_train.feature84.quantile(0.9995)
-        self.x_train['feature84'].loc[self.x_train['feature84'] > upper] = upper
-        upper = self.x_train.feature85.quantile(0.9995)
-        self.x_train['feature85'].loc[self.x_train['feature85'] > upper] = upper
-        upper = self.x_train.feature86.quantile(0.9995)
-        self.x_train['feature86'].loc[self.x_train['feature86'] > upper] = upper
-        upper = self.x_train.feature87.quantile(0.9995)
-        self.x_train['feature87'].loc[self.x_train['feature87'] > upper] = upper
+        for i in range(88):
+            self.drop_outliers_of_feature('feature' + str(i), 0.9995, 0.0005, 0.9995, 0.0005)
 
-        # Drop lower outlines in self.x_train
-        lower = self.x_train.feature0.quantile(0.0005)
-        self.x_train['feature0'].loc[self.x_train['feature0'] < lower] = lower
-        lower = self.x_train.feature1.quantile(0.0005)
-        self.x_train['feature1'].loc[self.x_train['feature1'] < lower] = lower
-        lower = self.x_train.feature2.quantile(0.0005)
-        self.x_train['feature2'].loc[self.x_train['feature2'] < lower] = lower
-        lower = self.x_train.feature3.quantile(0.0005)
-        self.x_train['feature3'].loc[self.x_train['feature3'] < lower] = lower
-        lower = self.x_train.feature4.quantile(0.0005)
-        self.x_train['feature4'].loc[self.x_train['feature4'] < lower] = lower
-        lower = self.x_train.feature5.quantile(0.0005)
-        self.x_train['feature5'].loc[self.x_train['feature5'] < lower] = lower
-        lower = self.x_train.feature6.quantile(0.0005)
-        self.x_train['feature6'].loc[self.x_train['feature6'] < lower] = lower
-        lower = self.x_train.feature7.quantile(0.0005)
-        self.x_train['feature7'].loc[self.x_train['feature7'] < lower] = lower
-        lower = self.x_train.feature8.quantile(0.0005)
-        self.x_train['feature8'].loc[self.x_train['feature8'] < lower] = lower
-        lower = self.x_train.feature9.quantile(0.0005)
-        self.x_train['feature9'].loc[self.x_train['feature9'] < lower] = lower
-        lower = self.x_train.feature10.quantile(0.0005)
-        self.x_train['feature10'].loc[self.x_train['feature10'] < lower] = lower
-        lower = self.x_train.feature11.quantile(0.0005)
-        self.x_train['feature11'].loc[self.x_train['feature11'] < lower] = lower
-        lower = self.x_train.feature12.quantile(0.0005)
-        self.x_train['feature12'].loc[self.x_train['feature12'] < lower] = lower
-        lower = self.x_train.feature13.quantile(0.0005)
-        self.x_train['feature13'].loc[self.x_train['feature13'] < lower] = lower
-        lower = self.x_train.feature14.quantile(0.0005)
-        self.x_train['feature14'].loc[self.x_train['feature14'] < lower] = lower
-        lower = self.x_train.feature15.quantile(0.0005)
-        self.x_train['feature15'].loc[self.x_train['feature15'] < lower] = lower
-        lower = self.x_train.feature16.quantile(0.0005)
-        self.x_train['feature16'].loc[self.x_train['feature16'] < lower] = lower
-        lower = self.x_train.feature17.quantile(0.0005)
-        self.x_train['feature17'].loc[self.x_train['feature17'] < lower] = lower
-        lower = self.x_train.feature18.quantile(0.0005)
-        self.x_train['feature18'].loc[self.x_train['feature18'] < lower] = lower
-        lower = self.x_train.feature19.quantile(0.0005)
-        self.x_train['feature19'].loc[self.x_train['feature19'] < lower] = lower
-        lower = self.x_train.feature20.quantile(0.0005)
-        self.x_train['feature20'].loc[self.x_train['feature20'] < lower] = lower
-        lower = self.x_train.feature21.quantile(0.0005)
-        self.x_train['feature21'].loc[self.x_train['feature21'] < lower] = lower
-        lower = self.x_train.feature22.quantile(0.0005)
-        self.x_train['feature22'].loc[self.x_train['feature22'] < lower] = lower
-        lower = self.x_train.feature23.quantile(0.0005)
-        self.x_train['feature23'].loc[self.x_train['feature23'] < lower] = lower
-        lower = self.x_train.feature24.quantile(0.0005)
-        self.x_train['feature24'].loc[self.x_train['feature24'] < lower] = lower
-        lower = self.x_train.feature25.quantile(0.0005)
-        self.x_train['feature25'].loc[self.x_train['feature25'] < lower] = lower
-        lower = self.x_train.feature26.quantile(0.0005)
-        self.x_train['feature26'].loc[self.x_train['feature26'] < lower] = lower
-        lower = self.x_train.feature27.quantile(0.0005)
-        self.x_train['feature27'].loc[self.x_train['feature27'] < lower] = lower
-        lower = self.x_train.feature28.quantile(0.0005)
-        self.x_train['feature28'].loc[self.x_train['feature28'] < lower] = lower
-        lower = self.x_train.feature29.quantile(0.0005)
-        self.x_train['feature29'].loc[self.x_train['feature29'] < lower] = lower
-        lower = self.x_train.feature30.quantile(0.0005)
-        self.x_train['feature30'].loc[self.x_train['feature30'] < lower] = lower
-        lower = self.x_train.feature31.quantile(0.0005)
-        self.x_train['feature31'].loc[self.x_train['feature31'] < lower] = lower
-        lower = self.x_train.feature32.quantile(0.0005)
-        self.x_train['feature32'].loc[self.x_train['feature32'] < lower] = lower
-        lower = self.x_train.feature33.quantile(0.0005)
-        self.x_train['feature33'].loc[self.x_train['feature33'] < lower] = lower
-        lower = self.x_train.feature34.quantile(0.0005)
-        self.x_train['feature34'].loc[self.x_train['feature34'] < lower] = lower
-        lower = self.x_train.feature35.quantile(0.0005)
-        self.x_train['feature35'].loc[self.x_train['feature35'] < lower] = lower
-        lower = self.x_train.feature36.quantile(0.0005)
-        self.x_train['feature36'].loc[self.x_train['feature36'] < lower] = lower
-        lower = self.x_train.feature37.quantile(0.0005)
-        self.x_train['feature37'].loc[self.x_train['feature37'] < lower] = lower
-        lower = self.x_train.feature38.quantile(0.0005)
-        self.x_train['feature38'].loc[self.x_train['feature38'] < lower] = lower
-        lower = self.x_train.feature39.quantile(0.0005)
-        self.x_train['feature39'].loc[self.x_train['feature39'] < lower] = lower
-        lower = self.x_train.feature40.quantile(0.0005)
-        self.x_train['feature40'].loc[self.x_train['feature40'] < lower] = lower
-        lower = self.x_train.feature41.quantile(0.0005)
-        self.x_train['feature41'].loc[self.x_train['feature41'] < lower] = lower
-        lower = self.x_train.feature42.quantile(0.0005)
-        self.x_train['feature42'].loc[self.x_train['feature42'] < lower] = lower
-        lower = self.x_train.feature43.quantile(0.0005)
-        self.x_train['feature43'].loc[self.x_train['feature43'] < lower] = lower
-        lower = self.x_train.feature44.quantile(0.0005)
-        self.x_train['feature44'].loc[self.x_train['feature44'] < lower] = lower
-        lower = self.x_train.feature45.quantile(0.0005)
-        self.x_train['feature45'].loc[self.x_train['feature45'] < lower] = lower
-        lower = self.x_train.feature46.quantile(0.0005)
-        self.x_train['feature46'].loc[self.x_train['feature46'] < lower] = lower
-        lower = self.x_train.feature47.quantile(0.0005)
-        self.x_train['feature47'].loc[self.x_train['feature47'] < lower] = lower
-        lower = self.x_train.feature48.quantile(0.0005)
-        self.x_train['feature48'].loc[self.x_train['feature48'] < lower] = lower
-        lower = self.x_train.feature49.quantile(0.0005)
-        self.x_train['feature49'].loc[self.x_train['feature49'] < lower] = lower
-        lower = self.x_train.feature50.quantile(0.0005)
-        self.x_train['feature50'].loc[self.x_train['feature50'] < lower] = lower
-        lower = self.x_train.feature51.quantile(0.0005)
-        self.x_train['feature51'].loc[self.x_train['feature51'] < lower] = lower
-        lower = self.x_train.feature52.quantile(0.0005)
-        self.x_train['feature52'].loc[self.x_train['feature52'] < lower] = lower
-        lower = self.x_train.feature53.quantile(0.0005)
-        self.x_train['feature53'].loc[self.x_train['feature53'] < lower] = lower
-        lower = self.x_train.feature54.quantile(0.0005)
-        self.x_train['feature54'].loc[self.x_train['feature54'] < lower] = lower
-        lower = self.x_train.feature55.quantile(0.0005)
-        self.x_train['feature55'].loc[self.x_train['feature55'] < lower] = lower
-        lower = self.x_train.feature56.quantile(0.0005)
-        self.x_train['feature56'].loc[self.x_train['feature56'] < lower] = lower
-        lower = self.x_train.feature57.quantile(0.0005)
-        self.x_train['feature57'].loc[self.x_train['feature57'] < lower] = lower
-        lower = self.x_train.feature58.quantile(0.0005)
-        self.x_train['feature58'].loc[self.x_train['feature58'] < lower] = lower
-        lower = self.x_train.feature59.quantile(0.0005)
-        self.x_train['feature59'].loc[self.x_train['feature59'] < lower] = lower
-        lower = self.x_train.feature60.quantile(0.0005)
-        self.x_train['feature60'].loc[self.x_train['feature60'] < lower] = lower
-        lower = self.x_train.feature61.quantile(0.0005)
-        self.x_train['feature61'].loc[self.x_train['feature61'] < lower] = lower
-        lower = self.x_train.feature62.quantile(0.0005)
-        self.x_train['feature62'].loc[self.x_train['feature62'] < lower] = lower
-        lower = self.x_train.feature63.quantile(0.0005)
-        self.x_train['feature63'].loc[self.x_train['feature63'] < lower] = lower
-        lower = self.x_train.feature64.quantile(0.0005)
-        self.x_train['feature64'].loc[self.x_train['feature64'] < lower] = lower
-        lower = self.x_train.feature65.quantile(0.0005)
-        self.x_train['feature65'].loc[self.x_train['feature65'] < lower] = lower
-        lower = self.x_train.feature66.quantile(0.0005)
-        self.x_train['feature66'].loc[self.x_train['feature66'] < lower] = lower
-        lower = self.x_train.feature67.quantile(0.0005)
-        self.x_train['feature67'].loc[self.x_train['feature67'] < lower] = lower
-        lower = self.x_train.feature68.quantile(0.0005)
-        self.x_train['feature68'].loc[self.x_train['feature68'] < lower] = lower
-        lower = self.x_train.feature69.quantile(0.0005)
-        self.x_train['feature69'].loc[self.x_train['feature69'] < lower] = lower
-        lower = self.x_train.feature70.quantile(0.0005)
-        self.x_train['feature70'].loc[self.x_train['feature70'] < lower] = lower
-        lower = self.x_train.feature71.quantile(0.0005)
-        self.x_train['feature71'].loc[self.x_train['feature71'] < lower] = lower
-        lower = self.x_train.feature72.quantile(0.0005)
-        self.x_train['feature72'].loc[self.x_train['feature72'] < lower] = lower
-        lower = self.x_train.feature73.quantile(0.0005)
-        self.x_train['feature73'].loc[self.x_train['feature73'] < lower] = lower
-        lower = self.x_train.feature74.quantile(0.0005)
-        self.x_train['feature74'].loc[self.x_train['feature74'] < lower] = lower
-        lower = self.x_train.feature75.quantile(0.0005)
-        self.x_train['feature75'].loc[self.x_train['feature75'] < lower] = lower
-        lower = self.x_train.feature76.quantile(0.0005)
-        self.x_train['feature76'].loc[self.x_train['feature76'] < lower] = lower
-        lower = self.x_train.feature77.quantile(0.0005)
-        self.x_train['feature77'].loc[self.x_train['feature77'] < lower] = lower
-        lower = self.x_train.feature78.quantile(0.0005)
-        self.x_train['feature78'].loc[self.x_train['feature78'] < lower] = lower
-        lower = self.x_train.feature79.quantile(0.0005)
-        self.x_train['feature79'].loc[self.x_train['feature79'] < lower] = lower
-        lower = self.x_train.feature80.quantile(0.0005)
-        self.x_train['feature80'].loc[self.x_train['feature80'] < lower] = lower
-        lower = self.x_train.feature81.quantile(0.0005)
-        self.x_train['feature81'].loc[self.x_train['feature81'] < lower] = lower
-        lower = self.x_train.feature82.quantile(0.0005)
-        self.x_train['feature82'].loc[self.x_train['feature82'] < lower] = lower
-        lower = self.x_train.feature83.quantile(0.0005)
-        self.x_train['feature83'].loc[self.x_train['feature83'] < lower] = lower
-        lower = self.x_train.feature84.quantile(0.0005)
-        self.x_train['feature84'].loc[self.x_train['feature84'] < lower] = lower
-        lower = self.x_train.feature85.quantile(0.0005)
-        self.x_train['feature85'].loc[self.x_train['feature85'] < lower] = lower
-        lower = self.x_train.feature86.quantile(0.0005)
-        self.x_train['feature86'].loc[self.x_train['feature86'] < lower] = lower
-        lower = self.x_train.feature87.quantile(0.0005)
-        self.x_train['feature87'].loc[self.x_train['feature87'] < lower] = lower
+        # feature | upper_quantile_train | lower_quantile_train | upper_quantile_test | lower_quantile_test
 
-        # Drop upper outlines in self.x_test
-        upper = self.x_test.feature0.quantile(0.9995)
-        self.x_test['feature0'].loc[self.x_test['feature0'] > upper] = upper
-        upper = self.x_test.feature1.quantile(0.9995)
-        self.x_test['feature1'].loc[self.x_test['feature1'] > upper] = upper
-        upper = self.x_test.feature2.quantile(0.9995)
-        self.x_test['feature2'].loc[self.x_test['feature2'] > upper] = upper
-        upper = self.x_test.feature3.quantile(0.9995)
-        self.x_test['feature3'].loc[self.x_test['feature3'] > upper] = upper
-        upper = self.x_test.feature4.quantile(0.9995)
-        self.x_test['feature4'].loc[self.x_test['feature4'] > upper] = upper
-        upper = self.x_test.feature5.quantile(0.9995)
-        self.x_test['feature5'].loc[self.x_test['feature5'] > upper] = upper
-        upper = self.x_test.feature6.quantile(0.9995)
-        self.x_test['feature6'].loc[self.x_test['feature6'] > upper] = upper
-        upper = self.x_test.feature7.quantile(0.9995)
-        self.x_test['feature7'].loc[self.x_test['feature7'] > upper] = upper
-        upper = self.x_test.feature8.quantile(0.9995)
-        self.x_test['feature8'].loc[self.x_test['feature8'] > upper] = upper
-        upper = self.x_test.feature9.quantile(0.9995)
-        self.x_test['feature9'].loc[self.x_test['feature9'] > upper] = upper
-        upper = self.x_test.feature10.quantile(0.9995)
-        self.x_test['feature10'].loc[self.x_test['feature10'] > upper] = upper
-        upper = self.x_test.feature11.quantile(0.9995)
-        self.x_test['feature11'].loc[self.x_test['feature11'] > upper] = upper
-        upper = self.x_test.feature12.quantile(0.9995)
-        self.x_test['feature12'].loc[self.x_test['feature12'] > upper] = upper
-        upper = self.x_test.feature13.quantile(0.9995)
-        self.x_test['feature13'].loc[self.x_test['feature13'] > upper] = upper
-        upper = self.x_test.feature14.quantile(0.9995)
-        self.x_test['feature14'].loc[self.x_test['feature14'] > upper] = upper
-        upper = self.x_test.feature15.quantile(0.9995)
-        self.x_test['feature15'].loc[self.x_test['feature15'] > upper] = upper
-        upper = self.x_test.feature16.quantile(0.9995)
-        self.x_test['feature16'].loc[self.x_test['feature16'] > upper] = upper
-        upper = self.x_test.feature17.quantile(0.9995)
-        self.x_test['feature17'].loc[self.x_test['feature17'] > upper] = upper
-        upper = self.x_test.feature18.quantile(0.9995)
-        self.x_test['feature18'].loc[self.x_test['feature18'] > upper] = upper
-        upper = self.x_test.feature19.quantile(0.9995)
-        self.x_test['feature19'].loc[self.x_test['feature19'] > upper] = upper
-        upper = self.x_test.feature20.quantile(0.9995)
-        self.x_test['feature20'].loc[self.x_test['feature20'] > upper] = upper
-        upper = self.x_test.feature21.quantile(0.9995)
-        self.x_test['feature21'].loc[self.x_test['feature21'] > upper] = upper
-        upper = self.x_test.feature22.quantile(0.9995)
-        self.x_test['feature22'].loc[self.x_test['feature22'] > upper] = upper
-        upper = self.x_test.feature23.quantile(0.9995)
-        self.x_test['feature23'].loc[self.x_test['feature23'] > upper] = upper
-        upper = self.x_test.feature24.quantile(0.9995)
-        self.x_test['feature24'].loc[self.x_test['feature24'] > upper] = upper
-        upper = self.x_test.feature25.quantile(0.9995)
-        self.x_test['feature25'].loc[self.x_test['feature25'] > upper] = upper
-        upper = self.x_test.feature26.quantile(0.9995)
-        self.x_test['feature26'].loc[self.x_test['feature26'] > upper] = upper
-        upper = self.x_test.feature27.quantile(0.9995)
-        self.x_test['feature27'].loc[self.x_test['feature27'] > upper] = upper
-        upper = self.x_test.feature28.quantile(0.9995)
-        self.x_test['feature28'].loc[self.x_test['feature28'] > upper] = upper
-        upper = self.x_test.feature29.quantile(0.9995)
-        self.x_test['feature29'].loc[self.x_test['feature29'] > upper] = upper
-        upper = self.x_test.feature30.quantile(0.9995)
-        self.x_test['feature30'].loc[self.x_test['feature30'] > upper] = upper
-        upper = self.x_test.feature31.quantile(0.9995)
-        self.x_test['feature31'].loc[self.x_test['feature31'] > upper] = upper
-        upper = self.x_test.feature32.quantile(0.9995)
-        self.x_test['feature32'].loc[self.x_test['feature32'] > upper] = upper
-        upper = self.x_test.feature33.quantile(0.9995)
-        self.x_test['feature33'].loc[self.x_test['feature33'] > upper] = upper
-        upper = self.x_test.feature34.quantile(0.9995)
-        self.x_test['feature34'].loc[self.x_test['feature34'] > upper] = upper
-        upper = self.x_test.feature35.quantile(0.9995)
-        self.x_test['feature35'].loc[self.x_test['feature35'] > upper] = upper
-        upper = self.x_test.feature36.quantile(0.9995)
-        self.x_test['feature36'].loc[self.x_test['feature36'] > upper] = upper
-        upper = self.x_test.feature37.quantile(0.9995)
-        self.x_test['feature37'].loc[self.x_test['feature37'] > upper] = upper
-        upper = self.x_test.feature38.quantile(0.9995)
-        self.x_test['feature38'].loc[self.x_test['feature38'] > upper] = upper
-        upper = self.x_test.feature39.quantile(0.9995)
-        self.x_test['feature39'].loc[self.x_test['feature39'] > upper] = upper
-        upper = self.x_test.feature40.quantile(0.9995)
-        self.x_test['feature40'].loc[self.x_test['feature40'] > upper] = upper
-        upper = self.x_test.feature41.quantile(0.9995)
-        self.x_test['feature41'].loc[self.x_test['feature41'] > upper] = upper
-        upper = self.x_test.feature42.quantile(0.9995)
-        self.x_test['feature42'].loc[self.x_test['feature42'] > upper] = upper
-        upper = self.x_test.feature43.quantile(0.9995)
-        self.x_test['feature43'].loc[self.x_test['feature43'] > upper] = upper
-        upper = self.x_test.feature44.quantile(0.9995)
-        self.x_test['feature44'].loc[self.x_test['feature44'] > upper] = upper
-        upper = self.x_test.feature45.quantile(0.9995)
-        self.x_test['feature45'].loc[self.x_test['feature45'] > upper] = upper
-        upper = self.x_test.feature46.quantile(0.9995)
-        self.x_test['feature46'].loc[self.x_test['feature46'] > upper] = upper
-        upper = self.x_test.feature47.quantile(0.9995)
-        self.x_test['feature47'].loc[self.x_test['feature47'] > upper] = upper
-        upper = self.x_test.feature48.quantile(0.9995)
-        self.x_test['feature48'].loc[self.x_test['feature48'] > upper] = upper
-        upper = self.x_test.feature49.quantile(0.9995)
-        self.x_test['feature49'].loc[self.x_test['feature49'] > upper] = upper
-        upper = self.x_test.feature50.quantile(0.9995)
-        self.x_test['feature50'].loc[self.x_test['feature50'] > upper] = upper
-        upper = self.x_test.feature51.quantile(0.9995)
-        self.x_test['feature51'].loc[self.x_test['feature51'] > upper] = upper
-        upper = self.x_test.feature52.quantile(0.9995)
-        self.x_test['feature52'].loc[self.x_test['feature52'] > upper] = upper
-        upper = self.x_test.feature53.quantile(0.9995)
-        self.x_test['feature53'].loc[self.x_test['feature53'] > upper] = upper
-        upper = self.x_test.feature54.quantile(0.9995)
-        self.x_test['feature54'].loc[self.x_test['feature54'] > upper] = upper
-        upper = self.x_test.feature55.quantile(0.9995)
-        self.x_test['feature55'].loc[self.x_test['feature55'] > upper] = upper
-        upper = self.x_test.feature56.quantile(0.9995)
-        self.x_test['feature56'].loc[self.x_test['feature56'] > upper] = upper
-        upper = self.x_test.feature57.quantile(0.9995)
-        self.x_test['feature57'].loc[self.x_test['feature57'] > upper] = upper
-        upper = self.x_test.feature58.quantile(0.9995)
-        self.x_test['feature58'].loc[self.x_test['feature58'] > upper] = upper
-        upper = self.x_test.feature59.quantile(0.9995)
-        self.x_test['feature59'].loc[self.x_test['feature59'] > upper] = upper
-        upper = self.x_test.feature60.quantile(0.9995)
-        self.x_test['feature60'].loc[self.x_test['feature60'] > upper] = upper
-        upper = self.x_test.feature61.quantile(0.9995)
-        self.x_test['feature61'].loc[self.x_test['feature61'] > upper] = upper
-        upper = self.x_test.feature62.quantile(0.9995)
-        self.x_test['feature62'].loc[self.x_test['feature62'] > upper] = upper
-        upper = self.x_test.feature63.quantile(0.9995)
-        self.x_test['feature63'].loc[self.x_test['feature63'] > upper] = upper
-        upper = self.x_test.feature64.quantile(0.9995)
-        self.x_test['feature64'].loc[self.x_test['feature64'] > upper] = upper
-        upper = self.x_test.feature65.quantile(0.9995)
-        self.x_test['feature65'].loc[self.x_test['feature65'] > upper] = upper
-        upper = self.x_test.feature66.quantile(0.9995)
-        self.x_test['feature66'].loc[self.x_test['feature66'] > upper] = upper
-        upper = self.x_test.feature67.quantile(0.9995)
-        self.x_test['feature67'].loc[self.x_test['feature67'] > upper] = upper
-        upper = self.x_test.feature68.quantile(0.9995)
-        self.x_test['feature68'].loc[self.x_test['feature68'] > upper] = upper
-        upper = self.x_test.feature69.quantile(0.9995)
-        self.x_test['feature69'].loc[self.x_test['feature69'] > upper] = upper
-        upper = self.x_test.feature70.quantile(0.9995)
-        self.x_test['feature70'].loc[self.x_test['feature70'] > upper] = upper
-        upper = self.x_test.feature71.quantile(0.9995)
-        self.x_test['feature71'].loc[self.x_test['feature71'] > upper] = upper
-        upper = self.x_test.feature72.quantile(0.9995)
-        self.x_test['feature72'].loc[self.x_test['feature72'] > upper] = upper
-        upper = self.x_test.feature73.quantile(0.9995)
-        self.x_test['feature73'].loc[self.x_test['feature73'] > upper] = upper
-        upper = self.x_test.feature74.quantile(0.9995)
-        self.x_test['feature74'].loc[self.x_test['feature74'] > upper] = upper
-        upper = self.x_test.feature75.quantile(0.9995)
-        self.x_test['feature75'].loc[self.x_test['feature75'] > upper] = upper
-        upper = self.x_test.feature76.quantile(0.9995)
-        self.x_test['feature76'].loc[self.x_test['feature76'] > upper] = upper
-        upper = self.x_test.feature77.quantile(0.9995)
-        self.x_test['feature77'].loc[self.x_test['feature77'] > upper] = upper
-        upper = self.x_test.feature78.quantile(0.9995)
-        self.x_test['feature78'].loc[self.x_test['feature78'] > upper] = upper
-        upper = self.x_test.feature79.quantile(0.9995)
-        self.x_test['feature79'].loc[self.x_test['feature79'] > upper] = upper
-        upper = self.x_test.feature80.quantile(0.9995)
-        self.x_test['feature80'].loc[self.x_test['feature80'] > upper] = upper
-        upper = self.x_test.feature81.quantile(0.9995)
-        self.x_test['feature81'].loc[self.x_test['feature81'] > upper] = upper
-        upper = self.x_test.feature82.quantile(0.9995)
-        self.x_test['feature82'].loc[self.x_test['feature82'] > upper] = upper
-        upper = self.x_test.feature83.quantile(0.9995)
-        self.x_test['feature83'].loc[self.x_test['feature83'] > upper] = upper
-        upper = self.x_test.feature84.quantile(0.9995)
-        self.x_test['feature84'].loc[self.x_test['feature84'] > upper] = upper
-        upper = self.x_test.feature85.quantile(0.9995)
-        self.x_test['feature85'].loc[self.x_test['feature85'] > upper] = upper
-        upper = self.x_test.feature86.quantile(0.9995)
-        self.x_test['feature86'].loc[self.x_test['feature86'] > upper] = upper
-        upper = self.x_test.feature87.quantile(0.9995)
-        self.x_test['feature87'].loc[self.x_test['feature87'] > upper] = upper
-
-        # Drop lower outlines in self.x_test
-        lower = self.x_test.feature0.quantile(0.0005)
-        self.x_test['feature0'].loc[self.x_test['feature0'] < lower] = lower
-        lower = self.x_test.feature1.quantile(0.0005)
-        self.x_test['feature1'].loc[self.x_test['feature1'] < lower] = lower
-        lower = self.x_test.feature2.quantile(0.0005)
-        self.x_test['feature2'].loc[self.x_test['feature2'] < lower] = lower
-        lower = self.x_test.feature3.quantile(0.0005)
-        self.x_test['feature3'].loc[self.x_test['feature3'] < lower] = lower
-        lower = self.x_test.feature4.quantile(0.0005)
-        self.x_test['feature4'].loc[self.x_test['feature4'] < lower] = lower
-        lower = self.x_test.feature5.quantile(0.0005)
-        self.x_test['feature5'].loc[self.x_test['feature5'] < lower] = lower
-        lower = self.x_test.feature6.quantile(0.0005)
-        self.x_test['feature6'].loc[self.x_test['feature6'] < lower] = lower
-        lower = self.x_test.feature7.quantile(0.0005)
-        self.x_test['feature7'].loc[self.x_test['feature7'] < lower] = lower
-        lower = self.x_test.feature8.quantile(0.0005)
-        self.x_test['feature8'].loc[self.x_test['feature8'] < lower] = lower
-        lower = self.x_test.feature9.quantile(0.0005)
-        self.x_test['feature9'].loc[self.x_test['feature9'] < lower] = lower
-        lower = self.x_test.feature10.quantile(0.0005)
-        self.x_test['feature10'].loc[self.x_test['feature10'] < lower] = lower
-        lower = self.x_test.feature11.quantile(0.0005)
-        self.x_test['feature11'].loc[self.x_test['feature11'] < lower] = lower
-        lower = self.x_test.feature12.quantile(0.0005)
-        self.x_test['feature12'].loc[self.x_test['feature12'] < lower] = lower
-        lower = self.x_test.feature13.quantile(0.0005)
-        self.x_test['feature13'].loc[self.x_test['feature13'] < lower] = lower
-        lower = self.x_test.feature14.quantile(0.0005)
-        self.x_test['feature14'].loc[self.x_test['feature14'] < lower] = lower
-        lower = self.x_test.feature15.quantile(0.0005)
-        self.x_test['feature15'].loc[self.x_test['feature15'] < lower] = lower
-        lower = self.x_test.feature16.quantile(0.0005)
-        self.x_test['feature16'].loc[self.x_test['feature16'] < lower] = lower
-        lower = self.x_test.feature17.quantile(0.0005)
-        self.x_test['feature17'].loc[self.x_test['feature17'] < lower] = lower
-        lower = self.x_test.feature18.quantile(0.0005)
-        self.x_test['feature18'].loc[self.x_test['feature18'] < lower] = lower
-        lower = self.x_test.feature19.quantile(0.0005)
-        self.x_test['feature19'].loc[self.x_test['feature19'] < lower] = lower
-        lower = self.x_test.feature20.quantile(0.0005)
-        self.x_test['feature20'].loc[self.x_test['feature20'] < lower] = lower
-        lower = self.x_test.feature21.quantile(0.0005)
-        self.x_test['feature21'].loc[self.x_test['feature21'] < lower] = lower
-        lower = self.x_test.feature22.quantile(0.0005)
-        self.x_test['feature22'].loc[self.x_test['feature22'] < lower] = lower
-        lower = self.x_test.feature23.quantile(0.0005)
-        self.x_test['feature23'].loc[self.x_test['feature23'] < lower] = lower
-        lower = self.x_test.feature24.quantile(0.0005)
-        self.x_test['feature24'].loc[self.x_test['feature24'] < lower] = lower
-        lower = self.x_test.feature25.quantile(0.0005)
-        self.x_test['feature25'].loc[self.x_test['feature25'] < lower] = lower
-        lower = self.x_test.feature26.quantile(0.0005)
-        self.x_test['feature26'].loc[self.x_test['feature26'] < lower] = lower
-        lower = self.x_test.feature27.quantile(0.0005)
-        self.x_test['feature27'].loc[self.x_test['feature27'] < lower] = lower
-        lower = self.x_test.feature28.quantile(0.0005)
-        self.x_test['feature28'].loc[self.x_test['feature28'] < lower] = lower
-        lower = self.x_test.feature29.quantile(0.0005)
-        self.x_test['feature29'].loc[self.x_test['feature29'] < lower] = lower
-        lower = self.x_test.feature30.quantile(0.0005)
-        self.x_test['feature30'].loc[self.x_test['feature30'] < lower] = lower
-        lower = self.x_test.feature31.quantile(0.0005)
-        self.x_test['feature31'].loc[self.x_test['feature31'] < lower] = lower
-        lower = self.x_test.feature32.quantile(0.0005)
-        self.x_test['feature32'].loc[self.x_test['feature32'] < lower] = lower
-        lower = self.x_test.feature33.quantile(0.0005)
-        self.x_test['feature33'].loc[self.x_test['feature33'] < lower] = lower
-        lower = self.x_test.feature34.quantile(0.0005)
-        self.x_test['feature34'].loc[self.x_test['feature34'] < lower] = lower
-        lower = self.x_test.feature35.quantile(0.0005)
-        self.x_test['feature35'].loc[self.x_test['feature35'] < lower] = lower
-        lower = self.x_test.feature36.quantile(0.0005)
-        self.x_test['feature36'].loc[self.x_test['feature36'] < lower] = lower
-        lower = self.x_test.feature37.quantile(0.0005)
-        self.x_test['feature37'].loc[self.x_test['feature37'] < lower] = lower
-        lower = self.x_test.feature38.quantile(0.0005)
-        self.x_test['feature38'].loc[self.x_test['feature38'] < lower] = lower
-        lower = self.x_test.feature39.quantile(0.0005)
-        self.x_test['feature39'].loc[self.x_test['feature39'] < lower] = lower
-        lower = self.x_test.feature40.quantile(0.0005)
-        self.x_test['feature40'].loc[self.x_test['feature40'] < lower] = lower
-        lower = self.x_test.feature41.quantile(0.0005)
-        self.x_test['feature41'].loc[self.x_test['feature41'] < lower] = lower
-        lower = self.x_test.feature42.quantile(0.0005)
-        self.x_test['feature42'].loc[self.x_test['feature42'] < lower] = lower
-        lower = self.x_test.feature43.quantile(0.0005)
-        self.x_test['feature43'].loc[self.x_test['feature43'] < lower] = lower
-        lower = self.x_test.feature44.quantile(0.0005)
-        self.x_test['feature44'].loc[self.x_test['feature44'] < lower] = lower
-        lower = self.x_test.feature45.quantile(0.0005)
-        self.x_test['feature45'].loc[self.x_test['feature45'] < lower] = lower
-        lower = self.x_test.feature46.quantile(0.0005)
-        self.x_test['feature46'].loc[self.x_test['feature46'] < lower] = lower
-        lower = self.x_test.feature47.quantile(0.0005)
-        self.x_test['feature47'].loc[self.x_test['feature47'] < lower] = lower
-        lower = self.x_test.feature48.quantile(0.0005)
-        self.x_test['feature48'].loc[self.x_test['feature48'] < lower] = lower
-        lower = self.x_test.feature49.quantile(0.0005)
-        self.x_test['feature49'].loc[self.x_test['feature49'] < lower] = lower
-        lower = self.x_test.feature50.quantile(0.0005)
-        self.x_test['feature50'].loc[self.x_test['feature50'] < lower] = lower
-        lower = self.x_test.feature51.quantile(0.0005)
-        self.x_test['feature51'].loc[self.x_test['feature51'] < lower] = lower
-        lower = self.x_test.feature52.quantile(0.0005)
-        self.x_test['feature52'].loc[self.x_test['feature52'] < lower] = lower
-        lower = self.x_test.feature53.quantile(0.0005)
-        self.x_test['feature53'].loc[self.x_test['feature53'] < lower] = lower
-        lower = self.x_test.feature54.quantile(0.0005)
-        self.x_test['feature54'].loc[self.x_test['feature54'] < lower] = lower
-        lower = self.x_test.feature55.quantile(0.0005)
-        self.x_test['feature55'].loc[self.x_test['feature55'] < lower] = lower
-        lower = self.x_test.feature56.quantile(0.0005)
-        self.x_test['feature56'].loc[self.x_test['feature56'] < lower] = lower
-        lower = self.x_test.feature57.quantile(0.0005)
-        self.x_test['feature57'].loc[self.x_test['feature57'] < lower] = lower
-        lower = self.x_test.feature58.quantile(0.0005)
-        self.x_test['feature58'].loc[self.x_test['feature58'] < lower] = lower
-        lower = self.x_test.feature59.quantile(0.0005)
-        self.x_test['feature59'].loc[self.x_test['feature59'] < lower] = lower
-        lower = self.x_test.feature60.quantile(0.0005)
-        self.x_test['feature60'].loc[self.x_test['feature60'] < lower] = lower
-        lower = self.x_test.feature61.quantile(0.0005)
-        self.x_test['feature61'].loc[self.x_test['feature61'] < lower] = lower
-        lower = self.x_test.feature62.quantile(0.0005)
-        self.x_test['feature62'].loc[self.x_test['feature62'] < lower] = lower
-        lower = self.x_test.feature63.quantile(0.0005)
-        self.x_test['feature63'].loc[self.x_test['feature63'] < lower] = lower
-        lower = self.x_test.feature64.quantile(0.0005)
-        self.x_test['feature64'].loc[self.x_test['feature64'] < lower] = lower
-        lower = self.x_test.feature65.quantile(0.0005)
-        self.x_test['feature65'].loc[self.x_test['feature65'] < lower] = lower
-        lower = self.x_test.feature66.quantile(0.0005)
-        self.x_test['feature66'].loc[self.x_test['feature66'] < lower] = lower
-        lower = self.x_test.feature67.quantile(0.0005)
-        self.x_test['feature67'].loc[self.x_test['feature67'] < lower] = lower
-        lower = self.x_test.feature68.quantile(0.0005)
-        self.x_test['feature68'].loc[self.x_test['feature68'] < lower] = lower
-        lower = self.x_test.feature69.quantile(0.0005)
-        self.x_test['feature69'].loc[self.x_test['feature69'] < lower] = lower
-        lower = self.x_test.feature70.quantile(0.0005)
-        self.x_test['feature70'].loc[self.x_test['feature70'] < lower] = lower
-        lower = self.x_test.feature71.quantile(0.0005)
-        self.x_test['feature71'].loc[self.x_test['feature71'] < lower] = lower
-        lower = self.x_test.feature72.quantile(0.0005)
-        self.x_test['feature72'].loc[self.x_test['feature72'] < lower] = lower
-        lower = self.x_test.feature73.quantile(0.0005)
-        self.x_test['feature73'].loc[self.x_test['feature73'] < lower] = lower
-        lower = self.x_test.feature74.quantile(0.0005)
-        self.x_test['feature74'].loc[self.x_test['feature74'] < lower] = lower
-        lower = self.x_test.feature75.quantile(0.0005)
-        self.x_test['feature75'].loc[self.x_test['feature75'] < lower] = lower
-        lower = self.x_test.feature76.quantile(0.0005)
-        self.x_test['feature76'].loc[self.x_test['feature76'] < lower] = lower
-        lower = self.x_test.feature77.quantile(0.0005)
-        self.x_test['feature77'].loc[self.x_test['feature77'] < lower] = lower
-        lower = self.x_test.feature78.quantile(0.0005)
-        self.x_test['feature78'].loc[self.x_test['feature78'] < lower] = lower
-        lower = self.x_test.feature79.quantile(0.0005)
-        self.x_test['feature79'].loc[self.x_test['feature79'] < lower] = lower
-        lower = self.x_test.feature80.quantile(0.0005)
-        self.x_test['feature80'].loc[self.x_test['feature80'] < lower] = lower
-        lower = self.x_test.feature81.quantile(0.0005)
-        self.x_test['feature81'].loc[self.x_test['feature81'] < lower] = lower
-        lower = self.x_test.feature82.quantile(0.0005)
-        self.x_test['feature82'].loc[self.x_test['feature82'] < lower] = lower
-        lower = self.x_test.feature83.quantile(0.0005)
-        self.x_test['feature83'].loc[self.x_test['feature83'] < lower] = lower
-        lower = self.x_test.feature84.quantile(0.0005)
-        self.x_test['feature84'].loc[self.x_test['feature84'] < lower] = lower
-        lower = self.x_test.feature85.quantile(0.0005)
-        self.x_test['feature85'].loc[self.x_test['feature85'] < lower] = lower
-        lower = self.x_test.feature86.quantile(0.0005)
-        self.x_test['feature86'].loc[self.x_test['feature86'] < lower] = lower
-        lower = self.x_test.feature87.quantile(0.0005)
-        self.x_test['feature87'].loc[self.x_test['feature87'] < lower] = lower
+        # self.drop_outliers_of_feature('feature0', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature1', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature2', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature3', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature4', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature5', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature6', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature7', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature8', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature9', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature10', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature11', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature12', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature13', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature14', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature15', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature16', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature17', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature18', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature19', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature20', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature21', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature22', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature23', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature24', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature25', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature26', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature27', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature28', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature29', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature30', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature31', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature32', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature33', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature34', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature35', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature36', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature37', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature38', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature39', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature40', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature41', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature42', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature43', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature44', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature45', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature46', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature47', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature48', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature49', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature50', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature51', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature52', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature53', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature54', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature55', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature56', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature57', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature58', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature59', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature60', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature61', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature62', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature63', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature64', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature65', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature66', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature67', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature68', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature69', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature70', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature71', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature72', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature73', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature74', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature75', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature76', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature77', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature78', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature79', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature80', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature81', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature82', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature83', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature84', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature85', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature86', 0.9995, 0.0005, 0.9995, 0.0005)
+        # self.drop_outliers_of_feature('feature87', 0.9995, 0.0005, 0.9995, 0.0005)
 
     # Standard Scale
     def standard_scale(self):
