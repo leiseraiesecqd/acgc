@@ -7,8 +7,9 @@ import numpy as np
 # Deep Stack
 class DeepStack:
 
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te, pred_path=None, loss_log_path=None,
-                 stack_output_path=None, hyper_params=None, layers_params=None, num_boost_round=None):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te, pred_path=None,
+                 loss_log_path=None, stack_output_path=None, hyper_params=None, layers_params=None,
+                 num_boost_round=None, show_importance=False):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -23,8 +24,8 @@ class DeepStack:
         self.stack_output_path = stack_output_path
         self.layers_params = layers_params
         self.dnn_l1_params = self.layers_params[0][-1]
-        # self.dnn_l2_params = self.layers_params[1][-1]
-        # self.dnn_l3_params = self.layers_params[2][-1]
+        self.dnn_l2_params = self.layers_params[1][-1]
+        self.dnn_l3_params = self.layers_params[2][-1]
         self.num_boost_round_lgb_l1 = num_boost_round['num_boost_round_lgb_l1']
         self.num_boost_round_xgb_l1 = num_boost_round['num_boost_round_xgb_l1']
         self.num_boost_round_lgb_l2 = num_boost_round['num_boost_round_lgb_l2']
@@ -35,6 +36,7 @@ class DeepStack:
         self.n_era = hyper_params['n_era']
         self.n_epoch = hyper_params['n_epoch']
         self.cv_seed = hyper_params['cv_seed']
+        self.show_importance = show_importance
 
     def init_models_layer1(self):
 
@@ -90,8 +92,8 @@ class DeepStack:
         return models_l3
 
     @staticmethod
-    def train_models(models_blender, params, x_train, y_train, w_train, x_g_train,
-                     x_valid, y_valid, w_valid, x_g_valid, idx_valid, x_test, x_g_test):
+    def train_models(models_blender, params, x_train, y_train, w_train, x_g_train, x_valid,
+                     y_valid, w_valid, x_g_valid, idx_valid, x_test, x_g_test, show_importance=False):
 
         # First raw - idx_valid
         all_model_valid_prob = [idx_valid]
@@ -107,8 +109,8 @@ class DeepStack:
 
             # Training on each model in models_l1 using one cross validation set
             prob_valid, prob_test, losses = \
-                model.stack_train(x_train, y_train, w_train, x_g_train,
-                                  x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, params[iter_model])
+                model.stack_train(x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid,
+                                  x_test, x_g_test, params[iter_model], show_importance=show_importance)
 
             all_model_valid_prob.append(prob_valid)
             all_model_test_prob.append(prob_test)
@@ -123,7 +125,7 @@ class DeepStack:
 
     def stacker(self, models_initializer, params, x_train_inputs, y_train_inputs, w_train_inputs,
                 e_train_inputs, x_g_train_inputs, x_test, x_g_test, cv, n_valid=4, n_era=20,
-                cv_seed=None, n_epoch=1, x_train_reuse=None, x_test_reuse=None):
+                cv_seed=None, n_epoch=1, x_train_reuse=None, x_test_reuse=None, show_importance=False):
 
         if n_era % n_valid != 0:
             raise ValueError('n_era must be an integer multiple of n_valid!')
@@ -132,9 +134,11 @@ class DeepStack:
         if x_train_reuse is not None:
             print('------------------------------------------------------')
             print('Stacking Reused Features...')
-            x_train_inputs = np.concatenate((x_train_inputs, x_train_reuse), axis=1)  # n_sample * (n_feature + n_reuse)
+            # n_sample * (n_feature + n_reuse)
+            x_train_inputs = np.concatenate((x_train_inputs, x_train_reuse), axis=1)
             x_g_trainroup = x_g_train_inputs[:, -1]
-            x_g_train_inputs = np.column_stack((x_train_inputs, x_g_trainroup))       # n_sample * (n_feature + n_reuse + 1)
+            # n_sample * (n_feature + n_reuse + 1)
+            x_g_train_inputs = np.column_stack((x_train_inputs, x_g_trainroup))
 
         if x_test_reuse is not None:
             print('------------------------------------------------------')
@@ -142,12 +146,6 @@ class DeepStack:
             x_test = np.concatenate((x_test, x_test_reuse), axis=1)  # n_sample * (n_feature + n_reuse)
             x_g_testroup = x_g_test[:, -1]
             x_g_test = np.column_stack((x_test, x_g_testroup))       # n_sample * (n_feature + n_reuse + 1)
-
-        # Print Shape
-        print('======================================================')
-        print('x_train_inputs shape:{}'.format(x_train_inputs.shape))
-        print('x_test shape:{}'.format(x_test.shape))
-        print('======================================================')
 
         n_cv = int(n_era // n_valid)
         blender_x_outputs = np.array([])
@@ -188,7 +186,8 @@ class DeepStack:
                 blender_valid_cv, blender_test_cv, \
                     blender_losses_cv = self.train_models(models_blender, params, x_train, y_train, w_train,
                                                           x_g_train, x_valid, y_valid, w_valid, x_g_valid,
-                                                          valid_index, x_test, x_g_test)
+                                                          valid_index, x_test, x_g_test,
+                                                          show_importance=show_importance)
 
                 # Add blenders of one cross validation set to blenders of all CV
                 blender_test_cv = blender_test_cv.reshape(n_model, 1, -1)  # n_model * 1 * n_test_sample
@@ -202,12 +201,6 @@ class DeepStack:
                     # n_model * n_cv * n_test_sample
                     blender_test = np.concatenate((blender_test, blender_test_cv), axis=1)
                     # blender_losses = np.concatenate((blender_losses, blender_losses_cv), axis=1)
-
-            # Print Shape
-            print('======================================================')
-            print('blender_valid shape:{}'.format(blender_valid.shape))
-            print('blender_test shape:{}'.format(blender_test.shape))
-            print('======================================================')
 
             # Sort blender_valid by valid_index
             print('------------------------------------------------------')
@@ -225,12 +218,6 @@ class DeepStack:
             # Transpose blenders
             blender_x_e = blender_valid_sorted.transpose()      # n_sample * n_model
             blender_test_e = blender_test_mean.transpose()      # n_test_sample * n_model
-
-            # Print Shape
-            print('======================================================')
-            print('blender_x_e shape:{}'.format(blender_x_e.shape))
-            print('blender_test_e shape:{}'.format(blender_test_e.shape))
-            print('======================================================')
 
             if epoch == 0:
                 blender_x_outputs = blender_x_e
@@ -252,14 +239,6 @@ class DeepStack:
         blender_x_g_outputs = np.column_stack((blender_x_outputs, self.g_train))
         blender_test_g_outputs = np.column_stack((blender_test_outputs, self.g_test))
 
-        # Print Shape
-        print('======================================================')
-        print('blender_x_outputs:{}'.format(blender_x_outputs.shape))
-        print('blender_test_outputs:{}'.format(blender_test_outputs.shape))
-        print('blender_x_g_outputs:{}'.format(blender_x_g_outputs.shape))
-        print('blender_test_g_outputs:{}'.format(blender_test_g_outputs.shape))
-        print('======================================================')
-
         return blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs
 
     def save_predict(self, pred_path, test_outputs):
@@ -273,11 +252,11 @@ class DeepStack:
 
         if model_name == 'LGB':
 
-            model = models.LightGBM(x_outputs, self.y_train, self.w_train, self.e_train,
-                                    test_outputs, self.id_test, x_g_outputs, test_g_outputs)
+            model = models.LightGBM(x_outputs, self.y_train, self.w_train, self.e_train, test_outputs, self.id_test,
+                                    x_g_outputs, test_g_outputs, num_boost_round=self.num_boost_round_final)
             print('Start training ' + model_name + '...')
-            model.train(self.pred_path + 'stack_results/', self.loss_log_path,
-                        n_valid=n_valid, n_cv=n_cv, n_era=n_era, cv_seed=self.cv_seed, parameters=params)
+            model.train(self.pred_path + 'stack_results/', self.loss_log_path, n_valid=n_valid,
+                        n_cv=n_cv, n_era=n_era, cv_seed=self.cv_seed, parameters=params)
 
         elif model_name == 'DNN':
 
@@ -305,7 +284,7 @@ class DeepStack:
             = self.stacker(models_initializer_l1, self.layers_params[0], self.x_train, self.y_train,
                            self.w_train, self.e_train, self.x_g_train, self.x_test, self.x_g_test,
                            cv_stack, n_valid=self.n_valid[0], n_era=self.n_era[0], cv_seed=self.cv_seed,
-                           n_epoch=self.n_epoch[0])
+                           n_epoch=self.n_epoch[0], show_importance=self.show_importance)
 
         # Save predicted test prob
         self.save_predict(self.pred_path + 'stack_l1_', test_outputs_l1)
@@ -328,10 +307,10 @@ class DeepStack:
         x_te_reuse = self.x_test[:, :88]
 
         x_outputs_l2, test_outputs_l2, x_g_outputs_l2, test_g_outputs_l2 \
-            = self.stacker(models_initializer_l2, self.layers_params[1], x_outputs_l1, self.y_train,
-                           self.w_train, self.e_train, x_g_outputs_l1, test_outputs_l1, test_g_outputs_l1,
-                           cv_stack, n_valid=self.n_valid[1], n_era=self.n_era[1], cv_seed=self.cv_seed,
-                           n_epoch=self.n_epoch[1], x_train_reuse=x_tr_reuse, x_test_reuse=x_te_reuse)
+            = self.stacker(models_initializer_l2, self.layers_params[1], x_outputs_l1, self.y_train, self.w_train,
+                           self.e_train, x_g_outputs_l1, test_outputs_l1, test_g_outputs_l1, cv_stack,
+                           n_valid=self.n_valid[1], n_era=self.n_era[1], cv_seed=self.cv_seed, n_epoch=self.n_epoch[1],
+                           x_train_reuse=x_tr_reuse, x_test_reuse=x_te_reuse, show_importance=self.show_importance)
 
         # Save predicted test prob
         self.save_predict(self.pred_path + 'stack_l2_', test_outputs_l2)
@@ -354,7 +333,7 @@ class DeepStack:
         #     = self.stacker(models_initializer_l3, self.layers_params[1], x_outputs_l2, self.y_train,
         #                    self.w_train, self.e_train, x_g_outputs_l2, test_outputs_l2, test_g_outputs_l2,
         #                    cv_stack, n_valid=self.n_valid[2], n_era=self.n_era[2], cv_seed=self.cv_seed,
-        #                    n_epoch=self.n_epoch[2])
+        #                    n_epoch=self.n_epoch[2], show_importance=self.show_importance)
         #
         # # Save predicted test prob
         # self.save_predict(self.pred_path + 'stack_l3_', test_outputs_l3)
@@ -384,10 +363,10 @@ class DeepStack:
 class StackLayer:
 
     def __init__(self, params, x_train, y_train, w_train, e_train, x_g_train, x_test, x_g_test, id_test,
-                 models_initializer=None, stacker=None, cv=None, n_valid=4, n_era=20, cv_seed=None, 
-                 input_layer=None, i_layer=1, n_epoch=1, x_train_reuse=None, x_test_reuse=None, dnn_param=None,
-                 pred_path=None, loss_log_path=None, stack_output_path=None, final_layer_model=None,
-                 num_boost_round_final=None, n_cv_final=None):
+                 models_initializer=None, cv=None, n_valid=4, n_era=20, cv_seed=None,  input_layer=None,
+                 i_layer=1, n_epoch=1, x_train_reuse=None, x_test_reuse=None, dnn_param=None,
+                 pred_path=None, loss_log_path=None, stack_output_path=None, show_importance=False,
+                 is_final_layer=False, n_cv_final=None):
 
         self.params = params
         self.x_train = x_train
@@ -402,7 +381,6 @@ class StackLayer:
         self.n_valid = n_valid
         self.n_era = n_era
         self.models_initializer = models_initializer
-        self.stacker = stacker
         self.cv_seed = cv_seed
         self.input_layer = input_layer
         self.i_layer = i_layer
@@ -413,8 +391,8 @@ class StackLayer:
         self.pred_path = pred_path
         self.loss_log_path = loss_log_path
         self.stack_output_path = stack_output_path
-        self.final_layer_model = final_layer_model
-        self.num_boost_round_final = num_boost_round_final
+        self.show_importance = show_importance
+        self.is_final_layer = is_final_layer
         self.n_cv_final = n_cv_final
         self.g_train = x_g_train[:, -1]
         self.g_test = x_g_test[:, -1]
@@ -425,49 +403,182 @@ class StackLayer:
 
         utils.save_pred_to_csv(pred_path, self.id_test, test_prob)
 
-    def stack_final_layer(self, model_name, params, n_valid, n_cv, n_era, blender_x_tree, blender_test_tree,
-                          blender_x_g_tree, blender_test_g_tree, num_boost_round=None, 
-                          x_train_reuse=None, x_test_reuse=None):
+    def train_models(self, models_blender, params, x_train, y_train, w_train, x_g_train,
+                     x_valid, y_valid, w_valid, x_g_valid, idx_valid, x_test, x_g_test):
+
+        # First raw - idx_valid
+        all_model_valid_prob = [idx_valid]
+        all_model_test_prob = []
+        all_model_losses = []
+
+        n_model = len(models_blender)
+
+        for iter_model, model in enumerate(models_blender):
+            print('------------------------------------------------------')
+            print('Training on model:{}/{}'.format(iter_model + 1, n_model))
+
+            # Training on each model in models_l1 using one cross validation set
+            prob_valid, prob_test, losses = \
+                model.stack_train(x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid,
+                                  x_test, x_g_test, params[iter_model], show_importance=self.show_importance)
+
+            all_model_valid_prob.append(prob_valid)
+            all_model_test_prob.append(prob_test)
+            all_model_losses.append(losses)
+
+        # Blenders of one cross validation set
+        blender_valid_cv = np.array(all_model_valid_prob, dtype=np.float64)  # (n_model+1) * n_valid_sample
+        blender_test_cv = np.array(all_model_test_prob, dtype=np.float64)  # n_model * n_test_sample
+        blender_losses_cv = np.array(all_model_losses, dtype=np.float64)  # n_model * n_loss
+
+        return blender_valid_cv, blender_test_cv, blender_losses_cv
+
+    def stacker(self, x_train_inputs, x_g_train_inputs, x_test, x_g_test, i_epoch=1):
+
+        if self.n_era % self.n_valid != 0:
+            raise ValueError('n_era must be an integer multiple of n_valid!')
 
         # Stack Reused Features
-        if x_train_reuse is not None:
+        if self.x_train_reuse is not None:
 
-            if x_test_reuse is None:
+            if self.x_test_reuse is None:
                 raise ValueError('x_test_reuse is None!')
 
             print('------------------------------------------------------')
             print('Stacking Reused Features of Train Set...')
             # n_sample * (n_feature + n_reuse)
-            blender_x_tree = np.concatenate((blender_x_tree, x_train_reuse), axis=1)
+            x_train_inputs = np.concatenate((x_train_inputs, self.x_train_reuse), axis=1)
+            # n_sample * (n_feature + n_reuse + 1)
+            x_g_train_inputs = np.column_stack((x_train_inputs, self.g_train))
+
+            print('------------------------------------------------------')
+            print('Stacking Reused Features of Test Set...')
+            # n_sample * (n_feature + n_reuse)
+            x_test = np.concatenate((x_test, self.x_test_reuse), axis=1)
+            # n_sample * (n_feature + n_reuse + 1)
+            x_g_test = np.column_stack((x_test, self.g_test))
+
+        # Print Shape
+        print('------------------------------------------------------')
+        print('x_train_inputs shape:{}'.format(x_train_inputs.shape))
+        print('x_test shape:{}'.format(x_test.shape))
+        print('------------------------------------------------------')
+
+        models_blender = self.models_initializer()
+        n_model = len(models_blender)
+
+        blender_valid = np.array([])
+        blender_test = np.array([])
+        # blender_losses = np.array([])
+
+        n_cv = int(self.n_era // self.n_valid)
+        counter_cv = 0
+
+        for x_train, y_train, w_train, x_g_train, x_valid, y_valid, \
+            w_valid, x_g_valid, valid_index, valid_era in self.cv.era_k_fold_for_stack(x=x_train_inputs,
+                                                                                       y=self.y_train,
+                                                                                       w=self.w_train,
+                                                                                       e=self.e_train,
+                                                                                       x_g=x_g_train_inputs,
+                                                                                       n_valid=self.n_valid,
+                                                                                       n_cv=n_cv,
+                                                                                       n_era=self.n_era,
+                                                                                       seed=self.cv_seed):
+
+            counter_cv += 1
+
+            print('======================================================')
+            print('Layer: {} | Epoch: {} | CV: {}/{}'.format(self.i_layer, i_epoch, counter_cv, n_cv))
+            print('Validation Set Era: ', valid_era)
+
+            # Training on models and get blenders of one cross validation set
+            blender_valid_cv, blender_test_cv, \
+                blender_losses_cv = self.train_models(models_blender, self.params, x_train, y_train,
+                                                      w_train, x_g_train, x_valid, y_valid, w_valid,
+                                                      x_g_valid, valid_index, x_test, x_g_test)
+
+            # Add blenders of one cross validation set to blenders of all CV
+            blender_test_cv = blender_test_cv.reshape(n_model, 1, -1)  # n_model * 1 * n_test_sample
+            if counter_cv == 1:
+                blender_valid = blender_valid_cv
+                blender_test = blender_test_cv
+                # blender_losses = blender_losses_cv
+            else:
+                # (n_model + 1) * n_sample
+                blender_valid = np.concatenate((blender_valid, blender_valid_cv), axis=1)
+                # n_model * n_cv * n_test_sample
+                blender_test = np.concatenate((blender_test, blender_test_cv), axis=1)
+                # blender_losses = np.concatenate((blender_losses, blender_losses_cv), axis=1)
+
+        # Print Shape
+        print('======================================================')
+        print('blender_valid shape:{}'.format(blender_valid.shape))
+        print('blender_test shape:{}'.format(blender_test.shape))
+
+        # Sort blender_valid by valid_index
+        print('------------------------------------------------------')
+        print('Sorting Validation Blenders...')
+        blender_valid_sorted = np.zeros_like(blender_valid, dtype=np.float64)  # n_model*n_x_sample
+        for column, idx in enumerate(blender_valid[0]):
+            blender_valid_sorted[:, int(idx)] = blender_valid[:, column]
+        blender_valid_sorted = np.delete(blender_valid_sorted, 0, axis=0)  # n_model*n_x_sample
+
+        # Calculate average of test_prob
+        print('------------------------------------------------------')
+        print('Calculating Average of Probabilities of Test Set...')
+        blender_test_mean = np.mean(blender_test, axis=1)  # n_model * n_test_sample
+
+        # Transpose blenders
+        blender_x_outputs = blender_valid_sorted.transpose()  # n_sample * n_model
+        blender_test_outputs = blender_test_mean.transpose()  # n_test_sample * n_model
+
+        # Stack Group Features
+        print('------------------------------------------------------')
+        print('Stacking Group Features...')
+        blender_x_g_outputs = np.column_stack((blender_x_outputs, self.g_train))
+        blender_test_g_outputs = np.column_stack((blender_test_outputs, self.g_test))
+
+        # Print Shape
+        print('------------------------------------------------------')
+        print('blender_x_outputs:{}'.format(blender_x_outputs.shape))
+        print('blender_test_outputs:{}'.format(blender_test_outputs.shape))
+        print('blender_x_g_outputs:{}'.format(blender_x_g_outputs.shape))
+        print('blender_test_g_outputs:{}'.format(blender_test_g_outputs.shape))
+        print('======================================================')
+
+        return blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs
+
+    def final_stacker(self, blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree):
+
+        # Stack Reused Features
+        if self.x_train_reuse is not None:
+
+            if self.x_test_reuse is None:
+                raise ValueError('x_test_reuse is None!')
+
+            print('------------------------------------------------------')
+            print('Stacking Reused Features of Train Set...')
+            # n_sample * (n_feature + n_reuse)
+            blender_x_tree = np.concatenate((blender_x_tree, self.x_train_reuse), axis=1)
             # n_sample * (n_feature + n_reuse + 1)
             blender_x_g_tree = np.column_stack((blender_x_tree, self.g_train))
 
             print('------------------------------------------------------')
             print('Stacking Reused Features of Test Set...')
             # n_sample * (n_feature + n_reuse)
-            blender_test_tree = np.concatenate((blender_test_tree, x_test_reuse), axis=1)
+            blender_test_tree = np.concatenate((blender_test_tree, self.x_test_reuse), axis=1)
             # n_sample * (n_feature + n_reuse + 1)
             blender_test_g_tree = np.column_stack((blender_test_tree, self.g_test))
 
-        if model_name == 'LGB':
+        print('======================================================')
+        print('Start Training Final Layer...')
 
-            model = models.LightGBM(blender_x_tree, self.y_train, self.w_train,  self.e_train, blender_test_tree,  
-                                    self.id_test, blender_x_g_tree, blender_test_g_tree, 
-                                    num_boost_round=num_boost_round)
-            print('Start training ' + model_name + '...')
-            model.train(self.pred_path, self.loss_log_path,
-                        n_valid=n_valid, n_cv=n_cv, n_era=n_era, cv_seed=self.cv_seed, parameters=params)
+        model = self.models_initializer(blender_x_tree, blender_test_tree, blender_x_g_tree,
+                                        blender_test_g_tree, params=self.params)
 
-        elif model_name == 'DNN':
-
-            model = models.DeepNeuralNetworks(blender_x_tree, self.y_train,  self.w_train,  self.e_train,
-                                              blender_test_tree,  self.id_test, params)
-            print('Start training ' + model_name + '...')
-            model.train(self.pred_path, self.loss_log_path,
-                        n_valid=n_valid, n_cv=n_cv, n_era=n_era, cv_seed=self.cv_seed)
-
-        else:
-            raise ValueError('Wrong model name!')
+        model.train(self.pred_path, self.loss_log_path, n_valid=self.n_valid,
+                    n_cv=self.n_cv_final, n_era=self.n_era, cv_seed=self.cv_seed,
+                    parameters=self.params, show_importance=self.show_importance)
 
     def train(self, i_epoch=1):
 
@@ -539,22 +650,16 @@ class StackLayer:
             blender_test_g_tree = self.x_g_test
 
         # For Final Layer
-        if self.final_layer_model is not None:
+        if self.is_final_layer is True:
 
-            self.stack_final_layer(self.final_layer_model, self.params, self.n_valid, self.n_cv_final, self.n_era,
-                                   blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree,
-                                   num_boost_round=self.num_boost_round_final, x_train_reuse=self.x_train_reuse, 
-                                   x_test_reuse=self.x_test_reuse)
+            self.final_stacker(blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree)
 
         else:
 
             # Training Stacker
             blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs \
-                = self.stacker(self.models_initializer, self.params, blender_x_tree, self.y_train, self.w_train,
-                               self.e_train, blender_x_g_tree, blender_test_tree, blender_test_g_tree,
-                               cv=self.cv, n_valid=self.n_valid, n_era=self.n_era, cv_seed=self.cv_seed,
-                               i_layer=self.i_layer, i_epoch=i_epoch, x_train_reuse=self.x_train_reuse,
-                               x_test_reuse=self.x_test_reuse)
+                = self.stacker(blender_x_tree, blender_x_g_tree, blender_test_tree, blender_test_g_tree,
+                               i_epoch=i_epoch)
 
             return blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs
 
@@ -566,9 +671,9 @@ class StackTree:
     pred_path = ''
     stack_output_path = ''
 
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te, pred_path=None, loss_log_path=None, 
-                 stack_output_path=None, hyper_params=None, layers_params=None, num_boost_round=None,
-                 final_layer_params=None, final_layer_set=None):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te,
+                 pred_path=None, loss_log_path=None, stack_output_path=None, hyper_params=None,
+                 layers_params=None, num_boost_round=None, show_importance=False):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -581,25 +686,21 @@ class StackTree:
         self.pred_path = pred_path
         self.loss_log_path = loss_log_path
         self.stack_output_path = stack_output_path
-        self.g_train = x_g_tr[:, -1]
-        self.g_test = x_g_te[:, -1]
-        
         self.n_valid = hyper_params['n_valid']
         self.n_era = hyper_params['n_era']
         self.n_epoch = hyper_params['n_epoch']
+        self.final_layer_cv = hyper_params['final_n_cv']
         self.cv_seed = hyper_params['cv_seed']
         self.layers_params = layers_params
+        self.dnn_l1_params = layers_params[0][-1]
+        self.dnn_l2_params = None
         self.num_boost_round_lgb_l1 = num_boost_round['num_boost_round_lgb_l1']
         self.num_boost_round_xgb_l1 = num_boost_round['num_boost_round_xgb_l1']
-        # self.num_boost_round_lgb_l2 = num_boost_round['num_boost_round_lgb_l2']
+        self.num_boost_round_lgb_l2 = None
         self.num_boost_round_final = num_boost_round['num_boost_round_final']
-        self.dnn_l1_params = layers_params[0][-1]
-        # self.dnn_l2_params = layers_params[1][-1]
+        self.show_importance = show_importance
 
-        self.final_layer_params = final_layer_params
-        self.final_layer_set = final_layer_set
-
-    def init_models_layer1(self):
+    def layer1_initializer(self):
 
         LGB_L1 = models.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
                                  self.x_test, self.id_test, self.x_g_train, self.x_g_test, 
@@ -630,170 +731,33 @@ class StackTree:
 
         return models_l1
 
-    def init_models_layer2(self):
+    def layer2_initializer(self):
 
-        # LGB_L2 = models.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
-        #                          self.x_test, self.id_test, self.x_g_train, self.x_g_test,
-        #                          num_boost_round=self.num_boost_round_lgb_l2)
+        LGB_L2 = models.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
+                                 self.x_test, self.id_test, self.x_g_train, self.x_g_test,
+                                 num_boost_round=self.num_boost_round_lgb_l2)
 
-        # DNN_L2 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
-        #                                    self.e_train, self.x_test, self.id_test, self.dnn_l2_params)
+        DNN_L2 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
+                                           self.e_train, self.x_test, self.id_test, self.dnn_l2_params)
 
         models_l2 = [
-                     # LGB_L2,
-                     # DNN_L2
+                     LGB_L2,
+                     DNN_L2
                      ]
 
         return models_l2
 
-    @staticmethod
-    def train_models(models_blender, params, x_train, y_train, w_train, x_g_train,
-                     x_valid, y_valid, w_valid, x_g_valid, idx_valid, x_test, x_g_test):
+    def final_layer_initializer(self, blender_x_tree, blender_test_tree, blender_x_g_tree,
+                                blender_test_g_tree, params=None):
 
-        # First raw - idx_valid
-        all_model_valid_prob = [idx_valid]
-        all_model_test_prob = []
-        all_model_losses = []
+        LGB_END = models.LightGBM(blender_x_tree, self.y_train, self.w_train,  self.e_train,
+                                  blender_test_tree, self.id_test, blender_x_g_tree, blender_test_g_tree,
+                                  num_boost_round=self.num_boost_round_final)
 
-        n_model = len(models_blender)
+        # DNN_END = models.DeepNeuralNetworks(blender_x_tree, self.y_train,  self.w_train,  self.e_train,
+        #                                     blender_test_tree,  self.id_test, params)
 
-        for iter_model, model in enumerate(models_blender):
-
-            print('------------------------------------------------------')
-            print('Training on model:{}/{}'.format(iter_model+1, n_model))
-
-            # Training on each model in models_l1 using one cross validation set
-            prob_valid, prob_test, losses = \
-                model.stack_train(x_train, y_train, w_train, x_g_train,
-                                  x_valid, y_valid, w_valid, x_g_valid, x_test, x_g_test, params[iter_model])
-
-            all_model_valid_prob.append(prob_valid)
-            all_model_test_prob.append(prob_test)
-            all_model_losses.append(losses)
-
-        # Blenders of one cross validation set
-        blender_valid_cv = np.array(all_model_valid_prob, dtype=np.float64)  # (n_model+1) * n_valid_sample
-        blender_test_cv = np.array(all_model_test_prob, dtype=np.float64)    # n_model * n_test_sample
-        blender_losses_cv = np.array(all_model_losses, dtype=np.float64)     # n_model * n_loss
-
-        return blender_valid_cv, blender_test_cv, blender_losses_cv
-
-    def stacker(self, models_initializer, params, x_train_inputs, y_train_inputs, w_train_inputs,
-                e_train_inputs, x_g_train_inputs, x_test, x_g_test, cv, n_valid=4, n_era=20, cv_seed=None,
-                i_layer=1, i_epoch=1, x_train_reuse=None, x_test_reuse=None):
-
-        if n_era % n_valid != 0:
-            raise ValueError('n_era must be an integer multiple of n_valid!')
-
-        # Stack Reused Features
-        if x_train_reuse is not None:
-
-            if x_test_reuse is None:
-                raise ValueError('x_test_reuse is None!')
-
-            print('------------------------------------------------------')
-            print('Stacking Reused Features of Train Set...')
-            # n_sample * (n_feature + n_reuse)
-            x_train_inputs = np.concatenate((x_train_inputs, x_train_reuse), axis=1)
-            # n_sample * (n_feature + n_reuse + 1)
-            x_g_train_inputs = np.column_stack((x_train_inputs, self.g_train))
-
-            print('------------------------------------------------------')
-            print('Stacking Reused Features of Test Set...')
-            # n_sample * (n_feature + n_reuse)
-            x_test = np.concatenate((x_test, x_test_reuse), axis=1)
-            # n_sample * (n_feature + n_reuse + 1)
-            x_g_test = np.column_stack((x_test, self.g_test))
-
-        # Print Shape
-        print('------------------------------------------------------')
-        print('x_train_inputs shape:{}'.format(x_train_inputs.shape))
-        print('x_test shape:{}'.format(x_test.shape))
-        print('------------------------------------------------------')
-
-        models_blender = models_initializer()
-        n_model = len(models_blender)
-
-        blender_valid = np.array([])
-        blender_test = np.array([])
-        # blender_losses = np.array([])
-        
-        n_cv = int(n_era // n_valid)
-        counter_cv = 0
-
-        for x_train, y_train, w_train, x_g_train, x_valid, y_valid, \
-            w_valid, x_g_valid, valid_index, valid_era in cv.era_k_fold_for_stack(x=x_train_inputs,
-                                                                                  y=y_train_inputs,
-                                                                                  w=w_train_inputs,
-                                                                                  e=e_train_inputs,
-                                                                                  x_g=x_g_train_inputs,
-                                                                                  n_valid=n_valid,
-                                                                                  n_cv=n_cv,
-                                                                                  n_era=n_era,
-                                                                                  seed=cv_seed):
-
-            counter_cv += 1
-
-            print('======================================================')
-            print('Layer: {} | Epoch: {} | CV: {}/{}'.format(i_layer, i_epoch, counter_cv, n_cv))
-            print('Validation Set Era: ', valid_era)
-
-            # Training on models and get blenders of one cross validation set
-            blender_valid_cv, blender_test_cv, \
-                blender_losses_cv = self.train_models(models_blender, params, x_train, y_train, w_train,
-                                                      x_g_train, x_valid, y_valid, w_valid, x_g_valid,
-                                                      valid_index, x_test, x_g_test)
-
-            # Add blenders of one cross validation set to blenders of all CV
-            blender_test_cv = blender_test_cv.reshape(n_model, 1, -1)  # n_model * 1 * n_test_sample
-            if counter_cv == 1:
-                blender_valid = blender_valid_cv
-                blender_test = blender_test_cv
-                # blender_losses = blender_losses_cv
-            else:
-                # (n_model + 1) * n_sample
-                blender_valid = np.concatenate((blender_valid, blender_valid_cv), axis=1)
-                # n_model * n_cv * n_test_sample
-                blender_test = np.concatenate((blender_test, blender_test_cv), axis=1)
-                # blender_losses = np.concatenate((blender_losses, blender_losses_cv), axis=1)
-
-        # Print Shape
-        print('======================================================')
-        print('blender_valid shape:{}'.format(blender_valid.shape))
-        print('blender_test shape:{}'.format(blender_test.shape))
-
-        # Sort blender_valid by valid_index
-        print('------------------------------------------------------')
-        print('Sorting Validation Blenders...')
-        blender_valid_sorted = np.zeros_like(blender_valid, dtype=np.float64)  # n_model*n_x_sample
-        for column, idx in enumerate(blender_valid[0]):
-            blender_valid_sorted[:, int(idx)] = blender_valid[:, column]
-        blender_valid_sorted = np.delete(blender_valid_sorted, 0, axis=0)      # n_model*n_x_sample
-
-        # Calculate average of test_prob
-        print('------------------------------------------------------')
-        print('Calculating Average of Probabilities of Test Set...')
-        blender_test_mean = np.mean(blender_test, axis=1)   # n_model * n_test_sample
-
-        # Transpose blenders
-        blender_x_outputs = blender_valid_sorted.transpose()      # n_sample * n_model
-        blender_test_outputs = blender_test_mean.transpose()      # n_test_sample * n_model
-
-        # Stack Group Features
-        print('------------------------------------------------------')
-        print('Stacking Group Features...')
-        blender_x_g_outputs = np.column_stack((blender_x_outputs, self.g_train))
-        blender_test_g_outputs = np.column_stack((blender_test_outputs, self.g_test))
-
-        # Print Shape
-        print('------------------------------------------------------')
-        print('blender_x_outputs:{}'.format(blender_x_outputs.shape))
-        print('blender_test_outputs:{}'.format(blender_test_outputs.shape))
-        print('blender_x_g_outputs:{}'.format(blender_x_g_outputs.shape))
-        print('blender_test_g_outputs:{}'.format(blender_test_g_outputs.shape))
-        print('======================================================')
-
-        return blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs
+        return LGB_END
 
     def save_predict(self, pred_path, test_outputs):
 
@@ -809,12 +773,9 @@ class StackTree:
         cv_stack = models.CrossValidation()
 
         # Initializing models for every layer
-        models_initializer_l1 = self.init_models_layer1
-        # models_initializer_l2 = self.init_models_layer2
-
-        # Final Layer params
-        final_layer_model = self.final_layer_set['model']
-        final_layer_cv = self.final_layer_set['n_cv']
+        models_initializer_l1 = self.layer1_initializer
+        # models_initializer_l2 = self.layer2_initializer
+        models_initializer_final = self.final_layer_initializer
 
         # Reused features
         x_train_reuse_l2 = self.x_train[:, :88]
@@ -828,10 +789,10 @@ class StackTree:
         # Layer 1
         stk_l1 = StackLayer(self.layers_params[0], self.x_train, self.y_train, self.w_train, self.e_train,
                             self.x_g_train, self.x_test, self.x_g_test, self.id_test,
-                            models_initializer=models_initializer_l1, stacker=self.stacker, cv=cv_stack,
-                            n_valid=self.n_valid[0], n_era=self.n_era[0], cv_seed=self.cv_seed,
-                            i_layer=1, n_epoch=self.n_epoch[0],  pred_path=self.pred_path, 
-                            stack_output_path=self.stack_output_path)
+                            models_initializer=models_initializer_l1, cv=cv_stack, n_valid=self.n_valid[0],
+                            n_era=self.n_era[0], cv_seed=self.cv_seed, i_layer=1, n_epoch=self.n_epoch[0],
+                            pred_path=self.pred_path, stack_output_path=self.stack_output_path,
+                            show_importance=self.show_importance)
 
         # Layer 2
         # stk_l2 = StackLayer(self.layers_params[1], self.x_train, self.y_train, self.w_train, self.e_train,
@@ -843,13 +804,13 @@ class StackTree:
         #                     pred_path=self.pred_path, stack_output_path=self.stack_output_path)
 
         # Final Layer
-        stk_l2 = StackLayer(self.final_layer_params, self.x_train, self.y_train, self.w_train, self.e_train,
+        stk_l2 = StackLayer(self.layers_params[1], self.x_train, self.y_train, self.w_train, self.e_train,
                             self.x_g_train, self.x_test, self.x_g_test, self.id_test,
-                            n_valid=self.n_valid[1], cv_seed=self.cv_seed, input_layer=stk_l1,
-                            i_layer=2, n_epoch=self.n_epoch[1], x_train_reuse=x_train_reuse_l2,
-                            x_test_reuse=x_test_reuse_l2, pred_path=self.pred_path, loss_log_path=self.loss_log_path, 
-                            stack_output_path=self.stack_output_path, final_layer_model=final_layer_model, 
-                            num_boost_round_final=self.num_boost_round_final, n_cv_final=final_layer_cv)
+                            models_initializer=models_initializer_final, n_valid=self.n_valid[1],
+                            cv_seed=self.cv_seed, input_layer=stk_l1, i_layer=2, n_epoch=self.n_epoch[1],
+                            x_train_reuse=x_train_reuse_l2, x_test_reuse=x_test_reuse_l2, pred_path=self.pred_path,
+                            loss_log_path=self.loss_log_path, stack_output_path=self.stack_output_path,
+                            show_importance=self.show_importance, is_final_layer=True, n_cv_final=self.final_layer_cv)
 
         # Training
         stk_l2.train()

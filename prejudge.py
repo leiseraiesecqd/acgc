@@ -30,7 +30,7 @@ class PrejudgeEraSign:
         self.x_g_test = x_g_te
 
     def predict_era_sign(self, pred_path, negative_era_list, num_boost_round_e, n_splits_e, n_cv_e, cv_seed,
-                         use_weight=True, force_convert_era=True, parameters_e=None):
+                         use_weight=True, force_convert_era=True, parameters_e=None, show_importance=False):
 
         print('======================================================')
         print('Training Era Sign...')
@@ -44,8 +44,9 @@ class PrejudgeEraSign:
                               self.x_test, self.id_test, feature, self.x_g_test, num_boost_round=num_boost_round_e)
 
         # Training and Get Probabilities of Test Era Being Positive
-        era_prob_test = LGB.prejudge_train(pred_path + 'pred_era/', n_splits=n_splits_e, n_cv=n_cv_e, cv_seed=cv_seed,
-                                           use_weight=use_weight, parameters=parameters_e)
+        era_prob_test = LGB.prejudge_train(pred_path + 'pred_era/', n_splits=n_splits_e, n_cv=n_cv_e,
+                                           cv_seed=cv_seed, use_weight=use_weight, parameters=parameters_e,
+                                           show_importance=show_importance)
 
         # Convert Probabilities of Test Era to 0 and 1
         if force_convert_era is True:
@@ -96,7 +97,7 @@ class PrejudgeEraSign:
     def train_models_by_era_sign(self, x_test_p, x_g_test_p, id_test_p, era_idx_test_p, x_test_n, x_g_test_n,
                                  id_test_n, era_idx_test_n, pred_path, loss_log_path, cv_seed, num_boost_round_p,
                                  n_valid_p, n_cv_p, n_era_p, parameters_p, era_list_p, num_boost_round_n, n_valid_n,
-                                 n_cv_n, n_era_n, parameters_n, era_list_n):
+                                 n_cv_n, n_era_n, parameters_n, era_list_n, show_importance=False):
 
         print('======================================================')
         print('Training Models by Era Sign...')
@@ -112,14 +113,14 @@ class PrejudgeEraSign:
 
         prob_test_p = LGBM_P.train(pred_path + 'positive/', loss_log_path + 'positive/', n_valid=n_valid_p,
                                    n_cv=n_cv_p, n_era=n_era_p,  cv_seed=cv_seed, parameters=parameters_p,
-                                   return_prob_test=True, era_list=era_list_p)
+                                   return_prob_test=True, era_list=era_list_p, show_importance=show_importance)
 
         print('======================================================')
         print('Training Models of Negative Era Sign...')
 
         prob_test_n = LGBM_N.train(pred_path + 'negative/', loss_log_path + 'negative/', n_valid=n_valid_n,
                                    n_cv=n_cv_n, n_era=n_era_n, cv_seed=cv_seed, parameters=parameters_n,
-                                   return_prob_test=True, era_list=era_list_n)
+                                   return_prob_test=True, era_list=era_list_n, show_importance=show_importance)
 
         prob_test = np.zeros_like(self.id_test, dtype=np.float64)
 
@@ -132,7 +133,7 @@ class PrejudgeEraSign:
         return prob_test
 
     def train(self, pred_path, loss_log_path, negative_era_list, model_parameters, hyper_parameters,
-              load_pickle=False, pickle_path=None):
+              load_pickle=False, pickle_path=None, show_importance=False):
 
         start_time = time.time()
 
@@ -181,8 +182,9 @@ class PrejudgeEraSign:
         else:
 
             # Training Era Sign
-            era_sign_test = self.predict_era_sign(pred_path, negative_era_list, num_boost_round_e, n_splits_e, n_cv_e, seed,
-                                                  use_weight=False,  force_convert_era=True, parameters_e=parameters_e)
+            era_sign_test = self.predict_era_sign(pred_path, negative_era_list, num_boost_round_e, n_splits_e, n_cv_e,
+                                                  seed, use_weight=False,  force_convert_era=True,
+                                                  parameters_e=parameters_e, show_importance=show_importance)
 
             # era_sign_test = self.convert_era_sign('./results/prejudge/pred_era/final_results/lgb_result.csv')
 
@@ -200,7 +202,8 @@ class PrejudgeEraSign:
                                           num_boost_round_p=num_boost_round_p, n_valid_p=n_valid_p, n_cv_p=n_cv_p,
                                           n_era_p=n_era_p, parameters_p=parameters_p, era_list_p=era_list_p,
                                           num_boost_round_n=num_boost_round_n, n_valid_n=n_valid_n, n_cv_n=n_cv_n,
-                                          n_era_n=n_era_n, parameters_n=parameters_n, era_list_n=era_list_n)
+                                          n_era_n=n_era_n, parameters_n=parameters_n, era_list_n=era_list_n,
+                                          show_importance=show_importance)
 
         # Save Predictions
         utils.save_pred_to_csv(pred_path + 'final_results/', self.id_test, prob_test)

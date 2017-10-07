@@ -61,7 +61,8 @@ class TrainSingleModel:
 
         print('Start training Logistic Regression...')
 
-        LR.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed, parameters=lr_parameters)
+        LR.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
+                 parameters=lr_parameters, show_importance=False)
 
     # Random Forest
     @staticmethod
@@ -90,7 +91,8 @@ class TrainSingleModel:
 
         print('Start training Random Forest...')
 
-        RF.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed, parameters=rf_parameters)
+        RF.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
+                 parameters=rf_parameters, show_importance=False)
 
     # Extra Trees
     @staticmethod
@@ -119,7 +121,8 @@ class TrainSingleModel:
 
         print('Start training Extra Trees...')
 
-        ET.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed, parameters=et_parameters)
+        ET.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
+                 parameters=et_parameters, show_importance=False)
 
     # AdaBoost
     @staticmethod
@@ -156,7 +159,8 @@ class TrainSingleModel:
 
         print('Start training AdaBoost...')
 
-        AB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed, parameters=ab_parameters)
+        AB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
+                 parameters=ab_parameters, show_importance=False)
 
     # GradientBoosting
     @staticmethod
@@ -187,7 +191,8 @@ class TrainSingleModel:
 
         print('Start training GradientBoosting...')
 
-        GB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed, parameters=gb_parameters)
+        GB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
+                 parameters=gb_parameters, show_importance=False)
 
     # XGBoost
     @staticmethod
@@ -214,7 +219,8 @@ class TrainSingleModel:
 
         print('Start training XGBoost...')
 
-        XGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed, parameters=xgb_parameters)
+        XGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
+                  parameters=xgb_parameters, show_importance=False)
 
     @staticmethod
     def xgb_train_sklearn():
@@ -251,7 +257,8 @@ class TrainSingleModel:
 
         print('Start training XGBoost...')
 
-        XGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed, parameters=xgb_parameters)
+        XGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
+                  parameters=xgb_parameters, show_importance=False)
 
         # LGBM = models.SKLearnXGBoost(x_train_n, y_train_n, w_train_n, e_train_n, x_test, id_test)
         #
@@ -294,7 +301,8 @@ class TrainSingleModel:
 
         print('Start training LGBM...')
 
-        LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed, parameters=lgb_parameters)
+        LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
+                   parameters=lgb_parameters, show_importance=False)
 
     @staticmethod
     def lgb_train_sklearn():
@@ -332,7 +340,8 @@ class TrainSingleModel:
 
         print('Start training LGBM...')
 
-        LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed, parameters=lgb_parameters)
+        LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
+                   parameters=lgb_parameters, show_importance=False)
 
         # LGBM = models.SKLearnLightGBM(x_train_n, y_train_n, w_train_n, e_train_n,
         #                               x_test, id_test, x_g_train_n, x_g_test)
@@ -443,7 +452,8 @@ class TrainSingleModel:
 
         print('Start training LGBM...')
 
-        LGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed, parameters=lgb_parameters)
+        LGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
+                  parameters=lgb_parameters, show_importance=False)
 
 
 # Grid Search
@@ -941,7 +951,7 @@ class PrejudgeTraining:
 
         PES.train(pred_path=pred_path + 'prejudge/', loss_log_path=loss_log_path + 'prejudge/',
                   negative_era_list=negative_era_list, model_parameters=models_parameters,
-                  hyper_parameters=hyper_parameters, load_pickle=True)
+                  hyper_parameters=hyper_parameters, load_pickle=True, show_importance=False)
 
 
 # Stacking
@@ -1144,27 +1154,6 @@ class ModelStacking:
 
         return layer2_params
 
-    # Parameters for layer3
-    @staticmethod
-    def get_layer3_params():
-
-        # Parameters of Deep Neural Network
-        dnn_params = {'version': '1.0',
-                      'epochs': 10,
-                      'unit_number': [4, 2],
-                      'learning_rate': 0.0001,
-                      'keep_probability': 0.8,
-                      'batch_size': 256,
-                      'seed': dnn_seed,
-                      'display_step': 100,
-                      'save_path': './checkpoints/',
-                      'log_path': './log/'}
-
-        # List of parameters for layer3
-        layer3_params = [dnn_params]
-
-        return layer3_params
-
     # Parameters for layer2
     @staticmethod
     def get_final_layer_params():
@@ -1235,7 +1224,7 @@ class ModelStacking:
         STK = stacking.DeepStack(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test,
                                  pred_path=pred_path + 'stack_results/', loss_log_path=loss_log_path,
                                  stack_output_path=stack_output_path, hyper_params=hyper_params,
-                                 layers_params=layers_params, num_boost_round=num_boost_round)
+                                 layers_params=layers_params, num_boost_round=num_boost_round, show_importance=False)
 
         STK.stack()
 
@@ -1247,24 +1236,20 @@ class ModelStacking:
         hyper_params = {'n_valid': (4, 4),
                         'n_era': (20, 20),
                         'n_epoch': (1, 8),
+                        'final_n_cv': 20,
                         'cv_seed': cv_seed}
 
         layer1_params = ModelStacking.get_layer1_params()
         # layer2_params = ModelStacking.get_layer2_params()
-        # layer3_params = ModelStacking.get_layer3_params()
+        final_layer_params = ModelStacking.get_final_layer_params()
 
         layers_params = [layer1_params,
                          # layer2_params,
-                         # layer3_params
-                         ]
+                         final_layer_params]
 
         num_boost_round = {'num_boost_round_lgb_l1': 65,
                            'num_boost_round_xgb_l1': 36,
                            'num_boost_round_final': 65}
-
-        final_layer_params = ModelStacking.get_final_layer_params()
-        final_layer_set = {'model': 'LGB',
-                           'n_cv': 20}
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
@@ -1272,8 +1257,7 @@ class ModelStacking:
         STK = stacking.StackTree(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test,
                                  pred_path=stack_pred_path, loss_log_path=loss_log_path,
                                  stack_output_path=stack_output_path, hyper_params=hyper_params,
-                                 layers_params=layers_params, num_boost_round=num_boost_round,
-                                 final_layer_params=final_layer_params, final_layer_set=final_layer_set)
+                                 layers_params=layers_params, num_boost_round=num_boost_round, show_importance=False)
 
         STK.stack()
 

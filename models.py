@@ -30,6 +30,7 @@ import xgboost as xgb
 from xgboost import XGBClassifier
 import lightgbm as lgb
 from lightgbm import LGBMClassifier
+from catboost import CatBoostClassifier
 
 import seaborn as sns
 sns.set(style="whitegrid", color_codes=True)
@@ -105,10 +106,15 @@ class LRegression:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, 
+              era_list=None, parameters=None, show_importance=False):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
+
+        print('------------------------------------------------------')
+        print('Training Logistic Regression...')
+        print('------------------------------------------------------')
 
         count = 0
         prob_test_total = []
@@ -166,7 +172,8 @@ class LRegression:
                                 acc_train_cv_era, acc_valid_cv_era)
 
             # Feature Importance
-            self.get_importance(clf)
+            if show_importance is True:
+                self.get_importance(clf)
 
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
@@ -199,8 +206,8 @@ class LRegression:
         utils.save_pred_to_csv(pred_path + 'final_results/lr_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/lr_', prob_train_mean, self.y_train)
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
-                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
+                    w_valid, x_g_valid, x_test, x_g_test, parameters, show_importance=False):
 
         print('------------------------------------------------------')
         print('Training Logistic Regression...')
@@ -211,7 +218,8 @@ class LRegression:
         clf.fit(x_train, y_train, sample_weight=w_train)
 
         # Feature Importance
-        self.get_importance(clf)
+        if show_importance is True:
+            self.get_importance(clf)
 
         # Print LogLoss
         loss_train, loss_valid, \
@@ -366,10 +374,15 @@ class DecisionTree:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, 
+              era_list=None, parameters=None, show_importance=False):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
+
+        print('------------------------------------------------------')
+        print('Training Decision Tree...')
+        print('------------------------------------------------------')
 
         count = 0
         prob_test_total = []
@@ -427,7 +440,8 @@ class DecisionTree:
                                 acc_train_cv_era, acc_valid_cv_era)
 
             # Feature Importance
-            self.get_importance(clf)
+            if show_importance is True:
+                self.get_importance(clf)
 
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
@@ -460,8 +474,8 @@ class DecisionTree:
         utils.save_pred_to_csv(pred_path + 'final_results/dt_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/dt_', prob_train_mean, self.y_train)
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
-                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
+                    w_valid, x_g_valid, x_test, x_g_test, parameters, show_importance=False):
 
         print('------------------------------------------------------')
         print('Training Decision Tree...')
@@ -472,7 +486,8 @@ class DecisionTree:
         clf.fit(x_train, y_train, sample_weight=w_train)
 
         # Feature Importance
-        self.get_importance(clf)
+        if show_importance is True:
+            self.get_importance(clf)
 
         # Print LogLoss
         loss_train, loss_valid, \
@@ -557,10 +572,15 @@ class RandomForest:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, 
+              era_list=None, parameters=None, show_importance=False):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
+
+        print('------------------------------------------------------')
+        print('Training Random Forest...')
+        print('------------------------------------------------------')
 
         count = 0
         prob_test_total = []
@@ -618,7 +638,8 @@ class RandomForest:
                                 acc_train_cv_era, acc_valid_cv_era)
 
             # Feature Importance
-            self.get_importance(clf)
+            if show_importance is True:
+                self.get_importance(clf)
 
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
@@ -651,8 +672,8 @@ class RandomForest:
         utils.save_pred_to_csv(pred_path + 'final_results/rf_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/rf_', prob_train_mean, self.y_train)
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
-                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
+                    w_valid, x_g_valid, x_test, x_g_test, parameters, show_importance=False):
 
         print('------------------------------------------------------')
         print('Training Random Forest...')
@@ -663,7 +684,8 @@ class RandomForest:
         clf.fit(x_train, y_train, sample_weight=w_train)
 
         # Feature Importance
-        self.get_importance(clf)
+        if show_importance is True:
+            self.get_importance(clf)
 
         # Print LogLoss
         loss_train, loss_valid, \
@@ -748,10 +770,15 @@ class ExtraTrees:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, 
+              era_list=None, parameters=None, show_importance=False):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
+
+        print('------------------------------------------------------')
+        print('Training Extra Trees...')
+        print('------------------------------------------------------')
 
         count = 0
         prob_test_total = []
@@ -809,7 +836,8 @@ class ExtraTrees:
                                 acc_train_cv_era, acc_valid_cv_era)
 
             # Feature Importance
-            self.get_importance(clf)
+            if show_importance is True:
+                self.get_importance(clf)
 
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
@@ -842,8 +870,8 @@ class ExtraTrees:
         utils.save_pred_to_csv(pred_path + 'final_results/et_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/et_', prob_train_mean, self.y_train)
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
-                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
+                    w_valid, x_g_valid, x_test, x_g_test, parameters, show_importance=False):
 
         print('------------------------------------------------------')
         print('Training Extra Trees...')
@@ -854,7 +882,8 @@ class ExtraTrees:
         clf.fit(x_train, y_train, sample_weight=w_train)
 
         # Feature Importance
-        self.get_importance(clf)
+        if show_importance is True:
+            self.get_importance(clf)
 
         # Print LogLoss
         loss_train, loss_valid, \
@@ -939,10 +968,15 @@ class AdaBoost:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, 
+              era_list=None, parameters=None, show_importance=False):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
+
+        print('------------------------------------------------------')
+        print('Training AdaBoost...')
+        print('------------------------------------------------------')
 
         count = 0
         prob_test_total = []
@@ -1000,7 +1034,8 @@ class AdaBoost:
                                 acc_train_cv_era, acc_valid_cv_era)
 
             # Feature Importance
-            self.get_importance(clf)
+            if show_importance is True:
+                self.get_importance(clf)
 
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
@@ -1033,8 +1068,8 @@ class AdaBoost:
         utils.save_pred_to_csv(pred_path + 'final_results/ab_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/ab_', prob_train_mean, self.y_train)
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
-                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
+                    w_valid, x_g_valid, x_test, x_g_test, parameters, show_importance=False):
 
         print('------------------------------------------------------')
         print('Training AdaBoost...')
@@ -1045,7 +1080,8 @@ class AdaBoost:
         clf.fit(x_train, y_train, sample_weight=w_train)
 
         # Feature Importance
-        self.get_importance(clf)
+        if show_importance is True:
+            self.get_importance(clf)
 
         # Print LogLoss
         loss_train, loss_valid, \
@@ -1130,10 +1166,15 @@ class GradientBoosting:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, 
+              era_list=None, parameters=None, show_importance=False):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
+
+        print('------------------------------------------------------')
+        print('Training GradientBoosting...')
+        print('------------------------------------------------------')
 
         count = 0
         prob_test_total = []
@@ -1166,7 +1207,8 @@ class GradientBoosting:
             clf.fit(x_train, y_train, sample_weight=w_train)
 
             # Feature Importance
-            self.get_importance(clf)
+            if show_importance is True:
+                self.get_importance(clf)
 
             # Prediction
             prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'cv_results/gb_cv_{}_'.format(count))
@@ -1224,8 +1266,8 @@ class GradientBoosting:
         utils.save_pred_to_csv(pred_path + 'final_results/gb_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/gb_', prob_train_mean, self.y_train)
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
-                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
+                    w_valid, x_g_valid, x_test, x_g_test, parameters, show_importance=False):
 
         print('------------------------------------------------------')
         print('Training GradientBoosting...')
@@ -1236,7 +1278,8 @@ class GradientBoosting:
         clf.fit(x_train, y_train, sample_weight=w_train)
 
         # Feature Importance
-        self.get_importance(clf)
+        if show_importance is True:
+            self.get_importance(clf)
 
         # Print LogLoss
         loss_train, loss_valid, \
@@ -1337,10 +1380,15 @@ class XGBoost:
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, 
+              era_list=None, parameters=None, show_importance=False):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
+
+        print('------------------------------------------------------')
+        print('Training XGBoost...')
+        print('------------------------------------------------------')
 
         count = 0
         prob_test_total = []
@@ -1376,7 +1424,8 @@ class XGBoost:
             bst = xgb.train(parameters, d_train, num_boost_round=self.num_boost_round, evals=eval_list)
 
             # Feature Importance
-            self.get_importance(bst)
+            if show_importance is True:
+                self.get_importance(bst)
 
             # Prediction
             prob_test = self.predict(bst, self.x_test, pred_path=pred_path + 'cv_results/xgb_cv_{}_'.format(count))
@@ -1434,8 +1483,8 @@ class XGBoost:
         utils.save_pred_to_csv(pred_path + 'final_results/xgb_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/xgb_', prob_train_mean, self.y_train)
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
-                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
+                    w_valid, x_g_valid, x_test, x_g_test, parameters, show_importance=False):
 
         print('------------------------------------------------------')
         print('Training XGBoost...')
@@ -1449,7 +1498,8 @@ class XGBoost:
         bst = xgb.train(parameters, d_train, num_boost_round=self.num_boost_round, evals=eval_list)
 
         # Feature Importance
-        self.get_importance(bst)
+        if show_importance is True:
+            self.get_importance(bst)
 
         # Print LogLoss
         # Print LogLoss
@@ -1538,10 +1588,15 @@ class SKLearnXGBoost:
         return prob_train
 
     # Using sk-learn API
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, 
+              era_list=None, parameters=None, show_importance=False):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
+
+        print('------------------------------------------------------')
+        print('Training XGBoost...')
+        print('------------------------------------------------------')
 
         count = 0
         prob_test_total = []
@@ -1575,7 +1630,8 @@ class SKLearnXGBoost:
                     early_stopping_rounds=100, eval_metric='logloss', verbose=True)
 
             # Feature Importance
-            self.get_importance(clf)
+            if show_importance is True:
+                self.get_importance(clf)
 
             # Prediction
             prob_test = self.predict(clf, self.x_test, pred_path=pred_path + 'cv_results/xgb_sk_cv_{}_'.format(count))
@@ -1633,8 +1689,8 @@ class SKLearnXGBoost:
         utils.save_pred_to_csv(pred_path + 'final_results/xgb_sk_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/xgb_sk_', prob_train_mean, self.y_train)
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
-                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
+                    w_valid, x_g_valid, x_test, x_g_test, parameters, show_importance=False):
 
         print('------------------------------------------------------')
         print('Training XGBoost...')
@@ -1647,7 +1703,8 @@ class SKLearnXGBoost:
                 early_stopping_rounds=10, eval_metric='logloss', verbose=True)
 
         # Feature Importance
-        self.get_importance(clf)
+        if show_importance is True:
+            self.get_importance(clf)
 
         # Print LogLoss
         loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
@@ -1738,10 +1795,14 @@ class LightGBM:
         return prob_train
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None,
-              parameters=None, return_prob_test=False):
+              parameters=None, return_prob_test=False, show_importance=False):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
+
+        print('------------------------------------------------------')
+        print('Training LightGBM...')
+        print('------------------------------------------------------')
 
         count = 0
         prob_test_total = []
@@ -1780,7 +1841,8 @@ class LightGBM:
                             valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
 
             # Feature Importance
-            self.get_importance(bst)
+            if show_importance is True:
+                self.get_importance(bst)
 
             # Prediction
             prob_test = self.predict(bst, self.x_g_test, pred_path=pred_path + 'cv_results/lgb_cv_{}_'.format(count))
@@ -1842,8 +1904,8 @@ class LightGBM:
         if return_prob_test is True:
             return prob_test_mean
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
-                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
+                    w_valid, x_g_valid, x_test, x_g_test, parameters, show_importance=False):
 
         print('------------------------------------------------------')
         print('Training LightGBM...')
@@ -1861,7 +1923,8 @@ class LightGBM:
                         valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
 
         # Feature Importance
-        self.get_importance(bst)
+        if show_importance is True:
+            self.get_importance(bst)
 
         # Print LogLoss
         print('------------------------------------------------------')
@@ -1876,7 +1939,8 @@ class LightGBM:
 
         return prob_valid, prob_test, losses
 
-    def prejudge_train(self, pred_path, n_splits, n_cv, cv_seed, use_weight=True, parameters=None):
+    def prejudge_train(self, pred_path, n_splits, n_cv, cv_seed,
+                       use_weight=True, parameters=None, show_importance=False):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path)
@@ -1917,7 +1981,8 @@ class LightGBM:
                             valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
 
             # Feature Importance
-            self.get_importance(bst)
+            if show_importance is True:
+                self.get_importance(bst)
 
             # Prediction
             prob_test = self.predict(bst, self.x_g_test, pred_path=pred_path + 'cv_results/lgb_cv_{}_'.format(count))
@@ -1998,14 +2063,6 @@ class SKLearnLightGBM:
 
         return clf
 
-    @staticmethod
-    def logloss_obj(y, preds):
-
-        grad = (preds - y) / ((1 - preds) * preds)
-        hess = (preds * preds - 2 * preds * y + y) / ((1 - preds) * (1 - preds) * preds * preds)
-
-        return grad, hess
-
     def get_importance(self, clf):
 
         print('------------------------------------------------------')
@@ -2042,10 +2099,15 @@ class SKLearnLightGBM:
         return prob_train
 
     # Using sk-learn API
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None, parameters=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, 
+              era_list=None, parameters=None, show_importance=False):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
+
+        print('------------------------------------------------------')
+        print('Training LightGBM...')
+        print('------------------------------------------------------')
 
         count = 0
         prob_test_total = []
@@ -2087,7 +2149,8 @@ class SKLearnLightGBM:
                     eval_metric='logloss', verbose=True)
 
             # Feature Importance
-            self.get_importance(clf)
+            if show_importance is True:
+                self.get_importance(clf)
 
             # Prediction
             prob_test = self.predict(clf, self.x_g_test,
@@ -2146,8 +2209,8 @@ class SKLearnLightGBM:
         utils.save_pred_to_csv(pred_path + 'final_results/lgb_sk_', self.id_test, prob_test_mean)
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/lgb_sk_', prob_train_mean, self.y_train)
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
-                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
+                    w_valid, x_g_valid, x_test, x_g_test, parameters, show_importance=False):
 
         print('------------------------------------------------------')
         print('Training LightGBM...')
@@ -2167,7 +2230,8 @@ class SKLearnLightGBM:
                 eval_metric='logloss', verbose=True)
 
         # Feature Importance
-        self.get_importance(clf)
+        if show_importance is True:
+            self.get_importance(clf)
 
         # Print LogLoss
         loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss_proba(clf, x_g_train, y_train, w_train,
@@ -2180,6 +2244,174 @@ class SKLearnLightGBM:
         prob_test = self.predict(clf, x_g_test)
 
         return prob_valid, prob_test, losses
+
+
+# CatBoost
+class CatBoost:
+
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te):
+
+        self.x_train = x_tr
+        self.y_train = y_tr
+        self.w_train = w_tr
+        self.e_train = e_tr
+        self.x_test = x_te
+        self.id_test = id_te
+        self.x_g_train = x_g_tr
+        self.x_g_test = x_g_te
+        self.importance = np.array([])
+        self.indices = np.array([])
+
+    @staticmethod
+    def get_clf(parameters=None):
+
+        print('Initialize Model...')
+
+        clf = CatBoostClassifier(**parameters)
+
+        return clf
+
+    def get_importance(self, clf):
+
+        print('------------------------------------------------------')
+        print('Feature Importance')
+
+        self.importance = clf.feature_importances_
+        self.indices = np.argsort(self.importance)[::-1]
+
+        feature_num = len(self.importance)
+
+        for f in range(feature_num):
+            print("%d | feature %d | %d" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+
+    def predict(self, clf, x_g_test, pred_path=None):
+
+        print('Predicting...')
+
+        prob_test = np.array(clf.predict_proba(x_g_test))[:, 1]
+
+        if pred_path is not None:
+            utils.save_pred_to_csv(pred_path, self.id_test, prob_test)
+
+        return prob_test
+
+    def get_prob_train(self, clf, x_train, pred_path=None):
+
+        print('Predicting...')
+
+        prob_train = np.array(clf.predict_proba(x_train))[:, 1]
+
+        if pred_path is not None:
+            utils.save_prob_train_to_csv(pred_path, prob_train, self.y_train)
+
+        return prob_train
+
+    # Using sk-learn API
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, 
+              era_list=None, parameters=None, show_importance=False):
+
+        # Check if directories exit or not
+        utils.check_dir_model(pred_path, loss_log_path)
+
+        print('------------------------------------------------------')
+        print('Training Logistic CatBoost...')
+        print('------------------------------------------------------')
+
+        count = 0
+        prob_test_total = []
+        prob_train_total = []
+        loss_train_total = []
+        loss_valid_total = []
+        loss_train_w_total = []
+        loss_valid_w_total = []
+
+        # Use Category
+        for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
+            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_g_train,
+                                                                         y=self.y_train,
+                                                                         w=self.w_train,
+                                                                         e=self.e_train,
+                                                                         n_valid=n_valid,
+                                                                         n_cv=n_cv,
+                                                                         n_era=n_era,
+                                                                         seed=cv_seed,
+                                                                         era_list=era_list):
+            count += 1
+
+            print('======================================================')
+            print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
+            print('Validation Set Era: ', valid_era)
+            print('------------------------------------------------------')
+
+            clf = self.get_clf(parameters)
+
+            idx_category = [x_train.shape[1] - 1]
+            print('Index of categorical feature: {}'.format(idx_category))
+
+            clf.fit(X=x_train, y=y_train, cat_features=idx_category, sample_weight=w_train,
+                    baseline=None, use_best_model=None, eval_set=(x_valid, y_valid),
+                    verbose=True, plot=True)
+
+            # Feature Importance
+            if show_importance is True:
+                self.get_importance(clf)
+
+            # Prediction
+            prob_test = self.predict(clf, self.x_g_test,
+                                     pred_path=pred_path + 'cv_results/cb_cv_{}_'.format(count))
+
+            # Save Train Probabilities to CSV File
+            prob_train = self.get_prob_train(clf, self.x_g_train,
+                                             pred_path=pred_path + 'cv_prob_train/cb_cv_{}_'.format(count))
+
+            # Get Probabilities of Validation Set
+            prob_valid = self.predict(clf, x_valid)
+
+            # Print LogLoss
+            print('------------------------------------------------------')
+            print('Validation Set Era: ', valid_era)
+            loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss_proba(clf, x_train, y_train, w_train,
+                                                                                        x_valid, y_valid, w_valid)
+
+            # Print and Get Accuracies of CV
+            acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+                utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
+
+            # Save Losses to File
+            utils.save_loss_log(loss_log_path + 'cb_', count, parameters, n_valid, n_cv, valid_era,
+                                loss_train, loss_valid, loss_train_w, loss_valid_w, acc_train_cv, acc_valid_cv,
+                                acc_train_cv_era, acc_valid_cv_era)
+
+            prob_test_total.append(list(prob_test))
+            prob_train_total.append(list(prob_train))
+            loss_train_total.append(loss_train)
+            loss_valid_total.append(loss_valid)
+            loss_train_w_total.append(loss_train_w)
+            loss_valid_w_total.append(loss_valid_w)
+
+        print('======================================================')
+        print('Calculating final result...')
+
+        prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
+        prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
+        loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
+        loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
+        loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
+        loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
+
+        # Print Total Losses
+        utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+
+        # Print and Get Accuracies of CV of All Train Set
+        acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
+
+        # Save Final Losses to File
+        utils.save_final_loss_log(loss_log_path + 'cb_', parameters, n_valid, n_cv, loss_train_mean,
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean, acc_train, acc_train_era)
+
+        # Save Final Result
+        utils.save_pred_to_csv(pred_path + 'final_results/cb_', self.id_test, prob_test_mean)
+        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/cb_', prob_train_mean, self.y_train)
 
 
 # Deep Neural Networks
@@ -2365,7 +2597,8 @@ class DeepNeuralNetworks:
         return prob
 
     # Training
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, era_list=None):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, cv_seed, 
+              era_list=None, parameters=None, show_importance=False):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -2561,8 +2794,8 @@ class DeepNeuralNetworks:
             utils.save_pred_to_csv(pred_path + 'final_results/dnn_', self.id_test, prob_test_mean)
             utils.save_prob_train_to_csv(pred_path + 'final_prob_train/dnn_', prob_train_mean, self.y_train)
 
-    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid,
-                    y_valid, w_valid, x_g_valid, x_test, x_g_test, parameters=None):
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
+                    w_valid, x_g_valid, x_test, x_g_test, parameters=None, show_importance=False):
 
         print('------------------------------------------------------')
         print('Training Deep Neural Network...')
