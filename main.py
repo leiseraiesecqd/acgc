@@ -251,7 +251,7 @@ class TrainSingleModel:
         print('Start training XGBoost...')
 
         XGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
-                  parameters=xgb_parameters, show_importance=False)
+                  parameters=xgb_parameters, show_importance=True)
 
         # LGBM = models.SKLearnXGBoost(x_train_n, y_train_n, w_train_n, e_train_n, x_test, id_test)
         #
@@ -289,10 +289,9 @@ class TrainSingleModel:
                           'early_stopping_rounds': 50,      # default=0
                           'seed': train_seed}
 
-        LGBM = models.LightGBM(x_train, y_train, w_train, e_train, x_test,
-                               id_test, x_g_train, x_g_test, num_boost_round=65)
+        LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=65)
 
-        print('Start training LGBM...')
+        print('Start training LightGBM...')
 
         LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
                    parameters=lgb_parameters, show_importance=False)
@@ -329,9 +328,9 @@ class TrainSingleModel:
                           'silent': False,
                           'seed': train_seed}
 
-        LGBM = models.SKLearnLightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test)
+        LGBM = models.SKLearnLightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test)
 
-        print('Start training LGBM...')
+        print('Start training LightGBM...')
 
         LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
                    parameters=lgb_parameters, show_importance=False)
@@ -382,9 +381,9 @@ class TrainSingleModel:
                          'eval_metric': 'Logloss',
                          'class_weights': None}
 
-        CB = models.CatBoost(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test)
+        CB = models.CatBoost(x_g_train, y_train, w_train, e_train, x_g_test, id_test)
 
-        print('Start training LGBM...')
+        print('Start training CatBoost...')
 
         CB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
                  parameters=cb_parameters, show_importance=True)
@@ -485,8 +484,8 @@ class TrainSingleModel:
                           'early_stopping_rounds': 50,      # default=0
                           'seed': train_seed}
 
-        LGB = models.LightGBM(blender_x_tree, y_train, w_train, e_train, blender_test_tree, id_test,
-                              blender_x_g_tree, blender_test_g_tree, num_boost_round=65)
+        LGB = models.LightGBM(blender_x_g_tree, y_train, w_train, e_train,
+                              blender_test_g_tree, id_test, num_boost_round=65)
 
         print('Start training LGBM...')
 
@@ -809,7 +808,7 @@ class GridSearch:
                       'silent': False,
                       'seed': train_seed}
 
-        LGB = models.SKLearnLightGBM(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test)
+        LGB = models.SKLearnLightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test)
 
         clf = LGB.get_clf(parameters)
 
@@ -842,7 +841,29 @@ class GridSearch:
         log_path = grid_search_log_path + 'stk_lgb_'
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        x_outputs, test_outputs, x_g_outputs, test_g_outputs = utils.load_stacked_data(stack_output_path + 'l1_')
+        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+        blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree \
+            = utils.load_stacked_data(stack_output_path + 'l2_')
+
+        g_train = x_g_train[:, -1]
+        g_test = x_g_test[:, -1]
+
+        x_train_reuse = x_train[:, :88]
+        x_test_reuse = x_test[:, :88]
+
+        print('------------------------------------------------------')
+        print('Stacking Reused Features of Train Set...')
+        # n_sample * (n_feature + n_reuse)
+        blender_x_tree = np.concatenate((blender_x_tree, x_train_reuse), axis=1)
+        # n_sample * (n_feature + n_reuse + 1)
+        blender_x_g_tree = np.column_stack((blender_x_tree, g_train))
+
+        print('------------------------------------------------------')
+        print('Stacking Reused Features of Test Set...')
+        # n_sample * (n_feature + n_reuse)
+        blender_test_tree = np.concatenate((blender_test_tree, x_test_reuse), axis=1)
+        # n_sample * (n_feature + n_reuse + 1)
+        blender_test_g_tree = np.column_stack((blender_test_tree, g_test))
 
         parameters = {'learning_rate': 0.006,
                       'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
@@ -866,8 +887,7 @@ class GridSearch:
                       'silent': False,
                       'random_state': train_seed}
 
-        LGB = models.SKLearnLightGBM(x_outputs, y_train, w_train, e_train,
-                                     test_outputs, id_test, x_g_outputs, test_g_outputs)
+        LGB = models.SKLearnLightGBM(blender_x_g_tree, y_train, w_train, e_train, blender_test_g_tree, id_test)
 
         clf = LGB.get_clf(parameters)
 
@@ -1324,7 +1344,7 @@ if __name__ == "__main__":
     # TrainSingleModel.ab_train()
 
     # GradientBoosting
-    TrainSingleModel.gb_train()
+    # TrainSingleModel.gb_train()
 
     # XGBoost
     # TrainSingleModel.xgb_train()
@@ -1335,7 +1355,7 @@ if __name__ == "__main__":
     # TrainSingleModel.lgb_train_sklearn()
 
     # CatBoost
-    # TrainSingleModel.cb_train()
+    TrainSingleModel.cb_train()
 
     # DNN
     # TrainSingleModel.dnn_tf_train()

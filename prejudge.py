@@ -40,8 +40,8 @@ class PrejudgeEraSign:
         era_sign_train = np.array([0 if era in negative_era_list else 1 for era in self.e_train])
 
         # Init Model
-        LGB = models.LightGBM(self.x_train, era_sign_train, self.w_train, self.e_train,
-                              self.x_test, self.id_test, feature, self.x_g_test, num_boost_round=num_boost_round_e)
+        LGB = models.LightGBM(feature, era_sign_train, self.w_train, self.e_train,
+                              self.x_g_test, self.id_test, num_boost_round=num_boost_round_e)
 
         # Training and Get Probabilities of Test Era Being Positive
         era_prob_test = LGB.prejudge_train(pred_path + 'pred_era/', n_splits=n_splits_e, n_cv=n_cv_e,
@@ -102,11 +102,11 @@ class PrejudgeEraSign:
         print('======================================================')
         print('Training Models by Era Sign...')
 
-        LGBM_P = models.LightGBM(self.x_train_p, self.y_train_p, self.w_train_p, self.e_train_p,
-                                 x_test_p, id_test_p, self.x_g_train_p, x_g_test_p, num_boost_round=num_boost_round_p)
+        LGBM_P = models.LightGBM(self.x_g_train_p, self.y_train_p, self.w_train_p, self.e_train_p,
+                                 x_g_test_p, id_test_p, num_boost_round=num_boost_round_p)
 
-        LGBM_N = models.LightGBM(self.x_train_n, self.y_train_n, self.w_train_n, self.e_train_n,
-                                 x_test_n, id_test_n, self.x_g_train_n, x_g_test_n, num_boost_round=num_boost_round_n)
+        LGBM_N = models.LightGBM(self.x_g_train_n, self.y_train_n, self.w_train_n, self.e_train_n,
+                                 x_g_test_n, id_test_n, num_boost_round=num_boost_round_n)
 
         print('======================================================')
         print('Training Models of Positive Era Sign...')

@@ -40,10 +40,10 @@ class DeepStack:
 
     def init_models_layer1(self):
 
-        LGB_L1 = models.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
-                                 self.x_test, self.id_test, self.x_g_train, self.x_g_test, self.num_boost_round_lgb_l1)
-        XGB_L1 = models.XGBoost(self.x_train, self.y_train, self.w_train,
-                                self.e_train, self.x_test, self.id_test, self.num_boost_round_xgb_l1)
+        LGB_L1 = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
+                                 self.x_g_test, self.id_test, self.num_boost_round_lgb_l1)
+        XGB_L1 = models.XGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
+                                self.x_test, self.id_test, self.num_boost_round_xgb_l1)
         # AB_L1 = models.AdaBoost(self.x_train, self.y_train, self.w_train,
         #                         self.e_train, self.x_test, self.id_test)
         # RF_L1 = models.RandomForest(self.x_train, self.y_train, self.w_train,
@@ -69,8 +69,8 @@ class DeepStack:
 
     def init_models_layer2(self):
 
-        LGB_L2 = models.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
-                                 self.x_test, self.id_test, self.x_g_train, self.x_g_test, self.num_boost_round_lgb_l2)
+        LGB_L2 = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
+                                 self.x_g_test, self.id_test, self.num_boost_round_lgb_l2)
 
         # DNN_L2 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
         #                                    self.e_train, self.x_test, self.id_test, self.dnn_l2_params)
@@ -251,8 +251,8 @@ class DeepStack:
 
         if model_name == 'LGB':
 
-            model = models.LightGBM(x_outputs, self.y_train, self.w_train, self.e_train, test_outputs, self.id_test,
-                                    x_g_outputs, test_g_outputs, num_boost_round=self.num_boost_round_final)
+            model = models.LightGBM(x_g_outputs, self.y_train, self.w_train, self.e_train, test_g_outputs,
+                                    self.id_test, num_boost_round=self.num_boost_round_final)
             print('Start training ' + model_name + '...')
             model.train(self.pred_path + 'stack_results/', self.loss_log_path, n_valid=n_valid,
                         n_cv=n_cv, n_era=n_era, cv_seed=self.cv_seed, parameters=params)
@@ -708,12 +708,10 @@ class StackTree:
 
     def layer1_initializer(self):
 
-        LGB_L1 = models.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
-                                 self.x_test, self.id_test, self.x_g_train, self.x_g_test, 
-                                 num_boost_round=self.num_boost_round_lgb_l1)
-        XGB_L1 = models.XGBoost(self.x_train, self.y_train, self.w_train,
-                                self.e_train, self.x_test, self.id_test,
-                                num_boost_round=self.num_boost_round_xgb_l1)
+        LGB_L1 = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
+                                 self.x_g_test, self.id_test, num_boost_round=self.num_boost_round_lgb_l1)
+        XGB_L1 = models.XGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
+                                self.x_test, self.id_test, num_boost_round=self.num_boost_round_xgb_l1)
         # AB_L1 = models.AdaBoost(self.x_train, self.y_train, self.w_train,
         #                         self.e_train, self.x_test, self.id_test)
         # RF_L1 = models.RandomForest(self.x_train, self.y_train, self.w_train,
@@ -739,9 +737,8 @@ class StackTree:
 
     def layer2_initializer(self):
 
-        LGB_L2 = models.LightGBM(self.x_train, self.y_train, self.w_train, self.e_train,
-                                 self.x_test, self.id_test, self.x_g_train, self.x_g_test,
-                                 num_boost_round=self.num_boost_round_lgb_l2)
+        LGB_L2 = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
+                                 self.x_g_test, self.id_test, num_boost_round=self.num_boost_round_lgb_l2)
 
         DNN_L2 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
                                            self.e_train, self.x_test, self.id_test, self.dnn_l2_params)
@@ -756,9 +753,8 @@ class StackTree:
     def final_layer_initializer(self, blender_x_tree, blender_test_tree, blender_x_g_tree,
                                 blender_test_g_tree, params=None):
 
-        LGB_END = models.LightGBM(blender_x_tree, self.y_train, self.w_train,  self.e_train,
-                                  blender_test_tree, self.id_test, blender_x_g_tree, blender_test_g_tree,
-                                  num_boost_round=self.num_boost_round_final)
+        LGB_END = models.LightGBM(blender_x_g_tree, self.y_train, self.w_train,  self.e_train,
+                                  blender_test_g_tree, self.id_test, num_boost_round=self.num_boost_round_final)
 
         # DNN_END = models.DeepNeuralNetworks(blender_x_tree, self.y_train,  self.w_train,  self.e_train,
         #                                     blender_test_tree,  self.id_test, params)
