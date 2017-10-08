@@ -1310,6 +1310,7 @@ if __name__ == "__main__":
     print('======================================================')
     print('Start Training...')
     print('======================================================')
+
     # Logistic Regression
     # TrainSingleModel.lr_train()
 
@@ -1323,7 +1324,7 @@ if __name__ == "__main__":
     # TrainSingleModel.ab_train()
 
     # GradientBoosting
-    # TrainSingleModel.gb_train()
+    TrainSingleModel.gb_train()
 
     # XGBoost
     # TrainSingleModel.xgb_train()
@@ -1334,7 +1335,7 @@ if __name__ == "__main__":
     # TrainSingleModel.lgb_train_sklearn()
 
     # CatBoost
-    TrainSingleModel.cb_train()
+    # TrainSingleModel.cb_train()
 
     # DNN
     # TrainSingleModel.dnn_tf_train()

@@ -38,7 +38,7 @@ sns.set(font_scale=1)
 color = sns.color_palette()
 
 
-class ModelBase:
+class SKLearnModelBase:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
@@ -217,7 +217,7 @@ class ModelBase:
         return prob_valid, prob_test, losses
 
 
-class GradientBoosting(ModelBase):
+class GradientBoosting(SKLearnModelBase):
 
     @staticmethod
     def get_clf(parameters):
