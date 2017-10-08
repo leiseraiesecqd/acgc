@@ -36,8 +36,10 @@ sns.set(font_scale=1)
 color = sns.color_palette()
 
 
-# Base Model Class of Models in scikit-learn Module
 class ModelBase(object):
+    """
+        Base Model Class of Models in scikit-learn Module
+    """
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
@@ -262,8 +264,10 @@ class ModelBase(object):
         return prob_valid, prob_test, losses
 
 
-# Logistic Regression
 class LRegression(ModelBase):
+    """
+        Logistic Regression
+    """
 
     @staticmethod
     def get_clf(parameters):
@@ -297,8 +301,10 @@ class LRegression(ModelBase):
             print("%d | feature %d | %f" % (f + 1, indices[f], self.importance[indices[f]]))
 
 
-# k-Nearest Neighbor Classifier
 class KNearestNeighbor(ModelBase):
+    """
+        k-Nearest Neighbor Classifier
+    """
 
     @staticmethod
     def get_clf(parameters):
@@ -320,8 +326,10 @@ class KNearestNeighbor(ModelBase):
         return model_name
 
 
-# SVM - Support Vector Clustering
 class SupportVectorClustering(ModelBase):
+    """
+        SVM - Support Vector Clustering
+    """
 
     @staticmethod
     def get_clf(parameters):
@@ -343,8 +351,10 @@ class SupportVectorClustering(ModelBase):
         return model_name
 
 
-# Gaussian NB
 class Gaussian(ModelBase):
+    """
+        Gaussian NB
+    """
 
     @staticmethod
     def get_clf(parameters):
@@ -366,8 +376,10 @@ class Gaussian(ModelBase):
         return model_name
 
 
-# Decision Tree
 class DecisionTree(ModelBase):
+    """
+        Decision Tree
+    """
 
     @staticmethod
     def get_clf(parameters):
@@ -389,8 +401,10 @@ class DecisionTree(ModelBase):
         return model_name
 
 
-# Random Forest
 class RandomForest(ModelBase):
+    """
+        Random Forest
+    """
 
     @staticmethod
     def get_clf(parameters):
@@ -412,8 +426,10 @@ class RandomForest(ModelBase):
         return model_name
 
 
-# Extra Trees
 class ExtraTrees(ModelBase):
+    """
+        Extra Trees
+    """
 
     @staticmethod
     def get_clf(parameters):
@@ -435,8 +451,10 @@ class ExtraTrees(ModelBase):
         return model_name
 
 
-# AdaBoost
 class AdaBoost(ModelBase):
+    """
+        AdaBoost
+    """
 
     @staticmethod
     def get_clf(parameters):
@@ -458,8 +476,10 @@ class AdaBoost(ModelBase):
         return model_name
 
 
-# Gradient Boosting
 class GradientBoosting(ModelBase):
+    """
+        Gradient Boosting
+    """
 
     @staticmethod
     def get_clf(parameters):
@@ -481,8 +501,10 @@ class GradientBoosting(ModelBase):
         return model_name
 
 
-# XGBoost
 class XGBoost(ModelBase):
+    """
+        XGBoost
+    """
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, num_boost_round):
 
@@ -683,8 +705,10 @@ class XGBoost(ModelBase):
         return prob_valid, prob_test, losses
 
 
-# XGBoost sklearn
 class SKLearnXGBoost(ModelBase):
+    """
+        XGBoost using sklearn module
+    """
 
     @staticmethod
     def get_clf(parameters=None):
@@ -726,8 +750,10 @@ class SKLearnXGBoost(ModelBase):
             print("%d | feature %d | %f" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
 
-# LightGBM
 class LightGBM(ModelBase):
+    """
+        LightGBM
+    """
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, num_boost_round):
 
@@ -1011,8 +1037,10 @@ class LightGBM(ModelBase):
         return prob_test_mean
 
 
-# LightGBM - sklearn
 class SKLearnLightGBM(ModelBase):
+    """
+        LightGBM using sklearn module
+    """
 
     @staticmethod
     def get_clf(parameters=None):
@@ -1058,8 +1086,10 @@ class SKLearnLightGBM(ModelBase):
                 eval_metric='logloss', verbose=True)
 
 
-# CatBoost
 class CatBoost(ModelBase):
+    """
+        CatBoost
+    """
 
     @staticmethod
     def get_clf(parameters=None):
@@ -1107,8 +1137,10 @@ class CatBoost(ModelBase):
                 baseline=None, use_best_model=None, eval_set=(x_g_valid, y_valid), verbose=True, plot=False)
 
 
-# Deep Neural Networks
 class DeepNeuralNetworks:
+    """
+        Deep Neural Networks
+    """
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, parameters):
 
@@ -1595,18 +1627,14 @@ class DeepNeuralNetworks:
             return prob_valid, prob_test, losses
 
 
-# # DNN using Keras
-# class KerasDeepNeuralNetworks:
+# class KerasDeepNeuralNetworks(ModelBase):
+#     """
+#         Deep Neural Networks
+#     """
 #
 #     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, parameters):
 #
-#         # Inputs
-#         self.x_train = x_tr
-#         self.y_train = y_tr
-#         self.w_train = w_tr
-#         self.e_train = e_tr
-#         self.x_test = x_te
-#         self.id_test = id_te
+#         super(KerasDeepNeuralNetworks, self).__init__(x_tr, y_tr, w_tr, e_tr, x_te, id_te)
 #
 #         # Hyperparameters
 #         self.batch_size = parameters['batch_size']
@@ -1695,8 +1723,10 @@ class DeepNeuralNetworks:
 #         utils.save_pred_to_csv(pred_path + 'final_results/dnn_keras_', self.id_test, prob_mean)
 
 
-# Cross Validation
 class CrossValidation:
+    """
+        Cross Validation
+    """
 
     trained_cv = []
 
@@ -2278,8 +2308,10 @@ class CrossValidation:
                               y_valid, w_valid, x_g_valid, valid_index, valid_era
 
 
-# Grid Search
 def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, n_era, cv_seed, params, params_grid):
+    """
+         Grid Search
+    """
 
     start_time = time.time()
 

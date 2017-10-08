@@ -41,6 +41,7 @@ color = sns.color_palette()
 
 # Logistic Regression
 class LRegression:
+
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
@@ -237,6 +238,7 @@ class LRegression:
 
 # k-Nearest Neighbor
 class KNearestNeighbor:
+
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
         self.x_train = x_tr
         self.y_train = y_tr
@@ -246,6 +248,7 @@ class KNearestNeighbor:
         self.id_test = id_te
 
     def train(self, parameters):
+
         clf = KNeighborsClassifier()
         '''
         KNeighborsClassifier(algorithm='auto', leaf_size=30, metric='minkowski',
@@ -262,6 +265,7 @@ class KNearestNeighbor:
 
 # SVM-SVC
 class SupportVectorClustering:
+
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
         self.x_train = x_tr
         self.y_train = y_tr
@@ -271,6 +275,7 @@ class SupportVectorClustering:
         self.id_test = id_te
 
     def train(self, parameters):
+
         clf = SVC(random_state=1)
 
         clf.fit(self.x_train, self.y_train, sample_weight=self.w_train)
@@ -281,6 +286,7 @@ class SupportVectorClustering:
 
 # Gaussian NB
 class Gaussian:
+
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
         self.x_train = x_tr
         self.y_train = y_tr
@@ -290,6 +296,7 @@ class Gaussian:
         self.id_test = id_te
 
     def train(self, parameters):
+
         clf_gnb = GaussianNB()
 
         clf_gnb.fit(self.x_train, self.y_train, sample_weight=self.w_train)
@@ -300,6 +307,7 @@ class Gaussian:
 
 # Decision Tree
 class DecisionTree:
+
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
@@ -495,6 +503,7 @@ class DecisionTree:
 
 # Random Forest
 class RandomForest:
+
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
@@ -692,6 +701,7 @@ class RandomForest:
 
 # Extra Trees
 class ExtraTrees:
+
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
@@ -889,6 +899,7 @@ class ExtraTrees:
 
 # AdaBoost
 class AdaBoost:
+
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
@@ -1086,6 +1097,7 @@ class AdaBoost:
 
 # GradientBoosting
 class GradientBoosting:
+
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
@@ -1283,6 +1295,7 @@ class GradientBoosting:
 
 # XGBoost
 class XGBoost:
+
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, num_boost_round):
 
         self.x_train = x_tr
@@ -1503,6 +1516,7 @@ class XGBoost:
 
 # XGBoost sklearn
 class SKLearnXGBoost:
+
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
@@ -1705,6 +1719,7 @@ class SKLearnXGBoost:
 
 # LightGBM
 class LightGBM:
+
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, num_boost_round):
 
         self.x_train = x_tr
@@ -2008,6 +2023,7 @@ class LightGBM:
 
 # LightGBM - sklearn
 class SKLearnLightGBM:
+
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
@@ -2226,6 +2242,7 @@ class SKLearnLightGBM:
 
 # CatBoost
 class CatBoost:
+
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
@@ -2393,6 +2410,7 @@ class CatBoost:
 
 # Deep Neural Networks
 class DeepNeuralNetworks:
+
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, parameters):
 
         # Inputs
@@ -2978,6 +2996,7 @@ class DeepNeuralNetworks:
 
 # Cross Validation
 class CrossValidation:
+
     trained_cv = []
 
     @staticmethod
@@ -3589,4 +3608,5 @@ def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, n_era, cv_seed, 
 
 
 if __name__ == '__main__':
+
     pass

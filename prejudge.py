@@ -4,8 +4,10 @@ import time
 import numpy as np
 
 
-# Pre Judge Era Sign
 class PrejudgeEraSign:
+    """
+        Prejudge - Training by Split Era sign
+    """
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_g_tr, x_tr_p, y_tr_p, w_tr_p, e_tr_p, x_g_tr_p,
                  x_tr_n, y_tr_n, w_tr_n, e_tr_n, x_g_tr_n, x_te, id_te, x_g_te,):

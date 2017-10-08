@@ -4,8 +4,10 @@ import time
 import numpy as np
 
 
-# Deep Stack
 class DeepStack:
+    """
+        DeepStack Model
+    """
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te, pred_path=None,
                  loss_log_path=None, stack_output_path=None, hyper_params=None, layers_params=None,
@@ -365,8 +367,10 @@ class DeepStack:
         print('======================================================')
 
 
-# Iterative Layer for Stack Tree
 class StackLayer:
+    """
+        Iterative Layer for Stack Tree
+    """
 
     def __init__(self, params, x_train, y_train, w_train, e_train, x_g_train, x_test, x_g_test, id_test,
                  models_initializer=None, input_layer=None, cv_generator=None, n_valid=4, n_era=20,
@@ -670,8 +674,10 @@ class StackLayer:
             return blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs
 
 
-# Stack Tree
 class StackTree:
+    """
+        Stack Tree Model
+    """
 
     id_test = np.array([])
     pred_path = ''

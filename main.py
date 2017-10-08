@@ -25,12 +25,16 @@ dnn_seed = np.random.randint(100)
 # dnn_seed = 21
 
 
-# Train single model
 class TrainSingleModel:
+    """
+        Train single model
+    """
 
-    # Logistic Regression
     @staticmethod
     def lr_train():
+        """
+            Logistic Regression
+        """
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
@@ -57,9 +61,11 @@ class TrainSingleModel:
         LR.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
                  parameters=lr_parameters, show_importance=False)
 
-    # Random Forest
     @staticmethod
     def rf_train():
+        """
+            Random Forest
+        """
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
@@ -87,9 +93,11 @@ class TrainSingleModel:
         RF.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
                  parameters=rf_parameters, show_importance=False)
 
-    # Extra Trees
     @staticmethod
     def et_train():
+        """
+            Extra Trees
+        """
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
@@ -117,9 +125,11 @@ class TrainSingleModel:
         ET.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
                  parameters=et_parameters, show_importance=False)
 
-    # AdaBoost
     @staticmethod
     def ab_train():
+        """
+            AdaBoost
+        """
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
@@ -155,9 +165,11 @@ class TrainSingleModel:
         AB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
                  parameters=ab_parameters, show_importance=False)
 
-    # GradientBoosting
     @staticmethod
     def gb_train():
+        """
+            GradientBoosting
+        """
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
@@ -187,9 +199,11 @@ class TrainSingleModel:
         GB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
                  parameters=gb_parameters, show_importance=False)
 
-    # XGBoost
     @staticmethod
     def xgb_train():
+        """
+            XGBoost
+        """
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
@@ -217,6 +231,9 @@ class TrainSingleModel:
 
     @staticmethod
     def xgb_train_sklearn():
+        """
+            XGBoost using scikit-learn module
+        """
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         #  x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p \
@@ -259,9 +276,11 @@ class TrainSingleModel:
         #
         # LGBM.train(pred_path, loss_log_path, n_valid=1, n_cv=6, n_era=6, cv_seed=cv_seed, parameters=xgb_parameters)
 
-    # LightGBM
     @staticmethod
     def lgb_train():
+        """
+            LightGBM
+        """
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
@@ -298,6 +317,9 @@ class TrainSingleModel:
 
     @staticmethod
     def lgb_train_sklearn():
+        """
+            LightGBM using scikit-learn module
+        """
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
@@ -345,6 +367,9 @@ class TrainSingleModel:
 
     @staticmethod
     def cb_train():
+        """
+            CatBoost
+        """
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
@@ -388,9 +413,11 @@ class TrainSingleModel:
         CB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
                  parameters=cb_parameters, show_importance=True)
 
-    # DNN
     @staticmethod
     def dnn_tf_train():
+        """
+            Deep Neural Networks
+        """
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
@@ -435,6 +462,9 @@ class TrainSingleModel:
 
     @staticmethod
     def stack_lgb_train():
+        """
+            LightGBM for stack layer
+        """
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
@@ -493,12 +523,16 @@ class TrainSingleModel:
                   parameters=lgb_parameters, show_importance=False)
 
 
-# Grid Search
 class GridSearch:
+    """
+        Grid Search
+    """
 
-    # LRegression:
     @staticmethod
     def lr_grid_search():
+        """
+            Logistic Regression
+        """
 
         log_path = grid_search_log_path + 'lr_'
 
@@ -536,9 +570,11 @@ class GridSearch:
 
         utils.print_grid_info('Logistic Regression', parameters, parameters_grid)
 
-    # Random Forest
     @staticmethod
     def rf_grid_search():
+        """
+            Random Forest
+        """
 
         log_path = grid_search_log_path + 'rf_'
 
@@ -580,9 +616,11 @@ class GridSearch:
 
         utils.print_grid_info('Random Forest', parameters, parameters_grid)
 
-    # Extra Trees
     @staticmethod
     def et_grid_search():
+        """
+            Extra Trees
+        """
 
         log_path = grid_search_log_path + 'et_'
 
@@ -625,9 +663,11 @@ class GridSearch:
 
         utils.print_grid_info('Extra Trees', parameters, parameters_grid)
 
-    # AdaBoost
     @staticmethod
     def ab_grid_search():
+        """
+            AdaBoost
+        """
 
         log_path = grid_search_log_path + 'ab_'
 
@@ -675,9 +715,11 @@ class GridSearch:
 
         utils.print_grid_info('AdaBoost', parameters, parameters_grid)
 
-    # GradientBoosting
     @staticmethod
     def gb_grid_search():
+        """
+            GradientBoosting
+        """
 
         log_path = grid_search_log_path + 'gb_'
 
@@ -723,9 +765,11 @@ class GridSearch:
 
         utils.print_grid_info('GradientBoosting', parameters, parameters_grid)
 
-    # XGBoost
     @staticmethod
     def xgb_grid_search():
+        """
+            XGBoost
+        """
 
         log_path = grid_search_log_path + 'xgb_'
 
@@ -777,9 +821,11 @@ class GridSearch:
 
         utils.print_grid_info('XGBoost', parameters, parameters_grid)
 
-    # LightGBM
     @staticmethod
     def lgb_grid_search():
+        """
+            LightGBM
+        """
 
         log_path = grid_search_log_path + 'lgb_'
 
@@ -914,11 +960,16 @@ class GridSearch:
         utils.print_grid_info('LightGBM', parameters, parameters_grid)
 
 
-# Training by Split Era sign
 class PrejudgeTraining:
+    """
+        Prejudge - Training by Split Era sign
+    """
 
     @staticmethod
     def get_models_parameters():
+        """
+            Set Parameters for models
+        """
 
         era_training_params = {'application': 'binary',
                                'learning_rate': 0.05,
@@ -974,6 +1025,9 @@ class PrejudgeTraining:
 
     @staticmethod
     def train():
+        """
+            Training model
+        """
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
@@ -1012,12 +1066,16 @@ class PrejudgeTraining:
                   hyper_parameters=hyper_parameters, load_pickle=True, show_importance=False)
 
 
-# Stacking
 class ModelStacking:
+    """
+        Stacking
+    """
 
-    # Parameters for layer1
     @staticmethod
     def get_layer1_params():
+        """
+            Set Parameters for models of layer1
+        """
 
         # Parameters of LightGBM
         lgb_params = {'application': 'binary',
@@ -1164,9 +1222,11 @@ class ModelStacking:
 
         return layer1_params
 
-    # Parameters for layer2
     @staticmethod
     def get_layer2_params():
+        """
+            Set Parameters for models of layer2
+        """
 
         # Parameters of LightGBM
         lgb_params = {'application': 'binary',
@@ -1212,9 +1272,11 @@ class ModelStacking:
 
         return layer2_params
 
-    # Parameters for layer2
     @staticmethod
     def get_final_layer_params():
+        """
+            Set Parameters for models of final layer
+        """
 
         # Parameters of LightGBM
         lgb_params = {'application': 'binary',
@@ -1256,6 +1318,9 @@ class ModelStacking:
 
     @staticmethod
     def deep_stack_train():
+        """
+            Training model using DeepStack model
+        """
 
         hyper_params = {'n_valid': (4, 4),
                         'n_era': (20, 20),
@@ -1288,6 +1353,9 @@ class ModelStacking:
 
     @staticmethod
     def stack_tree_train():
+        """
+            Training model using StackTree model
+        """
 
         stack_pred_path = pred_path + 'stack_results/'
 
