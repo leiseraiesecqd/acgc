@@ -1705,7 +1705,7 @@ class SKLearnXGBoost:
 
 # LightGBM
 class LightGBM:
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te, num_boost_round):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, num_boost_round):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -1713,8 +1713,6 @@ class LightGBM:
         self.e_train = e_tr
         self.x_test = x_te
         self.id_test = id_te
-        self.x_g_train = x_g_tr
-        self.x_g_test = x_g_te
         self.num_boost_round = num_boost_round
         self.importance = np.array([])
         self.indices = np.array([])
@@ -1797,7 +1795,7 @@ class LightGBM:
 
         # Cross Validation
         for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
-            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_g_train,
+            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
                                                                          y=self.y_train,
                                                                          w=self.w_train,
                                                                          e=self.e_train,
@@ -1828,10 +1826,10 @@ class LightGBM:
                 self.get_importance(bst)
 
             # Prediction
-            prob_test = self.predict(bst, self.x_g_test, pred_path=pred_path + 'cv_results/lgb_cv_{}_'.format(count))
+            prob_test = self.predict(bst, self.x_test, pred_path=pred_path + 'cv_results/lgb_cv_{}_'.format(count))
 
             # Save Train Probabilities to CSV File
-            prob_train = self.get_prob_train(bst, self.x_g_train,
+            prob_train = self.get_prob_train(bst, self.x_train,
                                              pred_path=pred_path + 'cv_prob_train/lgb_cv_{}_'.format(count))
 
             # Get Probabilities of Validation Set
@@ -1938,7 +1936,7 @@ class LightGBM:
 
         # Cross Validation
         for x_train, y_train, w_train, x_valid, \
-            y_valid, w_valid in CrossValidation.sk_k_fold_with_weight(x=self.x_g_train,
+            y_valid, w_valid in CrossValidation.sk_k_fold_with_weight(x=self.x_train,
                                                                       y=self.y_train,
                                                                       w=self.w_train,
                                                                       n_splits=n_splits,
@@ -1968,10 +1966,10 @@ class LightGBM:
                 self.get_importance(bst)
 
             # Prediction
-            prob_test = self.predict(bst, self.x_g_test, pred_path=pred_path + 'cv_results/lgb_cv_{}_'.format(count))
+            prob_test = self.predict(bst, self.x_test, pred_path=pred_path + 'cv_results/lgb_cv_{}_'.format(count))
 
             # Save Train Probabilities to CSV File
-            prob_train = self.get_prob_train(bst, self.x_g_train,
+            prob_train = self.get_prob_train(bst, self.x_train,
                                              pred_path=pred_path + 'cv_prob_train/lgb_cv_{}_'.format(count))
 
             # Print LogLoss
@@ -2010,7 +2008,7 @@ class LightGBM:
 
 # LightGBM - sklearn
 class SKLearnLightGBM:
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -2018,8 +2016,6 @@ class SKLearnLightGBM:
         self.e_train = e_tr
         self.x_test = x_te
         self.id_test = id_te
-        self.x_g_train = x_g_tr
-        self.x_g_test = x_g_te
         self.importance = np.array([])
         self.indices = np.array([])
         self.std = np.array([])
@@ -2101,7 +2097,7 @@ class SKLearnLightGBM:
 
         # Use Category
         for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
-            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_g_train,
+            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
                                                                          y=self.y_train,
                                                                          w=self.w_train,
                                                                          e=self.e_train,
@@ -2135,11 +2131,11 @@ class SKLearnLightGBM:
                 self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_g_test,
+            prob_test = self.predict(clf, self.x_test,
                                      pred_path=pred_path + 'cv_results/lgb_sk_cv_{}_'.format(count))
 
             # Save Train Probabilities to CSV File
-            prob_train = self.get_prob_train(clf, self.x_g_train,
+            prob_train = self.get_prob_train(clf, self.x_train,
                                              pred_path=pred_path + 'cv_prob_train/lgb_sk_cv_{}_'.format(count))
 
             # Get Probabilities of Validation Set
@@ -2230,7 +2226,7 @@ class SKLearnLightGBM:
 
 # CatBoost
 class CatBoost:
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -2238,8 +2234,6 @@ class CatBoost:
         self.e_train = e_tr
         self.x_test = x_te
         self.id_test = id_te
-        self.x_g_train = x_g_tr
-        self.x_g_test = x_g_te
         self.importance = np.array([])
         self.indices = np.array([])
 
@@ -2308,7 +2302,7 @@ class CatBoost:
 
         # Use Category
         for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
-            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_g_train,
+            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
                                                                          y=self.y_train,
                                                                          w=self.w_train,
                                                                          e=self.e_train,
@@ -2340,11 +2334,11 @@ class CatBoost:
                 self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_g_test,
+            prob_test = self.predict(clf, self.x_test,
                                      pred_path=pred_path + 'cv_results/cb_cv_{}_'.format(count))
 
             # Save Train Probabilities to CSV File
-            prob_train = self.get_prob_train(clf, self.x_g_train,
+            prob_train = self.get_prob_train(clf, self.x_train,
                                              pred_path=pred_path + 'cv_prob_train/cb_cv_{}_'.format(count))
 
             # Get Probabilities of Validation Set
