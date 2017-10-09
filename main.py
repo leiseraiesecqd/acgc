@@ -29,7 +29,7 @@ class TrainSingleModel:
     """
 
     @staticmethod
-    def lr_train():
+    def lr_train(idx=None):
         """
             Logistic Regression
         """
@@ -57,10 +57,10 @@ class TrainSingleModel:
         print('Start training Logistic Regression...')
 
         LR.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                 cv_seed=cv_seed, parameters=lr_parameters, show_importance=False)
+                 cv_seed=cv_seed, parameters=lr_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def rf_train():
+    def rf_train(idx=None):
         """
             Random Forest
         """
@@ -89,10 +89,10 @@ class TrainSingleModel:
         print('Start training Random Forest...')
 
         RF.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                 cv_seed=cv_seed, parameters=rf_parameters, show_importance=False)
+                 cv_seed=cv_seed, parameters=rf_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def et_train():
+    def et_train(idx=None):
         """
             Extra Trees
         """
@@ -121,10 +121,10 @@ class TrainSingleModel:
         print('Start training Extra Trees...')
 
         ET.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                 cv_seed=cv_seed, parameters=et_parameters, show_importance=False)
+                 cv_seed=cv_seed, parameters=et_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def ab_train():
+    def ab_train(idx=None):
         """
             AdaBoost
         """
@@ -161,10 +161,10 @@ class TrainSingleModel:
         print('Start training AdaBoost...')
 
         AB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                 cv_seed=cv_seed, parameters=ab_parameters, show_importance=False)
+                 cv_seed=cv_seed, parameters=ab_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def gb_train():
+    def gb_train(idx=None):
         """
             GradientBoosting
         """
@@ -195,10 +195,10 @@ class TrainSingleModel:
         print('Start training GradientBoosting...')
 
         GB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                 cv_seed=cv_seed, parameters=gb_parameters, show_importance=False)
+                 cv_seed=cv_seed, parameters=gb_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def xgb_train():
+    def xgb_train(idx=None):
         """
             XGBoost
         """
@@ -225,10 +225,10 @@ class TrainSingleModel:
         print('Start training XGBoost...')
 
         XGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                  cv_seed=cv_seed, parameters=xgb_parameters, show_importance=False)
+                  cv_seed=cv_seed, parameters=xgb_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def xgb_train_sklearn():
+    def xgb_train_sklearn(idx=None):
         """
             XGBoost using scikit-learn module
         """
@@ -262,10 +262,10 @@ class TrainSingleModel:
         print('Start training XGBoost...')
 
         XGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                  cv_seed=cv_seed, parameters=xgb_parameters, show_importance=True)
+                  cv_seed=cv_seed, parameters=xgb_parameters, show_importance=True, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def lgb_train():
+    def lgb_train(idx=None):
         """
             LightGBM
         """
@@ -303,10 +303,10 @@ class TrainSingleModel:
         print('Start training LightGBM...')
 
         LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False)
+                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def lgb_train_sklearn():
+    def lgb_train_sklearn(idx=None):
         """
             LightGBM using scikit-learn module
         """
@@ -341,10 +341,10 @@ class TrainSingleModel:
         print('Start training LightGBM...')
 
         LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False)
+                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def cb_train():
+    def cb_train(idx=None):
         """
             CatBoost
         """
@@ -389,10 +389,10 @@ class TrainSingleModel:
         print('Start training CatBoost...')
 
         CB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                 cv_seed=cv_seed, parameters=cb_parameters, show_importance=True)
+                 cv_seed=cv_seed, parameters=cb_parameters, show_importance=True, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def dnn_tf_train():
+    def dnn_tf_train(idx=None):
         """
             Deep Neural Networks
         """
@@ -417,7 +417,8 @@ class TrainSingleModel:
 
         print('Start training DNN(TensorFlow)...')
 
-        dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed, cv_seed=cv_seed)
+        dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20,
+                  train_seed=train_seed, cv_seed=cv_seed, save_csv_log=True, csv_idx=idx)
 
     # # DNN using Keras
     # @staticmethod
@@ -439,7 +440,7 @@ class TrainSingleModel:
     #     dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20, cv_seed=cv_seed)
 
     @staticmethod
-    def stack_lgb_train():
+    def stack_lgb_train(idx=None):
         """
             LightGBM for stack layer
         """
@@ -498,13 +499,13 @@ class TrainSingleModel:
         print('Start training LGBM...')
 
         LGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                  cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False)
+                  cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
 
 
 class ChampionModel:
 
     @staticmethod
-    def Christ1991():
+    def Christ1991(idx=None):
         """
             Model of week3 champion
         """
@@ -534,7 +535,8 @@ class ChampionModel:
         print('Start training LightGBM...')
 
         LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, cv_generator=cv_generator)
+                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False,
+                   save_csv_log=True, csv_idx=idx, cv_generator=cv_generator)
 
 
 class GridSearch:
@@ -1399,6 +1401,55 @@ class ModelStacking:
         STK.stack()
 
 
+def auto_train(n_epoch):
+    """
+        Automatically training a model for many times
+    """
+
+    for i in range(n_epoch):
+
+        print('======================================================')
+        print('Auto Training Epoch {}/{}...'.format(i+1, n_epoch))
+        print('------------------------------------------------------')
+
+        # Logistic Regression
+        # TrainSingleModel.lr_train(i+1)
+
+        # Random Forest
+        # TrainSingleModel.rf_train(i+1)
+
+        # Extra Trees
+        # TrainSingleModel.et_train(i+1)
+
+        # AdaBoost
+        # TrainSingleModel.ab_train(i+1)
+
+        # GradientBoosting
+        # TrainSingleModel.gb_train(i+1)
+
+        # XGBoost
+        # TrainSingleModel.xgb_train(i+1)
+        # TrainSingleModel.xgb_train_sklearn(i+1)
+
+        # LightGBM
+        # TrainSingleModel.lgb_train(i+1)
+        # TrainSingleModel.lgb_train_sklearn(i+1)
+
+        # CatBoost
+        # TrainSingleModel.cb_train(i+1)
+
+        # DNN
+        # TrainSingleModel.dnn_tf_train(i+1)
+        # TrainSingleModel.dnn_keras_train(i+1)
+
+        # Champion Model
+        ChampionModel.Christ1991(i+1)
+
+        print('------------------------------------------------------')
+        print('Auto Training Epoch Done!')
+        print('======================================================')
+
+
 if __name__ == "__main__":
 
     # Check if directories exit or not
@@ -1441,7 +1492,7 @@ if __name__ == "__main__":
     # TrainSingleModel.dnn_keras_train()
 
     # Champion Model
-    ChampionModel.Christ1991()
+    # ChampionModel.Christ1991()
 
     # Grid Search
     # GridSearch.lr_grid_search()
@@ -1460,6 +1511,9 @@ if __name__ == "__main__":
 
     # Prejudge
     # PrejudgeTraining.train()
+
+    # Auto Training
+    auto_train(100)
 
     print('======================================================')
     print('All Task Done!')

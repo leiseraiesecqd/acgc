@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import os
 import time
+import csv
 from os.path import isdir
 
 
@@ -62,14 +63,14 @@ def save_loss_log(log_path, count, parameters, n_valid, n_cv, valid_era, loss_tr
     with open(log_path + 'loss_log.txt', 'a') as f:
 
         print('------------------------------------------------------')
-        print('Saving Losses')
+        print('Saving Losses...')
 
         f.write('===================== CV: {}/{} =====================\n'.format(count, n_cv))
         f.write('Time: {}\n'.format(time.time()))
         f.write('------------------------------------------------------')
         f.write('Train Seed: {}\n'.format(train_seed))
         f.write('CV Seed: {}\n'.format(cv_seed))
-        f.write('Validation Era: {}\n'.format(n_valid))
+        f.write('Validation Era Number: {}\n'.format(n_valid))
         f.write('Validation Spilt Number: {}\n'.format(n_cv))
         f.write('Validation Set Index: ' + str(valid_era) + '\n')
         f.write('Parameters:\n')
@@ -95,14 +96,14 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean,
     with open(log_path + 'loss_log.txt', 'a') as f:
 
         print('------------------------------------------------------')
-        print('Saving Final Losses')
+        print('Saving Final Losses...')
 
         f.write('==================== Final Losses ===================\n')
         f.write('Time: {}\n'.format(time.time()))
         f.write('------------------------------------------------------')
         f.write('Train Seed: {}\n'.format(train_seed))
         f.write('CV Seed: {}\n'.format(cv_seed))
-        f.write('Validation Era: {}\n'.format(n_valid))
+        f.write('Validation Era Number: {}\n'.format(n_valid))
         f.write('Validation Spilt Number: {}\n'.format(n_cv))
         f.write('Parameters:\n')
         f.write('\t' + str(parameters) + '\n\n')
@@ -119,14 +120,14 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean,
 
     with open(log_path + 'final_loss_log.txt', 'a') as f:
 
-        print('Saving Final Losses')
+        print('Saving Final Losses...')
 
         f.write('=====================================================\n')
         f.write('Time: {}\n'.format(time.time()))
         f.write('------------------------------------------------------')
         f.write('Train Seed: {}\n'.format(train_seed))
         f.write('CV Seed: {}\n'.format(cv_seed))
-        f.write('Validation Era: {}\n'.format(n_valid))
+        f.write('Validation Era Number: {}\n'.format(n_valid))
         f.write('Validation Spilt Number: {}\n'.format(n_cv))
         f.write('Parameters:\n')
         f.write('\t' + str(parameters) + '\n\n')
@@ -141,7 +142,33 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean,
         f.write('\t\t' + str(acc_train_era) + '\n\n')
 
 
-# Saving stacking outputs of layers
+# Save Loss Log to csv File
+def save_final_loss_log_to_csv(idx, log_path, loss_train_w_mean, loss_valid_w_mean, acc_train,
+                               train_seed, cv_seed, n_valid, n_cv, parameters):
+
+    if not os.path.isfile(log_path + 'loss_log.csv'):
+
+        print('------------------------------------------------------')
+        print('Creating csv File of Final Loss Log...')
+
+        with open(log_path + 'loss_log.csv', 'w') as f:
+            header = ['id', 'time', 'loss_train', 'loss_valid', 'train_accuracy',
+                      'train_seed', 'cv_seed', 'n_valid', 'n_cv', 'parameters']
+            writer = csv.writer(f)
+            writer.writerow(header)
+
+    with open(log_path + 'loss_log.csv', 'a') as f:
+
+        print('------------------------------------------------------')
+        print('Saving Final Losses to csv File...')
+        local_time = time.time()
+        log = [idx, local_time, loss_train_w_mean, loss_valid_w_mean, acc_train,
+               train_seed, cv_seed, n_valid, n_cv, str(parameters)]
+        writer = csv.writer(f)
+        writer.writerow(log)
+
+
+# Save stacking outputs of layers
 def save_stack_outputs(output_path, x_outputs, test_outputs, x_g_outputs, test_g_outputs):
 
     print('Saving Stacking Outputs of Layer...')
@@ -385,13 +412,14 @@ def check_dir_model(pred_path, loss_log_path=None):
         path_list = [pred_path,
                      pred_path + 'cv_results/',
                      pred_path + 'cv_prob_train/',
-                     loss_log_path,
                      pred_path + 'final_results/',
-                     pred_path + 'final_prob_train/']
+                     pred_path + 'final_prob_train/',
+                     loss_log_path,
+                     loss_log_path + 'csv_files/']
     else:
         path_list = [pred_path,
                      pred_path + 'cv_results/',
-                     pred_path + 'cv_prob_train/']
+                     pred_path + 'cv_prob_train/',]
 
     check_dir(path_list)
 

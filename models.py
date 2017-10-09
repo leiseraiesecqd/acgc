@@ -132,7 +132,8 @@ class ModelBase(object):
         return prob_train
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, train_seed, cv_seed,
-              era_list=None, parameters=None, show_importance=False, cv_generator=None):
+              era_list=None, parameters=None, show_importance=False, save_csv_log=True,
+              csv_idx=None, cv_generator=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -218,6 +219,12 @@ class ModelBase(object):
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
+        # Save Final Result
+        utils.save_pred_to_csv(pred_path + 'final_results/' + model_name + '_',
+                               self.id_test, prob_test_mean)
+        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/' + model_name + '_',
+                                     prob_train_mean, self.y_train)
+
         # Print Total Losses
         utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
@@ -229,11 +236,11 @@ class ModelBase(object):
                                   loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean,
                                   train_seed, cv_seed, acc_train, acc_train_era)
 
-        # Save Final Result
-        utils.save_pred_to_csv(pred_path + 'final_results/' + model_name + '_',
-                               self.id_test, prob_test_mean)
-        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/' + model_name + '_',
-                                     prob_train_mean,  self.y_train)
+        # Save Loss Log to csv File
+        if save_csv_log is True:
+            utils.save_final_loss_log_to_csv(csv_idx, loss_log_path + 'csv_files/' + model_name + '_',
+                                             loss_train_w_mean, loss_valid_w_mean, acc_train,
+                                             train_seed, cv_seed, n_valid, n_cv, parameters)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
                     w_valid, x_g_valid, x_test, x_g_test, parameters, show_importance=False):
@@ -571,7 +578,8 @@ class XGBoost(ModelBase):
         return prob_train
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, train_seed, cv_seed,
-              era_list=None, parameters=None, show_importance=False, cv_generator=None):
+              era_list=None, parameters=None, show_importance=False, save_csv_log=True,
+              csv_idx=None, cv_generator=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -656,6 +664,10 @@ class XGBoost(ModelBase):
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
+        # Save Final Result
+        utils.save_pred_to_csv(pred_path + 'final_results/xgb_', self.id_test, prob_test_mean)
+        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/xgb_', prob_train_mean, self.y_train)
+
         # Print Total Losses
         utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
@@ -667,9 +679,11 @@ class XGBoost(ModelBase):
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean,
                                   train_seed, cv_seed, acc_train, acc_train_era)
 
-        # Save Final Result
-        utils.save_pred_to_csv(pred_path + 'final_results/xgb_', self.id_test, prob_test_mean)
-        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/xgb_', prob_train_mean, self.y_train)
+        # Save Loss Log to csv File
+        if save_csv_log is True:
+            utils.save_final_loss_log_to_csv(csv_idx, loss_log_path + 'csv_files/xgb_',
+                                             loss_train_w_mean, loss_valid_w_mean, acc_train,
+                                             train_seed, cv_seed, n_valid, n_cv, parameters)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
                     w_valid, x_g_valid, x_test, x_g_test, parameters, show_importance=False):
@@ -806,7 +820,8 @@ class LightGBM(ModelBase):
         return prob_train
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, train_seed, cv_seed, era_list=None,
-              parameters=None, return_prob_test=False, show_importance=False, cv_generator=None):
+              parameters=None, return_prob_test=False, show_importance=False, save_csv_log=True,
+              csv_idx=None, cv_generator=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -893,6 +908,10 @@ class LightGBM(ModelBase):
         loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
+        
+        # Save Final Result
+        utils.save_pred_to_csv(pred_path + 'final_results/lgb_', self.id_test, prob_test_mean)
+        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/lgb_', prob_train_mean, self.y_train)
 
         # Print Total Losses
         utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
@@ -905,9 +924,11 @@ class LightGBM(ModelBase):
                                   loss_valid_mean, loss_train_w_mean, loss_valid_w_mean,
                                   train_seed, cv_seed, acc_train, acc_train_era)
 
-        # Save Final Result
-        utils.save_pred_to_csv(pred_path + 'final_results/lgb_', self.id_test, prob_test_mean)
-        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/lgb_', prob_train_mean, self.y_train)
+        # Save Loss Log to csv File
+        if save_csv_log is True:
+            utils.save_final_loss_log_to_csv(csv_idx, loss_log_path + 'csv_files/lgb_',
+                                             loss_train_w_mean, loss_valid_w_mean, acc_train,
+                                             train_seed, cv_seed, n_valid, n_cv, parameters)
 
         # Return Probabilities of Test Set
         if return_prob_test is True:
@@ -1320,7 +1341,8 @@ class DeepNeuralNetworks:
 
     # Training
     def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, train_seed, cv_seed,
-              era_list=None, parameters=None, show_importance=False, cv_generator=None):
+              era_list=None, parameters=None, show_importance=False, save_csv_log=True,
+              csv_idx=None, cv_generator=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -1500,6 +1522,10 @@ class DeepNeuralNetworks:
             loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
             loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
+            # Save Final Result
+            utils.save_pred_to_csv(pred_path + 'final_results/dnn_', self.id_test, prob_test_mean)
+            utils.save_prob_train_to_csv(pred_path + 'final_prob_train/dnn_', prob_train_mean, self.y_train)
+
             # Print Total Losses
             utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
@@ -1511,8 +1537,11 @@ class DeepNeuralNetworks:
                                       loss_valid_mean, loss_train_w_mean, loss_valid_w_mean,
                                       train_seed, cv_seed, acc_train, acc_train_era)
 
-            utils.save_pred_to_csv(pred_path + 'final_results/dnn_', self.id_test, prob_test_mean)
-            utils.save_prob_train_to_csv(pred_path + 'final_prob_train/dnn_', prob_train_mean, self.y_train)
+            # Save Loss Log to csv File
+            if save_csv_log is True:
+                utils.save_final_loss_log_to_csv(csv_idx, loss_log_path + 'csv_files/dnn_',
+                                                 loss_train_w_mean, loss_valid_w_mean, acc_train,
+                                                 train_seed, cv_seed, n_valid, n_cv, parameters)
 
     def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
                     w_valid, x_g_valid, x_test, x_g_test, parameters=None, show_importance=False):
