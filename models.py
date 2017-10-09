@@ -1804,11 +1804,10 @@ class CrossValidation:
             if era_list is None:
                 era_list = range(1, n_era + 1)
 
-            era_idx = [era_list]
-            valid_era = np.random.choice(era_idx, n_valid, replace=False)
+            valid_era = np.random.choice(era_list, n_valid, replace=False)
             while any(set(valid_era) == i_cv for i_cv in trained_cv):
                 print('This CV split has been chosen, choosing another one...')
-                valid_era = np.random.choice(era_idx, n_valid, replace=False)
+                valid_era = np.random.choice(era_list, n_valid, replace=False)
 
             train_index = []
             valid_index = []
@@ -1840,11 +1839,10 @@ class CrossValidation:
             if era_list is None:
                 era_list = range(1, n_era + 1)
 
-            era_idx = [era_list]
-            valid_era = np.random.choice(era_idx, n_valid, replace=False)
+            valid_era = np.random.choice(era_list, n_valid, replace=False)
             while any(set(valid_era) == i_cv for i_cv in trained_cv):
                 print('This CV split has been chosen, choosing another one...')
-                valid_era = np.random.choice(era_idx, n_valid, replace=False)
+                valid_era = np.random.choice(era_list, n_valid, replace=False)
 
             train_index = []
             valid_index = []
