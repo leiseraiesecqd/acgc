@@ -234,10 +234,6 @@ class TrainSingleModel:
         """
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        #  x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p \
-        #     = utils.load_preprocessed_positive_pd_data(preprocessed_data_path)
-        #  x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n \
-        #      = utils.load_preprocessed_negative_pd_data(preprocessed_data_path)
 
         xgb_parameters = {'max_depth': 3,
                           'learning_rate': 0.1,
@@ -267,12 +263,6 @@ class TrainSingleModel:
 
         XGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                   cv_seed=cv_seed, parameters=xgb_parameters, show_importance=True)
-
-        # LGBM = models.SKLearnXGBoost(x_train_n, y_train_n, w_train_n, e_train_n, x_test, id_test)
-        #
-        # print('Start training XGBoost...')
-        #
-        # LGBM.train(pred_path, loss_log_path, n_valid=1, n_cv=6, n_era=6, cv_seed=cv_seed, parameters=xgb_parameters)
 
     @staticmethod
     def lgb_train():
@@ -308,12 +298,12 @@ class TrainSingleModel:
 
         LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=65)
 
-        cv_generator = models.CrossValidation.era_k_fold_with_weight_all_random
+        # cv_generator = models.CrossValidation.era_k_fold_with_weight_all_random
 
         print('Start training LightGBM...')
 
         LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, cv_generator=cv_generator)
+                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False)
 
     @staticmethod
     def lgb_train_sklearn():
@@ -323,10 +313,6 @@ class TrainSingleModel:
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
-        # x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p \
-        #     = utils.load_preprocessed_positive_pd_data(preprocessed_data_path)
-        # x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n \
-        #     = utils.load_preprocessed_negative_pd_data(preprocessed_data_path)
 
         lgb_parameters = {'learning_rate': 0.003,
                           'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
@@ -356,14 +342,6 @@ class TrainSingleModel:
 
         LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                    cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False)
-
-        # LGBM = models.SKLearnLightGBM(x_train_n, y_train_n, w_train_n, e_train_n,
-        #                               x_test, id_test, x_g_train_n, x_g_test)
-        #
-        # print('Start training LGBM...')
-        #
-        # LGBM.train(pred_path, loss_log_path, n_valid=1, n_cv=6, n_era=6,
-        #            cv_seed=cv_seed, era_list=[1, 3, 4, 5, 8, 10, 12, 16], parameters=lgb_parameters)
 
     @staticmethod
     def cb_train():
@@ -521,6 +499,42 @@ class TrainSingleModel:
 
         LGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False)
+
+
+class ChampionModel:
+
+    @staticmethod
+    def Christ1991():
+        """
+            Model of week3 champion
+        """
+
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+
+        lgb_parameters = {'application': 'binary',
+                          'learning_rate': 0.002,
+                          'num_leaves': 128,              # <2^(max_depth)
+                          'tree_learner': 'serial',
+                          'max_depth': 8,                 # default=-1
+                          'min_data_in_leaf': 20,         # default=20
+                          'feature_fraction': 0.8,        # default=1
+                          'bagging_fraction': 0.8,        # default=1
+                          'bagging_freq': 5,              # default=0 perform bagging every k iteration
+                          'bagging_seed': 6,              # default=3
+                          'early_stopping_rounds': 50,
+                          'max_bin': 255,
+                          'metric': 'binary_logloss',
+                          'verbosity': 1}
+
+        LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=65)
+
+        cv_generator = models.CrossValidation.era_k_fold_with_weight_all_random
+
+        print('Start training LightGBM...')
+
+        LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, cv_generator=cv_generator)
 
 
 class GridSearch:
@@ -1416,7 +1430,7 @@ if __name__ == "__main__":
     # TrainSingleModel.xgb_train_sklearn()
 
     # LightGBM
-    TrainSingleModel.lgb_train()
+    # TrainSingleModel.lgb_train()
     # TrainSingleModel.lgb_train_sklearn()
 
     # CatBoost
@@ -1425,6 +1439,9 @@ if __name__ == "__main__":
     # DNN
     # TrainSingleModel.dnn_tf_train()
     # TrainSingleModel.dnn_keras_train()
+
+    # Champion Model
+    ChampionModel.Christ1991()
 
     # Grid Search
     # GridSearch.lr_grid_search()

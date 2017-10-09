@@ -846,7 +846,7 @@ class LightGBM(ModelBase):
 
             # Booster
             bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
-                            valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
+                            valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
 
             # Feature Importance
             if show_importance is True:
