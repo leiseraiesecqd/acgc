@@ -100,138 +100,155 @@ class DataPreProcess:
         self.id_test = test_f['id']
         self.g_test = test_f['group']
 
-    # Drop Outlier of a Feature
-    def drop_outliers_of_feature(self, feature, upper_quantile_train, lower_quantile_train,
-                                 upper_quantile_test, lower_quantile_test):
+    # Drop Outlier of a Feature by Quantile
+    def drop_outliers_by_quantile(self, feature, upper_quantile_train=None, lower_quantile_train=None,
+                                  upper_quantile_test=None, lower_quantile_test=None):
 
         # Drop upper outliers in self.x_train
-        upper_train = self.x_train[feature].quantile(upper_quantile_train)
-        self.x_train[feature].loc[self.x_train[feature] > upper_train] = upper_train
+        if upper_quantile_train is not None:
+            upper_train = self.x_train[feature].quantile(upper_quantile_train)
+            self.x_train[feature].loc[self.x_train[feature] > upper_train] = upper_train
 
         # Drop lower outlines in self.x_train
-        lower_train = self.x_train[feature].quantile(lower_quantile_train)
-        self.x_train[feature].loc[self.x_train[feature] < lower_train] = lower_train
+        if lower_quantile_train is not None:
+            lower_train = self.x_train[feature].quantile(lower_quantile_train)
+            self.x_train[feature].loc[self.x_train[feature] < lower_train] = lower_train
 
         # Drop upper outlines in self.x_test
-        upper_test = self.x_test[feature].quantile(upper_quantile_test)
-        self.x_test[feature].loc[self.x_test[feature] > upper_test] = upper_test
+        if upper_quantile_test is not None:
+            upper_test = self.x_test[feature].quantile(upper_quantile_test)
+            self.x_test[feature].loc[self.x_test[feature] > upper_test] = upper_test
 
-        lower_test = self.x_test[feature].quantile(lower_quantile_test)
-        self.x_test[feature].loc[self.x_test[feature] < lower_test] = lower_test
+        # Drop lower outlines in self.x_test
+        if lower_quantile_test is not None:
+            lower_test = self.x_test[feature].quantile(lower_quantile_test)
+            self.x_test[feature].loc[self.x_test[feature] < lower_test] = lower_test
+
+    # Drop Outlier of a Feature by Value
+    def drop_outliers_by_value(self, feature, upper_train=None, lower_train=None):
+        
+        # Drop upper outliers in self.x_train
+        if upper_train is not None:
+            self.x_train[feature].loc[self.x_train[feature] > upper_train] = upper_train
+
+        # Drop lower outlines in self.x_train
+        if lower_train is not None:
+            self.x_train[feature].loc[self.x_train[feature] < lower_train] = lower_train
 
     # Dropping Outliers
     def drop_outliers(self):
 
         print('Dropping outliers...')
 
-        for i in range(88):
-
-            if i != 77:
-                self.drop_outliers_of_feature('feature' + str(i), 0.9995, 0.0005, 0.9995, 0.0005)
+        # for i in range(88):
+        #     if i != 77:
+        #         self.drop_outliers_by_quantile('feature' + str(i), 0.9995, 0.0005, 0.9995, 0.0005)
 
         # feature | upper_quantile_train | lower_quantile_train | upper_quantile_test | lower_quantile_test
 
-        # self.drop_outliers_of_feature('feature0', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature1', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature2', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature3', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature4', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature5', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature6', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature7', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature8', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature9', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature10', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature11', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature12', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature13', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature14', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature15', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature16', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature17', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature18', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature19', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature20', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature21', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature22', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature23', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature24', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature25', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature26', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature27', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature28', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature29', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature30', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature31', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature32', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature33', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature34', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature35', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature36', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature37', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature38', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature39', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature40', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature41', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature42', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature43', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature44', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature45', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature46', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature47', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature48', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature49', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature50', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature51', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature52', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature53', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature54', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature55', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature56', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature57', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature58', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature59', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature60', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature61', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature62', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature63', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature64', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature65', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature66', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature67', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature68', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature69', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature70', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature71', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature72', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature73', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature74', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature75', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature76', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature77', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature78', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature79', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature80', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature81', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature82', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature83', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature84', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature85', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature86', 0.9995, 0.0005, 0.9995, 0.0005)
-        # self.drop_outliers_of_feature('feature87', 0.9995, 0.0005, 0.9995, 0.0005)
+        self.drop_outliers_by_value('feature0', None, None)
+        self.drop_outliers_by_value('feature1', 3, None)
+        self.drop_outliers_by_value('feature2', None, None)
+        self.drop_outliers_by_value('feature3', None, None)
+        self.drop_outliers_by_value('feature4', 10.1, None)
+        self.drop_outliers_by_value('feature5', None, None)
+        self.drop_outliers_by_value('feature6', None, None)
+        self.drop_outliers_by_value('feature7', None, None)
+        self.drop_outliers_by_value('feature8', None, None)
+        self.drop_outliers_by_value('feature9', None, None)
+        self.drop_outliers_by_value('feature10', None, None)
+        self.drop_outliers_by_value('feature11', None, None)
+        self.drop_outliers_by_value('feature12', None, None)
+        self.drop_outliers_by_value('feature13', None, None)
+        self.drop_outliers_by_value('feature14', 20, None)
+        self.drop_outliers_by_value('feature15', None, None)
+        self.drop_outliers_by_value('feature16', None, None)
+        self.drop_outliers_by_value('feature17', None, None)
+        self.drop_outliers_by_value('feature18', 20, None)
+        self.drop_outliers_by_value('feature19', None, None)
+        self.drop_outliers_by_value('feature20', None, None)
+        self.drop_outliers_by_value('feature21', None, None)
+        self.drop_outliers_by_value('feature22', None, None)
+        self.drop_outliers_by_value('feature23', 21.2, None)
+        self.drop_outliers_by_value('feature24', 6.5, None)
+        self.drop_outliers_by_value('feature25', None, None)
+        self.drop_outliers_by_value('feature26', 12, None)
+        self.drop_outliers_by_value('feature27', None, None)
+        self.drop_outliers_by_value('feature28', None, None)
+        self.drop_outliers_by_value('feature29', 15, -10)
+        self.drop_outliers_by_value('feature30', None, None)
+        self.drop_outliers_by_value('feature31', None, None)
+        self.drop_outliers_by_value('feature32', None, None)
+        self.drop_outliers_by_value('feature33', 6.9, None)
+        self.drop_outliers_by_value('feature34', None, None)
+        self.drop_outliers_by_value('feature35', None, None)
+        self.drop_outliers_by_value('feature36', 20, None)
+        self.drop_outliers_by_value('feature37', None, None)
+        self.drop_outliers_by_value('feature38', 12, None)
+        self.drop_outliers_by_value('feature39', None, None)
+        self.drop_outliers_by_value('feature40', 10, None)
+        self.drop_outliers_by_value('feature41', None, None)
+        self.drop_outliers_by_value('feature42', None, None)
+        self.drop_outliers_by_value('feature43', 22.5, None)
+        self.drop_outliers_by_value('feature44', None, None)
+        self.drop_outliers_by_value('feature45', 12.1, None)
+        self.drop_outliers_by_value('feature46', None, None)
+        self.drop_outliers_by_value('feature47', None, None)
+        self.drop_outliers_by_value('feature48', None, None)
+        self.drop_outliers_by_value('feature49', None, None)
+        self.drop_outliers_by_value('feature50', None, None)
+        self.drop_outliers_by_value('feature51', None, None)
+        self.drop_outliers_by_value('feature52', None, None)
+        self.drop_outliers_by_value('feature53', 10.5, None)
+        self.drop_outliers_by_value('feature54', 12, None)
+        self.drop_outliers_by_value('feature55', None, None)
+        self.drop_outliers_by_value('feature56', None, None)
+        self.drop_outliers_by_value('feature57', None, None)
+        self.drop_outliers_by_value('feature58', None, None)
+        self.drop_outliers_by_value('feature59', None, None)
+        self.drop_outliers_by_value('feature60', None, None)
+        self.drop_outliers_by_value('feature61', None, None)
+        self.drop_outliers_by_value('feature62', None, None)
+        self.drop_outliers_by_value('feature63', 8, None)
+        self.drop_outliers_by_value('feature64', None, None)
+        self.drop_outliers_by_value('feature65', 7.025, None)
+        self.drop_outliers_by_value('feature66', None, None)
+        self.drop_outliers_by_value('feature67', 11, None)
+        self.drop_outliers_by_value('feature68', 10, None)
+        self.drop_outliers_by_value('feature69', None, None)
+        self.drop_outliers_by_value('feature70', None, None)
+        self.drop_outliers_by_value('feature71', None, None)
+        self.drop_outliers_by_value('feature72', 14, None)
+        self.drop_outliers_by_value('feature73', None, None)
+        self.drop_outliers_by_value('feature74', None, None)
+        self.drop_outliers_by_value('feature75', None, None)
+        self.drop_outliers_by_value('feature76', None, None)
+        # self.drop_outliers_by_value('feature77', None, None)
+        self.drop_outliers_by_value('feature78', 9, -30)
+        self.drop_outliers_by_value('feature79', None, None)
+        self.drop_outliers_by_value('feature80', None, None)
+        self.drop_outliers_by_value('feature81', None, None)
+        self.drop_outliers_by_value('feature82', None, None)
+        self.drop_outliers_by_value('feature83', None, None)
+        self.drop_outliers_by_value('feature84', None, None)
+        self.drop_outliers_by_value('feature85', None, None)
+        self.drop_outliers_by_value('feature86', 20, None)
+        self.drop_outliers_by_value('feature87', None, None)
 
     # Standard Scale
     def standard_scale(self):
 
         print('Standard Scaling Data...')
 
-        for each in self.x_train.columns:
-            mean, std = self.x_train[each].mean(), self.x_train[each].std()
-            self.x_train.loc[:, each] = (self.x_train[each] - mean)/std
+        mean = np.zeros(len(self.x_train.columns), dtype=np.float64)
+        std = np.zeros(len(self.x_train.columns), dtype=np.float64)
 
-        for each in self.x_test.columns:
-            mean, std = self.x_test[each].mean(), self.x_test[each].std()
-            self.x_test.loc[:, each] = (self.x_test[each] - mean)/std
+        for i, each in enumerate(self.x_train.columns):
+            mean[i], std[i] = self.x_train[each].mean(), self.x_train[each].std()
+            self.x_train.loc[:, each] = (self.x_train[each] - mean[i])/std[i]
+
+        for i, each in enumerate(self.x_test.columns):
+            self.x_test.loc[:, each] = (self.x_test[each] - mean[i])/std[i]
 
     # Min Max scale
     def min_max_scale(self):
