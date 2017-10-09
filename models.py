@@ -132,7 +132,7 @@ class ModelBase(object):
         return prob_train
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, train_seed, cv_seed,
-              era_list=None, parameters=None, show_importance=False):
+              era_list=None, parameters=None, show_importance=False, cv_generator=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -149,7 +149,8 @@ class ModelBase(object):
         loss_valid_w_total = []
 
         # Get Cross Validation Generator
-        cv_generator = CrossValidation.era_k_fold_with_weight
+        if cv_generator is None:
+            cv_generator = CrossValidation.era_k_fold_with_weight
 
         # Training on Cross Validation Sets
         for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era \
@@ -570,7 +571,7 @@ class XGBoost(ModelBase):
         return prob_train
 
     def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, train_seed, cv_seed,
-              era_list=None, parameters=None, show_importance=False):
+              era_list=None, parameters=None, show_importance=False, cv_generator=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -587,16 +588,13 @@ class XGBoost(ModelBase):
         loss_train_w_total = []
         loss_valid_w_total = []
 
-        for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
-            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
-                                                                         y=self.y_train,
-                                                                         w=self.w_train,
-                                                                         e=self.e_train,
-                                                                         n_valid=n_valid,
-                                                                         n_cv=n_cv,
-                                                                         n_era=n_era,
-                                                                         seed=cv_seed,
-                                                                         era_list=era_list):
+        # Get Cross Validation Generator
+        if cv_generator is None:
+            cv_generator = CrossValidation.era_k_fold_with_weight
+
+        for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid,  e_valid, valid_era \
+                in cv_generator(x=self.x_train, y=self.y_train, w=self.w_train, e=self.e_train,
+                                n_valid=n_valid, n_cv=n_cv, n_era=n_era, seed=cv_seed, era_list=era_list):
 
             count += 1
 
@@ -807,8 +805,8 @@ class LightGBM(ModelBase):
 
         return prob_train
 
-    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, train_seed, cv_seed,
-              era_list=None, parameters=None, return_prob_test=False, show_importance=False):
+    def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, train_seed, cv_seed, era_list=None,
+              parameters=None, return_prob_test=False, show_importance=False, cv_generator=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -825,17 +823,14 @@ class LightGBM(ModelBase):
         loss_train_w_total = []
         loss_valid_w_total = []
 
+        # Get Cross Validation Generator
+        if cv_generator is None:
+            cv_generator = CrossValidation.era_k_fold_with_weight
+
         # Cross Validation
-        for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
-            e_valid, valid_era in CrossValidation.era_k_fold_with_weight(x=self.x_train,
-                                                                         y=self.y_train,
-                                                                         w=self.w_train,
-                                                                         e=self.e_train,
-                                                                         n_valid=n_valid,
-                                                                         n_cv=n_cv,
-                                                                         n_era=n_era,
-                                                                         seed=cv_seed,
-                                                                         era_list=era_list):
+        for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era in \
+                cv_generator(x=self.x_train, y=self.y_train, w=self.w_train, e=self.e_train,
+                             n_valid=n_valid, n_cv=n_cv, n_era=n_era, seed=cv_seed, era_list=era_list):
 
             count += 1
 
@@ -1325,7 +1320,7 @@ class DeepNeuralNetworks:
 
     # Training
     def train(self, pred_path, loss_log_path, n_valid, n_cv, n_era, train_seed, cv_seed,
-              era_list=None, parameters=None, show_importance=False):
+              era_list=None, parameters=None, show_importance=False, cv_generator=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -1370,16 +1365,13 @@ class DeepNeuralNetworks:
             loss_train_w_total = []
             loss_valid_w_total = []
 
-            for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, \
-                e_valid, valid_era in CrossValidation.era_k_fold_with_weight(self.x_train,
-                                                                             self.y_train,
-                                                                             self.w_train,
-                                                                             self.e_train,
-                                                                             n_valid=n_valid,
-                                                                             n_cv=n_cv,
-                                                                             n_era=n_era,
-                                                                             seed=cv_seed,
-                                                                             era_list=era_list):
+            # Get Cross Validation Generator
+            if cv_generator is None:
+                cv_generator = CrossValidation.era_k_fold_with_weight
+
+            for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era \
+                    in cv_generator(self.x_train, self.y_train, self.w_train, self.e_train,
+                                    n_valid=n_valid, n_cv=n_cv, n_era=n_era, seed=cv_seed, era_list=era_list):
 
                 cv_counter += 1
 
@@ -1805,26 +1797,33 @@ class CrossValidation:
         if seed is not None:
             np.random.seed(seed)
 
+        trained_cv = []
+
         for i in range(n_cv):
 
             if era_list is None:
                 era_list = range(1, n_era + 1)
 
             era_idx = [era_list]
-            valid_group = np.random.choice(era_idx, n_valid, replace=False)
+            valid_era = np.random.choice(era_idx, n_valid, replace=False)
+            while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                print('This CV split has been chosen, choosing another one...')
+                valid_era = np.random.choice(era_idx, n_valid, replace=False)
 
             train_index = []
             valid_index = []
 
             for ii, ele in enumerate(e):
 
-                if ele in valid_group:
+                if ele in valid_era:
                     valid_index.append(ii)
                 else:
                     train_index.append(ii)
 
             np.random.shuffle(train_index)
             np.random.shuffle(valid_index)
+
+            trained_cv.append(set(valid_era))
 
             yield train_index, valid_index
 
@@ -1834,20 +1833,25 @@ class CrossValidation:
         if seed is not None:
             np.random.seed(seed)
 
+        trained_cv = []
+
         for i in range(n_cv):
 
             if era_list is None:
                 era_list = range(1, n_era + 1)
 
             era_idx = [era_list]
-            valid_group = np.random.choice(era_idx, n_valid, replace=False)
+            valid_era = np.random.choice(era_idx, n_valid, replace=False)
+            while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                print('This CV split has been chosen, choosing another one...')
+                valid_era = np.random.choice(era_idx, n_valid, replace=False)
 
             train_index = []
             valid_index = []
 
             for ii, ele in enumerate(e):
 
-                if ele in valid_group:
+                if ele in valid_era:
                     valid_index.append(ii)
                 else:
                     train_index.append(ii)
@@ -1864,6 +1868,8 @@ class CrossValidation:
             x_valid = x[valid_index]
             y_valid = y[valid_index]
             w_valid = w[valid_index]
+
+            trained_cv.append(set(valid_era))
 
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
@@ -1927,6 +1933,8 @@ class CrossValidation:
                     np.random.shuffle(train_index)
                     np.random.shuffle(valid_index)
 
+                    trained_cv.append(set(valid_era))
+
                     yield train_index, valid_index
 
             # n_cv is not an integer multiple of n_valid
@@ -1960,6 +1968,8 @@ class CrossValidation:
                         np.random.shuffle(train_index)
                         np.random.shuffle(valid_index)
 
+                        trained_cv.append(set(valid_era))
+
                         yield train_index, valid_index
 
                     else:
@@ -1984,6 +1994,8 @@ class CrossValidation:
 
                         np.random.shuffle(train_index)
                         np.random.shuffle(valid_index)
+
+                        trained_cv.append(set(valid_era))
 
                         yield train_index, valid_index
 

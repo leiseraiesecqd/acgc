@@ -308,10 +308,12 @@ class TrainSingleModel:
 
         LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=65)
 
+        cv_generator = models.CrossValidation.era_k_fold_with_weight_all_random
+
         print('Start training LightGBM...')
 
         LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False)
+                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, cv_generator=cv_generator)
 
     @staticmethod
     def lgb_train_sklearn():
@@ -1414,14 +1416,14 @@ if __name__ == "__main__":
     # TrainSingleModel.xgb_train_sklearn()
 
     # LightGBM
-    # TrainSingleModel.lgb_train()
+    TrainSingleModel.lgb_train()
     # TrainSingleModel.lgb_train_sklearn()
 
     # CatBoost
     # TrainSingleModel.cb_train()
 
     # DNN
-    TrainSingleModel.dnn_tf_train()
+    # TrainSingleModel.dnn_tf_train()
     # TrainSingleModel.dnn_keras_train()
 
     # Grid Search
