@@ -422,7 +422,7 @@ def check_dir_model(pred_path, loss_log_path=None):
                      pred_path + 'final_results/',
                      pred_path + 'final_prob_train/',
                      loss_log_path,
-                     loss_log_path + 'csv_files/']
+                     loss_log_path + 'csv_logs/']
     else:
         path_list = [pred_path,
                      pred_path + 'cv_results/',

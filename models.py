@@ -238,7 +238,7 @@ class ModelBase(object):
 
         # Save Loss Log to csv File
         if save_csv_log is True:
-            utils.save_final_loss_log_to_csv(csv_idx, loss_log_path + 'csv_files/' + model_name + '_',
+            utils.save_final_loss_log_to_csv(csv_idx, loss_log_path + 'csv_logs/' + model_name + '_',
                                              loss_train_w_mean, loss_valid_w_mean, acc_train,
                                              train_seed, cv_seed, n_valid, n_cv, parameters)
 
@@ -681,7 +681,7 @@ class XGBoost(ModelBase):
 
         # Save Loss Log to csv File
         if save_csv_log is True:
-            utils.save_final_loss_log_to_csv(csv_idx, loss_log_path + 'csv_files/xgb_',
+            utils.save_final_loss_log_to_csv(csv_idx, loss_log_path + 'csv_logs/xgb_',
                                              loss_train_w_mean, loss_valid_w_mean, acc_train,
                                              train_seed, cv_seed, n_valid, n_cv, parameters)
 
@@ -926,7 +926,7 @@ class LightGBM(ModelBase):
 
         # Save Loss Log to csv File
         if save_csv_log is True:
-            utils.save_final_loss_log_to_csv(csv_idx, loss_log_path + 'csv_files/lgb_',
+            utils.save_final_loss_log_to_csv(csv_idx, loss_log_path + 'csv_logs/lgb_',
                                              loss_train_w_mean, loss_valid_w_mean, acc_train,
                                              train_seed, cv_seed, n_valid, n_cv, parameters)
 
@@ -1539,7 +1539,7 @@ class DeepNeuralNetworks:
 
             # Save Loss Log to csv File
             if save_csv_log is True:
-                utils.save_final_loss_log_to_csv(csv_idx, loss_log_path + 'csv_files/dnn_',
+                utils.save_final_loss_log_to_csv(csv_idx, loss_log_path + 'csv_logs/dnn_',
                                                  loss_train_w_mean, loss_valid_w_mean, acc_train,
                                                  train_seed, cv_seed, n_valid, n_cv, parameters)
 
