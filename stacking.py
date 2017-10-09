@@ -33,6 +33,7 @@ class DeepStack:
         self.n_era = hyper_params['n_era']
         self.n_epoch = hyper_params['n_epoch']
         self.cv_seed = hyper_params['cv_seed']
+        self.train_seed = hyper_params['train_seed']
         self.num_boost_round_lgb_l1 = hyper_params['num_boost_round_lgb_l1']
         self.num_boost_round_xgb_l1 = hyper_params['num_boost_round_xgb_l1']
         self.num_boost_round_lgb_l2 = hyper_params['num_boost_round_lgb_l2']
@@ -254,7 +255,7 @@ class DeepStack:
                                     self.id_test, num_boost_round=self.num_boost_round_final)
             print('Start training ' + model_name + '...')
             model.train(self.pred_path + 'stack_results/', self.loss_log_path, n_valid=n_valid,
-                        n_cv=n_cv, n_era=n_era, cv_seed=self.cv_seed, parameters=params)
+                        n_cv=n_cv, n_era=n_era, train_seed=self.train_seed,  cv_seed=self.cv_seed, parameters=params)
 
         elif model_name == 'DNN':
 
@@ -262,7 +263,7 @@ class DeepStack:
                                               test_outputs, self.id_test, params)
             print('Start training ' + model_name + '...')
             model.train(self.pred_path + 'stack_results/', self.loss_log_path,
-                        n_valid=n_valid, n_cv=n_cv, n_era=n_era, cv_seed=self.cv_seed)
+                        n_valid=n_valid, n_cv=n_cv, n_era=n_era, train_seed=self.train_seed, cv_seed=self.cv_seed)
 
         else:
             raise ValueError('Wrong model name!')
@@ -370,7 +371,7 @@ class StackLayer:
     """
 
     def __init__(self, params, x_train, y_train, w_train, e_train, x_g_train, x_test, x_g_test, id_test,
-                 models_initializer=None, input_layer=None, cv_generator=None, n_valid=4, n_era=20,
+                 models_initializer=None, input_layer=None, cv_generator=None, n_valid=4, n_era=20, train_seed=None,
                  cv_seed=None, i_layer=1, n_epoch=1, x_train_reuse=None, x_test_reuse=None, dnn_param=None,
                  pred_path=None, loss_log_path=None, stack_output_path=None, show_importance=False,
                  is_final_layer=False, n_cv_final=None):
@@ -389,6 +390,7 @@ class StackLayer:
         self.cv_generator = cv_generator
         self.n_valid = n_valid
         self.n_era = n_era
+        self.train_seed = train_seed
         self.cv_seed = cv_seed
         self.i_layer = i_layer
         self.n_epoch = n_epoch
@@ -583,8 +585,8 @@ class StackLayer:
         model = self.models_initializer(blender_x_tree, blender_test_tree, blender_x_g_tree,
                                         blender_test_g_tree, params=self.params)
 
-        model.train(self.pred_path, self.loss_log_path, n_valid=self.n_valid,
-                    n_cv=self.n_cv_final, n_era=self.n_era, cv_seed=self.cv_seed,
+        model.train(self.pred_path, self.loss_log_path, n_valid=self.n_valid, n_cv=self.n_cv_final,
+                    n_era=self.n_era, train_seed=self.train_seed, cv_seed=self.cv_seed,
                     parameters=self.params, show_importance=self.show_importance)
 
     def train(self, i_epoch=1):
@@ -702,6 +704,7 @@ class StackTree:
         self.n_epoch = hyper_params['n_epoch']
         self.final_layer_cv = hyper_params['final_n_cv']
         self.cv_seed = hyper_params['cv_seed']
+        self.train_seed = hyper_params['train_seed']
         self.num_boost_round_lgb_l1 = hyper_params['num_boost_round_lgb_l1']
         self.num_boost_round_xgb_l1 = hyper_params['num_boost_round_xgb_l1']
         self.num_boost_round_lgb_l2 = None
@@ -799,8 +802,8 @@ class StackTree:
         # Layer 1
         stk_l1 = StackLayer(self.layers_params[0], self.x_train, self.y_train, self.w_train, self.e_train,
                             self.x_g_train, self.x_test, self.x_g_test, self.id_test,
-                            models_initializer=models_initializer_l1, cv_generator=cv_stack,
-                            n_valid=self.n_valid[0], n_era=self.n_era[0], cv_seed=self.cv_seed,
+                            models_initializer=models_initializer_l1, cv_generator=cv_stack, n_valid=self.n_valid[0],
+                            n_era=self.n_era[0], train_seed=self.train_seed, cv_seed=self.cv_seed,
                             i_layer=1, n_epoch=self.n_epoch[0], pred_path=self.pred_path,
                             stack_output_path=self.stack_output_path, show_importance=self.show_importance)
 
@@ -808,16 +811,16 @@ class StackTree:
         # stk_l2 = StackLayer(self.layers_params[1], self.x_train, self.y_train, self.w_train, self.e_train,
         #                     self.x_g_train, self.x_test, self.x_g_test, self.id_test,
         #                     models_initializer=models_initializer_l2, stacker=self.stacker, cv=cv_stack,
-        #                     n_valid=self.n_valid[1], n_era=self.n_era[1], cv_seed=self.cv_seed,
-        #                     input_layer=stk_l1, i_layer=2, n_epoch=self.n_epoch[1],
+        #                     n_valid=self.n_valid[1], n_era=self.n_era[1], train_seed=self.train_seed,
+        #                     cv_seed=self.cv_seed, input_layer=stk_l1, i_layer=2, n_epoch=self.n_epoch[1],
         #                     x_train_reuse=x_train_reuse_l2, x_test_reuse=x_test_reuse_l2,
         #                     pred_path=self.pred_path, stack_output_path=self.stack_output_path)
 
         # Final Layer
         stk_final = StackLayer(self.layers_params[1], self.x_train, self.y_train, self.w_train,
                                self.e_train, self.x_g_train, self.x_test, self.x_g_test, self.id_test,
-                               input_layer=stk_l1, models_initializer=models_initializer_final,
-                               n_valid=self.n_valid[1], cv_seed=self.cv_seed, i_layer=2, n_epoch=self.n_epoch[1],
+                               input_layer=stk_l1, models_initializer=models_initializer_final, n_valid=self.n_valid[1],
+                               train_seed=self.train_seed, cv_seed=self.cv_seed, i_layer=2, n_epoch=self.n_epoch[1],
                                x_train_reuse=x_train_reuse_l2, x_test_reuse=x_test_reuse_l2,
                                pred_path=self.pred_path, loss_log_path=self.loss_log_path,
                                stack_output_path=self.stack_output_path, show_importance=self.show_importance,

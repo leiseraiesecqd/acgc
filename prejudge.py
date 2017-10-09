@@ -37,7 +37,8 @@ class PrejudgeEraSign:
         self.parameters_e = models_parameters[0]
         self.parameters_p = models_parameters[1]
         self.parameters_n = models_parameters[2]
-        self.seed = hyper_parameters['seed']
+        self.cv_seed = hyper_parameters['cv_seed']
+        self.train_seed = hyper_parameters['train_seed']
         self.n_splits_e = hyper_parameters['n_splits_e']
         self.num_boost_round_e = hyper_parameters['num_boost_round_e']
         self.n_cv_e = hyper_parameters['n_cv_e']
@@ -134,7 +135,7 @@ class PrejudgeEraSign:
 
         # Training and Get Probabilities of Test Era Being Positive
         era_prob_test = model.prejudge_train(self.pred_path + 'pred_era/', n_splits=self.n_splits_e, n_cv=self.n_cv_e,
-                                             cv_seed=self.seed, use_weight=self.use_weight, parameters=self.parameters_e,
+                                             cv_seed=self.cv_seed, use_weight=self.use_weight, parameters=self.parameters_e,
                                              show_importance=self.show_importance)
 
         # Convert Probabilities of Test Era to 0 and 1
@@ -150,8 +151,8 @@ class PrejudgeEraSign:
             Split whole data set to positive and negative set using era sign
         """
 
-        if self.seed is not None:
-            np.random.seed(self.seed)
+        if self.cv_seed is not None:
+            np.random.seed(self.cv_seed)
 
         era_idx_test_p = []
         era_idx_test_n = []
@@ -194,15 +195,17 @@ class PrejudgeEraSign:
         print('Training Models of Positive Era Sign...')
         prob_test_p = model_p.train(self.pred_path + 'positive/', self.loss_log_path + 'positive/',
                                     n_valid=self.n_valid_p, n_cv=self.n_cv_p, n_era=self.n_era_p,
-                                    cv_seed=self.seed, parameters=self.parameters_p, return_prob_test=True,
-                                    era_list=self.era_list_p, show_importance=self.show_importance)
+                                    train_seed=self.train_seed, cv_seed=self.cv_seed, parameters=self.parameters_p,
+                                    return_prob_test=True, era_list=self.era_list_p,
+                                    show_importance=self.show_importance)
 
         print('======================================================')
         print('Training Models of Negative Era Sign...')
         prob_test_n = model_n.train(self.pred_path + 'negative/', self.loss_log_path + 'negative/',
                                     n_valid=self.n_valid_n, n_cv=self.n_cv_n, n_era=self.n_era_n,
-                                    cv_seed=self.seed, parameters=self.parameters_n, return_prob_test=True,
-                                    era_list=self.era_list_n, show_importance=self.show_importance)
+                                    train_seed=self.train_seed, cv_seed=self.cv_seed, parameters=self.parameters_n,
+                                    return_prob_test=True, era_list=self.era_list_n,
+                                    show_importance=self.show_importance)
 
         prob_test = np.zeros_like(self.id_test, dtype=np.float64)
 

@@ -56,8 +56,8 @@ class TrainSingleModel:
 
         print('Start training Logistic Regression...')
 
-        LR.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
-                 parameters=lr_parameters, show_importance=False)
+        LR.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+                 cv_seed=cv_seed, parameters=lr_parameters, show_importance=False)
 
     @staticmethod
     def rf_train():
@@ -88,8 +88,8 @@ class TrainSingleModel:
 
         print('Start training Random Forest...')
 
-        RF.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
-                 parameters=rf_parameters, show_importance=False)
+        RF.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+                 cv_seed=cv_seed, parameters=rf_parameters, show_importance=False)
 
     @staticmethod
     def et_train():
@@ -120,8 +120,8 @@ class TrainSingleModel:
 
         print('Start training Extra Trees...')
 
-        ET.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
-                 parameters=et_parameters, show_importance=False)
+        ET.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+                 cv_seed=cv_seed, parameters=et_parameters, show_importance=False)
 
     @staticmethod
     def ab_train():
@@ -160,8 +160,8 @@ class TrainSingleModel:
 
         print('Start training AdaBoost...')
 
-        AB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
-                 parameters=ab_parameters, show_importance=False)
+        AB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+                 cv_seed=cv_seed, parameters=ab_parameters, show_importance=False)
 
     @staticmethod
     def gb_train():
@@ -194,8 +194,8 @@ class TrainSingleModel:
 
         print('Start training GradientBoosting...')
 
-        GB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
-                 parameters=gb_parameters, show_importance=False)
+        GB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+                 cv_seed=cv_seed, parameters=gb_parameters, show_importance=False)
 
     @staticmethod
     def xgb_train():
@@ -224,8 +224,8 @@ class TrainSingleModel:
 
         print('Start training XGBoost...')
 
-        XGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
-                  parameters=xgb_parameters, show_importance=False)
+        XGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+                  cv_seed=cv_seed, parameters=xgb_parameters, show_importance=False)
 
     @staticmethod
     def xgb_train_sklearn():
@@ -265,8 +265,8 @@ class TrainSingleModel:
 
         print('Start training XGBoost...')
 
-        XGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
-                  parameters=xgb_parameters, show_importance=True)
+        XGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+                  cv_seed=cv_seed, parameters=xgb_parameters, show_importance=True)
 
         # LGBM = models.SKLearnXGBoost(x_train_n, y_train_n, w_train_n, e_train_n, x_test, id_test)
         #
@@ -310,8 +310,8 @@ class TrainSingleModel:
 
         print('Start training LightGBM...')
 
-        LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
-                   parameters=lgb_parameters, show_importance=False)
+        LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False)
 
     @staticmethod
     def lgb_train_sklearn():
@@ -352,8 +352,8 @@ class TrainSingleModel:
 
         print('Start training LightGBM...')
 
-        LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
-                   parameters=lgb_parameters, show_importance=False)
+        LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False)
 
         # LGBM = models.SKLearnLightGBM(x_train_n, y_train_n, w_train_n, e_train_n,
         #                               x_test, id_test, x_g_train_n, x_g_test)
@@ -408,8 +408,8 @@ class TrainSingleModel:
 
         print('Start training CatBoost...')
 
-        CB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
-                 parameters=cb_parameters, show_importance=True)
+        CB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+                 cv_seed=cv_seed, parameters=cb_parameters, show_importance=True)
 
     @staticmethod
     def dnn_tf_train():
@@ -437,7 +437,7 @@ class TrainSingleModel:
 
         print('Start training DNN(TensorFlow)...')
 
-        dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed)
+        dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed, cv_seed=cv_seed)
 
     # # DNN using Keras
     # @staticmethod
@@ -517,8 +517,8 @@ class TrainSingleModel:
 
         print('Start training LGBM...')
 
-        LGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, cv_seed=cv_seed,
-                  parameters=lgb_parameters, show_importance=False)
+        LGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+                  cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False)
 
 
 class GridSearch:
@@ -1030,7 +1030,8 @@ class PrejudgeTraining:
         positive_era_list = preprocess.positive_era_list
         negative_era_list = preprocess.negative_era_list
 
-        hyper_parameters = {'seed': cv_seed,
+        hyper_parameters = {'cv_seed': cv_seed,
+                            'train_seed': train_seed,
                             'n_splits_e': 5,
                             'num_boost_round_e': 5000,
                             'n_cv_e': 10,
@@ -1317,6 +1318,7 @@ class ModelStacking:
         hyper_params = {'n_valid': (4, 4),
                         'n_era': (20, 20),
                         'n_epoch': (3, 1),
+                        'train_seed': train_seed,
                         'cv_seed': cv_seed,
                         'num_boost_round_lgb_l1': 65,
                         'num_boost_round_xgb_l1': 65,
@@ -1355,6 +1357,7 @@ class ModelStacking:
                         'n_era': (20, 20),
                         'n_epoch': (1, 8),
                         'final_n_cv': 20,
+                        'train_seed': train_seed,
                         'cv_seed': cv_seed,
                         'num_boost_round_lgb_l1': 65,
                         'num_boost_round_xgb_l1': 36,
