@@ -1861,15 +1861,17 @@ class CrossValidation:
             x_train = x[train_index]
             y_train = y[train_index]
             w_train = w[train_index]
+            e_train = e[train_index]
 
             # Validation data
             x_valid = x[valid_index]
             y_valid = y[valid_index]
             w_valid = w[valid_index]
+            e_valid = e[valid_index]
 
             trained_cv.append(set(valid_era))
 
-            yield x_train, y_train, w_train, x_valid, y_valid, w_valid
+            yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
     @staticmethod
     def era_k_fold_split(e, n_valid, n_cv, n_era, seed=None, era_list=None):
