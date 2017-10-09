@@ -2,6 +2,7 @@ import pickle
 import pandas as pd
 import numpy as np
 import os
+import time
 from os.path import isdir
 
 
@@ -40,6 +41,8 @@ def seve_grid_search_log(log_path, params, params_grid, best_score, best_paramet
     with open(log_path + 'grid_search_log.txt', 'a') as f:
 
         f.write('=====================================================\n')
+        f.write('Time: {}\n'.format(time.time()))
+        f.write('------------------------------------------------------')
         f.write('Total Time: {:.3f}s\n'.format(total_time))
         f.write('Best Score: {:.6f}\n'.format(best_score))
         f.write('Parameters:\n')
@@ -52,8 +55,9 @@ def seve_grid_search_log(log_path, params, params_grid, best_score, best_paramet
 
 
 # Save Final Losses
-def save_loss_log(log_path, count, parameters, n_valid, n_cv, valid_era, loss_train, loss_valid, loss_train_w,
-                  loss_valid_w, acc_train=None, acc_valid=None, acc_train_era=None, acc_valid_era=None):
+def save_loss_log(log_path, count, parameters, n_valid, n_cv, valid_era, loss_train,
+                  loss_valid, loss_train_w, loss_valid_w, train_seed=None, cv_seed=None,
+                  acc_train=None, acc_valid=None, acc_train_era=None, acc_valid_era=None):
 
     with open(log_path + 'loss_log.txt', 'a') as f:
 
@@ -61,6 +65,10 @@ def save_loss_log(log_path, count, parameters, n_valid, n_cv, valid_era, loss_tr
         print('Saving Losses')
 
         f.write('===================== CV: {}/{} =====================\n'.format(count, n_cv))
+        f.write('Time: {}\n'.format(time.time()))
+        f.write('------------------------------------------------------')
+        f.write('Train Seed: {}\n'.format(train_seed))
+        f.write('CV Seed: {}\n'.format(cv_seed))
         f.write('Validation Era: {}\n'.format(n_valid))
         f.write('Validation Spilt Number: {}\n'.format(n_cv))
         f.write('Validation Set Index: ' + str(valid_era) + '\n')
@@ -80,8 +88,9 @@ def save_loss_log(log_path, count, parameters, n_valid, n_cv, valid_era, loss_tr
         f.write('\t\t' + str(acc_valid_era) + '\n\n')
 
 
-def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean, loss_valid_mean,
-                        loss_train_w_mean, loss_valid_w_mean, acc_train=None, acc_train_era=None):
+def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean,
+                        loss_valid_mean, loss_train_w_mean, loss_valid_w_mean,
+                        train_seed=None, cv_seed=None, acc_train=None, acc_train_era=None):
 
     with open(log_path + 'loss_log.txt', 'a') as f:
 
@@ -89,6 +98,10 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean, lo
         print('Saving Final Losses')
 
         f.write('==================== Final Losses ===================\n')
+        f.write('Time: {}\n'.format(time.time()))
+        f.write('------------------------------------------------------')
+        f.write('Train Seed: {}\n'.format(train_seed))
+        f.write('CV Seed: {}\n'.format(cv_seed))
         f.write('Validation Era: {}\n'.format(n_valid))
         f.write('Validation Spilt Number: {}\n'.format(n_cv))
         f.write('Parameters:\n')
@@ -109,6 +122,10 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean, lo
         print('Saving Final Losses')
 
         f.write('=====================================================\n')
+        f.write('Time: {}\n'.format(time.time()))
+        f.write('------------------------------------------------------')
+        f.write('Train Seed: {}\n'.format(train_seed))
+        f.write('CV Seed: {}\n'.format(cv_seed))
         f.write('Validation Era: {}\n'.format(n_valid))
         f.write('Validation Spilt Number: {}\n'.format(n_cv))
         f.write('Parameters:\n')
@@ -120,6 +137,8 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean, lo
         f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n\n'.format(loss_valid_w_mean))
         f.write('Accuracy:\n')
         f.write('\tTotal Train Accuracy: {:.3f}%\n\n'.format(acc_train * 100))
+        f.write('\tTotal Train Eras Accuracies:\n')
+        f.write('\t\t' + str(acc_train_era) + '\n\n')
 
 
 # Saving stacking outputs of layers

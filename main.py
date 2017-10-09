@@ -19,10 +19,8 @@ path_list = [pred_path,
 
 train_seed = np.random.randint(100)
 cv_seed = np.random.randint(100)
-dnn_seed = np.random.randint(100)
 # train_seed = 65
 # cv_seed = 6
-# dnn_seed = 21
 
 
 class TrainSingleModel:
@@ -423,12 +421,12 @@ class TrainSingleModel:
 
         # HyperParameters
         hyper_parameters = {'version': '1.0',
-                            'epochs': 4,
-                            'unit_number': [2048],
-                            'learning_rate': 0.00001,
-                            'keep_probability': 0.5,
+                            'epochs': 100,
+                            'unit_number': [48, 24, 12],
+                            'learning_rate': 0.01,
+                            'keep_probability': 1.0,
                             'batch_size': 128,
-                            'seed': dnn_seed,
+                            'seed': train_seed,
                             'display_step': 100,
                             'save_path': './checkpoints/',
                             'log_path': './log/'}
@@ -1198,7 +1196,7 @@ class ModelStacking:
                       'learning_rate': 0.0001,
                       'keep_probability': 0.4,
                       'batch_size': 256,
-                      'seed': dnn_seed,
+                      'seed': train_seed,
                       'display_step': 100,
                       'save_path': './checkpoints/',
                       'log_path': './log/'}
@@ -1253,7 +1251,7 @@ class ModelStacking:
         #               'learning_rate': 0.0001,
         #               'keep_probability': 0.8,
         #               'batch_size': 256,
-        #               'seed': dnn_seed,
+        #               'seed': train_seed,
         #               'display_step': 100,
         #               'save_path': './checkpoints/',
         #               'log_path': './log/'}
@@ -1303,7 +1301,7 @@ class ModelStacking:
         #               'learning_rate': 0.0001,
         #               'keep_probability': 0.8,
         #               'batch_size': 256,
-        #               'seed': dnn_seed,
+        #               'seed': train_seed,
         #               'display_step': 100,
         #               'save_path': './checkpoints/',
         #               'log_path': './log/'}
@@ -1417,10 +1415,10 @@ if __name__ == "__main__":
     # TrainSingleModel.lgb_train_sklearn()
 
     # CatBoost
-    TrainSingleModel.cb_train()
+    # TrainSingleModel.cb_train()
 
     # DNN
-    # TrainSingleModel.dnn_tf_train()
+    TrainSingleModel.dnn_tf_train()
     # TrainSingleModel.dnn_keras_train()
 
     # Grid Search
@@ -1445,6 +1443,5 @@ if __name__ == "__main__":
     print('All Task Done!')
     print('train_seed: ', train_seed)
     print('cv_seed: ', cv_seed)
-    print('dnn_seed: ', dnn_seed)
     print('Total Time: {}s'.format(time.time() - start_time))
     print('======================================================')
