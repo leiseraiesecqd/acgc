@@ -17,11 +17,6 @@ path_list = [pred_path,
              grid_search_log_path,
              loss_log_path]
 
-train_seed = np.random.randint(100)
-cv_seed = np.random.randint(100)
-# train_seed = 65
-# cv_seed = 6
-
 
 class TrainSingleModel:
     """
@@ -29,7 +24,7 @@ class TrainSingleModel:
     """
 
     @staticmethod
-    def lr_train(idx=None):
+    def lr_train(train_seed, cv_seed, idx=None):
         """
             Logistic Regression
         """
@@ -60,7 +55,7 @@ class TrainSingleModel:
                  cv_seed=cv_seed, parameters=lr_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def rf_train(idx=None):
+    def rf_train(train_seed, cv_seed, idx=None):
         """
             Random Forest
         """
@@ -92,7 +87,7 @@ class TrainSingleModel:
                  cv_seed=cv_seed, parameters=rf_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def et_train(idx=None):
+    def et_train(train_seed, cv_seed, idx=None):
         """
             Extra Trees
         """
@@ -124,7 +119,7 @@ class TrainSingleModel:
                  cv_seed=cv_seed, parameters=et_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def ab_train(idx=None):
+    def ab_train(train_seed, cv_seed, idx=None):
         """
             AdaBoost
         """
@@ -164,7 +159,7 @@ class TrainSingleModel:
                  cv_seed=cv_seed, parameters=ab_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def gb_train(idx=None):
+    def gb_train(train_seed, cv_seed, idx=None):
         """
             GradientBoosting
         """
@@ -198,7 +193,7 @@ class TrainSingleModel:
                  cv_seed=cv_seed, parameters=gb_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def xgb_train(idx=None):
+    def xgb_train(train_seed, cv_seed, idx=None):
         """
             XGBoost
         """
@@ -228,7 +223,7 @@ class TrainSingleModel:
                   cv_seed=cv_seed, parameters=xgb_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def xgb_train_sklearn(idx=None):
+    def xgb_train_sklearn(train_seed, cv_seed, idx=None):
         """
             XGBoost using scikit-learn module
         """
@@ -265,7 +260,7 @@ class TrainSingleModel:
                   cv_seed=cv_seed, parameters=xgb_parameters, show_importance=True, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def lgb_train(idx=None):
+    def lgb_train(train_seed, cv_seed, idx=None):
         """
             LightGBM
         """
@@ -306,7 +301,7 @@ class TrainSingleModel:
                    cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def lgb_train_sklearn(idx=None):
+    def lgb_train_sklearn(train_seed, cv_seed, idx=None):
         """
             LightGBM using scikit-learn module
         """
@@ -344,7 +339,7 @@ class TrainSingleModel:
                    cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def cb_train(idx=None):
+    def cb_train(train_seed, cv_seed, idx=None):
         """
             CatBoost
         """
@@ -392,7 +387,7 @@ class TrainSingleModel:
                  cv_seed=cv_seed, parameters=cb_parameters, show_importance=True, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def dnn_tf_train(idx=None):
+    def dnn_tf_train(train_seed, cv_seed, idx=None):
         """
             Deep Neural Networks
         """
@@ -422,7 +417,7 @@ class TrainSingleModel:
 
     # # DNN using Keras
     # @staticmethod
-    # def dnn_keras_train():
+    # def dnn_keras_train(train_seed, cv_seed, idx=None):
     #
     #     x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
     #
@@ -440,7 +435,7 @@ class TrainSingleModel:
     #     dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20, cv_seed=cv_seed)
 
     @staticmethod
-    def stack_lgb_train(idx=None):
+    def stack_lgb_train(train_seed, cv_seed, idx=None):
         """
             LightGBM for stack layer
         """
@@ -505,7 +500,7 @@ class TrainSingleModel:
 class ChampionModel:
 
     @staticmethod
-    def Christ1991(idx=None):
+    def Christ1991(train_seed, cv_seed, idx=None):
         """
             Model of week3 champion
         """
@@ -545,7 +540,7 @@ class GridSearch:
     """
 
     @staticmethod
-    def lr_grid_search():
+    def lr_grid_search(train_seed, cv_seed):
         """
             Logistic Regression
         """
@@ -587,7 +582,7 @@ class GridSearch:
         utils.print_grid_info('Logistic Regression', parameters, parameters_grid)
 
     @staticmethod
-    def rf_grid_search():
+    def rf_grid_search(train_seed, cv_seed):
         """
             Random Forest
         """
@@ -633,7 +628,7 @@ class GridSearch:
         utils.print_grid_info('Random Forest', parameters, parameters_grid)
 
     @staticmethod
-    def et_grid_search():
+    def et_grid_search(train_seed, cv_seed):
         """
             Extra Trees
         """
@@ -680,7 +675,7 @@ class GridSearch:
         utils.print_grid_info('Extra Trees', parameters, parameters_grid)
 
     @staticmethod
-    def ab_grid_search():
+    def ab_grid_search(train_seed, cv_seed):
         """
             AdaBoost
         """
@@ -732,7 +727,7 @@ class GridSearch:
         utils.print_grid_info('AdaBoost', parameters, parameters_grid)
 
     @staticmethod
-    def gb_grid_search():
+    def gb_grid_search(train_seed, cv_seed):
         """
             GradientBoosting
         """
@@ -782,7 +777,7 @@ class GridSearch:
         utils.print_grid_info('GradientBoosting', parameters, parameters_grid)
 
     @staticmethod
-    def xgb_grid_search():
+    def xgb_grid_search(train_seed, cv_seed):
         """
             XGBoost
         """
@@ -838,7 +833,7 @@ class GridSearch:
         utils.print_grid_info('XGBoost', parameters, parameters_grid)
 
     @staticmethod
-    def lgb_grid_search():
+    def lgb_grid_search(train_seed, cv_seed):
         """
             LightGBM
         """
@@ -898,7 +893,7 @@ class GridSearch:
 
     # Stacking Layer LightGBM
     @staticmethod
-    def stack_lgb_grid_search():
+    def stack_lgb_grid_search(train_seed, cv_seed):
 
         log_path = grid_search_log_path + 'stk_lgb_'
 
@@ -970,7 +965,7 @@ class PrejudgeTraining:
     """
 
     @staticmethod
-    def get_models_parameters():
+    def get_models_parameters(train_seed):
         """
             Set Parameters for models
         """
@@ -1028,7 +1023,7 @@ class PrejudgeTraining:
         return models_parameters
 
     @staticmethod
-    def train():
+    def train(train_seed, cv_seed):
         """
             Training model
         """
@@ -1083,7 +1078,7 @@ class ModelStacking:
     """
 
     @staticmethod
-    def get_layer1_params():
+    def get_layer1_params(train_seed):
         """
             Set Parameters for models of layer1
         """
@@ -1234,7 +1229,7 @@ class ModelStacking:
         return layer1_params
 
     @staticmethod
-    def get_layer2_params():
+    def get_layer2_params(train_seed):
         """
             Set Parameters for models of layer2
         """
@@ -1284,7 +1279,7 @@ class ModelStacking:
         return layer2_params
 
     @staticmethod
-    def get_final_layer_params():
+    def get_final_layer_params(train_seed):
         """
             Set Parameters for models of final layer
         """
@@ -1328,7 +1323,7 @@ class ModelStacking:
         return lgb_params
 
     @staticmethod
-    def deep_stack_train():
+    def deep_stack_train(train_seed, cv_seed):
         """
             Training model using DeepStack model
         """
@@ -1364,7 +1359,7 @@ class ModelStacking:
         STK.stack()
 
     @staticmethod
-    def stack_tree_train():
+    def stack_tree_train(train_seed, cv_seed):
         """
             Training model using StackTree model
         """
@@ -1408,116 +1403,129 @@ def auto_train(n_epoch):
 
     for i in range(n_epoch):
 
+        train_seed = np.random.randint(200)
+        cv_seed = np.random.randint(200)
+        epoch_start_time = time.time()
+
         print('======================================================')
         print('Auto Training Epoch {}/{}...'.format(i+1, n_epoch))
-        print('------------------------------------------------------')
+        print('======================================================')
 
         # Logistic Regression
-        # TrainSingleModel.lr_train(i+1)
+        # TrainSingleModel.lr_train(train_seed, cv_seed, i+1)
 
         # Random Forest
-        # TrainSingleModel.rf_train(i+1)
+        # TrainSingleModel.rf_train(train_seed, cv_seed, i+1)
 
         # Extra Trees
-        # TrainSingleModel.et_train(i+1)
+        # TrainSingleModel.et_train(train_seed, cv_seed, i+1)
 
         # AdaBoost
-        # TrainSingleModel.ab_train(i+1)
+        # TrainSingleModel.ab_train(train_seed, cv_seed, i+1)
 
         # GradientBoosting
-        # TrainSingleModel.gb_train(i+1)
+        # TrainSingleModel.gb_train(train_seed, cv_seed, i+1)
 
         # XGBoost
-        # TrainSingleModel.xgb_train(i+1)
-        # TrainSingleModel.xgb_train_sklearn(i+1)
+        # TrainSingleModel.xgb_train(train_seed, cv_seed, i+1)
+        # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, i+1)
 
         # LightGBM
-        # TrainSingleModel.lgb_train(i+1)
-        # TrainSingleModel.lgb_train_sklearn(i+1)
+        # TrainSingleModel.lgb_train(train_seed, cv_seed, i+1)
+        # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, i+1)
 
         # CatBoost
-        # TrainSingleModel.cb_train(i+1)
+        # TrainSingleModel.cb_train(train_seed, cv_seed, i+1)
 
         # DNN
-        # TrainSingleModel.dnn_tf_train(i+1)
-        # TrainSingleModel.dnn_keras_train(i+1)
+        # TrainSingleModel.dnn_tf_train(train_seed, cv_seed, i+1)
+        # TrainSingleModel.dnn_keras_train(train_seed, cv_seed, i+1)
 
         # Champion Model
-        ChampionModel.Christ1991(i+1)
+        ChampionModel.Christ1991(train_seed, cv_seed, i+1)
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Auto Training Epoch Done!')
+        print('Train Seed: {}'.format(train_seed))
+        print('Cross Validation Seed: {}'.format(cv_seed))
+        print('Epoch Time: {}s'.format(time.time() - epoch_start_time))
         print('======================================================')
 
 
 if __name__ == "__main__":
 
+    start_time = time.time()
+
     # Check if directories exit or not
     utils.check_dir(path_list)
 
-    start_time = time.time()
+    # Create Global Seed for Training and Cross Validation
+    global_train_seed = np.random.randint(200)
+    global_cv_seed = np.random.randint(200)
+    # global_train_seed = 65
+    # global_cv_seed = 6
 
     print('======================================================')
     print('Start Training...')
     print('======================================================')
 
     # Logistic Regression
-    # TrainSingleModel.lr_train()
+    # TrainSingleModel.lr_train(global_train_seed, global_cv_seed)
 
     # Random Forest
-    # TrainSingleModel.rf_train()
+    # TrainSingleModel.rf_train(global_train_seed, global_cv_seed)
 
     # Extra Trees
-    # TrainSingleModel.et_train()
+    # TrainSingleModel.et_train(global_train_seed, global_cv_seed)
 
     # AdaBoost
-    # TrainSingleModel.ab_train()
+    # TrainSingleModel.ab_train(global_train_seed, global_cv_seed)
 
     # GradientBoosting
-    # TrainSingleModel.gb_train()
+    # TrainSingleModel.gb_train(global_train_seed, global_cv_seed)
 
     # XGBoost
-    # TrainSingleModel.xgb_train()
-    # TrainSingleModel.xgb_train_sklearn()
+    # TrainSingleModel.xgb_train(global_train_seed, global_cv_seed)
+    # TrainSingleModel.xgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # LightGBM
-    # TrainSingleModel.lgb_train()
-    # TrainSingleModel.lgb_train_sklearn()
+    # TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
+    # TrainSingleModel.lgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # CatBoost
-    # TrainSingleModel.cb_train()
+    # TrainSingleModel.cb_train(global_train_seed, global_cv_seed)
 
     # DNN
-    # TrainSingleModel.dnn_tf_train()
-    # TrainSingleModel.dnn_keras_train()
+    # TrainSingleModel.dnn_tf_train(global_train_seed, global_cv_seed)
+    # TrainSingleModel.dnn_keras_train(global_train_seed, global_cv_seed)
 
     # Champion Model
-    # ChampionModel.Christ1991()
+    # ChampionModel.Christ1991(global_train_seed, global_cv_seed)
 
     # Grid Search
-    # GridSearch.lr_grid_search()
-    # GridSearch.rf_grid_search()
-    # GridSearch.et_grid_search()
-    # GridSearch.ab_grid_search()
-    # GridSearch.gb_grid_search()
-    # GridSearch.xgb_grid_search()
-    # GridSearch.lgb_grid_search()
-    # GridSearch.stack_lgb_grid_search()
+    # GridSearch.lr_grid_search(global_train_seed, global_cv_seed)
+    # GridSearch.rf_grid_search(global_train_seed, global_cv_seed)
+    # GridSearch.et_grid_search(global_train_seed, global_cv_seed)
+    # GridSearch.ab_grid_search(global_train_seed, global_cv_seed)
+    # GridSearch.gb_grid_search(global_train_seed, global_cv_seed)
+    # GridSearch.xgb_grid_search(global_train_seed, global_cv_seed)
+    # GridSearch.lgb_grid_search(global_train_seed, global_cv_seed)
+    # GridSearch.stack_lgb_grid_search(global_train_seed, global_cv_seed)
 
     # Stacking
-    # ModelStacking.deep_stack_train()
-    # ModelStacking.stack_tree_train()
-    # TrainSingleModel.stack_lgb_train()
+    # ModelStacking.deep_stack_train(global_train_seed, global_cv_seed)
+    # ModelStacking.stack_tree_train(global_train_seed, global_cv_seed)
+    # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed)
 
     # Prejudge
-    # PrejudgeTraining.train()
+    # PrejudgeTraining.train(global_train_seed, global_cv_seed)
 
     # Auto Training
     auto_train(100)
 
     print('======================================================')
     print('All Task Done!')
-    print('train_seed: ', train_seed)
-    print('cv_seed: ', cv_seed)
+    print('Global Train Seed: {}'.format(global_train_seed))
+    print('Global Cross Validation Seed: {}'.format(global_cv_seed))
     print('Total Time: {}s'.format(time.time() - start_time))
     print('======================================================')

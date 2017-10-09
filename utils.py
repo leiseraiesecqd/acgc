@@ -41,8 +41,10 @@ def seve_grid_search_log(log_path, params, params_grid, best_score, best_paramet
 
     with open(log_path + 'grid_search_log.txt', 'a') as f:
 
+        local_time = time.strftime('%Y/%m/%d-%H:%M:%S', time.localtime(time.time()))
+
         f.write('=====================================================\n')
-        f.write('Time: {}\n'.format(time.time()))
+        f.write('Time: {}\n'.format(local_time))
         f.write('------------------------------------------------------')
         f.write('Total Time: {:.3f}s\n'.format(total_time))
         f.write('Best Score: {:.6f}\n'.format(best_score))
@@ -65,8 +67,10 @@ def save_loss_log(log_path, count, parameters, n_valid, n_cv, valid_era, loss_tr
         print('------------------------------------------------------')
         print('Saving Losses...')
 
+        local_time = time.strftime('%Y/%m/%d-%H:%M:%S', time.localtime(time.time()))
+
         f.write('===================== CV: {}/{} =====================\n'.format(count, n_cv))
-        f.write('Time: {}\n'.format(time.time()))
+        f.write('Time: {}\n'.format(local_time))
         f.write('------------------------------------------------------')
         f.write('Train Seed: {}\n'.format(train_seed))
         f.write('CV Seed: {}\n'.format(cv_seed))
@@ -98,8 +102,10 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean,
         print('------------------------------------------------------')
         print('Saving Final Losses...')
 
+        local_time = time.strftime('%Y/%m/%d-%H:%M:%S', time.localtime(time.time()))
+
         f.write('==================== Final Losses ===================\n')
-        f.write('Time: {}\n'.format(time.time()))
+        f.write('Time: {}\n'.format(local_time))
         f.write('------------------------------------------------------')
         f.write('Train Seed: {}\n'.format(train_seed))
         f.write('CV Seed: {}\n'.format(cv_seed))
@@ -161,7 +167,8 @@ def save_final_loss_log_to_csv(idx, log_path, loss_train_w_mean, loss_valid_w_me
 
         print('------------------------------------------------------')
         print('Saving Final Losses to csv File...')
-        local_time = time.time()
+
+        local_time = time.strftime('%Y/%m/%d-%H:%M:%S', time.localtime(time.time()))
         log = [idx, local_time, loss_train_w_mean, loss_valid_w_mean, acc_train,
                train_seed, cv_seed, n_valid, n_cv, str(parameters)]
         writer = csv.writer(f)
