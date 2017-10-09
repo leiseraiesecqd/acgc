@@ -96,7 +96,7 @@ class DataPreProcess:
         self.w_train = train_f['weight']
         self.g_train = train_f['group']
         self.e_train = train_f['era']
-        self.x_test = test_f.drop(['id', 'group'], axis=1)
+        self.x_test = test_f.drop(['id', 'group', 'feature77'], axis=1)
         self.id_test = test_f['id']
         self.g_test = test_f['group']
 
