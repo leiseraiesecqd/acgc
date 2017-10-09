@@ -892,24 +892,12 @@ class GridSearch:
             = utils.load_stacked_data(stack_output_path + 'l2_')
 
         g_train = x_g_train[:, -1]
-        g_test = x_g_test[:, -1]
-
         x_train_reuse = x_train[:, :88]
-        x_test_reuse = x_test[:, :88]
 
         print('------------------------------------------------------')
         print('Stacking Reused Features of Train Set...')
-        # n_sample * (n_feature + n_reuse)
         blender_x_tree = np.concatenate((blender_x_tree, x_train_reuse), axis=1)
-        # n_sample * (n_feature + n_reuse + 1)
         blender_x_g_tree = np.column_stack((blender_x_tree, g_train))
-
-        print('------------------------------------------------------')
-        print('Stacking Reused Features of Test Set...')
-        # n_sample * (n_feature + n_reuse)
-        blender_test_tree = np.concatenate((blender_test_tree, x_test_reuse), axis=1)
-        # n_sample * (n_feature + n_reuse + 1)
-        blender_test_g_tree = np.column_stack((blender_test_tree, g_test))
 
         parameters = {'learning_rate': 0.006,
                       'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
@@ -954,7 +942,7 @@ class GridSearch:
             # 'max_bin': (255, 355, 455)
         }
 
-        models.grid_search(log_path, x_outputs, y_train, e_train, clf, n_valid=4, n_cv=20, n_era=20,
+        models.grid_search(log_path, blender_x_tree, y_train, e_train, clf, n_valid=4, n_cv=20, n_era=20,
                            cv_seed=cv_seed, params=parameters, params_grid=parameters_grid)
 
         utils.print_grid_info('LightGBM', parameters, parameters_grid)
@@ -1029,6 +1017,9 @@ class PrejudgeTraining:
             Training model
         """
 
+        prejudge_pred_path = pred_path + 'prejudge/'
+        prejudge_loss_log_path = loss_log_path + 'prejudge/'
+
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
         x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p \
@@ -1054,16 +1045,19 @@ class PrejudgeTraining:
                             'n_cv_n': 6,
                             'n_era_n': 6,
                             'num_boost_round_n': 50,
-                            'era_list_n': negative_era_list}
+                            'era_list_n': negative_era_list,
+                            'force_convert_era': True,
+                            'use_weight': True,
+                            'show_importance': False}
 
-        PES = prejudge.PrejudgeEraSign(x_train, y_train, w_train, e_train, x_g_train,
-                                       x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p,
-                                       x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n,
-                                       x_test, id_test, x_g_test)
+        PES = prejudge.PrejudgeEraSign(x_train, y_train, w_train, e_train, x_g_train, x_train_p,
+                                       y_train_p, w_train_p, e_train_p, x_g_train_p, x_train_n, y_train_n,
+                                       w_train_n, e_train_n, x_g_train_n, x_test, id_test, x_g_test,
+                                       pred_path=prejudge_pred_path, loss_log_path=prejudge_loss_log_path,
+                                       negative_era_list=negative_era_list, models_parameters=models_parameters,
+                                       hyper_parameters=hyper_parameters)
 
-        PES.train(pred_path=pred_path + 'prejudge/', loss_log_path=loss_log_path + 'prejudge/',
-                  negative_era_list=negative_era_list, model_parameters=models_parameters,
-                  hyper_parameters=hyper_parameters, load_pickle=True, show_importance=False)
+        PES.train(load_pickle=False, load_pickle_path=None)
 
 
 class ModelStacking:
@@ -1325,7 +1319,12 @@ class ModelStacking:
         hyper_params = {'n_valid': (4, 4),
                         'n_era': (20, 20),
                         'n_epoch': (3, 1),
-                        'cv_seed': cv_seed}
+                        'cv_seed': cv_seed,
+                        'num_boost_round_lgb_l1': 65,
+                        'num_boost_round_xgb_l1': 65,
+                        'num_boost_round_lgb_l2': 65,
+                        'num_boost_round_final': 65,
+                        'show_importance': False}
 
         layer1_prams = ModelStacking.get_layer1_params()
         layer2_prams = ModelStacking.get_layer2_params()
@@ -1336,18 +1335,13 @@ class ModelStacking:
                          # layer3_prams
                          ]
 
-        num_boost_round = {'num_boost_round_lgb_l1': 65,
-                           'num_boost_round_xgb_l1': 65,
-                           'num_boost_round_lgb_l2': 65,
-                           'num_boost_round_final': 65}
-
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
         STK = stacking.DeepStack(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test,
                                  pred_path=pred_path + 'stack_results/', loss_log_path=loss_log_path,
                                  stack_output_path=stack_output_path, hyper_params=hyper_params,
-                                 layers_params=layers_params, num_boost_round=num_boost_round, show_importance=False)
+                                 layers_params=layers_params)
 
         STK.stack()
 
@@ -1363,7 +1357,11 @@ class ModelStacking:
                         'n_era': (20, 20),
                         'n_epoch': (1, 8),
                         'final_n_cv': 20,
-                        'cv_seed': cv_seed}
+                        'cv_seed': cv_seed,
+                        'num_boost_round_lgb_l1': 65,
+                        'num_boost_round_xgb_l1': 36,
+                        'num_boost_round_final': 65,
+                        'show_importance': False}
 
         layer1_params = ModelStacking.get_layer1_params()
         # layer2_params = ModelStacking.get_layer2_params()
@@ -1373,17 +1371,13 @@ class ModelStacking:
                          # layer2_params,
                          final_layer_params]
 
-        num_boost_round = {'num_boost_round_lgb_l1': 65,
-                           'num_boost_round_xgb_l1': 36,
-                           'num_boost_round_final': 65}
-
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
         STK = stacking.StackTree(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test,
                                  pred_path=stack_pred_path, loss_log_path=loss_log_path,
-                                 stack_output_path=stack_output_path, hyper_params=hyper_params,
-                                 layers_params=layers_params, num_boost_round=num_boost_round, show_importance=False)
+                                 stack_output_path=stack_output_path, layers_params=layers_params,
+                                 hyper_params=hyper_params)
 
         STK.stack()
 

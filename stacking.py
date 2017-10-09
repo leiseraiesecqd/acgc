@@ -10,8 +10,7 @@ class DeepStack:
     """
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te, pred_path=None,
-                 loss_log_path=None, stack_output_path=None, hyper_params=None, layers_params=None,
-                 num_boost_round=None, show_importance=False):
+                 loss_log_path=None, stack_output_path=None, hyper_params=None, layers_params=None):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -28,17 +27,17 @@ class DeepStack:
         self.dnn_l1_params = self.layers_params[0][-1]
         self.dnn_l2_params = self.layers_params[1][-1]
         self.dnn_l3_params = self.layers_params[2][-1]
-        self.num_boost_round_lgb_l1 = num_boost_round['num_boost_round_lgb_l1']
-        self.num_boost_round_xgb_l1 = num_boost_round['num_boost_round_xgb_l1']
-        self.num_boost_round_lgb_l2 = num_boost_round['num_boost_round_lgb_l2']
-        self.num_boost_round_final = num_boost_round['num_boost_round_final']
         self.g_train = x_g_tr[:, -1]
         self.g_test = x_g_te[:, -1]
         self.n_valid = hyper_params['n_valid']
         self.n_era = hyper_params['n_era']
         self.n_epoch = hyper_params['n_epoch']
         self.cv_seed = hyper_params['cv_seed']
-        self.show_importance = show_importance
+        self.num_boost_round_lgb_l1 = hyper_params['num_boost_round_lgb_l1']
+        self.num_boost_round_xgb_l1 = hyper_params['num_boost_round_xgb_l1']
+        self.num_boost_round_lgb_l2 = hyper_params['num_boost_round_lgb_l2']
+        self.num_boost_round_final = hyper_params['num_boost_round_final']
+        self.show_importance = hyper_params['show_importance']
 
     def init_models_layer1(self):
 
@@ -93,9 +92,8 @@ class DeepStack:
 
         return models_l3
 
-    @staticmethod
-    def train_models(models_blender, params, x_train, y_train, w_train, x_g_train, x_valid,
-                     y_valid, w_valid, x_g_valid, idx_valid, x_test, x_g_test, show_importance=False):
+    def train_models(self, models_blender, params, x_train, y_train, w_train, x_g_train,
+                     x_valid, y_valid, w_valid, x_g_valid, idx_valid, x_test, x_g_test):
 
         # First raw - idx_valid
         all_model_valid_prob = [idx_valid]
@@ -112,7 +110,7 @@ class DeepStack:
             # Training on each model in models_l1 using one cross validation set
             prob_valid, prob_test, losses = \
                 model.stack_train(x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid,
-                                  x_test, x_g_test, params[iter_model], show_importance=show_importance)
+                                  x_test, x_g_test, params[iter_model], show_importance=self.show_importance)
 
             all_model_valid_prob.append(prob_valid)
             all_model_test_prob.append(prob_test)
@@ -127,7 +125,7 @@ class DeepStack:
 
     def stacker(self, models_initializer, params, x_train_inputs, y_train_inputs, w_train_inputs,
                 e_train_inputs, x_g_train_inputs, x_test, x_g_test, cv_generator, n_valid=4, n_era=20,
-                cv_seed=None, n_epoch=1, x_train_reuse=None, x_test_reuse=None, show_importance=False):
+                cv_seed=None, n_epoch=1, x_train_reuse=None, x_test_reuse=None):
 
         if n_era % n_valid != 0:
             raise ValueError('n_era must be an integer multiple of n_valid!')
@@ -187,8 +185,7 @@ class DeepStack:
                 blender_valid_cv, blender_test_cv, \
                     blender_losses_cv = self.train_models(models_blender, params, x_train, y_train, w_train,
                                                           x_g_train, x_valid, y_valid, w_valid, x_g_valid,
-                                                          valid_index, x_test, x_g_test,
-                                                          show_importance=show_importance)
+                                                          valid_index, x_test, x_g_test)
 
                 # Add blenders of one cross validation set to blenders of all CV
                 blender_test_cv = blender_test_cv.reshape(n_model, 1, -1)  # n_model * 1 * n_test_sample
@@ -292,7 +289,7 @@ class DeepStack:
             = self.stacker(models_initializer_l1, self.layers_params[0], self.x_train, self.y_train,
                            self.w_train, self.e_train, self.x_g_train, self.x_test, self.x_g_test,
                            cv_stack, n_valid=self.n_valid[0], n_era=self.n_era[0], cv_seed=self.cv_seed,
-                           n_epoch=self.n_epoch[0], show_importance=self.show_importance)
+                           n_epoch=self.n_epoch[0])
 
         # Save predicted test prob
         self.save_predict(self.pred_path + 'stack_l1_', test_outputs_l1)
@@ -318,7 +315,7 @@ class DeepStack:
             = self.stacker(models_initializer_l2, self.layers_params[1], x_outputs_l1, self.y_train, self.w_train,
                            self.e_train, x_g_outputs_l1, test_outputs_l1, test_g_outputs_l1, cv_stack,
                            n_valid=self.n_valid[1], n_era=self.n_era[1], cv_seed=self.cv_seed, n_epoch=self.n_epoch[1],
-                           x_train_reuse=x_tr_reuse, x_test_reuse=x_te_reuse, show_importance=self.show_importance)
+                           x_train_reuse=x_tr_reuse, x_test_reuse=x_te_reuse)
 
         # Save predicted test prob
         self.save_predict(self.pred_path + 'stack_l2_', test_outputs_l2)
@@ -341,7 +338,7 @@ class DeepStack:
         #     = self.stacker(models_initializer_l3, self.layers_params[1], x_outputs_l2, self.y_train,
         #                    self.w_train, self.e_train, x_g_outputs_l2, test_outputs_l2, test_g_outputs_l2,
         #                    cv_stack, n_valid=self.n_valid[2], n_era=self.n_era[2], cv_seed=self.cv_seed,
-        #                    n_epoch=self.n_epoch[2], show_importance=self.show_importance)
+        #                    n_epoch=self.n_epoch[2])
         #
         # # Save predicted test prob
         # self.save_predict(self.pred_path + 'stack_l3_', test_outputs_l3)
@@ -683,9 +680,8 @@ class StackTree:
     pred_path = ''
     stack_output_path = ''
 
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te,
-                 pred_path=None, loss_log_path=None, stack_output_path=None, hyper_params=None,
-                 layers_params=None, num_boost_round=None, show_importance=False):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te, pred_path=None,
+                 loss_log_path=None, stack_output_path=None,layers_params=None, hyper_params=None):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -698,19 +694,19 @@ class StackTree:
         self.pred_path = pred_path
         self.loss_log_path = loss_log_path
         self.stack_output_path = stack_output_path
+        self.layers_params = layers_params
+        self.dnn_l1_params = layers_params[0][-1]
+        self.dnn_l2_params = None
         self.n_valid = hyper_params['n_valid']
         self.n_era = hyper_params['n_era']
         self.n_epoch = hyper_params['n_epoch']
         self.final_layer_cv = hyper_params['final_n_cv']
         self.cv_seed = hyper_params['cv_seed']
-        self.layers_params = layers_params
-        self.dnn_l1_params = layers_params[0][-1]
-        self.dnn_l2_params = None
-        self.num_boost_round_lgb_l1 = num_boost_round['num_boost_round_lgb_l1']
-        self.num_boost_round_xgb_l1 = num_boost_round['num_boost_round_xgb_l1']
+        self.num_boost_round_lgb_l1 = hyper_params['num_boost_round_lgb_l1']
+        self.num_boost_round_xgb_l1 = hyper_params['num_boost_round_xgb_l1']
         self.num_boost_round_lgb_l2 = None
-        self.num_boost_round_final = num_boost_round['num_boost_round_final']
-        self.show_importance = show_importance
+        self.num_boost_round_final = hyper_params['num_boost_round_final']
+        self.show_importance = hyper_params['show_importance']
 
     def layer1_initializer(self):
 

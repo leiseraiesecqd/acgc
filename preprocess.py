@@ -7,11 +7,11 @@ from os.path import isdir
 from sklearn.model_selection import StratifiedShuffleSplit
 
 
-train_csv_path = './inputs/stock_train_data_20170929.csv'
-test_csv_path = './inputs/stock_test_data_20170929.csv'
+train_csv_path = './inputs/stock_train_data_20171006.csv'
+test_csv_path = './inputs/stock_test_data_20171006.csv'
 preprocessed_path = './preprocessed_data/'
-negative_era_list = [1, 3, 4, 5, 8, 10, 12, 16]
-positive_era_list = [2, 6, 7, 9, 11, 13, 14, 15, 17, 18, 19, 20]
+negative_era_list = [1, 2, 3, 4, 7, 8, 9, 15, 17]
+positive_era_list = [5, 6, 10, 11, 12, 13, 14, 16, 18, 19, 20]
 
 
 class DataPreProcess:
@@ -91,7 +91,7 @@ class DataPreProcess:
             raise
 
         # Drop Unnecessary Columns
-        self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era'], axis=1)
+        self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era', 'feature77'], axis=1)
         self.y_train = train_f['label']
         self.w_train = train_f['weight']
         self.g_train = train_f['group']
@@ -125,7 +125,9 @@ class DataPreProcess:
         print('Dropping outliers...')
 
         for i in range(88):
-            self.drop_outliers_of_feature('feature' + str(i), 0.9995, 0.0005, 0.9995, 0.0005)
+
+            if i != 77:
+                self.drop_outliers_of_feature('feature' + str(i), 0.9995, 0.0005, 0.9995, 0.0005)
 
         # feature | upper_quantile_train | lower_quantile_train | upper_quantile_test | lower_quantile_test
 
