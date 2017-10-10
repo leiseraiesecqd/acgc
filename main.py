@@ -1098,7 +1098,7 @@ class PrejudgeTraining:
                                        pred_path=prejudge_pred_path, loss_log_path=prejudge_loss_log_path,
                                        models_parameters=models_parameters, hyper_parameters=hyper_parameters)
 
-        PES.train(load_pickle=True, load_pickle_path=None)
+        PES.train(load_pickle=False, load_pickle_path=None)
 
 
 class ModelStacking:
@@ -1494,8 +1494,8 @@ if __name__ == "__main__":
     utils.check_dir(path_list)
 
     # Create Global Seed for Training and Cross Validation
-    # global_train_seed = random.randint(300)
-    # global_cv_seed = random.randint(300)
+    global_train_seed = random.randint(300)
+    global_cv_seed = random.randint(300)
     # global_train_seed = 65
     # global_cv_seed = 6
 
