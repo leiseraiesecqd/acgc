@@ -1752,7 +1752,9 @@ class CrossValidation:
         Cross Validation
     """
 
-    trained_cv = []
+    def __init__(self):
+
+        self.trained_cv = []
 
     @staticmethod
     def sk_k_fold_with_weight(x, y, w, n_splits, n_cv, seed=None):

@@ -12,16 +12,23 @@ pred_path = './results/'
 grid_search_log_path = './grid_search_logs/'
 loss_log_path = './loss_logs/'
 stack_output_path = './stacking_outputs/'
+dnn_log_path = './dnn_logs/'
+dnn_save_path = './dnn_checkpoints/'
 
 path_list = [pred_path,
              grid_search_log_path,
-             loss_log_path]
+             loss_log_path,
+             dnn_log_path,
+             dnn_save_path]
 
 
 class TrainSingleModel:
     """
         Train single model
     """
+
+    def __init__(self):
+        pass
 
     @staticmethod
     def lr_train(train_seed, cv_seed, idx=None):
@@ -403,8 +410,8 @@ class TrainSingleModel:
                             'batch_size': 128,
                             'seed': train_seed,
                             'display_step': 100,
-                            'save_path': './checkpoints/',
-                            'log_path': './log/'}
+                            'save_path': dnn_save_path,
+                            'log_path': dnn_log_path}
 
         print('Loading data set...')
 
@@ -499,6 +506,9 @@ class TrainSingleModel:
 
 class ChampionModel:
 
+    def __init__(self):
+        pass
+
     @staticmethod
     def Christ1991(train_seed, cv_seed, idx=None):
         """
@@ -538,6 +548,9 @@ class GridSearch:
     """
         Grid Search
     """
+
+    def __init__(self):
+        pass
 
     @staticmethod
     def lr_grid_search(train_seed, cv_seed):
@@ -964,6 +977,9 @@ class PrejudgeTraining:
         Prejudge - Training by Split Era sign
     """
 
+    def __init__(self):
+        pass
+
     @staticmethod
     def get_models_parameters(train_seed):
         """
@@ -1038,7 +1054,7 @@ class PrejudgeTraining:
         x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n \
             = utils.load_preprocessed_negative_pd_data(preprocessed_data_path)
 
-        models_parameters = PrejudgeTraining.get_models_parameters()
+        models_parameters = PrejudgeTraining.get_models_parameters(train_seed)
 
         positive_era_list = preprocess.positive_era_list
         negative_era_list = preprocess.negative_era_list
@@ -1076,6 +1092,9 @@ class ModelStacking:
     """
         Stacking
     """
+
+    def __init__(self):
+        pass
 
     @staticmethod
     def get_layer1_params(train_seed):
@@ -1212,8 +1231,8 @@ class ModelStacking:
                       'batch_size': 256,
                       'seed': train_seed,
                       'display_step': 100,
-                      'save_path': './checkpoints/',
-                      'log_path': './log/'}
+                      'save_path': dnn_save_path,
+                      'log_path': dnn_log_path}
 
         # List of parameters for layer1
         layer1_params = [
@@ -1267,8 +1286,8 @@ class ModelStacking:
         #               'batch_size': 256,
         #               'seed': train_seed,
         #               'display_step': 100,
-        #               'save_path': './checkpoints/',
-        #               'log_path': './log/'}
+        #               'save_path': dnn_save_path,
+        #               'log_path': dnn_log_path}
 
         # List of parameters for layer2
         layer2_params = [
@@ -1317,8 +1336,8 @@ class ModelStacking:
         #               'batch_size': 256,
         #               'seed': train_seed,
         #               'display_step': 100,
-        #               'save_path': './checkpoints/',
-        #               'log_path': './log/'}
+        #               'save_path': dnn_save_path,
+        #               'log_path': dnn_log_path}
 
         return lgb_params
 
@@ -1339,9 +1358,9 @@ class ModelStacking:
                         'num_boost_round_final': 65,
                         'show_importance': False}
 
-        layer1_prams = ModelStacking.get_layer1_params()
-        layer2_prams = ModelStacking.get_layer2_params()
-        # layer3_prams = ModelStacking.get_layer3_params()
+        layer1_prams = ModelStacking.get_layer1_params(train_seed)
+        layer2_prams = ModelStacking.get_layer2_params(train_seed)
+        # layer3_prams = ModelStacking.get_layer3_params(train_seed)
 
         layers_params = [layer1_prams,
                          layer2_prams,
@@ -1377,9 +1396,9 @@ class ModelStacking:
                         'num_boost_round_final': 65,
                         'show_importance': False}
 
-        layer1_params = ModelStacking.get_layer1_params()
-        # layer2_params = ModelStacking.get_layer2_params()
-        final_layer_params = ModelStacking.get_final_layer_params()
+        layer1_params = ModelStacking.get_layer1_params(train_seed)
+        # layer2_params = ModelStacking.get_layer2_params(train_seed)
+        final_layer_params = ModelStacking.get_final_layer_params(train_seed)
 
         layers_params = [layer1_params,
                          # layer2_params,
@@ -1518,10 +1537,10 @@ if __name__ == "__main__":
     # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed)
 
     # Prejudge
-    # PrejudgeTraining.train(global_train_seed, global_cv_seed)
+    PrejudgeTraining.train(global_train_seed, global_cv_seed)
 
     # Auto Training
-    auto_train(100)
+    # auto_train(100)
 
     print('======================================================')
     print('All Task Done!')
