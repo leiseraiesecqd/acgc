@@ -1494,8 +1494,8 @@ if __name__ == "__main__":
     utils.check_dir(path_list)
 
     # Create Global Seed for Training and Cross Validation
-    global_train_seed = random.randint(300)
-    global_cv_seed = random.randint(300)
+    global_train_seed = random.randint(0, 300)
+    global_cv_seed = random.randint(0, 300)
     # global_train_seed = 65
     # global_cv_seed = 6
 
