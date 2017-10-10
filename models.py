@@ -857,7 +857,7 @@ class LightGBM(ModelBase):
             # Use Category
             idx_category = [x_train.shape[1] - 1]
             print(x_train[:, idx_category])
-            print(x_test[:, idx_category])
+            print(self.x_test[:, idx_category])
             d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=idx_category)
             d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
 
