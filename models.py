@@ -1006,7 +1006,7 @@ class LightGBM(ModelBase):
 
         # Get Cross Validation Generator
         if cv_generator is None:
-            cv_generator = CrossValidation.sk_k_fold_with_weight()
+            cv_generator = CrossValidation.sk_k_fold_with_weight
 
         # Cross Validation
         for x_train, y_train, w_train, x_valid, y_valid, w_valid in \
