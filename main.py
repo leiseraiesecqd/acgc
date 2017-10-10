@@ -1478,8 +1478,8 @@ if __name__ == "__main__":
     utils.check_dir(path_list)
 
     # Create Global Seed for Training and Cross Validation
-    global_train_seed = np.random.randint(200)
-    global_cv_seed = np.random.randint(200)
+    # global_train_seed = np.random.randint(200)
+    # global_cv_seed = np.random.randint(200)
     # global_train_seed = 65
     # global_cv_seed = 6
 
@@ -1543,7 +1543,7 @@ if __name__ == "__main__":
 
     print('======================================================')
     print('All Task Done!')
-    print('Global Train Seed: {}'.format(global_train_seed))
-    print('Global Cross Validation Seed: {}'.format(global_cv_seed))
+    # print('Global Train Seed: {}'.format(global_train_seed))
+    # print('Global Cross Validation Seed: {}'.format(global_cv_seed))
     print('Total Time: {}s'.format(time.time() - start_time))
     print('======================================================')
