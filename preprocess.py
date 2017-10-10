@@ -408,7 +408,7 @@ class DataPreProcess:
         self.drop_outliers()
 
         # Scale features
-        self.standard_scale()
+        # self.standard_scale()
         # self.min_max_scale()
 
         # Convert column 'group' to dummies

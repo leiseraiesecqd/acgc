@@ -823,118 +823,116 @@ class LightGBM(ModelBase):
               parameters=None, return_prob_test=False, show_importance=False, save_csv_log=True,
               csv_idx=None, cv_generator=None):
 
-        print(train_seed, ',', cv_seed)
+        # Check if directories exit or not
+        utils.check_dir_model(pred_path, loss_log_path)
 
-        # # Check if directories exit or not
-        # utils.check_dir_model(pred_path, loss_log_path)
-        #
-        # print('------------------------------------------------------')
-        # print('Training LightGBM...')
-        # print('------------------------------------------------------')
-        #
-        # count = 0
-        # prob_test_total = []
-        # prob_train_total = []
-        # loss_train_total = []
-        # loss_valid_total = []
-        # loss_train_w_total = []
-        # loss_valid_w_total = []
-        #
-        # # Get Cross Validation Generator
-        # if cv_generator is None:
-        #     cv_generator = CrossValidation.era_k_fold_with_weight
-        #
-        # # Cross Validation
-        # for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era in \
-        #         cv_generator(x=self.x_train, y=self.y_train, w=self.w_train, e=self.e_train,
-        #                      n_valid=n_valid, n_cv=n_cv, n_era=n_era, seed=cv_seed, era_list=era_list):
-        #
-        #     count += 1
-        #
-        #     print('======================================================')
-        #     print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
-        #     print('Validation Set Era: ', valid_era)
-        #     print('------------------------------------------------------')
-        #
-        #     # Use Category
-        #     idx_category = [x_train.shape[1] - 1]
-        #     d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=idx_category)
-        #     d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
-        #
-        #     # Booster
-        #     bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
-        #                     valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
-        #
-        #     # Feature Importance
-        #     if show_importance is True:
-        #         self.get_importance(bst)
-        #
-        #     # Prediction
-        #     prob_test = self.predict(bst, self.x_test, pred_path=pred_path + 'cv_results/lgb_cv_{}_'.format(count))
-        #
-        #     # Save Train Probabilities to CSV File
-        #     prob_train = self.get_prob_train(bst, self.x_train,
-        #                                      pred_path=pred_path + 'cv_prob_train/lgb_cv_{}_'.format(count))
-        #
-        #     # Get Probabilities of Validation Set
-        #     prob_valid = self.predict(bst, x_valid)
-        #
-        #     # Print LogLoss
-        #     print('------------------------------------------------------')
-        #     print('Validation Set Era: ', valid_era)
-        #     loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_train, y_train, w_train,
-        #                                                                           x_valid, y_valid, w_valid)
-        #
-        #     # Print and Get Accuracies of CV
-        #     acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
-        #         utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
-        #
-        #     # Save Losses to File
-        #     utils.save_loss_log(loss_log_path + 'lgb_', count, parameters, n_valid, n_cv, valid_era,
-        #                         loss_train, loss_valid, loss_train_w, loss_valid_w, train_seed, cv_seed,
-        #                         acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era)
-        #
-        #     prob_test_total.append(list(prob_test))
-        #     prob_train_total.append(list(prob_train))
-        #     loss_train_total.append(loss_train)
-        #     loss_valid_total.append(loss_valid)
-        #     loss_train_w_total.append(loss_train_w)
-        #     loss_valid_w_total.append(loss_valid_w)
-        #
-        # print('======================================================')
-        # print('Calculating Final Result...')
-        #
-        # prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
-        # prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
-        # loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
-        # loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
-        # loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
-        # loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
-        #
-        # # Save Final Result
-        # utils.save_pred_to_csv(pred_path + 'final_results/lgb_', self.id_test, prob_test_mean)
-        # utils.save_prob_train_to_csv(pred_path + 'final_prob_train/lgb_', prob_train_mean, self.y_train)
-        #
-        # # Print Total Losses
-        # utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
-        #
-        # # Print and Get Accuracies of CV of All Train Set
-        # acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
-        #
-        # # Save Final Losses to File
-        # utils.save_final_loss_log(loss_log_path + 'lgb_', parameters, n_valid, n_cv, loss_train_mean,
-        #                           loss_valid_mean, loss_train_w_mean, loss_valid_w_mean,
-        #                           train_seed, cv_seed, acc_train, acc_train_era)
-        #
-        # # Save Loss Log to csv File
-        # if save_csv_log is True:
-        #     utils.save_final_loss_log_to_csv(csv_idx, loss_log_path + 'csv_logs/lgb_',
-        #                                      loss_train_w_mean, loss_valid_w_mean, acc_train,
-        #                                      train_seed, cv_seed, n_valid, n_cv, parameters)
-        #
-        # # Return Probabilities of Test Set
-        # if return_prob_test is True:
-        #     return prob_test_mean
+        print('------------------------------------------------------')
+        print('Training LightGBM...')
+        print('------------------------------------------------------')
+
+        count = 0
+        prob_test_total = []
+        prob_train_total = []
+        loss_train_total = []
+        loss_valid_total = []
+        loss_train_w_total = []
+        loss_valid_w_total = []
+
+        # Get Cross Validation Generator
+        if cv_generator is None:
+            cv_generator = CrossValidation.era_k_fold_with_weight
+
+        # Cross Validation
+        for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era in \
+                cv_generator(x=self.x_train, y=self.y_train, w=self.w_train, e=self.e_train,
+                             n_valid=n_valid, n_cv=n_cv, n_era=n_era, seed=cv_seed, era_list=era_list):
+
+            count += 1
+
+            print('======================================================')
+            print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
+            print('Validation Set Era: ', valid_era)
+            print('------------------------------------------------------')
+
+            # Use Category
+            idx_category = [x_train.shape[1] - 1]
+            d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=idx_category)
+            d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
+
+            # Booster
+            bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
+                            valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
+
+            # Feature Importance
+            if show_importance is True:
+                self.get_importance(bst)
+
+            # Prediction
+            prob_test = self.predict(bst, self.x_test, pred_path=pred_path + 'cv_results/lgb_cv_{}_'.format(count))
+
+            # Save Train Probabilities to CSV File
+            prob_train = self.get_prob_train(bst, self.x_train,
+                                             pred_path=pred_path + 'cv_prob_train/lgb_cv_{}_'.format(count))
+
+            # Get Probabilities of Validation Set
+            prob_valid = self.predict(bst, x_valid)
+
+            # Print LogLoss
+            print('------------------------------------------------------')
+            print('Validation Set Era: ', valid_era)
+            loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_train, y_train, w_train,
+                                                                                  x_valid, y_valid, w_valid)
+
+            # Print and Get Accuracies of CV
+            acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+                utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
+
+            # Save Losses to File
+            utils.save_loss_log(loss_log_path + 'lgb_', count, parameters, n_valid, n_cv, valid_era,
+                                loss_train, loss_valid, loss_train_w, loss_valid_w, train_seed, cv_seed,
+                                acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era)
+
+            prob_test_total.append(list(prob_test))
+            prob_train_total.append(list(prob_train))
+            loss_train_total.append(loss_train)
+            loss_valid_total.append(loss_valid)
+            loss_train_w_total.append(loss_train_w)
+            loss_valid_w_total.append(loss_valid_w)
+
+        print('======================================================')
+        print('Calculating Final Result...')
+
+        prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
+        prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
+        loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
+        loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
+        loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
+        loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
+
+        # Save Final Result
+        utils.save_pred_to_csv(pred_path + 'final_results/lgb_', self.id_test, prob_test_mean)
+        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/lgb_', prob_train_mean, self.y_train)
+
+        # Print Total Losses
+        utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+
+        # Print and Get Accuracies of CV of All Train Set
+        acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
+
+        # Save Final Losses to File
+        utils.save_final_loss_log(loss_log_path + 'lgb_', parameters, n_valid, n_cv, loss_train_mean,
+                                  loss_valid_mean, loss_train_w_mean, loss_valid_w_mean,
+                                  train_seed, cv_seed, acc_train, acc_train_era)
+
+        # Save Loss Log to csv File
+        if save_csv_log is True:
+            utils.save_final_loss_log_to_csv(csv_idx, loss_log_path + 'csv_logs/lgb_',
+                                             loss_train_w_mean, loss_valid_w_mean, acc_train,
+                                             train_seed, cv_seed, n_valid, n_cv, parameters)
+
+        # Return Probabilities of Test Set
+        if return_prob_test is True:
+            return prob_test_mean
 
     def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
                     w_valid, x_g_valid, x_test, x_g_test, parameters, show_importance=False):
