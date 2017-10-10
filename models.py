@@ -991,7 +991,7 @@ class LightGBM(ModelBase):
         return prob_valid, prob_test, losses
 
     def prejudge_train(self, pred_path, n_splits, n_cv, cv_seed, use_weight=True,
-                       parameters=None, show_importance=False, show_accuracy=False):
+                       parameters=None, show_importance=False, show_accuracy=False, cv_generator=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path)
@@ -1004,14 +1004,15 @@ class LightGBM(ModelBase):
         loss_train_w_total = []
         loss_valid_w_total = []
 
+        # Get Cross Validation Generator
+        if cv_generator is None:
+            cv_generator = CrossValidation.sk_k_fold_with_weight()
+
         # Cross Validation
-        for x_train, y_train, w_train, x_valid, \
-            y_valid, w_valid in CrossValidation.sk_k_fold_with_weight(x=self.x_train,
-                                                                      y=self.y_train,
-                                                                      w=self.w_train,
-                                                                      n_splits=n_splits,
-                                                                      n_cv=n_cv,
-                                                                      seed=cv_seed):
+        for x_train, y_train, w_train, x_valid, y_valid, w_valid in \
+                cv_generator(x=self.x_train, y=self.y_train, w=self.w_train,
+                             n_splits=n_splits, n_cv=n_cv, seed=cv_seed):
+
             count += 1
 
             print('======================================================')
@@ -1177,20 +1178,14 @@ class CatBoost(ModelBase):
                 baseline=None, use_best_model=None, eval_set=(x_g_valid, y_valid), verbose=True, plot=False)
 
 
-class DeepNeuralNetworks:
+class DeepNeuralNetworks(ModelBase):
     """
         Deep Neural Networks
     """
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, parameters):
 
-        # Inputs
-        self.x_train = x_tr
-        self.y_train = y_tr
-        self.w_train = w_tr
-        self.e_train = e_tr
-        self.x_test = x_te
-        self.id_test = id_te
+        super(DeepNeuralNetworks, self).__init__(x_tr, y_tr, w_tr, e_tr, x_te, id_te)
 
         # Hyperparameters
         self.parameters = parameters
