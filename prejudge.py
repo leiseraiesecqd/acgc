@@ -11,7 +11,7 @@ class PrejudgeEraSign:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_g_tr, x_tr_p, y_tr_p, w_tr_p, e_tr_p, x_g_tr_p,
                  x_tr_n, y_tr_n, w_tr_n, e_tr_n, x_g_tr_n, x_te, id_te, x_g_te,
-                 pred_path, loss_log_path, negative_era_list, models_parameters, hyper_parameters):
+                 pred_path, loss_log_path, models_parameters, hyper_parameters):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -33,7 +33,6 @@ class PrejudgeEraSign:
         self.x_g_test = x_g_te
         self.pred_path = pred_path
         self.loss_log_path = loss_log_path
-        self.negative_era_list = negative_era_list
         self.parameters_e = models_parameters[0]
         self.parameters_p = models_parameters[1]
         self.parameters_n = models_parameters[2]
@@ -121,12 +120,14 @@ class PrejudgeEraSign:
         """
             Training and predict era signs of instances
         """
-
+        print('======================================================')
+        print('Positive Era List: {}'.format(self.era_list_p))
+        print('Negative Era List: {}'.format(self.era_list_n))
         print('======================================================')
         print('Training Era Sign...')
 
         # Convert Eras of Training Data to 0 and 1
-        era_sign_train = np.array([0 if era in self.negative_era_list else 1 for era in self.e_train])
+        era_sign_train = np.array([0 if era in self.era_list_n else 1 for era in self.e_train])
 
         # Init Model
         print('------------------------------------------------------')

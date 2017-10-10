@@ -1082,8 +1082,7 @@ class PrejudgeTraining:
                                        y_train_p, w_train_p, e_train_p, x_g_train_p, x_train_n, y_train_n,
                                        w_train_n, e_train_n, x_g_train_n, x_test, id_test, x_g_test,
                                        pred_path=prejudge_pred_path, loss_log_path=prejudge_loss_log_path,
-                                       negative_era_list=negative_era_list, models_parameters=models_parameters,
-                                       hyper_parameters=hyper_parameters)
+                                       models_parameters=models_parameters, hyper_parameters=hyper_parameters)
 
         PES.train(load_pickle=False, load_pickle_path=None)
 
