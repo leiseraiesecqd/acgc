@@ -267,7 +267,7 @@ class PrejudgeEraSign:
                                           x_test_n, x_g_test_n, id_test_n, era_idx_test_n)
 
         # Save Predictions
-        utils.save_pred_to_csv(self.pred_path + 'final_results/', self.id_test, prob_test)
+        utils.save_pred_to_csv(self.pred_path + 'final_results/prejudge_', self.id_test, prob_test)
 
         total_time = time.time() - start_time
         print('======================================================')
