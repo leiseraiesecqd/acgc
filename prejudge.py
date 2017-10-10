@@ -54,6 +54,7 @@ class PrejudgeEraSign:
         self.force_convert_era = hyper_parameters['force_convert_era']
         self.use_weight = hyper_parameters['use_weight']
         self.show_importance = hyper_parameters['show_importance']
+        self.show_accuracy = hyper_parameters['show_accuracy']
 
     @staticmethod
     def load_era_sign_csv(pred_path):
@@ -135,9 +136,10 @@ class PrejudgeEraSign:
         model = self.era_prejudge_model_initializer(self.x_train, self.x_g_train, era_sign_train)
 
         # Training and Get Probabilities of Test Era Being Positive
-        era_prob_test = model.prejudge_train(self.pred_path + 'pred_era/', n_splits=self.n_splits_e, n_cv=self.n_cv_e,
-                                             cv_seed=self.cv_seed, use_weight=self.use_weight, parameters=self.parameters_e,
-                                             show_importance=self.show_importance)
+        era_prob_test = model.prejudge_train(self.pred_path + 'pred_era/', n_splits=self.n_splits_e,
+                                             n_cv=self.n_cv_e, cv_seed=self.cv_seed, use_weight=self.use_weight,
+                                             parameters=self.parameters_e, show_importance=self.show_importance,
+                                             show_accuracy=self.show_accuracy)
 
         # Convert Probabilities of Test Era to 0 and 1
         if self.force_convert_era is True:
@@ -198,7 +200,8 @@ class PrejudgeEraSign:
                                     n_valid=self.n_valid_p, n_cv=self.n_cv_p, n_era=self.n_era_p,
                                     train_seed=self.train_seed, cv_seed=self.cv_seed, parameters=self.parameters_p,
                                     return_prob_test=True, era_list=self.era_list_p,
-                                    show_importance=self.show_importance, save_csv_log=True, csv_idx='prejudge_p')
+                                    show_importance=self.show_importance, show_accuracy=self.show_accuracy,
+                                    save_csv_log=True, csv_idx='prejudge_p')
 
         print('======================================================')
         print('Training Models of Negative Era Sign...')
@@ -206,7 +209,8 @@ class PrejudgeEraSign:
                                     n_valid=self.n_valid_n, n_cv=self.n_cv_n, n_era=self.n_era_n,
                                     train_seed=self.train_seed, cv_seed=self.cv_seed, parameters=self.parameters_n,
                                     return_prob_test=True, era_list=self.era_list_n,
-                                    show_importance=self.show_importance, save_csv_log=True, csv_idx='prejudge_n')
+                                    show_importance=self.show_importance, show_accuracy=self.show_accuracy,
+                                    save_csv_log=True, csv_idx='prejudge_n')
 
         prob_test = np.zeros_like(self.id_test, dtype=np.float64)
 

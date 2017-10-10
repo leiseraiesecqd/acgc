@@ -60,7 +60,8 @@ class TrainSingleModel:
         print('Start training Logistic Regression...')
 
         LR.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                 cv_seed=cv_seed, parameters=lr_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
+                 cv_seed=cv_seed, parameters=lr_parameters, show_importance=False,
+                 show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
     def rf_train(train_seed, cv_seed, idx=None):
@@ -92,7 +93,8 @@ class TrainSingleModel:
         print('Start training Random Forest...')
 
         RF.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                 cv_seed=cv_seed, parameters=rf_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
+                 cv_seed=cv_seed, parameters=rf_parameters, show_importance=False,
+                 show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
     def et_train(train_seed, cv_seed, idx=None):
@@ -124,7 +126,8 @@ class TrainSingleModel:
         print('Start training Extra Trees...')
 
         ET.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                 cv_seed=cv_seed, parameters=et_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
+                 cv_seed=cv_seed, parameters=et_parameters, show_importance=False,
+                 show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
     def ab_train(train_seed, cv_seed, idx=None):
@@ -164,7 +167,8 @@ class TrainSingleModel:
         print('Start training AdaBoost...')
 
         AB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                 cv_seed=cv_seed, parameters=ab_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
+                 cv_seed=cv_seed, parameters=ab_parameters, show_importance=False,
+                 show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
     def gb_train(train_seed, cv_seed, idx=None):
@@ -198,7 +202,8 @@ class TrainSingleModel:
         print('Start training GradientBoosting...')
 
         GB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                 cv_seed=cv_seed, parameters=gb_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
+                 cv_seed=cv_seed, parameters=gb_parameters, show_importance=False,
+                 show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
     def xgb_train(train_seed, cv_seed, idx=None):
@@ -228,7 +233,8 @@ class TrainSingleModel:
         print('Start training XGBoost...')
 
         XGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                  cv_seed=cv_seed, parameters=xgb_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
+                  cv_seed=cv_seed, parameters=xgb_parameters, show_importance=False,
+                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
     def xgb_train_sklearn(train_seed, cv_seed, idx=None):
@@ -265,7 +271,8 @@ class TrainSingleModel:
         print('Start training XGBoost...')
 
         XGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                  cv_seed=cv_seed, parameters=xgb_parameters, show_importance=True, save_csv_log=True, csv_idx=idx)
+                  cv_seed=cv_seed, parameters=xgb_parameters, show_importance=True,
+                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
     def lgb_train(train_seed, cv_seed, idx=None):
@@ -306,7 +313,8 @@ class TrainSingleModel:
         print('Start training LightGBM...')
 
         LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
+                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False,
+                   show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
     def lgb_train_sklearn(train_seed, cv_seed, idx=None):
@@ -344,7 +352,8 @@ class TrainSingleModel:
         print('Start training LightGBM...')
 
         LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
+                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False,
+                   show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
     def cb_train(train_seed, cv_seed, idx=None):
@@ -392,7 +401,8 @@ class TrainSingleModel:
         print('Start training CatBoost...')
 
         CB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                 cv_seed=cv_seed, parameters=cb_parameters, show_importance=True, save_csv_log=True, csv_idx=idx)
+                 cv_seed=cv_seed, parameters=cb_parameters, show_importance=True,
+                 show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
     def dnn_tf_train(train_seed, cv_seed, idx=None):
@@ -421,7 +431,8 @@ class TrainSingleModel:
         print('Start training DNN(TensorFlow)...')
 
         dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20,
-                  train_seed=train_seed, cv_seed=cv_seed, save_csv_log=True, csv_idx=idx)
+                  train_seed=train_seed, cv_seed=cv_seed, show_accuracy=True,
+                  save_csv_log=True, csv_idx=idx)
 
     # # DNN using Keras
     # @staticmethod
@@ -502,7 +513,8 @@ class TrainSingleModel:
         print('Start training LGBM...')
 
         LGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                  cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, save_csv_log=True, csv_idx=idx)
+                  cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False,
+                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
 
 class ChampionModel:
@@ -540,8 +552,8 @@ class ChampionModel:
 
         print('Start training LightGBM...')
 
-        LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=1, n_era=20, train_seed=train_seed,
-                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False,
+        LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, show_accuracy=True,
                    save_csv_log=True, csv_idx=idx, cv_generator=cv_generator)
 
 
@@ -1077,7 +1089,8 @@ class PrejudgeTraining:
                             'era_list_n': negative_era_list,
                             'force_convert_era': True,
                             'use_weight': True,
-                            'show_importance': False}
+                            'show_importance': False,
+                            'show_accuracy': True}
 
         PES = prejudge.PrejudgeEraSign(x_train, y_train, w_train, e_train, x_g_train, x_train_p,
                                        y_train_p, w_train_p, e_train_p, x_g_train_p, x_train_n, y_train_n,
@@ -1356,7 +1369,8 @@ class ModelStacking:
                         'num_boost_round_xgb_l1': 65,
                         'num_boost_round_lgb_l2': 65,
                         'num_boost_round_final': 65,
-                        'show_importance': False}
+                        'show_importance': False,
+                        'show_accuracy': True}
 
         layer1_prams = ModelStacking.get_layer1_params(train_seed)
         layer2_prams = ModelStacking.get_layer2_params(train_seed)
@@ -1394,7 +1408,8 @@ class ModelStacking:
                         'num_boost_round_lgb_l1': 65,
                         'num_boost_round_xgb_l1': 36,
                         'num_boost_round_final': 65,
-                        'show_importance': False}
+                        'show_importance': False,
+                        'show_accuracy': True}
 
         layer1_params = ModelStacking.get_layer1_params(train_seed)
         # layer2_params = ModelStacking.get_layer2_params(train_seed)
@@ -1479,8 +1494,8 @@ if __name__ == "__main__":
     utils.check_dir(path_list)
 
     # Create Global Seed for Training and Cross Validation
-    # global_train_seed = np.random.randint(200)
-    # global_cv_seed = np.random.randint(200)
+    # global_train_seed = random.randint(300)
+    # global_cv_seed = random.randint(300)
     # global_train_seed = 65
     # global_cv_seed = 6
 

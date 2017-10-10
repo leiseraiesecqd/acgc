@@ -39,6 +39,7 @@ class DeepStack:
         self.num_boost_round_lgb_l2 = hyper_params['num_boost_round_lgb_l2']
         self.num_boost_round_final = hyper_params['num_boost_round_final']
         self.show_importance = hyper_params['show_importance']
+        self.show_accuracy = hyper_params['show_accuracy']
 
     def init_models_layer1(self):
 
@@ -111,7 +112,8 @@ class DeepStack:
             # Training on each model in models_l1 using one cross validation set
             prob_valid, prob_test, losses = \
                 model.stack_train(x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid,
-                                  x_test, x_g_test, params[iter_model], show_importance=self.show_importance)
+                                  x_test, x_g_test, params[iter_model], show_importance=self.show_importance,
+                                  show_accuracy=self.show_accuracy)
 
             all_model_valid_prob.append(prob_valid)
             all_model_test_prob.append(prob_test)
@@ -256,7 +258,8 @@ class DeepStack:
             print('Start training ' + model_name + '...')
             model.train(self.pred_path + 'stack_results/', self.loss_log_path, n_valid=n_valid,
                         n_cv=n_cv, n_era=n_era, train_seed=self.train_seed, cv_seed=self.cv_seed,
-                        parameters=params, save_csv_log=True, csv_idx='stack_final')
+                        parameters=params, show_importance=self.show_importance,
+                        show_accuracy=self.show_accuracy, save_csv_log=True, csv_idx='stack_final')
 
         elif model_name == 'DNN':
 
@@ -265,7 +268,8 @@ class DeepStack:
             print('Start training ' + model_name + '...')
             model.train(self.pred_path + 'stack_results/', self.loss_log_path,
                         n_valid=n_valid, n_cv=n_cv, n_era=n_era, train_seed=self.train_seed,
-                        cv_seed=self.cv_seed, save_csv_log=True, csv_idx='stack_final')
+                        cv_seed=self.cv_seed, show_importance=self.show_importance,
+                        show_accuracy=self.show_accuracy, save_csv_log=True, csv_idx='stack_final')
 
         else:
             raise ValueError('Wrong model name!')
@@ -376,7 +380,7 @@ class StackLayer:
                  models_initializer=None, input_layer=None, cv_generator=None, n_valid=4, n_era=20, train_seed=None,
                  cv_seed=None, i_layer=1, n_epoch=1, x_train_reuse=None, x_test_reuse=None, dnn_param=None,
                  pred_path=None, loss_log_path=None, stack_output_path=None, show_importance=False,
-                 is_final_layer=False, n_cv_final=None):
+                 show_accuracy=False, is_final_layer=False, n_cv_final=None):
 
         self.params = params
         self.x_train = x_train
@@ -403,6 +407,7 @@ class StackLayer:
         self.loss_log_path = loss_log_path
         self.stack_output_path = stack_output_path
         self.show_importance = show_importance
+        self.show_accuracy = show_accuracy
         self.is_final_layer = is_final_layer
         self.n_cv_final = n_cv_final
         self.g_train = x_g_train[:, -1]
@@ -431,7 +436,8 @@ class StackLayer:
             # Training on each model in models_l1 using one cross validation set
             prob_valid, prob_test, losses = \
                 model.stack_train(x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid,
-                                  x_test, x_g_test, params[iter_model], show_importance=self.show_importance)
+                                  x_test, x_g_test, params[iter_model], show_importance=self.show_importance,
+                                  show_accuracy=self.show_accuracy)
 
             all_model_valid_prob.append(prob_valid)
             all_model_test_prob.append(prob_test)
@@ -588,8 +594,9 @@ class StackLayer:
                                         blender_test_g_tree, params=self.params)
 
         model.train(self.pred_path, self.loss_log_path, n_valid=self.n_valid, n_cv=self.n_cv_final,
-                    n_era=self.n_era, train_seed=self.train_seed, cv_seed=self.cv_seed, parameters=self.params,
-                    show_importance=self.show_importance, save_csv_log=True, csv_idx='stack_final')
+                    n_era=self.n_era, train_seed=self.train_seed, cv_seed=self.cv_seed,
+                    parameters=self.params, show_importance=self.show_importance,
+                    show_accuracy=self.show_accuracy, save_csv_log=True, csv_idx='stack_final')
 
     def train(self, i_epoch=1):
 
@@ -712,6 +719,7 @@ class StackTree:
         self.num_boost_round_lgb_l2 = None
         self.num_boost_round_final = hyper_params['num_boost_round_final']
         self.show_importance = hyper_params['show_importance']
+        self.show_accuracy = hyper_params['show_accuracy']
 
     def layer1_initializer(self):
 
@@ -807,7 +815,8 @@ class StackTree:
                             models_initializer=models_initializer_l1, cv_generator=cv_stack, n_valid=self.n_valid[0],
                             n_era=self.n_era[0], train_seed=self.train_seed, cv_seed=self.cv_seed,
                             i_layer=1, n_epoch=self.n_epoch[0], pred_path=self.pred_path,
-                            stack_output_path=self.stack_output_path, show_importance=self.show_importance)
+                            stack_output_path=self.stack_output_path, show_importance=self.show_importance,
+                            show_accuracy=self.show_accuracy)
 
         # Layer 2
         # stk_l2 = StackLayer(self.layers_params[1], self.x_train, self.y_train, self.w_train, self.e_train,
@@ -826,7 +835,7 @@ class StackTree:
                                x_train_reuse=x_train_reuse_l2, x_test_reuse=x_test_reuse_l2,
                                pred_path=self.pred_path, loss_log_path=self.loss_log_path,
                                stack_output_path=self.stack_output_path, show_importance=self.show_importance,
-                               is_final_layer=True, n_cv_final=self.final_layer_cv)
+                               show_accuracy=self.show_accuracy, is_final_layer=True, n_cv_final=self.final_layer_cv)
 
         # Training
         stk_final.train()
