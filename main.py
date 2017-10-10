@@ -1016,7 +1016,7 @@ class PrejudgeTraining:
                                'seed': train_seed}
 
         positive_params = {'application': 'binary',
-                           'learning_rate': 0.003,
+                           'learning_rate': 0.002,
                            'num_leaves': 80,                # <2^(max_depth)
                            'tree_learner': 'serial',
                            'max_depth': 7,                  # default=-1
@@ -1032,7 +1032,7 @@ class PrejudgeTraining:
                            'seed': train_seed}
 
         negative_params = {'application': 'binary',
-                           'learning_rate': 0.003,
+                           'learning_rate': 0.002
                            'num_leaves': 80,                # <2^(max_depth)
                            'tree_learner': 'serial',
                            'max_depth': 7,                  # default=-1
@@ -1552,10 +1552,10 @@ if __name__ == "__main__":
     # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed)
 
     # Prejudge
-    # PrejudgeTraining.train(global_train_seed, global_cv_seed)
+    PrejudgeTraining.train(global_train_seed, global_cv_seed)
 
     # Auto Training
-    auto_train(100)
+    # auto_train(100)
 
     print('======================================================')
     print('All Task Done!')
