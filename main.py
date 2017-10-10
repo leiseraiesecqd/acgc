@@ -5,6 +5,7 @@ import stacking
 import prejudge
 import preprocess
 import numpy as np
+import random
 
 
 preprocessed_data_path = './preprocessed_data/'
@@ -1421,8 +1422,8 @@ def auto_train(n_epoch):
 
     for i in range(n_epoch):
 
-        train_seed = np.random.randint(200)
-        cv_seed = np.random.randint(200)
+        train_seed = random.randint(0, 300)
+        cv_seed = random.randint(0, 300)
         epoch_start_time = time.time()
 
         print('======================================================')
