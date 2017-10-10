@@ -1425,6 +1425,8 @@ def auto_train(n_epoch):
         cv_seed = np.random.randint(200)
         epoch_start_time = time.time()
 
+        print(train_seed, ',', cv_seed)
+
         print('======================================================')
         print('Auto Training Epoch {}/{}...'.format(i+1, n_epoch))
         print('======================================================')
@@ -1460,7 +1462,7 @@ def auto_train(n_epoch):
         # TrainSingleModel.dnn_keras_train(train_seed, cv_seed, i+1)
 
         # Champion Model
-        ChampionModel.Christ1991(train_seed, cv_seed, i+1)
+        # ChampionModel.Christ1991(train_seed, cv_seed, i+1)
 
         print('======================================================')
         print('Auto Training Epoch Done!')
@@ -1507,7 +1509,7 @@ if __name__ == "__main__":
     # TrainSingleModel.xgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # LightGBM
-    TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
+    # TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
     # TrainSingleModel.lgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # CatBoost
@@ -1539,7 +1541,7 @@ if __name__ == "__main__":
     # PrejudgeTraining.train(global_train_seed, global_cv_seed)
 
     # Auto Training
-    # auto_train(100)
+    auto_train(100)
 
     print('======================================================')
     print('All Task Done!')
