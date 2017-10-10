@@ -255,7 +255,8 @@ class DeepStack:
                                     self.id_test, num_boost_round=self.num_boost_round_final)
             print('Start training ' + model_name + '...')
             model.train(self.pred_path + 'stack_results/', self.loss_log_path, n_valid=n_valid,
-                        n_cv=n_cv, n_era=n_era, train_seed=self.train_seed,  cv_seed=self.cv_seed, parameters=params)
+                        n_cv=n_cv, n_era=n_era, train_seed=self.train_seed, cv_seed=self.cv_seed,
+                        parameters=params, save_csv_log=True, csv_idx='stack_final')
 
         elif model_name == 'DNN':
 
@@ -263,7 +264,8 @@ class DeepStack:
                                               test_outputs, self.id_test, params)
             print('Start training ' + model_name + '...')
             model.train(self.pred_path + 'stack_results/', self.loss_log_path,
-                        n_valid=n_valid, n_cv=n_cv, n_era=n_era, train_seed=self.train_seed, cv_seed=self.cv_seed)
+                        n_valid=n_valid, n_cv=n_cv, n_era=n_era, train_seed=self.train_seed,
+                        cv_seed=self.cv_seed, save_csv_log=True, csv_idx='stack_final')
 
         else:
             raise ValueError('Wrong model name!')
@@ -586,8 +588,8 @@ class StackLayer:
                                         blender_test_g_tree, params=self.params)
 
         model.train(self.pred_path, self.loss_log_path, n_valid=self.n_valid, n_cv=self.n_cv_final,
-                    n_era=self.n_era, train_seed=self.train_seed, cv_seed=self.cv_seed,
-                    parameters=self.params, show_importance=self.show_importance)
+                    n_era=self.n_era, train_seed=self.train_seed, cv_seed=self.cv_seed, parameters=self.params,
+                    show_importance=self.show_importance, save_csv_log=True, csv_idx='stack_final')
 
     def train(self, i_epoch=1):
 

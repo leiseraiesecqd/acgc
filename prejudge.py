@@ -198,7 +198,7 @@ class PrejudgeEraSign:
                                     n_valid=self.n_valid_p, n_cv=self.n_cv_p, n_era=self.n_era_p,
                                     train_seed=self.train_seed, cv_seed=self.cv_seed, parameters=self.parameters_p,
                                     return_prob_test=True, era_list=self.era_list_p,
-                                    show_importance=self.show_importance)
+                                    show_importance=self.show_importance, save_csv_log=True, csv_idx='prejudge_p')
 
         print('======================================================')
         print('Training Models of Negative Era Sign...')
@@ -206,7 +206,7 @@ class PrejudgeEraSign:
                                     n_valid=self.n_valid_n, n_cv=self.n_cv_n, n_era=self.n_era_n,
                                     train_seed=self.train_seed, cv_seed=self.cv_seed, parameters=self.parameters_n,
                                     return_prob_test=True, era_list=self.era_list_n,
-                                    show_importance=self.show_importance)
+                                    show_importance=self.show_importance, save_csv_log=True, csv_idx='prejudge_n')
 
         prob_test = np.zeros_like(self.id_test, dtype=np.float64)
 
