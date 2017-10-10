@@ -1064,14 +1064,14 @@ class PrejudgeTraining:
                             'n_splits_e': 5,
                             'num_boost_round_e': 5000,
                             'n_cv_e': 10,
-                            'n_valid_p': 3,
-                            'n_cv_p': 20,
-                            'n_era_p': 14,
+                            'n_valid_p': 2,
+                            'n_cv_p': 18,
+                            'n_era_p': 11,
                             'num_boost_round_p': 50,
                             'era_list_p': positive_era_list,
-                            'n_valid_n': 1,
-                            'n_cv_n': 6,
-                            'n_era_n': 6,
+                            'n_valid_n': 2,
+                            'n_cv_n': 15,
+                            'n_era_n': 9,
                             'num_boost_round_n': 50,
                             'era_list_n': negative_era_list,
                             'force_convert_era': True,
@@ -1084,7 +1084,7 @@ class PrejudgeTraining:
                                        pred_path=prejudge_pred_path, loss_log_path=prejudge_loss_log_path,
                                        models_parameters=models_parameters, hyper_parameters=hyper_parameters)
 
-        PES.train(load_pickle=False, load_pickle_path=None)
+        PES.train(load_pickle=True, load_pickle_path=None)
 
 
 class ModelStacking:
