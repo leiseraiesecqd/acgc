@@ -804,8 +804,8 @@ class StackTree:
         models_initializer_final = self.final_layer_initializer
 
         # Reused features
-        x_train_reuse_l2 = self.x_train[:, :88]
-        x_test_reuse_l2 = self.x_test[:, :88]
+        x_train_reuse_l2 = self.x_train[:, :87]
+        x_test_reuse_l2 = self.x_test[:, 87]
 
         print('======================================================')
         print('Start training...')

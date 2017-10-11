@@ -1394,7 +1394,7 @@ class ModelStacking:
                         'train_seed': train_seed,
                         'cv_seed': cv_seed,
                         'num_boost_round_lgb_l1': 65,
-                        'num_boost_round_xgb_l1': 36,
+                        'num_boost_round_xgb_l1': 30,
                         'num_boost_round_final': 65,
                         'show_importance': False,
                         'show_accuracy': True}
@@ -1511,7 +1511,7 @@ if __name__ == "__main__":
     # TrainSingleModel.xgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # LightGBM
-    TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
+    # TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
     # TrainSingleModel.lgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # CatBoost
@@ -1536,7 +1536,7 @@ if __name__ == "__main__":
 
     # Stacking
     # ModelStacking.deep_stack_train(global_train_seed, global_cv_seed)
-    # ModelStacking.stack_tree_train(global_train_seed, global_cv_seed)
+    ModelStacking.stack_tree_train(global_train_seed, global_cv_seed)
     # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed)
 
     # Prejudge
