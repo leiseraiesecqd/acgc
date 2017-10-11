@@ -316,7 +316,7 @@ class TrainSingleModel:
         cv_generator = models.CrossValidation.era_k_fold_with_weight_balance
 
         LGBM.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False,
+                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, save_cv_pred=False,
                    show_accuracy=True, save_csv_log=True, csv_idx=idx, cv_generator=cv_generator)
 
     @staticmethod
@@ -1397,7 +1397,8 @@ class ModelStacking:
                         'num_boost_round_xgb_l1': 30,
                         'num_boost_round_final': 65,
                         'show_importance': False,
-                        'show_accuracy': True}
+                        'show_accuracy': True,
+                        'save_epoch_results': False}
 
         layer1_params = ModelStacking.get_layer1_params(train_seed)
         # layer2_params = ModelStacking.get_layer2_params(train_seed)
@@ -1453,7 +1454,7 @@ def auto_train(n_epoch):
         # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, i+1)
 
         # LightGBM
-        # TrainSingleModel.lgb_train(train_seed, cv_seed, i+1)
+        TrainSingleModel.lgb_train(train_seed, cv_seed, i+1)
         # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, i+1)
 
         # CatBoost
@@ -1464,7 +1465,7 @@ def auto_train(n_epoch):
         # TrainSingleModel.dnn_keras_train(train_seed, cv_seed, i+1)
 
         # Champion Model
-        ChampionModel.Christ1991(train_seed, cv_seed, i+1)
+        # ChampionModel.Christ1991(train_seed, cv_seed, i+1)
 
         print('======================================================')
         print('Auto Training Epoch Done!')
@@ -1543,11 +1544,11 @@ if __name__ == "__main__":
     # PrejudgeTraining.train(global_train_seed, global_cv_seed)
 
     # Auto Training
-    # auto_train(100)
+    auto_train(100)
 
     print('======================================================')
     print('All Task Done!')
-    # print('Global Train Seed: {}'.format(global_train_seed))
-    # print('Global Cross Validation Seed: {}'.format(global_cv_seed))
+    print('Global Train Seed: {}'.format(global_train_seed))
+    print('Global Cross Validation Seed: {}'.format(global_cv_seed))
     print('Total Time: {}s'.format(time.time() - start_time))
     print('======================================================')
