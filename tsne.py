@@ -30,7 +30,7 @@ def tsne_train(seed):
 
     x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-    parameters = {'n_components': 5,
+    parameters = {'n_components': 2,
                   'perplexity': 30.0,
                   'early_exaggeration': 12.0,
                   'learning_rate': 200.0,

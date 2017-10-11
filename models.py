@@ -2251,7 +2251,6 @@ class CrossValidation:
                     if trained_cv:
                         valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                         while utils.check_bad_cv(trained_cv, valid_era):
-                            print('This CV split has been chosen, choosing another one...')
                             if set(valid_era) != set(era_idx[i]):
                                 valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                             else:
@@ -2304,7 +2303,6 @@ class CrossValidation:
                         if trained_cv:
                             valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                             while utils.check_bad_cv(trained_cv, valid_era):
-                                print('This CV split has been chosen, choosing another one...')
                                 valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                         else:
                             valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
@@ -2347,7 +2345,6 @@ class CrossValidation:
 
                         valid_era = era_idx[i] + list(np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
                         while utils.check_bad_cv(trained_cv, valid_era):
-                            print('This CV split has been chosen, choosing another one...')
                             valid_era = era_idx[i] + list(
                                 np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
 
