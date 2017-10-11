@@ -2381,7 +2381,6 @@ class CrossValidation:
                         yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
 
-
 def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, n_era, cv_seed, params, params_grid):
     """
          Grid Search
