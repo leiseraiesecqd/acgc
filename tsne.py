@@ -7,6 +7,7 @@ from MulticoreTSNE import MulticoreTSNE as TSNE
 preprocessed_data_path = preprocess.preprocessed_path
 tsne_outputs_path = './data/tsne_outputs/'
 
+
 class MultiCoreTSNE:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
@@ -52,6 +53,8 @@ def tsne_train(seed):
 if __name__ == "__main__":
 
     start_time = time.time()
+
+    utils.check_dir([tsne_outputs_path])
 
     # Create Global Seed for Training and Cross Validation
     global_seed = random.randint(0, 300)

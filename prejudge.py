@@ -230,14 +230,11 @@ class PrejudgeEraSign:
 
         start_time = time.time()
 
-        path_list = [self.pred_path,
-                     self.pred_path + 'positive/',
+        path_list = [self.pred_path + 'positive/',
                      self.pred_path + 'negative/',
                      self.pred_path + 'pred_era/',
                      self.pred_path + 'pred_era/final_results/',
                      self.pred_path + 'final_results/',
-                     self.pred_path + 'era_sign_test_pickle/',
-                     self.loss_log_path,
                      self.loss_log_path + 'positive/',
                      self.loss_log_path + 'negative/']
         utils.check_dir(path_list)
@@ -258,7 +255,7 @@ class PrejudgeEraSign:
             # Training Era Sign
             era_sign_test = self.predict_era_sign()
 
-            # era_sign_test = self.load_era_sign_csv('./results/prejudge/pred_era/final_results/lgb_result.csv')
+            # era_sign_test = self.load_era_sign_csv(self.pred_path + 'pred_era/final_results/lgb_result.csv')
 
             # Save era_sign_test to Pickle File
             utils.save_np_to_pkl(era_sign_test, self.prejudged_data_path + 'era_sign_test.p')

@@ -151,7 +151,8 @@ class ModelBase(object):
 
     def train(self, pred_path=None, loss_log_path=None, n_valid=4, n_cv=20, n_era=20, train_seed=None,
               cv_seed=None, era_list=None, parameters=None, show_importance=False, show_accuracy=False,
-              save_csv_log=True, csv_idx=None, cv_generator=None, return_prob_test=False):
+              save_cv_pred=True, save_cv_prob_train=False, save_csv_log=True, csv_idx=None,
+              cv_generator=None, return_prob_test=False):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -191,13 +192,18 @@ class ModelBase(object):
                 self.get_importance(clf)
 
             # Prediction
-            prob_test = self.predict(clf, self.x_test,
-                                     pred_path=pred_path + 'cv_results/' + model_name + '_cv_{}_'.format(count))
+            if save_cv_pred is True:
+                cv_pred_path = pred_path + 'cv_results/' + model_name + '_cv_{}_'.format(count)
+            else:
+                cv_pred_path=None
+            prob_test = self.predict(clf, self.x_test, pred_path=cv_pred_path)
 
             # Save Train Probabilities to CSV File
-            prob_train = \
-                self.get_prob_train(clf, self.x_train,
-                                    pred_path=pred_path + 'cv_prob_train/' + model_name + '_cv_{}_'.format(count))
+            if save_cv_prob_train is True:
+                cv_prob_train_path = pred_path + 'cv_prob_train/' + model_name + '_cv_{}_'.format(count)
+            else:
+                cv_prob_train_path = None
+            prob_train = self.get_prob_train(clf, self.x_train, pred_path=cv_prob_train_path)
 
             # Get Probabilities of Validation Set
             prob_valid = self.predict(clf, x_valid)
@@ -1200,7 +1206,8 @@ class DeepNeuralNetworks(ModelBase):
     # Training
     def train(self, pred_path=None, loss_log_path=None, n_valid=4, n_cv=20, n_era=20, train_seed=None,
               cv_seed=None, era_list=None, parameters=None, show_importance=False, show_accuracy=False,
-              save_csv_log=True, csv_idx=None, cv_generator=None, return_prob_test=False):
+              save_cv_pred=True, save_cv_prob_train=False, save_csv_log=True, csv_idx=None,
+              cv_generator=None, return_prob_test=False):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -1366,8 +1373,9 @@ class DeepNeuralNetworks(ModelBase):
                                     valid_era, loss_train, loss_valid, loss_train_w, loss_valid_w, train_seed, cv_seed,
                                     acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era)
 
-                utils.save_pred_to_csv(pred_path + 'cv_results/' + model_name + '_cv_{}_'.format(cv_counter),
-                                       self.id_test, prob_test)
+                if save_cv_pred is True:
+                    utils.save_pred_to_csv(pred_path + 'cv_results/' + model_name + '_cv_{}_'.format(cv_counter),
+                                           self.id_test, prob_test)
 
             # Final Result
             print('======================================================')
