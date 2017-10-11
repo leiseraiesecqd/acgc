@@ -8,19 +8,32 @@ import numpy as np
 import random
 
 
-preprocessed_data_path = './preprocessed_data/'
 pred_path = './results/'
-grid_search_log_path = './grid_search_logs/'
-loss_log_path = './loss_logs/'
-stack_output_path = './stacking_outputs/'
-dnn_log_path = './dnn_logs/'
-dnn_save_path = './dnn_checkpoints/'
+single_model_pred_path = pred_path + 'single_model/'
+prejudge_pred_path = pred_path + 'prejudge/'
+stack_pred_path = pred_path + 'stacking/'
+log_path = './logs/'
+loss_log_path = log_path + 'loss_logs/'
+dnn_log_path = log_path + 'dnn_logs/'
+grid_search_log_path = log_path + 'grid_search_logs/'
+data_path = './data/'
+preprocessed_data_path = data_path + 'preprocessed_data/'
+stack_output_path = data_path + 'stacking_outputs/'
+model_checkpoint_path = './checkpoints/'
+dnn_checkpoint_path = model_checkpoint_path + 'dnn_checkpoints/'
+
 
 path_list = [pred_path,
+             single_model_pred_path,
+             prejudge_pred_path,
+             stack_pred_path,
+             log_path,
              grid_search_log_path,
              loss_log_path,
              dnn_log_path,
-             dnn_save_path]
+             data_path,
+             model_checkpoint_path,
+             dnn_checkpoint_path]
 
 
 class TrainSingleModel:
@@ -421,7 +434,7 @@ class TrainSingleModel:
                             'batch_size': 128,
                             'seed': train_seed,
                             'display_step': 100,
-                            'save_path': dnn_save_path,
+                            'save_path': dnn_checkpoint_path,
                             'log_path': dnn_log_path}
 
         print('Loading data set...')
@@ -1057,7 +1070,6 @@ class PrejudgeTraining:
             Training model
         """
 
-        prejudge_pred_path = pred_path + 'prejudge/'
         prejudge_loss_log_path = loss_log_path + 'prejudge/'
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
@@ -1244,7 +1256,7 @@ class ModelStacking:
                       'batch_size': 256,
                       'seed': train_seed,
                       'display_step': 100,
-                      'save_path': dnn_save_path,
+                      'save_path': dnn_checkpoint_path,
                       'log_path': dnn_log_path}
 
         # List of parameters for layer1
@@ -1519,7 +1531,7 @@ if __name__ == "__main__":
     # TrainSingleModel.gb_train(global_train_seed, global_cv_seed)
 
     # XGBoost
-    # TrainSingleModel.xgb_train(global_train_seed, global_cv_seed)
+    TrainSingleModel.xgb_train(global_train_seed, global_cv_seed)
     # TrainSingleModel.xgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # LightGBM
@@ -1555,7 +1567,7 @@ if __name__ == "__main__":
     # PrejudgeTraining.train(global_train_seed, global_cv_seed)
 
     # Auto Training
-    auto_train(100)
+    # auto_train(100)
 
     print('======================================================')
     print('All Task Done!')

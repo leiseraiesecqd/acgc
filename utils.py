@@ -4,6 +4,7 @@ import numpy as np
 import os
 import time
 import csv
+import models
 from os.path import isdir
 
 
@@ -334,27 +335,6 @@ def print_grid_info(model_name, parameters, parameters_grid):
     print('\n')
 
 
-# Print Losses of CV
-def print_loss(model, x_t, y_t, w_t, x_v, y_v, w_v):
-
-    prob_train = model.predict(x_t)
-    prob_valid = model.predict(x_v)
-
-    loss_train = log_loss(prob_train, y_t)
-    loss_valid = log_loss(prob_valid, y_v)
-
-    loss_train_w = log_loss_with_weight(prob_train, y_t, w_t)
-    loss_valid_w = log_loss_with_weight(prob_valid, y_v, w_v)
-
-    print('------------------------------------------------------')
-    print('Train LogLoss: {:>.8f}\n'.format(loss_train),
-          'Validation LogLoss: {:>.8f}\n'.format(loss_valid),
-          'Train LogLoss with Weight: {:>.8f}\n'.format(loss_train_w),
-          'Validation LogLoss with Weight: {:>.8f}'.format(loss_valid_w))
-
-    return loss_train, loss_valid, loss_train_w, loss_valid_w
-
-
 # Print Losses of CV of sk-learn
 def print_loss_proba(model, x_t, y_t, w_t, x_v, y_v, w_v):
 
@@ -374,6 +354,46 @@ def print_loss_proba(model, x_t, y_t, w_t, x_v, y_v, w_v):
           'Validation LogLoss with Weight: {:>.8f}'.format(loss_valid_w))
 
     return loss_train, loss_valid, loss_train_w, loss_valid_w
+
+
+# Print Losses of LightGBM
+def print_loss_lgb(model, x_t, y_t, w_t, x_v, y_v, w_v):
+
+    prob_train = model.predict(x_t)
+    prob_valid = model.predict(x_v)
+
+    loss_train = log_loss(prob_train, y_t)
+    loss_valid = log_loss(prob_valid, y_v)
+
+    loss_train_w = log_loss_with_weight(prob_train, y_t, w_t)
+    loss_valid_w = log_loss_with_weight(prob_valid, y_v, w_v)
+
+    print('------------------------------------------------------')
+    print('Train LogLoss: {:>.8f}\n'.format(loss_train),
+          'Validation LogLoss: {:>.8f}\n'.format(loss_valid),
+          'Train LogLoss with Weight: {:>.8f}\n'.format(loss_train_w),
+          'Validation LogLoss with Weight: {:>.8f}'.format(loss_valid_w))
+
+    return loss_train, loss_valid, loss_train_w, loss_valid_w
+
+
+# Print Losses of XGBoost
+def print_loss_xgb(model, x_t, y_t, w_t, x_v, y_v, w_v):
+
+    prob_train = model.predict(models.xgb.DMatrix(x_t))
+    prob_valid = model.predict(models.xgb.DMatrix(x_v))
+
+    loss_train = log_loss(prob_train, y_t)
+    loss_valid = log_loss(prob_valid, y_v)
+
+    loss_train_w = log_loss_with_weight(prob_train, y_t, w_t)
+    loss_valid_w = log_loss_with_weight(prob_valid, y_v, w_v)
+
+    print('------------------------------------------------------')
+    print('Train LogLoss: {:>.8f}\n'.format(loss_train),
+          'Validation LogLoss: {:>.8f}\n'.format(loss_valid),
+          'Train LogLoss with Weight: {:>.8f}\n'.format(loss_train_w),
+          'Validation LogLoss with Weight: {:>.8f}\n'.format(loss_valid_w))
 
 
 # Print DNN Losses

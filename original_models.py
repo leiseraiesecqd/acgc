@@ -1853,8 +1853,8 @@ class LightGBM:
             # Print LogLoss
             print('------------------------------------------------------')
             print('Validation Set Era: ', valid_era)
-            loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_train, y_train, w_train,
-                                                                                  x_valid, y_valid, w_valid)
+            loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss_lgb(bst, x_train, y_train, w_train,
+                                                                                      x_valid, y_valid, w_valid)
 
             # Print and Get Accuracies of CV
             acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
@@ -1924,8 +1924,8 @@ class LightGBM:
 
         # Print LogLoss
         print('------------------------------------------------------')
-        loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_train, y_train, w_train,
-                                                                              x_valid, y_valid, w_valid)
+        loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss_lgb(bst, x_train, y_train, w_train,
+                                                                                  x_valid, y_valid, w_valid)
 
         losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
 
@@ -1989,8 +1989,8 @@ class LightGBM:
 
             # Print LogLoss
             print('------------------------------------------------------')
-            loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss(bst, x_train, y_train, w_train,
-                                                                                  x_valid, y_valid, w_valid)
+            loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss_lgb(bst, x_train, y_train, w_train,
+                                                                                      x_valid, y_valid, w_valid)
 
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
