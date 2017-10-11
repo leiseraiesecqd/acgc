@@ -11,7 +11,7 @@ class PrejudgeEraSign:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_g_tr, x_tr_p, y_tr_p, w_tr_p, e_tr_p, x_g_tr_p,
                  x_tr_n, y_tr_n, w_tr_n, e_tr_n, x_g_tr_n, x_te, id_te, x_g_te,
-                 pred_path, loss_log_path, models_parameters, hyper_parameters):
+                 pred_path, prejudged_data_path, loss_log_path, models_parameters, hyper_parameters):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -32,6 +32,7 @@ class PrejudgeEraSign:
         self.id_test = id_te
         self.x_g_test = x_g_te
         self.pred_path = pred_path
+        self.prejudged_data_path = prejudged_data_path
         self.loss_log_path = loss_log_path
         self.parameters_e = models_parameters[0]
         self.parameters_p = models_parameters[1]
@@ -248,7 +249,7 @@ class PrejudgeEraSign:
 
             # Load era_sign_test
             if load_pickle_path is None:
-                era_sign_test = utils.load_pkl_to_np(self.pred_path + 'era_sign_test_pickle/era_sign_test.p')
+                era_sign_test = utils.load_pkl_to_np(self.prejudged_data_path + '/era_sign_test.p')
             else:
                 era_sign_test = utils.load_pkl_to_np(load_pickle_path)
 
@@ -260,7 +261,7 @@ class PrejudgeEraSign:
             # era_sign_test = self.load_era_sign_csv('./results/prejudge/pred_era/final_results/lgb_result.csv')
 
             # Save era_sign_test to Pickle File
-            utils.save_np_to_pkl(era_sign_test, self.pred_path + 'era_sign_test_pickle/era_sign_test.p')
+            utils.save_np_to_pkl(era_sign_test, self.prejudged_data_path + '/era_sign_test.p')
 
         x_test_p, x_g_test_p, id_test_p, era_idx_test_p, x_test_n, \
             x_g_test_n, id_test_n, era_idx_test_n = self.split_data_by_era_sign(era_sign_test)

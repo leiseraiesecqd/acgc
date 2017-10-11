@@ -380,7 +380,7 @@ class StackLayer:
                  models_initializer=None, input_layer=None, cv_generator=None, n_valid=4, n_era=20, train_seed=None,
                  cv_seed=None, i_layer=1, n_epoch=1, x_train_reuse=None, x_test_reuse=None, dnn_param=None,
                  pred_path=None, loss_log_path=None, stack_output_path=None, show_importance=False,
-                 show_accuracy=False, is_final_layer=False, n_cv_final=None):
+                 show_accuracy=False, save_epoch_results=False, is_final_layer=False, n_cv_final=None):
 
         self.params = params
         self.x_train = x_train
@@ -408,6 +408,7 @@ class StackLayer:
         self.stack_output_path = stack_output_path
         self.show_importance = show_importance
         self.show_accuracy = show_accuracy
+        self.save_epoch_results = save_epoch_results
         self.is_final_layer = is_final_layer
         self.n_cv_final = n_cv_final
         self.g_train = x_g_train[:, -1]
@@ -638,8 +639,9 @@ class StackLayer:
                 print('======================================================')
 
                 # Save Predicted Test Prob
-                self.save_predict(self.pred_path + 'epochs_results/stack_l{}_e{}_'.format(self.i_layer, epoch+1),
-                                  blender_test_tree)
+                if self.save_epoch_results is True:
+                    self.save_predict(self.pred_path + 'epochs_results/stack_l{}_e{}_'.format(self.i_layer, epoch+1),
+                                      blender_test_tree)
 
                 # Stack Group Features
             print('------------------------------------------------------')
@@ -720,6 +722,7 @@ class StackTree:
         self.num_boost_round_final = hyper_params['num_boost_round_final']
         self.show_importance = hyper_params['show_importance']
         self.show_accuracy = hyper_params['show_accuracy']
+        self.save_epoch_results = hyper_params['save_epoch_results']
 
     def layer1_initializer(self):
 
@@ -816,7 +819,7 @@ class StackTree:
                             n_era=self.n_era[0], train_seed=self.train_seed, cv_seed=self.cv_seed,
                             i_layer=1, n_epoch=self.n_epoch[0], pred_path=self.pred_path,
                             stack_output_path=self.stack_output_path, show_importance=self.show_importance,
-                            show_accuracy=self.show_accuracy)
+                            show_accuracy=self.show_accuracy, save_epoch_results=self.save_epoch_results)
 
         # Layer 2
         # stk_l2 = StackLayer(self.layers_params[1], self.x_train, self.y_train, self.w_train, self.e_train,
@@ -835,7 +838,8 @@ class StackTree:
                                x_train_reuse=x_train_reuse_l2, x_test_reuse=x_test_reuse_l2,
                                pred_path=self.pred_path, loss_log_path=self.loss_log_path,
                                stack_output_path=self.stack_output_path, show_importance=self.show_importance,
-                               show_accuracy=self.show_accuracy, is_final_layer=True, n_cv_final=self.final_layer_cv)
+                               show_accuracy=self.show_accuracy, save_epoch_results=self.save_epoch_results,
+                               is_final_layer=True, n_cv_final=self.final_layer_cv)
 
         # Training
         stk_final.train()

@@ -14,10 +14,12 @@ prejudge_pred_path = pred_path + 'prejudge/'
 stack_pred_path = pred_path + 'stacking/'
 log_path = './logs/'
 loss_log_path = log_path + 'loss_logs/'
+prejudge_loss_log_path = loss_log_path + 'prejudge/'
 dnn_log_path = log_path + 'dnn_logs/'
 grid_search_log_path = log_path + 'grid_search_logs/'
 data_path = './data/'
-preprocessed_data_path = data_path + 'preprocessed_data/'
+preprocessed_data_path = preprocess.preprocessed_path
+prejudged_data_path = data_path + 'prejudged_data/'
 stack_output_path = data_path + 'stacking_outputs/'
 model_checkpoint_path = './checkpoints/'
 dnn_checkpoint_path = model_checkpoint_path + 'dnn_checkpoints/'
@@ -29,9 +31,12 @@ path_list = [pred_path,
              stack_pred_path,
              log_path,
              grid_search_log_path,
+             prejudge_loss_log_path,
              loss_log_path,
              dnn_log_path,
              data_path,
+             prejudged_data_path,
+             stack_output_path,
              model_checkpoint_path,
              dnn_checkpoint_path]
 
@@ -72,7 +77,7 @@ class TrainSingleModel:
 
         print('Start training Logistic Regression...')
 
-        LR.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+        LR.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                  cv_seed=cv_seed, parameters=lr_parameters, show_importance=False,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
@@ -105,7 +110,7 @@ class TrainSingleModel:
 
         print('Start training Random Forest...')
 
-        RF.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+        RF.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                  cv_seed=cv_seed, parameters=rf_parameters, show_importance=False,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
@@ -138,7 +143,7 @@ class TrainSingleModel:
 
         print('Start training Extra Trees...')
 
-        ET.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+        ET.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                  cv_seed=cv_seed, parameters=et_parameters, show_importance=False,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
@@ -179,7 +184,7 @@ class TrainSingleModel:
 
         print('Start training AdaBoost...')
 
-        AB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+        AB.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                  cv_seed=cv_seed, parameters=ab_parameters, show_importance=False,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
@@ -214,7 +219,7 @@ class TrainSingleModel:
 
         print('Start training GradientBoosting...')
 
-        GB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+        GB.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                  cv_seed=cv_seed, parameters=gb_parameters, show_importance=False,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
@@ -245,7 +250,7 @@ class TrainSingleModel:
 
         print('Start training XGBoost...')
 
-        XGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+        XGB.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                   cv_seed=cv_seed, parameters=xgb_parameters, show_importance=False,
                   show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
@@ -283,7 +288,7 @@ class TrainSingleModel:
 
         print('Start training XGBoost...')
 
-        XGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+        XGB.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                   cv_seed=cv_seed, parameters=xgb_parameters, show_importance=True,
                   show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
@@ -325,7 +330,7 @@ class TrainSingleModel:
 
         print('Start training LightGBM...')
 
-        LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+        LGBM.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                    cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False,
                    show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
@@ -364,7 +369,7 @@ class TrainSingleModel:
 
         print('Start training LightGBM...')
 
-        LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+        LGBM.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                    cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False,
                    show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
@@ -413,7 +418,7 @@ class TrainSingleModel:
 
         print('Start training CatBoost...')
 
-        CB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+        CB.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                  cv_seed=cv_seed, parameters=cb_parameters, show_importance=True,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
@@ -443,7 +448,7 @@ class TrainSingleModel:
 
         print('Start training DNN(TensorFlow)...')
 
-        dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20,
+        dnn.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20,
                   train_seed=train_seed, cv_seed=cv_seed, show_accuracy=True,
                   save_csv_log=True, csv_idx=idx)
 
@@ -525,7 +530,7 @@ class TrainSingleModel:
 
         print('Start training LGBM...')
 
-        LGB.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+        LGB.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False,
                   show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
@@ -565,7 +570,7 @@ class ChampionModel:
 
         print('Start training LightGBM...')
 
-        LGBM.train(pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+        LGBM.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                    cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, show_accuracy=False,
                    save_csv_log=True, csv_idx=idx, cv_generator=cv_generator)
 
@@ -1070,8 +1075,6 @@ class PrejudgeTraining:
             Training model
         """
 
-        prejudge_loss_log_path = loss_log_path + 'prejudge/'
-
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
         x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p \
@@ -1107,8 +1110,9 @@ class PrejudgeTraining:
         PES = prejudge.PrejudgeEraSign(x_train, y_train, w_train, e_train, x_g_train, x_train_p,
                                        y_train_p, w_train_p, e_train_p, x_g_train_p, x_train_n, y_train_n,
                                        w_train_n, e_train_n, x_g_train_n, x_test, id_test, x_g_test,
-                                       pred_path=prejudge_pred_path, loss_log_path=prejudge_loss_log_path,
-                                       models_parameters=models_parameters, hyper_parameters=hyper_parameters)
+                                       pred_path=prejudge_pred_path, prejudged_data_path=prejudged_data_path,
+                                       loss_log_path=prejudge_loss_log_path, models_parameters=models_parameters,
+                                       hyper_parameters=hyper_parameters)
 
         PES.train(load_pickle=False, load_pickle_path=None)
 
@@ -1382,7 +1386,8 @@ class ModelStacking:
                         'num_boost_round_lgb_l2': 65,
                         'num_boost_round_final': 65,
                         'show_importance': False,
-                        'show_accuracy': True}
+                        'show_accuracy': True,
+                        'save_epoch_results': False}
 
         layer1_prams = ModelStacking.get_layer1_params(train_seed)
         layer2_prams = ModelStacking.get_layer2_params(train_seed)
@@ -1397,7 +1402,7 @@ class ModelStacking:
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
         STK = stacking.DeepStack(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test,
-                                 pred_path=pred_path + 'stack_results/', loss_log_path=loss_log_path,
+                                 pred_path=stack_pred_path, loss_log_path=loss_log_path,
                                  stack_output_path=stack_output_path, hyper_params=hyper_params,
                                  layers_params=layers_params)
 
@@ -1408,8 +1413,6 @@ class ModelStacking:
         """
             Training model using StackTree model
         """
-
-        stack_pred_path = pred_path + 'stack_results/'
 
         hyper_params = {'n_valid': (4, 4),
                         'n_era': (20, 20),

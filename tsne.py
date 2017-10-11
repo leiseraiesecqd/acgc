@@ -1,9 +1,11 @@
-import numpy as np
 import utils
 import preprocess
+import time
+import random
 from MulticoreTSNE import MulticoreTSNE as TSNE
 
 preprocessed_data_path = preprocess.preprocessed_path
+tsne_outputs_path = './data/tsne_outputs/'
 
 class MultiCoreTSNE:
 
@@ -21,24 +23,24 @@ class MultiCoreTSNE:
         tsne = TSNE(**parameters)
         tsne_outputs = tsne.fit_transform(self.x_train)
 
-        utils.save_np_to_pkl(tsne_outputs, self.pred_path + 'era_sign_test_pickle/era_sign_test.p')
+        utils.save_np_to_pkl(tsne_outputs, tsne_outputs_path + 'tsne_outputs.p')
 
 
-def train_tsne():
+def train_tsne(seed):
 
     x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-    parameters = {'n_components': 2,
+    parameters = {'n_components': 5,
                   'perplexity': 30.0,
                   'early_exaggeration': 12.0,
                   'learning_rate': 200.0,
-                  'n_iter': 1000,
+                  'n_iter': 500,
                   'n_iter_without_progress': 300,
                   'min_grad_norm': 1e-07,
                   'metric': 'euclidean',
                   'init': 'random',
                   'verbose': 1,
-                  'random_state': None,
+                  'random_state': seed,
                   'method': 'barnes_hut',
                   'angle': 0.5}
 
@@ -46,5 +48,21 @@ def train_tsne():
 
     MTSNE.train(parameters=parameters)
 
+if __name__ == "__main__":
+
+    start_time = time.time()
+
+    # Create Global Seed for Training and Cross Validation
+    global_seed = random.randint(0, 300)
+
+    print('======================================================')
+    print('Start Training...')
+    print('======================================================')
 
 
+
+    print('======================================================')
+    print('All Task Done!')
+    print('Global Seed: {}'.format(global_seed))
+    print('Total Time: {}s'.format(time.time() - start_time))
+    print('======================================================')

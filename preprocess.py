@@ -1,7 +1,6 @@
 import time
 import utils
 import os
-import main
 import numpy as np
 import pandas as pd
 from os.path import isdir
