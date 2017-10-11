@@ -26,7 +26,7 @@ class MultiCoreTSNE:
         utils.save_np_to_pkl(tsne_outputs, tsne_outputs_path + 'tsne_outputs.p')
 
 
-def train_tsne(seed):
+def tsne_train(seed):
 
     x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
@@ -42,7 +42,8 @@ def train_tsne(seed):
                   'verbose': 1,
                   'random_state': seed,
                   'method': 'barnes_hut',
-                  'angle': 0.5}
+                  'angle': 0.5,
+                  'n_jobs': 8}
 
     MTSNE = MultiCoreTSNE(x_train, y_train, w_train, e_train, x_test, id_test)
 
@@ -59,7 +60,7 @@ if __name__ == "__main__":
     print('Start Training...')
     print('======================================================')
 
-
+    tsne_train(global_seed)
 
     print('======================================================')
     print('All Task Done!')

@@ -1086,7 +1086,7 @@ class PrejudgeTraining:
                                        loss_log_path=prejudge_loss_log_path, models_parameters=models_parameters,
                                        hyper_parameters=hyper_parameters)
 
-        PES.train(load_pickle=False, load_pickle_path=None)
+        PES.train(load_pickle=True, load_pickle_path=None)
 
 
 class ModelStacking:
@@ -1510,7 +1510,7 @@ if __name__ == "__main__":
     # TrainSingleModel.xgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # LightGBM
-    TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
+    # TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
     # TrainSingleModel.lgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # CatBoost
@@ -1539,7 +1539,7 @@ if __name__ == "__main__":
     # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed)
 
     # Prejudge
-    # PrejudgeTraining.train(global_train_seed, global_cv_seed)
+    PrejudgeTraining.train(global_train_seed, global_cv_seed)
 
     # Auto Training
     # auto_train(100)
