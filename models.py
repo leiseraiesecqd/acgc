@@ -537,6 +537,17 @@ class XGBoost(ModelBase):
 
         self.num_boost_round = num_boost_round
 
+    @staticmethod
+    def start_and_get_model_name():
+
+        print('------------------------------------------------------')
+        print('Training XGBoost...')
+        print('------------------------------------------------------')
+
+        model_name = 'xgb'
+
+        return model_name
+
     def fit(self, x_train, y_train, w_train, x_valid, y_valid, w_valid, parameters):
 
         d_train = xgb.DMatrix(x_train, label=y_train, weight=w_train)
