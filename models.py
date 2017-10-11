@@ -194,11 +194,8 @@ class ModelBase(object):
                 utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 
             # Print and Get Accuracies of CV
-            if show_accuracy is True:
-                acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
-                    utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
-            else:
-                acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = '', '', '', ''
+            acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+                utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid, show_accuracy)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + model_name + '_', count, parameters, n_valid, n_cv, valid_era,
@@ -232,11 +229,8 @@ class ModelBase(object):
         utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Print and Get Accuracies of CV of All Train Set
-        if show_accuracy is True:
-            acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean,
-                                                                          self.y_train, self.e_train)
-        else:
-            acc_train, acc_train_era = '', ''
+        acc_train, acc_train_era = \
+            utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train, show_accuracy)
 
         # Save Final Losses to File
         utils.save_final_loss_log(loss_log_path + model_name + '_', parameters, n_valid, n_cv,
@@ -646,11 +640,8 @@ class XGBoost(ModelBase):
                                                                                  x_valid, y_valid, w_valid)
 
             # Print and Get Accuracies of CV
-            if show_accuracy is True:
-                acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
-                    utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
-            else:
-                acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = '', '', '', ''
+            acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+                utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid, show_accuracy)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'xgb_', count, parameters, n_valid, n_cv, valid_era,
@@ -682,11 +673,8 @@ class XGBoost(ModelBase):
         utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Print and Get Accuracies of CV of All Train Set
-        if show_accuracy is True:
-            acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean,
-                                                                          self.y_train, self.e_train)
-        else:
-            acc_train, acc_train_era = '', ''
+        acc_train, acc_train_era \
+            = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train, show_accuracy)
 
         # Save Final Losses to File
         utils.save_final_loss_log(loss_log_path + 'xgb_', parameters, n_valid, n_cv, loss_train_mean,
@@ -898,11 +886,8 @@ class LightGBM(ModelBase):
                                                                                   x_valid, y_valid, w_valid)
 
             # Print and Get Accuracies of CV
-            if show_accuracy is True:
-                acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
-                    utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
-            else:
-                acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = '', '', '', ''
+            acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+                utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid, show_accuracy)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'lgb_', count, parameters, n_valid, n_cv, valid_era,
@@ -934,11 +919,8 @@ class LightGBM(ModelBase):
         utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Print and Get Accuracies of CV of All Train Set
-        if show_accuracy is True:
-            acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean,
-                                                                          self.y_train, self.e_train)
-        else:
-            acc_train, acc_train_era = '', ''
+        acc_train, acc_train_era = \
+            utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train, show_accuracy)
 
         # Save Final Losses to File
         utils.save_final_loss_log(loss_log_path + 'lgb_', parameters, n_valid, n_cv, loss_train_mean,
@@ -1069,8 +1051,7 @@ class LightGBM(ModelBase):
         utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
         # Print and Get Accuracies of CV of All Train Set
-        if show_accuracy is True:
-            _, _ = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train)
+        _, _ = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train, show_accuracy)
 
         # Save Final Result
         utils.save_pred_to_csv(pred_path + 'final_results/lgb_', self.id_test, prob_test_mean)
@@ -1518,11 +1499,8 @@ class DeepNeuralNetworks(ModelBase):
                 loss_valid_w_total.append(loss_valid_w)
 
                 # Print and Get Accuracies of CV
-                if show_accuracy is True:
-                    acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
-                        utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
-                else:
-                    acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = '', '', '', ''
+                acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+                    utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid, show_accuracy)
 
                 utils.save_loss_log(loss_log_path + 'dnn_', cv_counter, self.parameters, n_valid, n_cv,
                                     valid_era, loss_train, loss_valid, loss_train_w, loss_valid_w, train_seed, cv_seed,
@@ -1550,11 +1528,8 @@ class DeepNeuralNetworks(ModelBase):
             utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
 
             # Print and Get Accuracies of CV of All Train Set
-            if show_accuracy is True:
-                acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean,
-                                                                              self.y_train, self.e_train)
-            else:
-                acc_train, acc_train_era = '', ''
+            acc_train, acc_train_era = \
+                utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train, show_accuracy)
 
             # Save Final Losses to File
             utils.save_final_loss_log(loss_log_path + 'dnn_', self.parameters, n_valid, n_cv, loss_train_mean,

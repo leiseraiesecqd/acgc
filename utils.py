@@ -442,7 +442,7 @@ def get_accuracy(prob, label):
 
 
 # Get Accuracies of Eras
-def get_era_accuracy(prob, y, e):
+def get_era_accuracy(prob, y, e, show_accuracy):
 
     prob_sorted = np.zeros_like(prob, dtype=np.float64)
     y_sorted = np.zeros_like(y, dtype=np.float64)
@@ -464,7 +464,8 @@ def get_era_accuracy(prob, y, e):
             y_era = y_sorted[era_index]
             acc_era = get_accuracy(prob_era, y_era)
             accuracy_eras[iter_era] = acc_era
-            print('Accuracy of Era-{}: {:.3f}%'.format(iter_era, acc_era * 100))
+            if show_accuracy is True:
+                print('Accuracy of Era-{}: {:.3f}%'.format(iter_era, acc_era * 100))
         elif ele == iter_era:
             era_index.append(i)
         else:
@@ -472,7 +473,8 @@ def get_era_accuracy(prob, y, e):
             y_era = y_sorted[era_index]
             acc_era = get_accuracy(prob_era, y_era)
             accuracy_eras[iter_era] = acc_era
-            print('Accuracy of Era-{}: {:.3f}%'.format(iter_era, acc_era*100))
+            if show_accuracy is True:
+                print('Accuracy of Era-{}: {:.3f}%'.format(iter_era, acc_era*100))
             iter_era = ele
             era_index = [i]
 
@@ -480,7 +482,7 @@ def get_era_accuracy(prob, y, e):
 
 
 # Get Accuracies of Eras of  Train Probabilities
-def get_train_era_accuracy(prob, y, e):
+def get_train_era_accuracy(prob, y, e, show_accuracy):
 
     era_index = []
     accuracy_eras = {}
@@ -493,7 +495,8 @@ def get_train_era_accuracy(prob, y, e):
             y_era = y[era_index]
             acc_era = get_accuracy(prob_era, y_era)
             accuracy_eras[iter_era] = acc_era
-            print('Accuracy of Era-{}: {:.3f}%'.format(iter_era, acc_era * 100))
+            if show_accuracy is True:
+                print('Accuracy of Era-{}: {:.3f}%'.format(iter_era, acc_era * 100))
         elif ele == iter_era:
             era_index.append(i)
         else:
@@ -501,7 +504,8 @@ def get_train_era_accuracy(prob, y, e):
             y_era = y[era_index]
             acc_era = get_accuracy(prob_era, y_era)
             accuracy_eras[iter_era] = acc_era
-            print('Accuracy of Era-{}: {:.3f}%'.format(iter_era, acc_era*100))
+            if show_accuracy is True:
+                print('Accuracy of Era-{}: {:.3f}%'.format(iter_era, acc_era*100))
             iter_era = ele
             era_index = [i]
 
@@ -509,33 +513,42 @@ def get_train_era_accuracy(prob, y, e):
 
 
 # Print and Get Accuracy of Eras
-def print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid):
+def print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid, show_accuracy):
 
     acc_train_cv = get_accuracy(prob_train, y_train)
     acc_valid_cv = get_accuracy(prob_valid, y_valid)
-    print('------------------------------------------------------')
-    print('Accuracies of CV:')
-    print('Accuracy of Train CV: {:.3f}%'.format(acc_train_cv * 100))
-    print('Accuracy of Validation CV: {:.3f}%'.format(acc_valid_cv * 100))
-    print('------------------------------------------------------')
-    print('Accuracies of Train Eras:')
-    acc_train_era = get_era_accuracy(prob_train, y_train, e_train)
-    print('------------------------------------------------------')
-    print('Accuracies of Validation Eras:')
-    acc_valid_era = get_era_accuracy(prob_valid, y_valid, e_valid)
+
+    if show_accuracy is True:
+        print('------------------------------------------------------')
+        print('Accuracies of CV:')
+        print('Accuracy of Train CV: {:.3f}%'.format(acc_train_cv * 100))
+        print('Accuracy of Validation CV: {:.3f}%'.format(acc_valid_cv * 100))
+        print('------------------------------------------------------')
+        print('Accuracies of Train Eras:')
+
+    acc_train_era = get_era_accuracy(prob_train, y_train, e_train, show_accuracy)
+
+    if show_accuracy is True:
+        print('------------------------------------------------------')
+        print('Accuracies of Validation Eras:')
+
+    acc_valid_era = get_era_accuracy(prob_valid, y_valid, e_valid, show_accuracy)
 
     return acc_train_cv, acc_valid_cv, acc_train_era, acc_valid_era
 
 
 # Print and Get Accuracies of Eras of  Train Probabilities
-def print_and_get_train_accuracy(prob_train, y_train, e_train):
+def print_and_get_train_accuracy(prob_train, y_train, e_train, show_accuracy):
 
     acc_train = get_accuracy(prob_train, y_train)
-    print('------------------------------------------------------')
-    print('Total Train Accuracy: {:.3f}%'.format(acc_train * 100))
-    print('------------------------------------------------------')
-    print('Accuracies of Total Train Eras:')
-    acc_train_era = get_train_era_accuracy(prob_train, y_train, e_train)
+
+    if show_accuracy is True:
+        print('------------------------------------------------------')
+        print('Total Train Accuracy: {:.3f}%'.format(acc_train * 100))
+        print('------------------------------------------------------')
+        print('Accuracies of Total Train Eras:')
+
+    acc_train_era = get_train_era_accuracy(prob_train, y_train, e_train, show_accuracy)
 
     return acc_train, acc_train_era
 
