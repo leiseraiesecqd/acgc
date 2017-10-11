@@ -2250,7 +2250,7 @@ class CrossValidation:
                     # Choose eras that have not used
                     if trained_cv:
                         valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
-                        while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                        while utils.check_bad_cv(trained_cv, valid_era):
                             print('This CV split has been chosen, choosing another one...')
                             if set(valid_era) != set(era_idx[i]):
                                 valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
@@ -2303,7 +2303,7 @@ class CrossValidation:
 
                         if trained_cv:
                             valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
-                            while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                            while utils.check_bad_cv(trained_cv, valid_era):
                                 print('This CV split has been chosen, choosing another one...')
                                 valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                         else:
@@ -2346,7 +2346,7 @@ class CrossValidation:
                         era_idx_else = [t for t in list(era_list) if t not in era_idx[i]]
 
                         valid_era = era_idx[i] + list(np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
-                        while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                        while utils.check_bad_cv(trained_cv, valid_era):
                             print('This CV split has been chosen, choosing another one...')
                             valid_era = era_idx[i] + list(
                                 np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
@@ -2394,9 +2394,7 @@ def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, n_era, cv_seed, 
                                      verbose=1,
                                      n_jobs=-1,
                                      cv=CrossValidation.era_k_fold_split(e=tr_e, n_valid=n_valid,
-                                                                         n_cv=n_cv, n_era=n_era, seed=cv_seed),
-                                     # cv=5
-                                     )
+                                                                         n_cv=n_cv, n_era=n_era, seed=cv_seed))
 
     # Start Grid Search
     print('Grid Searching...')

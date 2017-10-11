@@ -313,10 +313,11 @@ class TrainSingleModel:
         LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=65)
 
         # cv_generator = models.CrossValidation.era_k_fold_with_weight_all_random
+        cv_generator = models.CrossValidation.era_k_fold_with_weight_balance
 
         LGBM.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                    cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False,
-                   show_accuracy=True, save_csv_log=True, csv_idx=idx)
+                   show_accuracy=True, save_csv_log=True, csv_idx=idx, cv_generator=cv_generator)
 
     @staticmethod
     def lgb_train_sklearn(train_seed, cv_seed, idx=None):
@@ -1510,7 +1511,7 @@ if __name__ == "__main__":
     # TrainSingleModel.xgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # LightGBM
-    # TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
+    TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
     # TrainSingleModel.lgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # CatBoost
@@ -1539,7 +1540,7 @@ if __name__ == "__main__":
     # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed)
 
     # Prejudge
-    PrejudgeTraining.train(global_train_seed, global_cv_seed)
+    # PrejudgeTraining.train(global_train_seed, global_cv_seed)
 
     # Auto Training
     # auto_train(100)

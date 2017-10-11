@@ -5,6 +5,7 @@ import os
 import time
 import csv
 import models
+import preprocess
 from os.path import isdir
 
 
@@ -573,6 +574,23 @@ def print_and_get_train_accuracy(prob_train, y_train, e_train, show_accuracy):
     acc_train_era = get_train_era_accuracy(prob_train, y_train, e_train, show_accuracy)
 
     return acc_train, acc_train_era
+
+
+# Check If A CV is A Bad CV
+def check_bad_cv(trained_cv, valid_era):
+
+    cv_is_trained =  any(set(valid_era) == i_cv for i_cv in trained_cv)
+
+    negative_era_counter = 0
+    for era in valid_era:
+        if era in preprocess.negative_era_list:
+            negative_era_counter += 1
+    bad_num_negative_era = negative_era_counter not in [1, 2]
+
+    is_bad_cv = cv_is_trained or bad_num_negative_era
+
+    return is_bad_cv
+
 
 
 if __name__ == '__main__':
