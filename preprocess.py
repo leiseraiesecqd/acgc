@@ -433,5 +433,6 @@ class DataPreProcess:
 
 if __name__ == '__main__':
 
+    utils.check_dir([preprocessed_path])
     DPP = DataPreProcess(train_csv_path, test_csv_path, preprocessed_path)
     DPP.preprocess_pd()
