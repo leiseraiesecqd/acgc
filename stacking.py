@@ -112,8 +112,7 @@ class DeepStack:
             # Training on each model in models_l1 using one cross validation set
             prob_valid, prob_test, losses = \
                 model.stack_train(x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid,
-                                  x_test, x_g_test, params[iter_model], show_importance=self.show_importance,
-                                  show_accuracy=self.show_accuracy)
+                                  x_test, x_g_test, params[iter_model], show_importance=self.show_importance)
 
             all_model_valid_prob.append(prob_valid)
             all_model_test_prob.append(prob_test)
@@ -437,8 +436,7 @@ class StackLayer:
             # Training on each model in models_l1 using one cross validation set
             prob_valid, prob_test, losses = \
                 model.stack_train(x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid,
-                                  x_test, x_g_test, params[iter_model], show_importance=self.show_importance,
-                                  show_accuracy=self.show_accuracy)
+                                  x_test, x_g_test, params[iter_model], show_importance=self.show_importance)
 
             all_model_valid_prob.append(prob_valid)
             all_model_test_prob.append(prob_test)
