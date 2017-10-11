@@ -198,7 +198,7 @@ class ModelBase(object):
                 acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
                     utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
             else:
-                acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = None, None, None, None
+                acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = '', '', '', ''
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + model_name + '_', count, parameters, n_valid, n_cv, valid_era,
@@ -236,7 +236,7 @@ class ModelBase(object):
             acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean,
                                                                           self.y_train, self.e_train)
         else:
-            acc_train, acc_train_era = None, None
+            acc_train, acc_train_era = '', ''
 
         # Save Final Losses to File
         utils.save_final_loss_log(loss_log_path + model_name + '_', parameters, n_valid, n_cv,
@@ -650,7 +650,7 @@ class XGBoost(ModelBase):
                 acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
                     utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
             else:
-                acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = None, None, None, None
+                acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = '', '', '', ''
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'xgb_', count, parameters, n_valid, n_cv, valid_era,
@@ -686,7 +686,7 @@ class XGBoost(ModelBase):
             acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean,
                                                                           self.y_train, self.e_train)
         else:
-            acc_train, acc_train_era = None, None
+            acc_train, acc_train_era = '', ''
 
         # Save Final Losses to File
         utils.save_final_loss_log(loss_log_path + 'xgb_', parameters, n_valid, n_cv, loss_train_mean,
@@ -902,7 +902,7 @@ class LightGBM(ModelBase):
                 acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
                     utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
             else:
-                acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = None, None, None, None
+                acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = '', '', '', ''
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + 'lgb_', count, parameters, n_valid, n_cv, valid_era,
@@ -938,7 +938,7 @@ class LightGBM(ModelBase):
             acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean,
                                                                           self.y_train, self.e_train)
         else:
-            acc_train, acc_train_era = None, None
+            acc_train, acc_train_era = '', ''
 
         # Save Final Losses to File
         utils.save_final_loss_log(loss_log_path + 'lgb_', parameters, n_valid, n_cv, loss_train_mean,
@@ -1522,7 +1522,7 @@ class DeepNeuralNetworks(ModelBase):
                     acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
                         utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid)
                 else:
-                    acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = None, None, None, None
+                    acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = '', '', '', ''
 
                 utils.save_loss_log(loss_log_path + 'dnn_', cv_counter, self.parameters, n_valid, n_cv,
                                     valid_era, loss_train, loss_valid, loss_train_w, loss_valid_w, train_seed, cv_seed,
@@ -1554,7 +1554,7 @@ class DeepNeuralNetworks(ModelBase):
                 acc_train, acc_train_era = utils.print_and_get_train_accuracy(prob_train_mean,
                                                                               self.y_train, self.e_train)
             else:
-                acc_train, acc_train_era = None, None
+                acc_train, acc_train_era = '', ''
 
             # Save Final Losses to File
             utils.save_final_loss_log(loss_log_path + 'dnn_', self.parameters, n_valid, n_cv, loss_train_mean,
