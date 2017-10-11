@@ -608,6 +608,8 @@ class XGBoost(ModelBase):
     @staticmethod
     def print_loss(bst, x_train, y_train, w_train, x_valid, y_valid, w_valid):
 
+        print(bst, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+
         loss_train, loss_valid, loss_train_w, loss_valid_w = \
             utils.print_loss_xgb(bst, x_train, y_train, w_train, x_valid, y_valid, w_valid)
 

@@ -75,8 +75,6 @@ class TrainSingleModel:
 
         LR = models.LRegression(x_train, y_train, w_train, e_train, x_test, id_test)
 
-        print('Start training Logistic Regression...')
-
         LR.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                  cv_seed=cv_seed, parameters=lr_parameters, show_importance=False,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
@@ -108,8 +106,6 @@ class TrainSingleModel:
 
         RF = models.RandomForest(x_train, y_train, w_train, e_train, x_test, id_test)
 
-        print('Start training Random Forest...')
-
         RF.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                  cv_seed=cv_seed, parameters=rf_parameters, show_importance=False,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
@@ -140,8 +136,6 @@ class TrainSingleModel:
                          'warm_start': False}
 
         ET = models.ExtraTrees(x_train, y_train, w_train, e_train, x_test, id_test)
-
-        print('Start training Extra Trees...')
 
         ET.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                  cv_seed=cv_seed, parameters=et_parameters, show_importance=False,
@@ -182,8 +176,6 @@ class TrainSingleModel:
 
         AB = models.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
-        print('Start training AdaBoost...')
-
         AB.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                  cv_seed=cv_seed, parameters=ab_parameters, show_importance=False,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
@@ -217,8 +209,6 @@ class TrainSingleModel:
 
         GB = models.GradientBoosting(x_train, y_train, w_train, e_train, x_test, id_test)
 
-        print('Start training GradientBoosting...')
-
         GB.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                  cv_seed=cv_seed, parameters=gb_parameters, show_importance=False,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
@@ -247,8 +237,6 @@ class TrainSingleModel:
                           'seed': train_seed}
 
         XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test, num_boost_round=35)
-
-        print('Start training XGBoost...')
 
         XGB.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                   cv_seed=cv_seed, parameters=xgb_parameters, show_importance=False,
@@ -285,8 +273,6 @@ class TrainSingleModel:
                           'missing': None}
 
         XGB = models.SKLearnXGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
-
-        print('Start training XGBoost...')
 
         XGB.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                   cv_seed=cv_seed, parameters=xgb_parameters, show_importance=True,
@@ -328,8 +314,6 @@ class TrainSingleModel:
 
         # cv_generator = models.CrossValidation.era_k_fold_with_weight_all_random
 
-        print('Start training LightGBM...')
-
         LGBM.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                    cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False,
                    show_accuracy=True, save_csv_log=True, csv_idx=idx)
@@ -366,8 +350,6 @@ class TrainSingleModel:
                           'seed': train_seed}
 
         LGBM = models.SKLearnLightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test)
-
-        print('Start training LightGBM...')
 
         LGBM.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                    cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False,
@@ -416,8 +398,6 @@ class TrainSingleModel:
 
         CB = models.CatBoost(x_g_train, y_train, w_train, e_train, x_g_test, id_test)
 
-        print('Start training CatBoost...')
-
         CB.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                  cv_seed=cv_seed, parameters=cb_parameters, show_importance=True,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
@@ -446,8 +426,6 @@ class TrainSingleModel:
 
         dnn = models.DeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
 
-        print('Start training DNN(TensorFlow)...')
-
         dnn.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20,
                   train_seed=train_seed, cv_seed=cv_seed, show_accuracy=True,
                   save_csv_log=True, csv_idx=idx)
@@ -466,8 +444,6 @@ class TrainSingleModel:
     #                         'batch_size': 256}
     #
     #     dnn = models.KerasDeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
-    #
-    #     print('Start training DNN(Keras)...')
     #
     #     dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20, cv_seed=cv_seed)
 
@@ -528,8 +504,6 @@ class TrainSingleModel:
         LGB = models.LightGBM(blender_x_g_tree, y_train, w_train, e_train,
                               blender_test_g_tree, id_test, num_boost_round=65)
 
-        print('Start training LGBM...')
-
         LGB.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False,
                   show_accuracy=True, save_csv_log=True, csv_idx=idx)
@@ -567,8 +541,6 @@ class ChampionModel:
         LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=65)
 
         cv_generator = models.CrossValidation.era_k_fold_with_weight_all_random
-
-        print('Start training LightGBM...')
 
         LGBM.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                    cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, show_accuracy=False,
