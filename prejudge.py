@@ -291,7 +291,8 @@ class PrejudgeMulti:
 
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_g_tr, x_tr_p, y_tr_p, w_tr_p, e_tr_p, x_g_tr_p,
                  x_tr_n, y_tr_n, w_tr_n, e_tr_n, x_g_tr_n, x_te, id_te, x_g_te,
-                 pred_path, prejudged_data_path, loss_log_path, models_parameters, hyper_parameters):
+                 pred_path, prejudged_data_path, loss_log_path, csv_log_path,
+                 models_parameters, hyper_parameters):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -314,6 +315,7 @@ class PrejudgeMulti:
         self.pred_path = pred_path
         self.prejudged_data_path = prejudged_data_path
         self.loss_log_path = loss_log_path
+        self.csv_log_path = csv_log_path
         self.parameters_e = models_parameters[0]
         self.parameters_p = models_parameters[1]
         self.parameters_n = models_parameters[2]
@@ -478,18 +480,18 @@ class PrejudgeMulti:
         print('======================================================')
         print('Training Models of Positive Era Sign...')
         prob_test_p = model_p.train(self.pred_path + 'positive/', self.loss_log_path + 'positive/',
-                                    n_valid=self.n_valid_p, n_cv=self.n_cv_p, n_era=self.n_era_p,
-                                    train_seed=self.train_seed, cv_seed=self.cv_seed, parameters=self.parameters_p,
-                                    return_prob_test=True, era_list=self.era_list_p,
+                                    csv_path=self.csv_log_path, n_valid=self.n_valid_p, n_cv=self.n_cv_p,
+                                    n_era=self.n_era_p, train_seed=self.train_seed, cv_seed=self.cv_seed,
+                                    parameters=self.parameters_p, return_prob_test=True, era_list=self.era_list_p,
                                     show_importance=self.show_importance, show_accuracy=self.show_accuracy,
                                     save_csv_log=True, csv_idx='prejudge_p')
 
         print('======================================================')
         print('Training Models of Negative Era Sign...')
         prob_test_n = model_n.train(self.pred_path + 'negative/', self.loss_log_path + 'negative/',
-                                    n_valid=self.n_valid_n, n_cv=self.n_cv_n, n_era=self.n_era_n,
-                                    train_seed=self.train_seed, cv_seed=self.cv_seed, parameters=self.parameters_n,
-                                    return_prob_test=True, era_list=self.era_list_n,
+                                    csv_path=self.csv_log_path, n_valid=self.n_valid_n, n_cv=self.n_cv_n,
+                                    n_era=self.n_era_n, train_seed=self.train_seed, cv_seed=self.cv_seed,
+                                    parameters=self.parameters_n, return_prob_test=True, era_list=self.era_list_n,
                                     show_importance=self.show_importance, show_accuracy=self.show_accuracy,
                                     save_csv_log=True, csv_idx='prejudge_n')
 

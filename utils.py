@@ -611,7 +611,6 @@ def check_bad_cv(trained_cv, valid_era):
     return is_bad_cv
 
 
-
 if __name__ == '__main__':
 
     pass

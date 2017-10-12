@@ -518,12 +518,13 @@ class TrainSingleModel:
 
         LGB = models.LightGBM(blender_x_g_tree, y_train, w_train, e_train,
                               blender_test_g_tree, id_test, num_boost_round=65)
-        cv_generator = models.CrossValidation.era_k_fold_with_weight_balance
+
+        # cv_generator = models.CrossValidation.era_k_fold_with_weight_balance
 
         LGB.train(single_model_pred_path, loss_log_path, csv_path=csv_log_path + 'stack_final_',
                   n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False,
-                  show_accuracy=True, save_csv_log=True, csv_idx=idx, cv_generator=cv_generator)
+                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
 
 class ChampionModel:
