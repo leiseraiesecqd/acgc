@@ -1074,6 +1074,20 @@ class CatBoost(ModelBase):
 
         return model_name
 
+    def get_importance(self, clf):
+
+        print('------------------------------------------------------')
+        print('Feature Importance')
+
+        idx_category = [self.x_train.shape[1] - 1]
+        self.importance = clf.get_feature_importance(self.x_train, y=self.y_train, cat_features=idx_category)
+        self.indices = np.argsort(self.importance)[::-1]
+
+        feature_num = len(self.importance)
+
+        for f in range(feature_num):
+            print("%d | feature %d | %d" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
+
     def fit(self, x_train, y_train, w_train, x_valid, y_valid, w_valid, parameters):
 
         # Get Classifier
