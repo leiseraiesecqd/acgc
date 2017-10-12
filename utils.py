@@ -602,7 +602,7 @@ def check_bad_cv(trained_cv, valid_era):
     for era in valid_era:
         if era in preprocess.negative_era_list:
             negative_era_counter += 1
-    bad_num_negative_era = negative_era_counter not in [1, 2]
+    bad_num_negative_era = negative_era_counter not in [0, 1, 2]
     if bad_num_negative_era:
         print('Bad number of negative era in this CV split, choosing another one...')
 
