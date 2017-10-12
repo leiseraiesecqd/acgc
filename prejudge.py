@@ -70,6 +70,15 @@ class PrejudgeEraSign:
 
         return era_sign_test
 
+    def print_positive_rate_test(self, era_sign_test=None):
+
+        if era_sign_test is None:
+            era_sign_test = utils.load_pkl_to_np(self.prejudged_data_path + 'era_sign_test.p')
+
+        positive_rate_test = np.sum(era_sign_test) / len(era_sign_test)
+
+        print('Positive Rate Prediction of Test Set: {:.6f}%'.format(positive_rate_test * 100))
+
     def era_prejudge_model_initializer(self, x_train, x_g_train, era_sign_train):
         """
             Initialize model for era prejudging
@@ -260,6 +269,10 @@ class PrejudgeEraSign:
             # Save era_sign_test to Pickle File
             utils.save_np_to_pkl(era_sign_test, self.prejudged_data_path + 'era_sign_test.p')
 
+        # Print Prediction of Positive Era Rate
+        self.print_positive_rate_test(era_sign_test)
+
+        # Get Split Data
         x_test_p, x_g_test_p, id_test_p, era_idx_test_p, x_test_n, \
             x_g_test_n, id_test_n, era_idx_test_n = self.split_data_by_era_sign(era_sign_test)
 

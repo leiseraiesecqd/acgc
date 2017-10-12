@@ -709,6 +709,7 @@ class LightGBM(ModelBase):
         # Create Dataset
         idx_category = [x_train.shape[1] - 1]
         print('Index of categorical feature: {}'.format(idx_category))
+        print('------------------------------------------------------')
 
         d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=idx_category)
         d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
@@ -723,6 +724,7 @@ class LightGBM(ModelBase):
 
         idx_category = [x_g_train.shape[1] - 1]
         print('Index of categorical feature: {}'.format(idx_category))
+        print('------------------------------------------------------')
 
         # Use Category
         d_train = lgb.Dataset(x_g_train, label=y_train, weight=w_train, categorical_feature=idx_category)
@@ -840,10 +842,11 @@ class LightGBM(ModelBase):
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
+
+            idx_category = [x_train.shape[1] - 1]
+            print('Index of categorical feature: {}'.format(idx_category))
             print('------------------------------------------------------')
 
-            # Use Category
-            idx_category = [x_train.shape[1] - 1]
             if use_weight is True:
                 d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=idx_category)
                 d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)

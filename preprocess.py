@@ -225,6 +225,7 @@ class DataPreProcess:
         self.drop_feature_outliers_by_value('feature86', 20, None)
         self.drop_feature_outliers_by_value('feature87', None, None)
 
+    # Drop Outliers by Quantile
     def drop_outliers_by_quantile(self):
 
         print('Dropping outliers...')
@@ -281,7 +282,7 @@ class DataPreProcess:
         self.drop_feature_outliers_by_quantile('feature45', 0.9999, None)
         self.drop_feature_outliers_by_quantile('feature46', None, 0.0001)
         self.drop_feature_outliers_by_quantile('feature47', None, None)
-        self.drop_feature_outliers_by_quantile('feature48', None, None)
+        self.drop_feature_outliers_by_quantile('feature48', None, 0.0001)
         self.drop_feature_outliers_by_quantile('feature49', None, None)
         self.drop_feature_outliers_by_quantile('feature50', None, None)
         self.drop_feature_outliers_by_quantile('feature51', None, None)
@@ -289,8 +290,8 @@ class DataPreProcess:
         self.drop_feature_outliers_by_quantile('feature53', 0.9999, None)
         self.drop_feature_outliers_by_quantile('feature54', 0.9999, None)
         self.drop_feature_outliers_by_quantile('feature55', None, None)
-        self.drop_feature_outliers_by_quantile('feature56', 0.9999, 0.0001)
-        self.drop_feature_outliers_by_quantile('feature57', 0.9999, 0.0001)
+        self.drop_feature_outliers_by_quantile('feature56', 0.9999, None)
+        self.drop_feature_outliers_by_quantile('feature57', 0.9999, None)
         self.drop_feature_outliers_by_quantile('feature58', 0.9999, 0.0001)
         self.drop_feature_outliers_by_quantile('feature59', 0.9999, None)
         self.drop_feature_outliers_by_quantile('feature60', 0.9999, None)
@@ -316,11 +317,11 @@ class DataPreProcess:
         self.drop_feature_outliers_by_quantile('feature80', 0.9999, 0.0001)
         self.drop_feature_outliers_by_quantile('feature81', 0.9999, 0.0001)
         self.drop_feature_outliers_by_quantile('feature82', 0.9999, 0.0001)
-        self.drop_feature_outliers_by_quantile('feature83', None, 0.0001)
-        self.drop_feature_outliers_by_quantile('feature84', None, 0.0001)
-        self.drop_feature_outliers_by_quantile('feature85', None, 0.0001)
-        self.drop_feature_outliers_by_quantile('feature86', None, 0.0001)
-        self.drop_feature_outliers_by_quantile('feature87', None, 0.0001)
+        self.drop_feature_outliers_by_quantile('feature83', 0.9999, None)
+        self.drop_feature_outliers_by_quantile('feature84', 0.9999, 0.0001)
+        self.drop_feature_outliers_by_quantile('feature85', 0.9999, None)
+        self.drop_feature_outliers_by_quantile('feature86', 0.9999, None)
+        self.drop_feature_outliers_by_quantile('feature87', 0.9999, None)
 
     # Standard Scale
     def standard_scale(self):
@@ -496,7 +497,7 @@ class DataPreProcess:
         # self.drop_outliers_by_quantile()
 
         # Scale features
-        self.standard_scale()
+        # self.standard_scale()
         # self.min_max_scale()
 
         # Convert column 'group' to dummies
