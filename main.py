@@ -313,7 +313,8 @@ class TrainSingleModel:
         LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=65)
 
         # cv_generator = models.CrossValidation.era_k_fold_with_weight_all_random
-        cv_generator = models.CrossValidation.era_k_fold_with_weight_balance
+        # cv_generator = models.CrossValidation.era_k_fold_with_weight_balance
+        cv_generator = models.CrossValidation.random_split_with_weight
 
         LGBM.train(single_model_pred_path, loss_log_path, n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                    cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, save_cv_pred=False,
@@ -1080,12 +1081,12 @@ class PrejudgeTraining:
                             'show_importance': False,
                             'show_accuracy': True}
 
-        PES = prejudge.PrejudgeEraSign(x_train, y_train, w_train, e_train, x_g_train, x_train_p,
-                                       y_train_p, w_train_p, e_train_p, x_g_train_p, x_train_n, y_train_n,
-                                       w_train_n, e_train_n, x_g_train_n, x_test, id_test, x_g_test,
-                                       pred_path=prejudge_pred_path, prejudged_data_path=prejudged_data_path,
-                                       loss_log_path=prejudge_loss_log_path, models_parameters=models_parameters,
-                                       hyper_parameters=hyper_parameters)
+        PES = prejudge.PrejudgeBinary(x_train, y_train, w_train, e_train, x_g_train, x_train_p,
+                                      y_train_p, w_train_p, e_train_p, x_g_train_p, x_train_n, y_train_n,
+                                      w_train_n, e_train_n, x_g_train_n, x_test, id_test, x_g_test,
+                                      pred_path=prejudge_pred_path, prejudged_data_path=prejudged_data_path,
+                                      loss_log_path=prejudge_loss_log_path, models_parameters=models_parameters,
+                                      hyper_parameters=hyper_parameters)
 
         PES.train(load_pickle=False, load_pickle_path=None)
 
@@ -1512,7 +1513,7 @@ if __name__ == "__main__":
     # TrainSingleModel.xgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # LightGBM
-    # TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
+    TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
     # TrainSingleModel.lgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # CatBoost
@@ -1541,7 +1542,7 @@ if __name__ == "__main__":
     # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed)
 
     # Prejudge
-    PrejudgeTraining.train(global_train_seed, global_cv_seed)
+    # PrejudgeTraining.train(global_train_seed, global_cv_seed)
 
     # Auto Training
     # auto_train(100)
