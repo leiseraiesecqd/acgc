@@ -310,7 +310,7 @@ class TrainSingleModel:
                           'early_stopping_rounds': 50,      # default=0
                           'seed': train_seed}
 
-        LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=65)
+        LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=30)
 
         # cv_generator = models.CrossValidation.era_k_fold_with_weight_all_random
         # cv_generator = models.CrossValidation.era_k_fold_with_weight_balance
