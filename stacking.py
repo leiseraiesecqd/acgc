@@ -378,8 +378,9 @@ class StackLayer:
     def __init__(self, params, x_train, y_train, w_train, e_train, x_g_train, x_test, x_g_test, id_test,
                  models_initializer=None, input_layer=None, cv_generator=None, n_valid=4, n_era=20, train_seed=None,
                  cv_seed=None, i_layer=1, n_epoch=1, x_train_reuse=None, x_test_reuse=None, dnn_param=None,
-                 pred_path=None, loss_log_path=None, stack_output_path=None, show_importance=False,
-                 show_accuracy=False, save_epoch_results=False, is_final_layer=False, n_cv_final=None):
+                 pred_path=None, loss_log_path=None, stack_output_path=None, csv_log_path=None,
+                 show_importance=False, show_accuracy=False, save_epoch_results=False,
+                 is_final_layer=False, n_cv_final=None, save_csv_log=None, csv_idx=None):
 
         self.params = params
         self.x_train = x_train
@@ -405,11 +406,14 @@ class StackLayer:
         self.pred_path = pred_path
         self.loss_log_path = loss_log_path
         self.stack_output_path = stack_output_path
+        self.csv_log_path = csv_log_path
         self.show_importance = show_importance
         self.show_accuracy = show_accuracy
         self.save_epoch_results = save_epoch_results
         self.is_final_layer = is_final_layer
         self.n_cv_final = n_cv_final
+        self.save_csv_log = save_csv_log
+        self.csv_idx = csv_idx
         self.g_train = x_g_train[:, -1]
         self.g_test = x_g_test[:, -1]
 
@@ -592,10 +596,10 @@ class StackLayer:
         model = self.models_initializer(blender_x_tree, blender_test_tree, blender_x_g_tree,
                                         blender_test_g_tree, params=self.params)
 
-        model.train(self.pred_path, self.loss_log_path, n_valid=self.n_valid, n_cv=self.n_cv_final,
-                    n_era=self.n_era, train_seed=self.train_seed, cv_seed=self.cv_seed,
-                    parameters=self.params, show_importance=self.show_importance,
-                    show_accuracy=self.show_accuracy, save_csv_log=True, csv_idx='stack_final')
+        model.train(self.pred_path, self.loss_log_path, csv_log_path=self.csv_log_path, n_valid=self.n_valid,
+                    n_cv=self.n_cv_final, n_era=self.n_era, train_seed=self.train_seed, cv_seed=self.cv_seed,
+                    parameters=self.params, show_importance=self.show_importance, show_accuracy=self.show_accuracy,
+                    save_csv_log=self.save_csv_log, csv_idx=self.csv_idx)
 
     def train(self, i_epoch=1):
 
@@ -691,8 +695,7 @@ class StackTree:
     pred_path = ''
     stack_output_path = ''
 
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te, pred_path=None,
-                 loss_log_path=None, stack_output_path=None,layers_params=None, hyper_params=None):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te, layers_params=None, hyper_params=None):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -702,9 +705,6 @@ class StackTree:
         self.id_test = id_te
         self.x_g_train = x_g_tr
         self.x_g_test = x_g_te
-        self.pred_path = pred_path
-        self.loss_log_path = loss_log_path
-        self.stack_output_path = stack_output_path
         self.layers_params = layers_params
         self.dnn_l1_params = layers_params[0][-1]
         self.dnn_l2_params = None
@@ -783,17 +783,24 @@ class StackTree:
 
         utils.save_pred_to_csv(pred_path, self.id_test, test_prob)
 
-    def stack(self):
+    def stack(self, pred_path=None, loss_log_path=None, stack_output_path=None,
+              csv_log_path=None, save_csv_log=False, csv_idx=None):
 
         start_time = time.time()
 
         # Check if directories exit or not
-        path_list = [self.pred_path,
-                     self.pred_path + 'epochs_results/',
-                     self.stack_output_path]
+        path_list = [pred_path,
+                     pred_path + 'epochs_results/',
+                     stack_output_path]
         utils.check_dir(path_list)
 
-        # Create a CrossValidation Generator
+        if csv_idx is not None:
+            stack_output_path += 'auto_{}_'.format(csv_idx)
+            csv_idx_ = 'stack_{}'.format(csv_idx)
+        else:
+            csv_idx_ = 'stack'
+
+            # Create a CrossValidation Generator
         cv_stack = models.CrossValidation()
 
         # Initializing models for every layer
@@ -815,8 +822,8 @@ class StackTree:
                             self.x_g_train, self.x_test, self.x_g_test, self.id_test,
                             models_initializer=models_initializer_l1, cv_generator=cv_stack, n_valid=self.n_valid[0],
                             n_era=self.n_era[0], train_seed=self.train_seed, cv_seed=self.cv_seed,
-                            i_layer=1, n_epoch=self.n_epoch[0], pred_path=self.pred_path,
-                            stack_output_path=self.stack_output_path, show_importance=self.show_importance,
+                            i_layer=1, n_epoch=self.n_epoch[0], pred_path=pred_path,
+                            stack_output_path=stack_output_path, show_importance=self.show_importance,
                             show_accuracy=self.show_accuracy, save_epoch_results=self.save_epoch_results)
 
         # Layer 2
@@ -834,16 +841,17 @@ class StackTree:
                                input_layer=stk_l1, models_initializer=models_initializer_final, n_valid=self.n_valid[1],
                                train_seed=self.train_seed, cv_seed=self.cv_seed, i_layer=2, n_epoch=self.n_epoch[1],
                                x_train_reuse=x_train_reuse_l2, x_test_reuse=x_test_reuse_l2,
-                               pred_path=self.pred_path, loss_log_path=self.loss_log_path,
-                               stack_output_path=self.stack_output_path, show_importance=self.show_importance,
+                               pred_path=pred_path, loss_log_path=loss_log_path, stack_output_path=stack_output_path,
+                               csv_log_path=csv_log_path, show_importance=self.show_importance,
                                show_accuracy=self.show_accuracy, save_epoch_results=self.save_epoch_results,
-                               is_final_layer=True, n_cv_final=self.final_layer_cv)
+                               is_final_layer=True, n_cv_final=self.final_layer_cv, save_csv_log=save_csv_log,
+                               csv_idx=csv_idx_)
 
         # Training
         stk_final.train()
 
         # # Save predicted test prob
-        # self.save_predict(self.pred_path + 'final_results/stack_', test_outputs)
+        # self.save_predict(pred_path + 'final_results/stack_', test_outputs)
 
         total_time = time.time() - start_time
         print('======================================================')
