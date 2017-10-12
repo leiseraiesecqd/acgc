@@ -427,6 +427,18 @@ def print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_v
           'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
 
 
+# Print Prediction of Positive Era Rate
+def print_positive_rate_test(era_sign_test=None):
+
+    if era_sign_test is None:
+        era_sign_test = load_pkl_to_np('./data/prejudged_data/era_sign_test.p')
+
+    positive_rate_test = np.sum(era_sign_test) / len(era_sign_test)
+
+    print('------------------------------------------------------')
+    print('Positive Rate Prediction of Test Set: {:.6f}%'.format(positive_rate_test * 100))
+
+
 # Check if directories exit or not
 def check_dir(path_list):
 
