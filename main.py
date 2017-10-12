@@ -77,7 +77,7 @@ class TrainSingleModel:
 
         LR = models.LRegression(x_train, y_train, w_train, e_train, x_test, id_test)
 
-        LR.train(single_model_pred_path, loss_log_path, csv_path=csv_log_path + 'single_',
+        LR.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
                  n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                  cv_seed=cv_seed, parameters=lr_parameters, show_importance=False,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
@@ -109,7 +109,7 @@ class TrainSingleModel:
 
         RF = models.RandomForest(x_train, y_train, w_train, e_train, x_test, id_test)
 
-        RF.train(single_model_pred_path, loss_log_path, csv_path=csv_log_path + 'single_',
+        RF.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
                  n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                  cv_seed=cv_seed, parameters=rf_parameters, show_importance=False,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
@@ -141,7 +141,7 @@ class TrainSingleModel:
 
         ET = models.ExtraTrees(x_train, y_train, w_train, e_train, x_test, id_test)
 
-        ET.train(single_model_pred_path, loss_log_path, csv_path=csv_log_path + 'single_',
+        ET.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
                  n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                  cv_seed=cv_seed, parameters=et_parameters, show_importance=False,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
@@ -181,7 +181,7 @@ class TrainSingleModel:
 
         AB = models.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
-        AB.train(single_model_pred_path, loss_log_path, csv_path=csv_log_path + 'single_',
+        AB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
                  n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                  cv_seed=cv_seed, parameters=ab_parameters, show_importance=False,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
@@ -215,7 +215,7 @@ class TrainSingleModel:
 
         GB = models.GradientBoosting(x_train, y_train, w_train, e_train, x_test, id_test)
 
-        GB.train(single_model_pred_path, loss_log_path, csv_path=csv_log_path + 'single_',
+        GB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
                  n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                  cv_seed=cv_seed, parameters=gb_parameters, show_importance=False,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
@@ -245,7 +245,7 @@ class TrainSingleModel:
 
         XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test, num_boost_round=35)
 
-        XGB.train(single_model_pred_path, loss_log_path, csv_path=csv_log_path + 'single_',
+        XGB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
                   n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                   cv_seed=cv_seed, parameters=xgb_parameters, show_importance=False,
                   show_accuracy=True, save_csv_log=True, csv_idx=idx)
@@ -282,7 +282,7 @@ class TrainSingleModel:
 
         XGB = models.SKLearnXGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
-        XGB.train(single_model_pred_path, loss_log_path, csv_path=csv_log_path + 'single_',
+        XGB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
                   n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                   cv_seed=cv_seed, parameters=xgb_parameters, show_importance=True,
                   show_accuracy=True, save_csv_log=True, csv_idx=idx)
@@ -325,7 +325,7 @@ class TrainSingleModel:
         # cv_generator = models.CrossValidation.random_split_with_weight
         cv_generator = models.CrossValidation.era_k_fold_with_weight_balance
 
-        LGBM.train(single_model_pred_path, loss_log_path, csv_path=csv_log_path + 'single_',
+        LGBM.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
                    n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                    cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, save_cv_pred=False,
                    show_accuracy=True, save_csv_log=True, csv_idx=idx, cv_generator=cv_generator)
@@ -363,7 +363,7 @@ class TrainSingleModel:
 
         LGBM = models.SKLearnLightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test)
 
-        LGBM.train(single_model_pred_path, loss_log_path, csv_path=csv_log_path + 'single_',
+        LGBM.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
                    n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                    cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False,
                    show_accuracy=True, save_csv_log=True, csv_idx=idx)
@@ -411,7 +411,7 @@ class TrainSingleModel:
 
         CB = models.CatBoost(x_g_train, y_train, w_train, e_train, x_g_test, id_test)
 
-        CB.train(single_model_pred_path, loss_log_path, csv_path=csv_log_path + 'single_',
+        CB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
                  n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                  cv_seed=cv_seed, parameters=cb_parameters, show_importance=True,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx)
@@ -440,7 +440,7 @@ class TrainSingleModel:
 
         dnn = models.DeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
 
-        dnn.train(single_model_pred_path, loss_log_path, csv_path=csv_log_path + 'single_',
+        dnn.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
                   n_valid=4, n_cv=20, n_era=20,
                   train_seed=train_seed, cv_seed=cv_seed, show_accuracy=True,
                   save_csv_log=True, csv_idx=idx)
@@ -521,7 +521,7 @@ class TrainSingleModel:
 
         # cv_generator = models.CrossValidation.era_k_fold_with_weight_balance
 
-        LGB.train(single_model_pred_path, loss_log_path, csv_path=csv_log_path + 'stack_final_',
+        LGB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'stack_final_',
                   n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                   cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False,
                   show_accuracy=True, save_csv_log=True, csv_idx=idx)
@@ -560,7 +560,7 @@ class ChampionModel:
 
         cv_generator = models.CrossValidation.era_k_fold_with_weight_all_random
 
-        LGBM.train(single_model_pred_path, loss_log_path, csv_path=csv_log_path + 'christ1991_',
+        LGBM.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'christ1991_',
                    n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                    cv_seed=cv_seed, parameters=lgb_parameters, show_importance=False, show_accuracy=False,
                    save_csv_log=True, csv_idx=idx, cv_generator=cv_generator)
@@ -1485,7 +1485,7 @@ def auto_train(n_epoch):
         # ChampionModel.Christ1991(train_seed, cv_seed, i+1)
 
         # Stacking
-        ModelStacking.stack_tree_train(train_seed, cv_seed, i+1)
+        # ModelStacking.stack_tree_train(train_seed, cv_seed, i+1)
         for ii in range(5):
             t_seed = random.randint(0, 300)
             c_seed = random.randint(0, 300)

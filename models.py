@@ -150,7 +150,7 @@ class ModelBase(object):
 
         return loss_train, loss_valid, loss_train_w, loss_valid_w
 
-    def train(self, pred_path=None, loss_log_path=None, csv_path=None, n_valid=4, n_cv=20, n_era=20,
+    def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, n_valid=4, n_cv=20, n_era=20,
               train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
               show_accuracy=False, save_cv_pred=True, save_cv_prob_train=False, save_csv_log=True,
               csv_idx=None, cv_generator=None, return_prob_test=False):
@@ -261,7 +261,7 @@ class ModelBase(object):
 
         # Save Loss Log to csv File
         if save_csv_log is True:
-            utils.save_final_loss_log_to_csv(csv_idx, csv_path + model_name + '_',
+            utils.save_final_loss_log_to_csv(csv_idx, csv_log_path + model_name + '_',
                                              loss_train_w_mean, loss_valid_w_mean, acc_train,
                                              train_seed, cv_seed, n_valid, n_cv, parameters)
 
@@ -1309,7 +1309,7 @@ class DeepNeuralNetworks(ModelBase):
         return prob
 
     # Training
-    def train(self, pred_path=None, loss_log_path=None, csv_path=None, n_valid=4, n_cv=20, n_era=20,
+    def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, n_valid=4, n_cv=20, n_era=20,
               train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
               show_accuracy=False, save_cv_pred=True, save_cv_prob_train=False, save_csv_log=True,
               csv_idx=None, cv_generator=None, return_prob_test=False):
@@ -1513,7 +1513,7 @@ class DeepNeuralNetworks(ModelBase):
 
             # Save Loss Log to csv File
             if save_csv_log is True:
-                utils.save_final_loss_log_to_csv(csv_idx, csv_path + model_name + '_',
+                utils.save_final_loss_log_to_csv(csv_idx, csv_log_path + model_name + '_',
                                                  loss_train_w_mean, loss_valid_w_mean, acc_train,
                                                  train_seed, cv_seed, n_valid, n_cv, parameters)
 
