@@ -816,7 +816,7 @@ class LightGBM(ModelBase):
 
         return prob_valid, prob_test, losses
 
-    def prejudge_train_binary(self, pred_path, n_splits, n_cv, cv_seed, use_weight=True,
+    def prejudge_train_binary(self, pred_path=None, n_splits=10, n_cv=10, cv_seed=None, use_weight=True,
                               parameters=None, show_importance=False, show_accuracy=False, cv_generator=None):
 
         # Check if directories exit or not
@@ -835,9 +835,9 @@ class LightGBM(ModelBase):
             cv_generator = CrossValidation.sk_k_fold_with_weight
 
         # Cross Validation
-        for x_train, y_train, w_train, x_valid, y_valid, w_valid in \
-                cv_generator(x=self.x_train, y=self.y_train, w=self.w_train,
-                             n_splits=n_splits, n_cv=n_cv, seed=cv_seed):
+        for x_train, y_train, w_train, \
+            x_valid, y_valid, w_valid in cv_generator(x=self.x_train, y=self.y_train, w=self.w_train,
+                                                      n_splits=n_splits, n_cv=n_cv, seed=cv_seed):
 
             count += 1
 
@@ -903,33 +903,29 @@ class LightGBM(ModelBase):
 
         return prob_test_mean
 
-    def prejudge_train_multi(self, pred_path, n_splits, n_cv, cv_seed, use_weight=True,
-                             parameters=None, show_importance=False, show_accuracy=False, cv_generator=None):
+    def prejudge_train_multiclass(self, pred_path=None, n_splits=10, n_cv=10, n_era=20, cv_seed=None, use_weight=True,
+                                  parameters=None, show_importance=False, show_accuracy=False, cv_generator=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path)
 
-        count = 0
-        prob_test_total = []
-        prob_train_total = []
-        loss_train_total = []
-        loss_valid_total = []
-        loss_train_w_total = []
-        loss_valid_w_total = []
+        cv_counter = 0
+        prob_test_total = np.array([])
+        prob_train_total = np.array([])
 
         # Get Cross Validation Generator
         if cv_generator is None:
             cv_generator = CrossValidation.sk_k_fold_with_weight
 
         # Cross Validation
-        for x_train, y_train, w_train, x_valid, y_valid, w_valid in \
-                cv_generator(x=self.x_train, y=self.y_train, w=self.w_train,
-                             n_splits=n_splits, n_cv=n_cv, seed=cv_seed):
+        for x_train, y_train, w_train, \
+            x_valid, y_valid, w_valid in cv_generator(x=self.x_train, y=self.y_train, w=self.w_train,
+                                                      n_splits=n_splits, n_cv=n_cv, seed=cv_seed):
 
-            count += 1
+            cv_counter += 1
 
             print('======================================================')
-            print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
+            print('Training on the Cross Validation Set: {}/{}'.format(cv_counter, n_cv))
 
             idx_category = [x_train.shape[1] - 1]
             print('Index of categorical feature: {}'.format(idx_category))
@@ -951,42 +947,30 @@ class LightGBM(ModelBase):
                 self.get_importance(bst)
 
             # Prediction
-            prob_test = self.predict(bst, self.x_test, pred_path=pred_path + 'cv_results/lgb_cv_{}_'.format(count))
+            prob_test = self.predict(bst, self.x_test, pred_path=pred_path + 'cv_results/lgb_cv_{}_'.format(cv_counter))
 
             # Save Train Probabilities to CSV File
             prob_train = self.get_prob_train(bst, self.x_train,
-                                             pred_path=pred_path + 'cv_prob_train/lgb_cv_{}_'.format(count))
+                                             pred_path=pred_path + 'cv_prob_train/lgb_cv_{}_'.format(cv_counter))
 
-            # Print LogLoss
-            print('------------------------------------------------------')
-            loss_train, loss_valid, loss_train_w, loss_valid_w = self.print_loss(bst, x_train, y_train, w_train,
-                                                                                 x_valid, y_valid, w_valid)
+            # TODO: Print LogLoss
 
-            prob_test_total.append(list(prob_test))
-            prob_train_total.append(list(prob_train))
-            loss_train_total.append(loss_train)
-            loss_valid_total.append(loss_valid)
-            loss_train_w_total.append(loss_train_w)
-            loss_valid_w_total.append(loss_valid_w)
+            if cv_counter == 1:
+                prob_test_total = prob_test.reshape(-1, 1, n_era)
+                prob_train_total = prob_train.reshape(-1, 1, n_era)
+            else:
+                np.concatenate((prob_test_total, prob_test), axis=1)
+                np.concatenate((prob_train_total, prob_train), axis=1)
 
         print('======================================================')
         print('Calculating Final Result...')
 
-        prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
-        prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
-        loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
-        loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
-        loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
-        loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
+        prob_test_mean = np.mean(prob_test_total, axis=1)
+        prob_train_mean = np.mean(prob_train_total, axis=1)
 
-        # Print Total Losses
-        utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
+        # TODO: Print Total Losses
 
-        # Print and Get Accuracies of CV of All Train Set
-        _, _ = utils.print_and_get_train_accuracy(prob_train_mean, self.y_train, self.e_train, show_accuracy)
-
-        # Save Final Result
-        utils.save_pred_to_csv(pred_path + 'final_results/lgb_', self.id_test, prob_test_mean)
+        # TODO: Print and Get Accuracies of CV of All Train Set
 
         return prob_test_mean
 

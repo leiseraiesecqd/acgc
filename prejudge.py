@@ -152,7 +152,7 @@ class PrejudgeBinary:
 
         return era_sign_test
 
-    def split_data_by_era_sign(self, era_sign_test):
+    def split_test_set_by_era_sign(self, era_sign_test):
         """
             Split whole data set to positive and negative set using era sign
         """
@@ -267,7 +267,7 @@ class PrejudgeBinary:
 
         # Get Split Data
         x_test_p, x_g_test_p, id_test_p, era_idx_test_p, x_test_n, \
-            x_g_test_n, id_test_n, era_idx_test_n = self.split_data_by_era_sign(era_sign_test)
+            x_g_test_n, id_test_n, era_idx_test_n = self.split_test_set_by_era_sign(era_sign_test)
 
         # Training Models by Era Sign
         prob_test = \
@@ -317,191 +317,205 @@ class PrejudgeMultiClass:
         self.loss_log_path = loss_log_path
         self.csv_log_path = csv_log_path
         self.parameters_e = models_parameters[0]
-        self.parameters_p = models_parameters[1]
-        self.parameters_n = models_parameters[2]
+        self.parameters_m = models_parameters[1]
         self.cv_seed = hyper_parameters['cv_seed']
         self.train_seed = hyper_parameters['train_seed']
         self.n_splits_e = hyper_parameters['n_splits_e']
         self.num_boost_round_e = hyper_parameters['num_boost_round_e']
         self.n_cv_e = hyper_parameters['n_cv_e']
-        self.n_valid_p = hyper_parameters['n_valid_p']
-        self.n_cv_p = hyper_parameters['n_cv_p']
-        self.n_era_p = hyper_parameters['n_era_p']
-        self.num_boost_round_p = hyper_parameters['num_boost_round_p']
-        self.era_list_p = hyper_parameters['era_list_p']
-        self.n_valid_n = hyper_parameters['n_valid_n']
-        self.n_cv_n = hyper_parameters['n_cv_n']
-        self.n_era_n = hyper_parameters['n_era_n']
-        self.num_boost_round_n = hyper_parameters['num_boost_round_n']
-        self.era_list_n = hyper_parameters['era_list_n']
-        self.force_convert_era = hyper_parameters['force_convert_era']
+        self.n_era = hyper_parameters['n_era']
+        self.n_valid_m = hyper_parameters['n_valid_m']
+        self.n_cv_m = hyper_parameters['n_cv_m']
+        self.n_era_m = hyper_parameters['n_era_m']
+        self.num_boost_round_m = hyper_parameters['num_boost_round_m']
         self.use_weight = hyper_parameters['use_weight']
         self.show_importance = hyper_parameters['show_importance']
         self.show_accuracy = hyper_parameters['show_accuracy']
 
-    @staticmethod
-    def load_era_sign_csv(pred_path):
-        """
-            Load era sign from existed csv file
-        """
-
-        f = np.loadtxt(pred_path, dtype=np.float64, skiprows=1, delimiter=",")
-        era_prob_test = f[:, -1]
-
-        era_sign_test = np.array([0 if era_prob < 0.5 else 1 for era_prob in era_prob_test])
-
-        return era_sign_test
-
-    def era_prejudge_model_initializer(self, era_sign_train):
+    def era_prejudge_model_initializer(self, e_train):
         """
             Initialize model for era prejudging
         """
 
-        LGB_E = models.LightGBM(self.x_g_train, era_sign_train, self.w_train, self.e_train,
+        LGB_E = models.LightGBM(self.x_g_train, e_train, self.w_train, self.e_train,
                                 self.x_g_test, self.id_test, num_boost_round=self.num_boost_round_e)
-        # XGB_E = models.XGBoost(self.x_train, era_sign_train, self.w_train, self.e_train,
+        # XGB_E = models.XGBoost(self.x_train, e_train, self.w_train, self.e_train,
         #                        self.x_test, self.id_test, num_boost_round=self.num_boost_round_e)
-        # DNN_E = models.DeepNeuralNetworks(self.x_train, era_sign_train, self.w_train,
+        # DNN_E = models.DeepNeuralNetworks(self.x_train, e_train, self.w_train,
         #                                   self.e_train, self.x_test, self.id_test, self.dnn_l1_params)
 
         model_e = LGB_E
 
         return model_e
 
-    def positive_model_initializer(self, x_test_p, x_g_test_p, id_test_p):
+    def multiclass_model_initializer(self, x_train_era, x_g_train_era, y_train_era, w_train_era,
+                                     e_train_era, x_test_era, x_g_test_era, id_test_era):
         """
             Initialize model for positive eras
         """
 
-        LGB_P = models.LightGBM(self.x_g_train_p, self.y_train_p, self.w_train_p, self.e_train_p,
-                                x_g_test_p, id_test_p, num_boost_round=self.num_boost_round_p)
-        # XGB_P = models.XGBoost(self.x_train_p, self.y_train_p, self.w_train_p, self.e_train_p,
-        #                        x_test_p, id_test_p, num_boost_round=self.num_boost_round_p)
-        # DNN_P = models.DeepNeuralNetworks(self.x_train_p, self.y_train_p, self.w_train_p,
-        #                                   self.e_train_p, x_test_p, id_test_p, self.dnn_l1_params)
+        LGB_M = models.LightGBM(x_g_train_era, y_train_era, w_train_era, e_train_era,
+                                x_g_test_era, id_test_era, num_boost_round=self.num_boost_round_m)
+        # XGB_M = models.XGBoost(x_train_era, y_train_era, w_train_era, e_train_era,
+        #                        x_test_era, id_test_era, num_boost_round=self.num_boost_round_m)
+        # DNN_M = models.DeepNeuralNetworks(x_train_era, y_train_era, w_train_era, e_train_era,
+        #                                   x_test_era, id_test_era, self.dnn_l1_params)
 
-        model_p = LGB_P
+        model_m = LGB_M
 
-        return model_p
-
-    def negative_model_initializer(self, x_test_n, x_g_test_n, id_test_n):
-        """
-            Initialize model for negative eras
-        """
-
-        LGB_N = models.LightGBM(self.x_g_train_n, self.y_train_n, self.w_train_n, self.e_train_n,
-                                x_g_test_n, id_test_n, num_boost_round=self.num_boost_round_n)
-        # XGB_N = models.XGBoost(self.x_train_n, self.y_train_n, self.w_train_n, self.e_train_n,
-        #                        x_test_n, id_test_n, num_boost_round=self.num_boost_round_n)
-        # DNN_N = models.DeepNeuralNetworks(self.x_train_n, self.y_train_n, self.w_train_n,
-        #                                   self.e_train_n, x_test_n, id_test_n, self.dnn_l1_params)
-
-        model_n = LGB_N
-
-        return model_n
+        return model_m
 
     def predict_era_sign(self):
         """
             Training and predict era signs of instances
         """
-        print('======================================================')
-        print('Positive Era List: {}'.format(self.era_list_p))
-        print('Negative Era List: {}'.format(self.era_list_n))
+
         print('======================================================')
         print('Training Era Sign...')
-
-        # Convert Eras of Training Data to 0 and 1
-        era_sign_train = np.array([0 if era in self.era_list_n else 1 for era in self.e_train])
 
         # Init Model
         print('------------------------------------------------------')
         print('Initializing Model...')
-        model = self.era_prejudge_model_initializer(era_sign_train)
+
+        # Shift e_train to (0-19)
+        e_train_shifted = self.e_train - 1
+
+        model = self.era_prejudge_model_initializer(e_train_shifted)
 
         # Training and Get Probabilities of Test Era Being Positive
-        era_prob_test = model.prejudge_train_binary(self.pred_path + 'pred_era/', n_splits=self.n_splits_e,
-                                                    n_cv=self.n_cv_e, cv_seed=self.cv_seed, use_weight=self.use_weight,
-                                                    parameters=self.parameters_e, show_importance=self.show_importance,
-                                                    show_accuracy=self.show_accuracy)
+        # n_test_sample x n_era_class
+        era_prob_test = \
+            model.prejudge_train_multiclass(self.pred_path + 'pred_era/', n_splits=self.n_splits_e, n_cv=self.n_cv_e,
+                                            n_era=self.n_era, cv_seed=self.cv_seed, use_weight=self.use_weight,
+                                            parameters=self.parameters_e, show_importance=self.show_importance,
+                                            show_accuracy=self.show_accuracy)
 
-        # Convert Probabilities of Test Era to 0 and 1
-        if self.force_convert_era is True:
-            era_sign_test = np.array([0 if era_prob < 0.5 else 1 for era_prob in era_prob_test])
-        else:
-            era_sign_test = era_prob_test
+        # Generate Index of Most Probably Era
+        era_sign_test = np.argsort(era_prob_test, axis=1)[:, :-4:-1]
 
         return era_sign_test
 
-    def split_data_by_era_sign(self, era_sign_test):
+    def split_test_set_by_era_sign(self, era_sign_test):
         """
-            Split whole data set to positive and negative set using era sign
+            Split test data set to n_era sets using era signs
         """
 
         if self.cv_seed is not None:
             np.random.seed(self.cv_seed)
 
-        era_idx_test_p = []
-        era_idx_test_n = []
+        x_test_idx = []
+        x_test = []
+        x_g_test = []
+        id_test = []
+        for e in range(self.n_era):
+            x_test_idx_e = []
+            for i, era_idx_list in enumerate(era_sign_test):
+                if e in era_idx_list:
+                    x_test_idx_e.append(i)
 
-        for idx, era_sign in enumerate(era_sign_test):
+            # Shuffle
+            np.random.shuffle(x_test_idx_e)
 
-            if era_sign == 1:
-                era_idx_test_p.append(idx)
-            else:
-                era_idx_test_n.append(idx)
+            x_test.append(self.x_test[x_test_idx_e])
+            x_g_test.append(self.x_g_test[x_test_idx_e])
+            id_test.append(self.id_test[x_test_idx_e])
+            x_test_idx.append(x_test_idx_e)
 
-        np.random.shuffle(era_idx_test_p)
-        np.random.shuffle(era_idx_test_n)
+        return x_test, x_g_test, id_test, x_test_idx
 
-        # Split Set of Test Set
-        x_test_p = self.x_test[era_idx_test_p]
-        x_g_test_p = self.x_test[era_idx_test_p]
-        id_test_p = self.id_test[era_idx_test_p]
-        x_test_n = self.x_test[era_idx_test_n]
-        x_g_test_n = self.x_test[era_idx_test_n]
-        id_test_n = self.id_test[era_idx_test_n]
-
-        return x_test_p, x_g_test_p, id_test_p, era_idx_test_p, x_test_n, x_g_test_n, id_test_n, era_idx_test_n
-
-    def train_models_by_era_sign(self, x_test_p, x_g_test_p, id_test_p, era_idx_test_p,
-                                 x_test_n, x_g_test_n, id_test_n, era_idx_test_n):
+    def split_train_set_by_era(self):
         """
-            Training positive and negative model using data set respectively
+            Split train data set to n_era sets
+        """
+
+        x_train_e = []
+        x_g_train_e = []
+        y_train_e = []
+        w_train_e = []
+        e_train_e = []
+        x_train = []
+        x_g_train = []
+        y_train = []
+        w_train = []
+        e_train = []
+        era_tag = 1
+
+        for idx, era in enumerate(self.e_train):
+
+            if idx == len(self.e_train)-1:
+                x_train_e.append(self.x_train[idx])
+                x_g_train_e.append(self.x_g_train[idx])
+                y_train_e.append(self.y_train[idx])
+                w_train_e.append(self.w_train[idx])
+                e_train_e.append(self.e_train[idx])
+                x_train.append(x_train_e)
+                x_g_train.append(x_g_train_e)
+                y_train.append(y_train_e)
+                w_train.append(w_train_e)
+                e_train.append(e_train_e)
+            elif era_tag == era:
+                x_train_e.append(self.x_train[idx])
+                x_g_train_e.append(self.x_g_train[idx])
+                y_train_e.append(self.y_train[idx])
+                w_train_e.append(self.w_train[idx])
+                e_train_e.append(self.e_train[idx])
+            else:
+                era_tag = era
+                x_train.append(x_train_e)
+                x_g_train.append(x_g_train_e)
+                y_train.append(y_train_e)
+                w_train.append(w_train_e)
+                e_train.append(e_train_e)
+                x_train_e = [self.x_train[idx]]
+                x_g_train_e = [self.x_g_train[idx]]
+                y_train_e = [self.y_train[idx]]
+                w_train_e = [self.w_train[idx]]
+                e_train_e = [self.e_train[idx]]
+
+        return x_train, x_g_train, y_train, w_train, e_train
+
+    def train_models_by_era_sign(self, x_train, x_g_train, y_train, w_train, e_train,
+                                 x_test, x_g_test, id_test, x_test_idx):
+        """
+            Training Models for Different Eras
         """
 
         print('======================================================')
         print('Training Models by Era Sign...')
 
-        print('------------------------------------------------------')
-        print('Initializing Model...')
-        model_p = self.positive_model_initializer(x_test_p, x_g_test_p, id_test_p)
-        model_n = self.negative_model_initializer(x_test_n, x_g_test_n, id_test_n)
-
-        print('======================================================')
-        print('Training Models of Positive Era Sign...')
-        prob_test_p = model_p.train(self.pred_path + 'positive/', self.loss_log_path + 'positive/',
-                                    csv_log_path=self.csv_log_path, n_valid=self.n_valid_p, n_cv=self.n_cv_p,
-                                    n_era=self.n_era_p, train_seed=self.train_seed, cv_seed=self.cv_seed,
-                                    parameters=self.parameters_p, return_prob_test=True, era_list=self.era_list_p,
-                                    show_importance=self.show_importance, show_accuracy=self.show_accuracy,
-                                    save_csv_log=True, csv_idx='prejudge_p')
-
-        print('======================================================')
-        print('Training Models of Negative Era Sign...')
-        prob_test_n = model_n.train(self.pred_path + 'negative/', self.loss_log_path + 'negative/',
-                                    csv_log_path=self.csv_log_path, n_valid=self.n_valid_n, n_cv=self.n_cv_n,
-                                    n_era=self.n_era_n, train_seed=self.train_seed, cv_seed=self.cv_seed,
-                                    parameters=self.parameters_n, return_prob_test=True, era_list=self.era_list_n,
-                                    show_importance=self.show_importance, show_accuracy=self.show_accuracy,
-                                    save_csv_log=True, csv_idx='prejudge_n')
-
         prob_test = np.zeros_like(self.id_test, dtype=np.float64)
 
-        for idx_p, prob_p in zip(era_idx_test_p, prob_test_p):
-            prob_test[idx_p] = prob_p
+        for model_iter in range(self.n_era):
 
-        for idx_n, prob_n in zip(era_idx_test_n, prob_test_n):
-            prob_test[idx_n] = prob_n
+            print('======================================================')
+            print('Training Models of Era: {}/{}'.format(model_iter+1, self.n_era))
+
+            x_train_era = x_train[model_iter]
+            x_g_train_era = x_g_train[model_iter]
+            y_train_era = y_train[model_iter]
+            w_train_era = w_train[model_iter]
+            e_train_era = e_train[model_iter]
+            x_test_era = x_test[model_iter]
+            x_g_test_era = x_g_test[model_iter]
+            id_test_era = id_test[model_iter]
+            x_test_idx_era = x_test_idx[model_iter]
+
+            print('------------------------------------------------------')
+            print('Initializing Model...')
+            model = self.multiclass_model_initializer(x_train_era, x_g_train_era, y_train_era, w_train_era,
+                                                      e_train_era, x_test_era, x_g_test_era, id_test_era)
+
+            print('------------------------------------------------------')
+            print('Training...')
+            prob_test_era = model.train(self.pred_path + 'multiclass/', self.loss_log_path + 'multiclass/',
+                                        csv_log_path=self.csv_log_path, n_valid=self.n_valid_m, n_cv=self.n_cv_m,
+                                        n_era=self.n_era_m, train_seed=self.train_seed, cv_seed=self.cv_seed,
+                                        parameters=self.parameters_m, return_prob_test=True,
+                                        show_importance=self.show_importance, show_accuracy=self.show_accuracy,
+                                        save_csv_log=True, csv_idx='era_{}'.format(model_iter+1))
+
+            for idx_era, prob_era in zip(x_test_idx_era, prob_test_era):
+                prob_test[idx_era] = prob_era
 
         return prob_test
 
@@ -512,13 +526,10 @@ class PrejudgeMultiClass:
 
         start_time = time.time()
 
-        path_list = [self.pred_path + 'positive/',
-                     self.pred_path + 'negative/',
+        path_list = [self.pred_path + 'multiclass/',
                      self.pred_path + 'pred_era/',
                      self.pred_path + 'pred_era/final_results/',
-                     self.pred_path + 'final_results/',
-                     self.loss_log_path + 'positive/',
-                     self.loss_log_path + 'negative/']
+                     self.pred_path + 'final_results/']
         utils.check_dir(path_list)
 
         print('======================================================')
@@ -546,13 +557,13 @@ class PrejudgeMultiClass:
         utils.print_positive_rate_test(era_sign_test)
 
         # Get Split Data
-        x_test_p, x_g_test_p, id_test_p, era_idx_test_p, x_test_n, \
-            x_g_test_n, id_test_n, era_idx_test_n = self.split_data_by_era_sign(era_sign_test)
+        x_test, x_g_test, id_test, x_test_idx = self.split_test_set_by_era_sign(era_sign_test)
+        x_train, x_g_train, y_train, w_train, e_train = self.split_train_set_by_era()
 
         # Training Models by Era Sign
         prob_test = \
-            self.train_models_by_era_sign(x_test_p, x_g_test_p, id_test_p, era_idx_test_p,
-                                          x_test_n, x_g_test_n, id_test_n, era_idx_test_n)
+            self.train_models_by_era_sign(x_train, x_g_train, y_train, w_train, e_train,
+                                          x_test, x_g_test, id_test, x_test_idx)
 
         # Save Predictions
         utils.save_pred_to_csv(self.pred_path + 'final_results/prejudge_', self.id_test, prob_test)
