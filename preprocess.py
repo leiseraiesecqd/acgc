@@ -366,17 +366,17 @@ class DataPreProcess:
         # print('Shape of x_test with group dummies: {}'.format(self.x_test.shape))
 
     # Split Positive and Negative Era Set
-    def split_data_by_era_distribution(self, negative_era):
+    def split_data_by_era_distribution(self):
 
         print('Splitting Positive and Negative Era Set...')
-        print('Negative Eras: ', negative_era)
+        print('Negative Eras: ', negative_era_list)
 
         positive_index = []
         negative_index = []
 
         for i, ele in enumerate(self.e_train):
 
-            if int(ele) in negative_era:
+            if int(ele) in negative_era_list:
                 negative_index.append(i)
             else:
                 positive_index.append(i)
@@ -507,8 +507,7 @@ class DataPreProcess:
         self.save_data_pd()
 
         # Split Positive and Negative Era Set
-        negative_era = negative_era_list
-        self.split_data_by_era_distribution(negative_era)
+        self.split_data_by_era_distribution()
 
         # Save Data Split by Era Distribution
         self.save_data_by_era_distribution_pd()

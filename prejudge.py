@@ -70,16 +70,16 @@ class PrejudgeEraSign:
 
         return era_sign_test
 
-    def era_prejudge_model_initializer(self, x_train, x_g_train, era_sign_train):
+    def era_prejudge_model_initializer(self, era_sign_train):
         """
             Initialize model for era prejudging
         """
 
-        LGB_E = models.LightGBM(x_g_train, era_sign_train, self.w_train, self.e_train,
+        LGB_E = models.LightGBM(self.x_g_train, era_sign_train, self.w_train, self.e_train,
                                 self.x_g_test, self.id_test, num_boost_round=self.num_boost_round_e)
-        # XGB_E = models.XGBoost(x_train, era_sign_train, self.w_train, self.e_train,
+        # XGB_E = models.XGBoost(self.x_train, era_sign_train, self.w_train, self.e_train,
         #                        self.x_test, self.id_test, num_boost_round=self.num_boost_round_e)
-        # DNN_E = models.DeepNeuralNetworks(x_train, era_sign_train, self.w_train,
+        # DNN_E = models.DeepNeuralNetworks(self.x_train, era_sign_train, self.w_train,
         #                                   self.e_train, self.x_test, self.id_test, self.dnn_l1_params)
 
         model_e = LGB_E
@@ -134,7 +134,7 @@ class PrejudgeEraSign:
         # Init Model
         print('------------------------------------------------------')
         print('Initializing Model...')
-        model = self.era_prejudge_model_initializer(self.x_train, self.x_g_train, era_sign_train)
+        model = self.era_prejudge_model_initializer(era_sign_train)
 
         # Training and Get Probabilities of Test Era Being Positive
         era_prob_test = model.prejudge_train(self.pred_path + 'pred_era/', n_splits=self.n_splits_e,
