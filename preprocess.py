@@ -13,8 +13,8 @@ from sklearn.model_selection import StratifiedShuffleSplit
 # negative_era_list = [1, 2, 3, 4, 7, 8, 9, 15, 17]
 # positive_era_list = [5, 6, 10, 11, 12, 13, 14, 16, 18, 19, 20]
 
-train_csv_path = './inputs/stock_train_data_20170929.csv'
-test_csv_path = './inputs/stock_test_data_20170929.csv'
+train_csv_path = './inputs/stock_train_data_20170923.csv'
+test_csv_path = './inputs/stock_test_data_20170923.csv'
 preprocessed_path = './data//preprocessed_data/'
 negative_era_list = [1, 3, 4, 5, 8, 10, 12, 16]
 positive_era_list = [2, 6, 7, 9, 11, 13, 14, 15, 17, 18, 19, 20]
