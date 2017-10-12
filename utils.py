@@ -596,15 +596,15 @@ def check_bad_cv(trained_cv, valid_era):
 
     cv_is_trained = any(set(valid_era) == i_cv for i_cv in trained_cv)
     if cv_is_trained:
-        print('This CV split has been chosen, choosing another one...')
+        print('[W] This CV split has been chosen, choosing another one...')
 
     negative_era_counter = 0
     for era in valid_era:
         if era in preprocess.negative_era_list:
             negative_era_counter += 1
-    bad_num_negative_era = negative_era_counter not in [0, 1, 2]
+    bad_num_negative_era = negative_era_counter not in [0, 1]
     if bad_num_negative_era:
-        print('Bad number of negative era in this CV split, choosing another one...')
+        print('[W] Bad number of negative era in this CV split, choosing another one...')
 
     is_bad_cv = cv_is_trained or bad_num_negative_era
 

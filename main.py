@@ -1244,7 +1244,7 @@ class ModelStacking:
         # Parameters of Deep Neural Network
         dnn_params = {'version': '1.0',
                       'epochs': 5,
-                      'unit_number': [56, 28, 14],
+                      'unit_number': [48, 24, 12],
                       'learning_rate': 0.0001,
                       'keep_probability': 0.4,
                       'batch_size': 256,
@@ -1535,7 +1535,7 @@ if __name__ == "__main__":
     # TrainSingleModel.xgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # LightGBM
-    # TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
+    TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
     # TrainSingleModel.lgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # CatBoost
@@ -1567,7 +1567,7 @@ if __name__ == "__main__":
     # PrejudgeTraining.train(global_train_seed, global_cv_seed)
 
     # Auto Training
-    auto_train(5)
+    # auto_train(5)
 
     print('======================================================')
     print('All Task Done!')
