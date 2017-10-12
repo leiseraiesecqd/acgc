@@ -193,7 +193,7 @@ class PrejudgeEraSign:
         print('------------------------------------------------------')
         print('Initializing Model...')
         model_p = self.positive_model_initializer(x_test_p, x_g_test_p, id_test_p)
-        model_n = self.positive_model_initializer(x_test_n, x_g_test_n, id_test_n)
+        model_n = self.negative_model_initializer(x_test_n, x_g_test_n, id_test_n)
 
         print('======================================================')
         print('Training Models of Positive Era Sign...')
