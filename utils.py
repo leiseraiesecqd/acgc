@@ -131,8 +131,10 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean,
 
         print('Saving Final Losses...')
 
+        local_time = time.strftime('%Y/%m/%d-%H:%M:%S', time.localtime(time.time()))
+
         f.write('=====================================================\n')
-        f.write('Time: {}\n'.format(time.time()))
+        f.write('Time: {}\n'.format(local_time))
         f.write('------------------------------------------------------')
         f.write('Train Seed: {}\n'.format(train_seed))
         f.write('CV Seed: {}\n'.format(cv_seed))
