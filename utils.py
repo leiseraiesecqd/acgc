@@ -591,7 +591,7 @@ def print_and_get_train_accuracy(prob_train, y_train, e_train, show_accuracy):
     return acc_train, acc_train_era
 
 
-# Check If A CV is A Bad CV
+# Check If a CV is a Bad CV
 def check_bad_cv(trained_cv, valid_era):
 
     cv_is_trained = any(set(valid_era) == i_cv for i_cv in trained_cv)

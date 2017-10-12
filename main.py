@@ -6,6 +6,7 @@ import prejudge
 import preprocess
 import numpy as np
 import random
+from cross_validation import CrossValidation
 
 
 pred_path = './results/'
@@ -321,9 +322,9 @@ class TrainSingleModel:
 
         LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=65)
 
-        # cv_generator = models.CrossValidation.era_k_fold_with_weight_all_random
-        # cv_generator = models.CrossValidation.random_split_with_weight
-        cv_generator = models.CrossValidation.era_k_fold_with_weight_balance
+        # cv_generator = CrossValidation.era_k_fold_with_weight_all_random
+        # cv_generator = CrossValidation.random_split_with_weight
+        cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
         LGBM.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
                    n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
@@ -519,7 +520,7 @@ class TrainSingleModel:
         LGB = models.LightGBM(blender_x_g_tree, y_train, w_train, e_train,
                               blender_test_g_tree, id_test, num_boost_round=65)
 
-        # cv_generator = models.CrossValidation.era_k_fold_with_weight_balance
+        # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
         LGB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'stack_final_',
                   n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
@@ -558,7 +559,7 @@ class ChampionModel:
 
         LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=65)
 
-        cv_generator = models.CrossValidation.era_k_fold_with_weight_all_random
+        cv_generator = CrossValidation.era_k_fold_with_weight_all_random
 
         LGBM.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'christ1991_',
                    n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,

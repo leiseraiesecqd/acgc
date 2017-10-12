@@ -2,6 +2,7 @@ import models
 import utils
 import time
 import numpy as np
+from cross_validation import CrossValidation
 
 
 class DeepStack:
@@ -284,7 +285,7 @@ class DeepStack:
         utils.check_dir(path_list)
 
         # Create a CrossValidation Generator
-        cv_stack = models.CrossValidation()
+        cv_stack = CrossValidation()
 
         # Layer 1
         print('------------------------------------------------------')
@@ -801,7 +802,7 @@ class StackTree:
             csv_idx_ = 'stack'
 
             # Create a CrossValidation Generator
-        cv_stack = models.CrossValidation()
+        cv_stack = CrossValidation()
 
         # Initializing models for every layer
         models_initializer_l1 = self.layer1_initializer
