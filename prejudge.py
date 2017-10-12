@@ -248,7 +248,7 @@ class PrejudgeBinary:
 
             # Load era_sign_test
             if load_pickle_path is None:
-                era_sign_test = utils.load_pkl_to_np(self.prejudged_data_path + 'era_sign_test.p')
+                era_sign_test = utils.load_pkl_to_np(self.prejudged_data_path + 'binary_era_sign_test.p')
             else:
                 era_sign_test = utils.load_pkl_to_np(load_pickle_path)
 
@@ -260,7 +260,7 @@ class PrejudgeBinary:
             # era_sign_test = self.load_era_sign_csv(self.pred_path + 'pred_era/final_results/lgb_result.csv')
 
             # Save era_sign_test to Pickle File
-            utils.save_np_to_pkl(era_sign_test, self.prejudged_data_path + 'era_sign_test.p')
+            utils.save_np_to_pkl(era_sign_test, self.prejudged_data_path + 'binary_era_sign_test.p')
 
         # Print Prediction of Positive Era Rate
         utils.print_positive_rate_test(era_sign_test)
@@ -289,8 +289,7 @@ class PrejudgeMultiClass:
         Prejudge - Training by Multi Class of Split Era sign
     """
 
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_g_tr, x_tr_p, y_tr_p, w_tr_p, e_tr_p, x_g_tr_p,
-                 x_tr_n, y_tr_n, w_tr_n, e_tr_n, x_g_tr_n, x_te, id_te, x_g_te,
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_g_tr, x_te, id_te, x_g_te,
                  pred_path, prejudged_data_path, loss_log_path, csv_log_path,
                  models_parameters, hyper_parameters):
 
@@ -299,16 +298,6 @@ class PrejudgeMultiClass:
         self.w_train = w_tr
         self.e_train = e_tr
         self.x_g_train = x_g_tr
-        self.x_train_p = x_tr_p
-        self.y_train_p = y_tr_p
-        self.w_train_p = w_tr_p
-        self.e_train_p = e_tr_p
-        self.x_g_train_p = x_g_tr_p
-        self.x_train_n = x_tr_n
-        self.y_train_n = y_tr_n
-        self.w_train_n = w_tr_n
-        self.e_train_n = e_tr_n
-        self.x_g_train_n = x_g_tr_n
         self.x_test = x_te
         self.id_test = id_te
         self.x_g_test = x_g_te
@@ -326,7 +315,6 @@ class PrejudgeMultiClass:
         self.n_era = hyper_parameters['n_era']
         self.n_valid_m = hyper_parameters['n_valid_m']
         self.n_cv_m = hyper_parameters['n_cv_m']
-        self.n_era_m = hyper_parameters['n_era_m']
         self.num_boost_round_m = hyper_parameters['num_boost_round_m']
         self.use_weight = hyper_parameters['use_weight']
         self.show_importance = hyper_parameters['show_importance']
@@ -509,7 +497,7 @@ class PrejudgeMultiClass:
             print('Training...')
             prob_test_era = model.train(self.pred_path + 'multiclass/', self.loss_log_path + 'multiclass/',
                                         csv_log_path=self.csv_log_path, n_valid=self.n_valid_m, n_cv=self.n_cv_m,
-                                        n_era=self.n_era_m, train_seed=self.train_seed, cv_seed=self.cv_seed,
+                                        train_seed=self.train_seed, cv_seed=self.cv_seed,
                                         parameters=self.parameters_m, return_prob_test=True,
                                         show_importance=self.show_importance, show_accuracy=self.show_accuracy,
                                         save_csv_log=True, csv_idx='era_{}'.format(model_iter+1))
@@ -539,7 +527,7 @@ class PrejudgeMultiClass:
 
             # Load era_sign_test
             if load_pickle_path is None:
-                era_sign_test = utils.load_pkl_to_np(self.prejudged_data_path + 'era_sign_test.p')
+                era_sign_test = utils.load_pkl_to_np(self.prejudged_data_path + 'multiclass_era_sign_test.p')
             else:
                 era_sign_test = utils.load_pkl_to_np(load_pickle_path)
 
@@ -551,7 +539,7 @@ class PrejudgeMultiClass:
             # era_sign_test = self.load_era_sign_csv(self.pred_path + 'pred_era/final_results/lgb_result.csv')
 
             # Save era_sign_test to Pickle File
-            utils.save_np_to_pkl(era_sign_test, self.prejudged_data_path + 'era_sign_test.p')
+            utils.save_np_to_pkl(era_sign_test, self.prejudged_data_path + 'multiclass_era_sign_test.p')
 
         # Print Prediction of Positive Era Rate
         utils.print_positive_rate_test(era_sign_test)

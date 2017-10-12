@@ -1003,9 +1003,9 @@ class PrejudgeTraining:
         pass
 
     @staticmethod
-    def get_models_parameters(train_seed):
+    def get_binary_models_parameters(train_seed):
         """
-            Set Parameters for models
+            Set Parameters for models of PrejudgeBinary
         """
 
         era_training_params = {'application': 'binary',
@@ -1061,9 +1061,52 @@ class PrejudgeTraining:
         return models_parameters
 
     @staticmethod
-    def train(train_seed, cv_seed):
+    def get_multiclass_models_parameters(train_seed):
         """
-            Training model
+            Set Parameters for models of PrejudgeMultiClass
+        """
+
+        era_training_params = {'application': 'multiclass',
+                               'num_class': 20,
+                               'learning_rate': 0.01,
+                               'num_leaves': 80,            # <2^(max_depth)
+                               'tree_learner': 'serial',
+                               'max_depth': 7,              # default=-1
+                               'min_data_in_leaf': 2000,    # default=20
+                               'feature_fraction': 0.5,     # default=1
+                               'bagging_fraction': 0.6,     # default=1
+                               'bagging_freq': 5,           # default=0 perform bagging every k iteration
+                               'bagging_seed': 1,           # default=3
+                               'early_stopping_rounds': 50,
+                               'max_bin': 50,
+                               'metric': 'multiclass_logloss',
+                               'verbosity': 1,
+                               'seed': train_seed}
+
+        multiclass_params = {'application': 'binary',
+                             'learning_rate': 0.002,
+                             'num_leaves': 80,              # <2^(max_depth)
+                             'tree_learner': 'serial',
+                             'max_depth': 7,                # default=-1
+                             'min_data_in_leaf': 2000,      # default=20
+                             'feature_fraction': 0.5,       # default=1
+                             'bagging_fraction': 0.6,       # default=1
+                             'bagging_freq': 5,             # default=0 perform bagging every k iteration
+                             'bagging_seed': 1,             # default=3
+                             'early_stopping_rounds': 65,
+                             'max_bin': 50,
+                             'metric': 'binary_logloss',
+                             'verbosity': 1,
+                             'seed': train_seed}
+
+        models_parameters = [era_training_params, multiclass_params]
+
+        return models_parameters
+
+    @staticmethod
+    def binary_train(train_seed, cv_seed):
+        """
+            Training model of PrejudgeBinary
         """
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
@@ -1073,7 +1116,7 @@ class PrejudgeTraining:
         x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n \
             = utils.load_preprocessed_negative_pd_data(preprocessed_data_path)
 
-        models_parameters = PrejudgeTraining.get_models_parameters(train_seed)
+        models_parameters = PrejudgeTraining.get_binary_models_parameters(train_seed)
 
         positive_era_list = preprocess.positive_era_list
         negative_era_list = preprocess.negative_era_list
@@ -1104,6 +1147,37 @@ class PrejudgeTraining:
                                       pred_path=prejudge_pred_path, prejudged_data_path=prejudged_data_path,
                                       loss_log_path=prejudge_loss_log_path, csv_log_path=csv_log_path + 'prejudge_',
                                       models_parameters=models_parameters, hyper_parameters=hyper_parameters)
+
+        PES.train(load_pickle=False, load_pickle_path=None)
+
+    @staticmethod
+    def multiclass_train(train_seed, cv_seed):
+        """
+            Training model of PrejudgeMultiClass
+        """
+
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+
+        models_parameters = PrejudgeTraining.get_multiclass_models_parameters(train_seed)
+
+        hyper_parameters = {'cv_seed': cv_seed,
+                            'train_seed': train_seed,
+                            'n_splits_e': 10,
+                            'num_boost_round_e': 4000,
+                            'n_cv_e': 20,
+                            'n_era': 20,
+                            'n_valid_m': 2,
+                            'n_cv_m': 18,
+                            'num_boost_round_m': 50,
+                            'use_weight': True,
+                            'show_importance': False,
+                            'show_accuracy': True}
+
+        PES = prejudge.PrejudgeMultiClass(x_train, y_train, w_train, e_train, x_g_train, x_test, id_test, x_g_test,
+                                          pred_path=prejudge_pred_path, prejudged_data_path=prejudged_data_path,
+                                          loss_log_path=prejudge_loss_log_path, csv_log_path=csv_log_path + 'prejudge_',
+                                          models_parameters=models_parameters, hyper_parameters=hyper_parameters)
 
         PES.train(load_pickle=False, load_pickle_path=None)
 
