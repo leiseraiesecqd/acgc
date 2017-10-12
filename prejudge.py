@@ -70,10 +70,11 @@ class PrejudgeEraSign:
 
         return era_sign_test
 
-    def print_positive_rate_test(self, era_sign_test=None):
+    @staticmethod
+    def print_positive_rate_test(era_sign_test=None):
 
         if era_sign_test is None:
-            era_sign_test = utils.load_pkl_to_np(self.prejudged_data_path + 'era_sign_test.p')
+            era_sign_test = utils.load_pkl_to_np('./data/prejudged_data/era_sign_test.p')
 
         positive_rate_test = np.sum(era_sign_test) / len(era_sign_test)
 
