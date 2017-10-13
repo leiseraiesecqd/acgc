@@ -1042,8 +1042,8 @@ class PrejudgeTraining:
                            'seed': train_seed}
 
         negative_params = {'application': 'binary',
-                           'learning_rate': 0.002,
-                           'num_leaves': 80,                # <2^(max_depth)
+                           'learning_rate': 0.001,
+                           'num_leaves': 88,                # <2^(max_depth)
                            'tree_learner': 'serial',
                            'max_depth': 7,                  # default=-1
                            'min_data_in_leaf': 2000,        # default=20
@@ -1149,7 +1149,7 @@ class PrejudgeTraining:
                                       loss_log_path=prejudge_loss_log_path, csv_log_path=csv_log_path + 'prejudge_',
                                       models_parameters=models_parameters, hyper_parameters=hyper_parameters)
 
-        PES.train(load_pickle=False, load_pickle_path=None)
+        PES.train(load_pickle=True, load_pickle_path=None)
 
     @staticmethod
     def multiclass_train(train_seed, cv_seed):
