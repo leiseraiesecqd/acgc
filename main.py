@@ -1069,7 +1069,7 @@ class PrejudgeTraining:
 
         era_training_params = {'application': 'multiclass',
                                'num_class': 20,
-                               'learning_rate': 0.1,
+                               'learning_rate': 0.2,
                                'num_leaves': 80,            # <2^(max_depth)
                                'tree_learner': 'serial',
                                'max_depth': 7,              # default=-1
