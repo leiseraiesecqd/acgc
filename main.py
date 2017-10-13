@@ -1019,7 +1019,7 @@ class PrejudgeTraining:
                                'bagging_fraction': 0.6,         # default=1
                                'bagging_freq': 5,               # default=0 perform bagging every k iteration
                                'bagging_seed': 1,               # default=3
-                               # 'early_stopping_rounds': 50,
+                               'early_stopping_rounds': 50,
                                'max_bin': 50,
                                'metric': 'binary_logloss',
                                'verbosity': 1,
@@ -1078,7 +1078,7 @@ class PrejudgeTraining:
                                'bagging_fraction': 0.6,     # default=1
                                'bagging_freq': 5,           # default=0 perform bagging every k iteration
                                'bagging_seed': 1,           # default=3
-                               'early_stopping_rounds': 50,
+                               # 'early_stopping_rounds': 50,
                                'max_bin': 50,
                                'metric': 'multiclass_logloss',
                                'verbosity': 1,
