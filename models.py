@@ -854,8 +854,8 @@ class LightGBM(ModelBase):
                 d_valid = lgb.Dataset(x_valid, label=y_valid, categorical_feature=idx_category)
 
             # Booster
-            bst = lgb.binary(parameters, d_train, num_boost_round=self.num_boost_round,
-                             valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
+            bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
+                            valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
 
             # Feature Importance
             if show_importance is True:
