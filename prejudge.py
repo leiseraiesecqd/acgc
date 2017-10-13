@@ -2,6 +2,7 @@ import models
 import utils
 import time
 import numpy as np
+from cross_validation import CrossValidation
 
 
 class PrejudgeBinary:
@@ -495,12 +496,14 @@ class PrejudgeMultiClass:
 
             print('------------------------------------------------------')
             print('Training...')
+            cv_generator = CrossValidation.random_split_with_weight
             prob_test_era = model.train(self.pred_path + 'multiclass/', self.loss_log_path + 'multiclass/',
                                         csv_log_path=self.csv_log_path, n_valid=self.n_valid_m, n_cv=self.n_cv_m,
                                         train_seed=self.train_seed, cv_seed=self.cv_seed,
                                         parameters=self.parameters_m, return_prob_test=True,
                                         show_importance=self.show_importance, show_accuracy=self.show_accuracy,
-                                        save_csv_log=True, csv_idx='era_{}'.format(model_iter+1))
+                                        save_csv_log=True, csv_idx='era_{}'.format(model_iter+1),
+                                        cv_generator=cv_generator)
 
             for idx_era, prob_era in zip(x_test_idx_era, prob_test_era):
                 prob_test[idx_era] = prob_era
