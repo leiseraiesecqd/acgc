@@ -1164,7 +1164,7 @@ class PrejudgeTraining:
 
         hyper_parameters = {'cv_seed': cv_seed,
                             'train_seed': train_seed,
-                            'n_splits_e': 10,
+                            'n_splits_e': 2,
                             'num_boost_round_e': 50,
                             'n_cv_e': 2,
                             'n_era': 20,
