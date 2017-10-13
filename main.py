@@ -1069,7 +1069,7 @@ class PrejudgeTraining:
 
         era_training_params = {'application': 'multiclass',
                                'num_class': 20,
-                               'learning_rate': 0.01,
+                               'learning_rate': 0.05,
                                'num_leaves': 80,            # <2^(max_depth)
                                'tree_learner': 'serial',
                                'max_depth': 7,              # default=-1
@@ -1081,7 +1081,7 @@ class PrejudgeTraining:
                                'early_stopping_rounds': 50,
                                'max_bin': 50,
                                'metric': 'multi_logloss',
-                               'verbosity': 1,
+                               'verbosity': 0,
                                'seed': train_seed}
 
         multiclass_params = {'application': 'binary',
@@ -1166,10 +1166,10 @@ class PrejudgeTraining:
                             'train_seed': train_seed,
                             'n_splits_e': 10,
                             'num_boost_round_e': 50,
-                            'n_cv_e': 10,
+                            'n_cv_e': 2,
                             'n_era': 20,
                             'n_valid_m': 2,
-                            'n_cv_m': 18,
+                            'n_cv_m': 2,
                             'num_boost_round_m': 50,
                             'use_weight': True,
                             'show_importance': False,
