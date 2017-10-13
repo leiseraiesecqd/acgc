@@ -25,8 +25,8 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 import xgboost as xgb
 from xgboost import XGBClassifier
-# import lightgbm as lgb
-# from lightgbm import LGBMClassifier
+import lightgbm as lgb
+from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
 
 import seaborn as sns
