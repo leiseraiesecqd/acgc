@@ -936,6 +936,7 @@ class LightGBM(ModelBase):
                 d_train = lgb.Dataset(x_train, label=y_train, categorical_feature=idx_category)
                 d_valid = lgb.Dataset(x_valid, label=y_valid, categorical_feature=idx_category)
 
+            print('1212')
             # Booster
             bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
                             valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
