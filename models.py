@@ -956,8 +956,8 @@ class LightGBM(ModelBase):
                 prob_test_total = prob_test.reshape(-1, 1, n_era)
                 prob_train_total = prob_train.reshape(-1, 1, n_era)
             else:
-                np.concatenate((prob_test_total, prob_test), axis=1)
-                np.concatenate((prob_train_total, prob_train), axis=1)
+                np.concatenate((prob_test_total, prob_test.reshape(-1, 1, n_era)), axis=1)
+                np.concatenate((prob_train_total, prob_train.reshape(-1, 1, n_era)), axis=1)
 
         print('======================================================')
         print('Calculating Final Result...')
