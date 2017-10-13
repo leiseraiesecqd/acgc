@@ -1180,7 +1180,7 @@ class PrejudgeTraining:
                                           loss_log_path=prejudge_loss_log_path, csv_log_path=csv_log_path + 'prejudge_',
                                           models_parameters=models_parameters, hyper_parameters=hyper_parameters)
 
-        PES.train(load_pickle=True, load_pickle_path=None)
+        PES.train(load_pickle=False, load_pickle_path=None)
 
 
 class ModelStacking:
