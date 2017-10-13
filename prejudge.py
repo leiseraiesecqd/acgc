@@ -479,15 +479,15 @@ class PrejudgeMultiClass:
             print('======================================================')
             print('Training Models of Era: {}/{}'.format(model_iter+1, self.n_era))
 
-            x_train_era = x_train[model_iter]
-            x_g_train_era = x_g_train[model_iter]
-            y_train_era = y_train[model_iter]
-            w_train_era = w_train[model_iter]
-            e_train_era = e_train[model_iter]
-            x_test_era = x_test[model_iter]
-            x_g_test_era = x_g_test[model_iter]
-            id_test_era = id_test[model_iter]
-            x_test_idx_era = x_test_idx[model_iter]
+            x_train_era = np.array(x_train[model_iter])
+            x_g_train_era = np.array(x_g_train[model_iter])
+            y_train_era = np.array(y_train[model_iter])
+            w_train_era = np.array(w_train[model_iter])
+            e_train_era = np.array(e_train[model_iter])
+            x_test_era = np.array(x_test[model_iter])
+            x_g_test_era = np.array(x_g_test[model_iter])
+            id_test_era = np.array(id_test[model_iter])
+            x_test_idx_era = np.array(x_test_idx[model_iter])
 
             print('------------------------------------------------------')
             print('Initializing Model...')
