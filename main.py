@@ -1652,10 +1652,10 @@ if __name__ == "__main__":
     # Stacking
     # ModelStacking.deep_stack_train(global_train_seed, global_cv_seed)
     # ModelStacking.stack_tree_train(global_train_seed, global_cv_seed)
-    # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed)
+    TrainSingleModel.stack_lgb_train(135, 54, 2)
 
     # Prejudge
-    PrejudgeTraining.binary_train(global_train_seed, global_cv_seed)
+    # PrejudgeTraining.binary_train(global_train_seed, global_cv_seed)
     # PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
 
     # Auto Training
