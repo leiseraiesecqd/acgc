@@ -1631,7 +1631,7 @@ if __name__ == "__main__":
     # TrainSingleModel.lgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # CatBoost
-    # TrainSingleModel.cb_train(global_train_seed, global_cv_seed)
+    TrainSingleModel.cb_train(global_train_seed, global_cv_seed)
 
     # DNN
     # TrainSingleModel.dnn_tf_train(global_train_seed, global_cv_seed)
@@ -1659,7 +1659,7 @@ if __name__ == "__main__":
     # PrejudgeTraining.train(global_train_seed, global_cv_seed)
 
     # Auto Training
-    auto_train(5)
+    # auto_train(5)
 
     print('======================================================')
     print('All Task Done!')

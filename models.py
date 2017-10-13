@@ -25,8 +25,8 @@ from sklearn.ensemble import AdaBoostClassifier
 from sklearn.ensemble import GradientBoostingClassifier
 import xgboost as xgb
 from xgboost import XGBClassifier
-import lightgbm as lgb
-from lightgbm import LGBMClassifier
+# import lightgbm as lgb
+# from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
 
 import seaborn as sns
@@ -1061,8 +1061,7 @@ class CatBoost(ModelBase):
         print('------------------------------------------------------')
         print('Feature Importance')
 
-        idx_category = [self.x_train.shape[1] - 1]
-        self.importance = clf.get_feature_importance(self.x_train, y=self.y_train, cat_features=idx_category)
+        self.importance = clf.feature_importances_
         self.indices = np.argsort(self.importance)[::-1]
 
         feature_num = len(self.importance)
@@ -1085,6 +1084,8 @@ class CatBoost(ModelBase):
         clf.fit(X=x_train, y=y_train, cat_features=idx_category, sample_weight=w_train,
                 baseline=None, use_best_model=None, eval_set=(x_valid, y_valid), verbose=True, plot=False)
 
+        return clf
+
     def stack_fit(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid, parameters):
 
         # Get Classifier
@@ -1099,6 +1100,8 @@ class CatBoost(ModelBase):
         # Fitting and Training Model
         clf.fit(X=x_g_train, y=y_train, cat_features=idx_category, sample_weight=w_train,
                 baseline=None, use_best_model=None, eval_set=(x_g_valid, y_valid), verbose=True, plot=False)
+
+        return clf
 
 
 class DeepNeuralNetworks(ModelBase):
