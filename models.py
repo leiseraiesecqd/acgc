@@ -714,8 +714,8 @@ class LightGBM(ModelBase):
         d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
 
         # Booster
-        bst = lgb.binary_train(parameters, d_train, num_boost_round=self.num_boost_round,
-                               valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
+        bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
+                        valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
 
         return bst
 
@@ -730,8 +730,8 @@ class LightGBM(ModelBase):
         d_valid = lgb.Dataset(x_g_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
 
         # Booster
-        bst = lgb.binary_train(parameters, d_train, num_boost_round=self.num_boost_round,
-                               valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
+        bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
+                        valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
 
         return bst
 
