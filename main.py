@@ -1464,7 +1464,7 @@ class ModelStacking:
                         'train_seed': train_seed,
                         'cv_seed': cv_seed,
                         'num_boost_round_lgb_l1': 65,
-                        'num_boost_round_xgb_l1': 65,
+                        'num_boost_round_xgb_l1': 50,
                         'num_boost_round_lgb_l2': 65,
                         'num_boost_round_final': 65,
                         'show_importance': False,
