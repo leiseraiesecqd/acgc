@@ -1010,7 +1010,7 @@ class PrejudgeTraining:
         """
 
         era_training_params = {'application': 'binary',
-                               'learning_rate': 0.05,
+                               'learning_rate': 0.1,
                                'num_leaves': 80,                # <2^(max_depth)
                                'tree_learner': 'serial',
                                'max_depth': 7,                  # default=-1
@@ -1125,17 +1125,17 @@ class PrejudgeTraining:
         hyper_parameters = {'cv_seed': cv_seed,
                             'train_seed': train_seed,
                             'n_splits_e': 10,
-                            'num_boost_round_e': 4000,
-                            'n_cv_e': 20,
+                            'num_boost_round_e': 1000,
+                            'n_cv_e': 10,
                             'n_valid_p': 2,
                             'n_cv_p': 18,
                             'n_era_p': len(positive_era_list),
-                            'num_boost_round_p': 50,
+                            'num_boost_round_p': 65,
                             'era_list_p': positive_era_list,
                             'n_valid_n': 2,
                             'n_cv_n': 15,
                             'n_era_n': len(negative_era_list),
-                            'num_boost_round_n': 50,
+                            'num_boost_round_n': 65,
                             'era_list_n': negative_era_list,
                             'force_convert_era': True,
                             'use_weight': True,
@@ -1170,7 +1170,7 @@ class PrejudgeTraining:
                             'n_era': 20,
                             'n_valid_m': 4,
                             'n_cv_m': 20,
-                            'num_boost_round_m': 50,
+                            'num_boost_round_m': 65,
                             'use_weight': True,
                             'show_importance': False,
                             'show_accuracy': True}
@@ -1180,7 +1180,7 @@ class PrejudgeTraining:
                                           loss_log_path=prejudge_loss_log_path, csv_log_path=csv_log_path + 'prejudge_',
                                           models_parameters=models_parameters, hyper_parameters=hyper_parameters)
 
-        PES.train(load_pickle=False, load_pickle_path=None)
+        PES.train(load_pickle=True, load_pickle_path=None)
 
 
 class ModelStacking:
@@ -1655,8 +1655,8 @@ if __name__ == "__main__":
     # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed)
 
     # Prejudge
-    # PrejudgeTraining.binary_train(global_train_seed, global_cv_seed)
-    PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
+    PrejudgeTraining.binary_train(global_train_seed, global_cv_seed)
+    # PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
 
     # Auto Training
     # auto_train(5)
