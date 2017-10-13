@@ -1656,8 +1656,8 @@ if __name__ == "__main__":
     # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed)
 
     # Prejudge
-    # PrejudgeTraining.binary_train(global_train_seed, global_cv_seed)
-    PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
+    PrejudgeTraining.binary_train(global_train_seed, global_cv_seed)
+    # PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
 
     # Auto Training
     # auto_train(5)
