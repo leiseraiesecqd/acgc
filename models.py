@@ -945,11 +945,10 @@ class LightGBM(ModelBase):
                 self.get_importance(bst)
 
             # Prediction
-            prob_test = self.predict(bst, self.x_test, pred_path=pred_path + 'cv_results/lgb_cv_{}_'.format(cv_counter))
+            prob_test = self.predict(bst, self.x_test)
 
             # Save Train Probabilities to CSV File
-            prob_train = self.get_prob_train(bst, self.x_train,
-                                             pred_path=pred_path + 'cv_prob_train/lgb_cv_{}_'.format(cv_counter))
+            prob_train = self.get_prob_train(bst, self.x_train)
 
             # TODO: Print LogLoss
 
