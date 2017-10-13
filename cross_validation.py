@@ -25,6 +25,8 @@ class CrossValidation:
 
         for train_index, valid_index in ss_train.split(x, y):
 
+            print(train_index, valid_index)
+
             # Training data
             x_train = x[train_index]
             y_train = y[train_index]

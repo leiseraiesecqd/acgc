@@ -544,9 +544,6 @@ class PrejudgeMultiClass:
             # Save era_sign_test to Pickle File
             utils.save_np_to_pkl(era_sign_test, self.prejudged_data_path + 'multiclass_era_sign_test.p')
 
-        # Print Prediction of Positive Era Rate
-        utils.print_positive_rate_test(era_sign_test)
-
         # Get Split Data
         x_test, x_g_test, id_test, x_test_idx = self.split_test_set_by_era_sign(era_sign_test)
         x_train, x_g_train, y_train, w_train, e_train = self.split_train_set_by_era()
