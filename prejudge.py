@@ -243,7 +243,7 @@ class PrejudgeBinary:
         utils.check_dir(path_list)
 
         print('======================================================')
-        print('Start training...')
+        print('Start Training PrejudgeBinary...')
 
         if load_pickle is True:
 
@@ -472,7 +472,7 @@ class PrejudgeMultiClass:
         print('======================================================')
         print('Training Models by Era Sign...')
 
-        prob_test = np.zeros_like(self.id_test, dtype=np.float64)
+        prob_test = np.zeros_like(self.id_test, dtype=np.float64).reshape(-1, 1).tolist()
 
         for model_iter in range(self.n_era):
 
@@ -494,8 +494,6 @@ class PrejudgeMultiClass:
             model = self.multiclass_model_initializer(x_train_era, x_g_train_era, y_train_era, w_train_era,
                                                       e_train_era, x_test_era, x_g_test_era, id_test_era)
 
-            print('------------------------------------------------------')
-            print('Training...')
             cv_generator = CrossValidation.random_split_with_weight
             prob_test_era = model.train(self.pred_path + 'multiclass/', self.loss_log_path + 'multiclass/',
                                         csv_log_path=self.csv_log_path, n_valid=self.n_valid_m, n_cv=self.n_cv_m,
@@ -506,7 +504,13 @@ class PrejudgeMultiClass:
                                         cv_generator=cv_generator)
 
             for idx_era, prob_era in zip(x_test_idx_era, prob_test_era):
-                prob_test[idx_era] = prob_era
+                if prob_test[idx_era] == 0.:
+                    prob_test[idx_era][0] = prob_era
+                else:
+                    prob_test[idx_era].append(prob_era)
+
+        # Calculate Mean of prob_test
+        prob_test = np.mean(prob_test, axis=1, dtype=np.float64)
 
         return prob_test
 
@@ -524,7 +528,7 @@ class PrejudgeMultiClass:
         utils.check_dir(path_list)
 
         print('======================================================')
-        print('Start training...')
+        print('Start Training PrejudgeMultiClass...')
 
         if load_pickle is True:
 

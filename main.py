@@ -1605,7 +1605,6 @@ if __name__ == "__main__":
 
     print('======================================================')
     print('Start Training...')
-    print('======================================================')
 
     # Logistic Regression
     # TrainSingleModel.lr_train(global_train_seed, global_cv_seed)
