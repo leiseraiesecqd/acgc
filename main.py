@@ -1633,7 +1633,7 @@ if __name__ == "__main__":
     # TrainSingleModel.xgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # LightGBM
-    # TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
+    TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
     # TrainSingleModel.lgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # CatBoost
