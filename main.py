@@ -378,12 +378,12 @@ class TrainSingleModel:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
-        cb_parameters = {'iterations': 100,
-                         'learning_rate': 0.005,
-                         'depth': 7,                            # Depth of the tree.
-                         'l2_leaf_reg': 3,                      # L2 regularization coefficient.
+        cb_parameters = {'iterations': 50,
+                         'learning_rate': 0.003,
+                         'depth': 8,                            # Depth of the tree.
+                         'l2_leaf_reg': 0.3,                      # L2 regularization coefficient.
                          'rsm': 1,                              # The percentage of features to use at each iteration.
-                         'bagging_temperature': 1,              # Controls intensity of Bayesian bagging. The higher the temperature the more aggressive bagging is.
+                         'bagging_temperature': 0.9,              # Controls intensity of Bayesian bagging. The higher the temperature the more aggressive bagging is.
                          'loss_function': 'Logloss',
                          'border': 0.5,
                          'border_count': 128,
@@ -1573,7 +1573,7 @@ def auto_train(n_epoch):
         # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, i+1)
 
         # CatBoost
-        # TrainSingleModel.cb_train(train_seed, cv_seed, i+1)
+        TrainSingleModel.cb_train(train_seed, cv_seed, i+1)
 
         # DNN
         # TrainSingleModel.dnn_tf_train(train_seed, cv_seed, i+1)
@@ -1583,11 +1583,11 @@ def auto_train(n_epoch):
         # ChampionModel.Christ1991(train_seed, cv_seed, i+1)
 
         # Stacking
-        ModelStacking.stack_tree_train(train_seed, cv_seed, i+1)
-        for ii in range(5):
-            t_seed = random.randint(0, 300)
-            c_seed = random.randint(0, 300)
-            TrainSingleModel.stack_lgb_train(t_seed, c_seed, 'auto_{}_epoch_{}'.format(i+1, ii+1), i+1)
+        #  ModelStacking.stack_tree_train(train_seed, cv_seed, i+1)
+        #  for ii in range(5):
+        #      t_seed = random.randint(0, 300)
+        #      c_seed = random.randint(0, 300)
+        #      TrainSingleModel.stack_lgb_train(t_seed, c_seed, 'auto_{}_epoch_{}'.format(i+1, ii+1), i+1)
 
         print('======================================================')
         print('Auto Training Epoch Done!')
@@ -1633,7 +1633,7 @@ if __name__ == "__main__":
     # TrainSingleModel.xgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # LightGBM
-    TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
+    #  TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
     # TrainSingleModel.lgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # CatBoost
@@ -1666,7 +1666,7 @@ if __name__ == "__main__":
     # PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
 
     # Auto Training
-    # auto_train(5)
+    auto_train(100)
 
     print('======================================================')
     print('All Task Done!')
