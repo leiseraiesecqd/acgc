@@ -1681,7 +1681,7 @@ def auto_grid_search():
             epoch_start_time = time.time()
 
             print('======================================================')
-            print('Auto Training Epoch {}/{}...'.format(i+1, n_epoch))
+            print('Auto Training... | Parameter:{} | Epoch: {}/{}'.format(param, i+1, n_epoch))
             print('======================================================')
 
             # Logistic Regression
