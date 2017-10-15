@@ -151,7 +151,7 @@ class ModelBase(object):
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, n_valid=4, n_cv=20, n_era=20,
               train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
               show_accuracy=False, save_cv_pred=True, save_cv_prob_train=False, save_csv_log=True,
-              csv_idx=None, cv_generator=None, return_prob_test=False):
+              csv_idx=None, cv_generator=None, return_prob_test=False, auto_train_pred_path=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -240,10 +240,14 @@ class ModelBase(object):
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
         # Save Final Result
-        utils.save_pred_to_csv(pred_path + 'final_results/' + model_name + '_',
-                               self.id_test, prob_test_mean)
-        utils.save_prob_train_to_csv(pred_path + 'final_prob_train/' + model_name + '_',
-                                     prob_train_mean, self.y_train)
+        if auto_train_pred_path is None:
+            utils.save_pred_to_csv(pred_path + 'final_results/' + model_name + '_',
+                                   self.id_test, prob_test_mean)
+            utils.save_prob_train_to_csv(pred_path + 'final_prob_train/' + model_name + '_',
+                                         prob_train_mean, self.y_train)
+        else:
+            utils.save_pred_to_csv(auto_train_pred_path + model_name + str(csv_idx) + '_' + str(train_seed) + '_' + str(cv_seed) + '_',
+                                   self.id_test, prob_test_mean)
 
         # Print Total Losses
         utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
@@ -1296,7 +1300,7 @@ class DeepNeuralNetworks(ModelBase):
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, n_valid=4, n_cv=20, n_era=20,
               train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
               show_accuracy=False, save_cv_pred=True, save_cv_prob_train=False, save_csv_log=True,
-              csv_idx=None, cv_generator=None, return_prob_test=False):
+              csv_idx=None, cv_generator=None, return_prob_test=False, auto_train_pred_path=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -1478,10 +1482,14 @@ class DeepNeuralNetworks(ModelBase):
             loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
             # Save Final Result
-            utils.save_pred_to_csv(pred_path + 'final_results/' + model_name + '_',
-                                   self.id_test, prob_test_mean)
-            utils.save_prob_train_to_csv(pred_path + 'final_prob_train/' + model_name + '_',
-                                         prob_train_mean, self.y_train)
+            if auto_train_pred_path is None:
+                utils.save_pred_to_csv(pred_path + 'final_results/' + model_name + '_',
+                                       self.id_test, prob_test_mean)
+                utils.save_prob_train_to_csv(pred_path + 'final_prob_train/' + model_name + '_',
+                                             prob_train_mean, self.y_train)
+            else:
+                utils.save_pred_to_csv(auto_train_pred_path + model_name + str(csv_idx) + '_' + str(train_seed) + '_' + str(cv_seed) + '_',
+                                       self.id_test, prob_test_mean)
 
             # Print Total Losses
             utils.print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean)
