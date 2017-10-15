@@ -1761,44 +1761,44 @@ def auto_train():
         print('======================================================')
 
         # Logistic Regression
-        # TrainSingleModel.lr_train(train_seed, cv_seed, save_auto_train_results=True, i+1)
+        # TrainSingleModel.lr_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # Random Forest
-        # TrainSingleModel.rf_train(train_seed, cv_seed, save_auto_train_results=True, i+1)
+        # TrainSingleModel.rf_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # Extra Trees
-        # TrainSingleModel.et_train(train_seed, cv_seed, save_auto_train_results=True, i+1)
+        # TrainSingleModel.et_train(train_seed, cv_seed, save_auto_train_results=True, idx=+1)
 
         # AdaBoost
-        # TrainSingleModel.ab_train(train_seed, cv_seed, save_auto_train_results=True, i+1)
+        # TrainSingleModel.ab_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # GradientBoosting
-        # TrainSingleModel.gb_train(train_seed, cv_seed, save_auto_train_results=True, i+1)
+        # TrainSingleModel.gb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # XGBoost
-        # TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True, i+1)
-        # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, i+1)
+        # TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # LightGBM
-        # TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True, i+1)
-        # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, i+1)
+        # TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # CatBoost
         TrainSingleModel.cb_train(train_seed, cv_seed, idx=i+1)
 
         # DNN
-        # TrainSingleModel.dnn_tf_train(train_seed, cv_seed, save_auto_train_results=True, i+1)
-        # TrainSingleModel.dnn_keras_train(train_seed, cv_seed, save_auto_train_results=True, i+1)
+        # TrainSingleModel.dnn_tf_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        # TrainSingleModel.dnn_keras_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # Champion Model
-        # ChampionModel.Christ1991(train_seed, cv_seed, save_auto_train_results=True, i+1)
+        # ChampionModel.Christ1991(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # Stacking
-        #  ModelStacking.stack_tree_train(train_seed, cv_seed, save_auto_train_results=True, i+1)
+        #  ModelStacking.stack_tree_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
         #  for ii in range(5):
         #      t_seed = random.randint(0, 300)
         #      c_seed = random.randint(0, 300)
-        #      TrainSingleModel.stack_lgb_train(t_seed, c_seed, 'auto_{}_epoch_{}'.format(i+1, ii+1), i+1)
+        #      TrainSingleModel.stack_lgb_train(t_seed, c_seed, idx='auto_{}_epoch_{}'.format(i+1, ii+1), i+1)
 
         print('======================================================')
         print('Auto Training Epoch Done!')
