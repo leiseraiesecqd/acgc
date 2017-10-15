@@ -7,8 +7,8 @@ from os.path import isdir
 from sklearn.model_selection import StratifiedShuffleSplit
 
 
-train_csv_path = './inputs/stock_train_data_20171006.csv'
-test_csv_path = './inputs/stock_test_data_20171006.csv'
+train_csv_path = './inputs/stock_train_data_20171013.csv'
+test_csv_path = './inputs/stock_test_data_20171013.csv'
 preprocessed_path = './data/preprocessed_data/'
 negative_era_list = [1, 2, 3, 4, 7, 8, 9, 15, 17]
 positive_era_list = [5, 6, 10, 11, 12, 13, 14, 16, 18, 19, 20]
@@ -98,12 +98,12 @@ class DataPreProcess:
 
         # Drop Unnecessary Columns
         # self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era'], axis=1)
-        self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era', 'feature77'], axis=1)
+        self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era', 'feature43'], axis=1)
         self.y_train = train_f['label']
         self.w_train = train_f['weight']
         self.g_train = train_f['group']
         self.e_train = train_f['era']
-        self.x_test = test_f.drop(['id', 'group', 'feature77'], axis=1)
+        self.x_test = test_f.drop(['id', 'group', 'feature43'], axis=1)
         self.id_test = test_f['id']
         self.g_test = test_f['group']
 
@@ -493,7 +493,7 @@ class DataPreProcess:
         self.load_data_pd()
 
         # Drop outliers
-        self.drop_outliers_by_value()
+        # self.drop_outliers_by_value()
         # self.drop_outliers_by_quantile()
 
         # Scale features
