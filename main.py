@@ -1132,7 +1132,7 @@ class PrejudgeTraining:
 
         era_training_params = {'application': 'binary',
                                'boosting': 'gbdt',               # gdbt,rf,dart,goss
-                               'learning_rate': 0.01,            # default=0.1
+                               'learning_rate': 0.02,            # default=0.1
                                'num_leaves': 88,                 # default=31       <2^(max_depth)
                                'max_depth': 10,                  # default=-1
                                'min_data_in_leaf': 2500,         # default=20       reduce over-fit
@@ -1267,7 +1267,7 @@ class PrejudgeTraining:
         hyper_parameters = {'cv_seed': cv_seed,
                             'train_seed': train_seed,
                             'n_splits_e': 10,
-                            'num_boost_round_e': 1000,
+                            'num_boost_round_e': 2000,
                             'n_cv_e': 10,
                             'n_valid_p': 2,
                             'n_cv_p': 18,
