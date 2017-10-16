@@ -1798,7 +1798,7 @@ def auto_train():
         # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # CatBoost
-        TrainSingleModel.cb_train(train_seed, cv_seed, idx=i+1)
+        # TrainSingleModel.cb_train(train_seed, cv_seed, idx=i+1)
 
         # DNN
         # TrainSingleModel.dnn_tf_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
