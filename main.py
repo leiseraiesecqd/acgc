@@ -1142,7 +1142,7 @@ class PrejudgeTraining:
                                'bagging_fraction': 0.8,          # default=1
                                'bagging_freq': 1,                # default=0        perform bagging every k iteration
                                'bagging_seed': 19,               # default=3
-                               'lambda_l1': 0,                   # default=0
+                               'lambda_l1': 5,                   # default=0
                                'lambda_l2': 5,                   # default=0
                                'min_gain_to_split': 0,           # default=0
                                'max_bin': 225,                   # default=255
