@@ -10,8 +10,8 @@ from sklearn.model_selection import StratifiedShuffleSplit
 train_csv_path = './inputs/stock_train_data_20171013.csv'
 test_csv_path = './inputs/stock_test_data_20171013.csv'
 preprocessed_path = './data/preprocessed_data/'
-negative_era_list = [1, 2, 3, 4, 7, 8, 9, 15, 17]
-positive_era_list = [5, 6, 10, 11, 12, 13, 14, 16, 18, 19, 20]
+negative_era_list = [2, 3, 4, 5, 8, 10, 12, 16]
+positive_era_list = [1, 6, 7, 9, 11, 13, 14, 15, 17, 18, 19, 20]
 
 # train_csv_path = './inputs/stock_train_data_20170923.csv'
 # test_csv_path = './inputs/stock_test_data_20170923.csv'
@@ -122,7 +122,7 @@ class DataPreProcess:
 
     # Drop Outlier of a Feature by Value
     def drop_feature_outliers_by_value(self, feature, upper_train=None, lower_train=None):
-        
+
         # Drop upper outliers in self.x_train
         if upper_train is not None:
             self.x_train[feature].loc[self.x_train[feature] > upper_train] = upper_train

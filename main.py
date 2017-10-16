@@ -61,12 +61,12 @@ class TrainSingleModel:
         """
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        
+
         if save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None
-            
+
         parameters = {'C': 1.0,
                       'class_weight': None,
                       'dual': False,
@@ -1134,10 +1134,10 @@ class PrejudgeTraining:
                                'boosting': 'gbdt',               # gdbt,rf,dart,goss
                                'learning_rate': 0.003,           # default=0.1
                                'num_leaves': 88,                 # default=31       <2^(max_depth)
-                               'max_depth': 10,                   # default=-1
+                               'max_depth': 10,                  # default=-1
                                'min_data_in_leaf': 2500,         # default=20       reduce over-fit
                                'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
-                               'feature_fraction': 0.5,            # default=1
+                               'feature_fraction': 0.5,          # default=1
                                'feature_fraction_seed': 10,      # default=2
                                'bagging_fraction': 0.8,          # default=1
                                'bagging_freq': 1,                # default=0        perform bagging every k iteration
@@ -1145,7 +1145,7 @@ class PrejudgeTraining:
                                'lambda_l1': 0,                   # default=0
                                'lambda_l2': 0,                   # default=0
                                'min_gain_to_split': 0,           # default=0
-                               'max_bin': 225,                  # default=255
+                               'max_bin': 225,                   # default=255
                                'min_data_in_bin': 5,             # default=5
                                'metric': 'binary_logloss',
                                'num_threads': -1,
@@ -1155,7 +1155,7 @@ class PrejudgeTraining:
 
         positive_params = {'application': 'binary',
                            'learning_rate': 0.002,
-                           'num_leaves': 80,                # <2^(max_depth)
+                           'num_leaves': 88,                # <2^(max_depth)
                            'tree_learner': 'serial',
                            'max_depth': 7,                  # default=-1
                            'min_data_in_leaf': 2000,        # default=20
@@ -1170,7 +1170,7 @@ class PrejudgeTraining:
                            'seed': train_seed}
 
         negative_params = {'application': 'binary',
-                           'learning_rate': 0.001,
+                           'learning_rate': 0.002,
                            'num_leaves': 88,                # <2^(max_depth)
                            'tree_learner': 'serial',
                            'max_depth': 7,                  # default=-1
@@ -1253,7 +1253,7 @@ class PrejudgeTraining:
         hyper_parameters = {'cv_seed': cv_seed,
                             'train_seed': train_seed,
                             'n_splits_e': 10,
-                            'num_boost_round_e': 1000,
+                            'num_boost_round_e': 4000,
                             'n_cv_e': 10,
                             'n_valid_p': 2,
                             'n_cv_p': 18,
@@ -1261,7 +1261,7 @@ class PrejudgeTraining:
                             'num_boost_round_p': 65,
                             'era_list_p': positive_era_list,
                             'n_valid_n': 1,
-                            'n_cv_n': 9,
+                            'n_cv_n': 8,
                             'n_era_n': len(negative_era_list),
                             'num_boost_round_n': 65,
                             'era_list_n': negative_era_list,
@@ -1844,7 +1844,7 @@ if __name__ == "__main__":
     # TrainSingleModel.xgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # LightGBM
-    #  TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
+    # TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
     # TrainSingleModel.lgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # CatBoost
@@ -1873,14 +1873,14 @@ if __name__ == "__main__":
     # TrainSingleModel.stack_lgb_train(213, 33, auto_idx='2')
 
     # Prejudge
-    # PrejudgeTraining.binary_train(global_train_seed, global_cv_seed)
+    PrejudgeTraining.binary_train(global_train_seed, global_cv_seed)
     # PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
 
     # Auto Training
     # auto_train()
 
     # Auto Training
-    auto_grid_search()
+    # auto_grid_search()
 
     print('======================================================')
     print('All Task Done!')
