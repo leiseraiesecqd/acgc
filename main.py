@@ -400,7 +400,7 @@ class TrainSingleModel:
         # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
         LGBM.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
-                   n_valid=4, n_cv=5, n_era=20, train_seed=train_seed, auto_train_pred_path=auto_train_path,
+                   n_valid=4, n_cv=20, n_era=20, train_seed=train_seed, auto_train_pred_path=auto_train_path,
                    cv_seed=cv_seed, parameters=parameters, show_importance=False, save_cv_pred=False,
                    show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
@@ -1764,7 +1764,7 @@ def auto_train():
         Automatically training a model for many times
     """
 
-    n_epoch = 100
+    n_epoch = 50
 
     for i in range(n_epoch):
 
@@ -1783,7 +1783,7 @@ def auto_train():
         # TrainSingleModel.rf_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # Extra Trees
-        # TrainSingleModel.et_train(train_seed, cv_seed, save_auto_train_results=True, idx=+1)
+        # TrainSingleModel.et_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # AdaBoost
         # TrainSingleModel.ab_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
@@ -1792,7 +1792,7 @@ def auto_train():
         # TrainSingleModel.gb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # XGBoost
-        # TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
         # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # LightGBM
@@ -1893,10 +1893,10 @@ if __name__ == "__main__":
     # PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
 
     # Auto Training
-    # auto_train()
+    auto_train()
 
     # Auto Grid Searching
-    auto_grid_search()
+    # auto_grid_search()
 
     print('======================================================')
     print('All Task Done!')
