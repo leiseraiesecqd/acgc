@@ -1694,55 +1694,57 @@ def auto_grid_search():
             cv_seed = random.randint(0, 300)
             epoch_start_time = time.time()
 
+            idx = parameter_grid[0] + '-' + str(param) + '-' + str(i+1)
+
             print('======================================================')
-            print('Auto Training... | Parameter:{} | Epoch: {}/{}'.format(param, i+1, n_epoch))
+            print('Auto Training... | Parameter: {} | Epoch: {}/{}'.format(param, i+1, n_epoch))
             print('======================================================')
 
             # Logistic Regression
             # TrainSingleModel.lr_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                           idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                           idx=idx, grid_search_tuple=grid_search_tuple)
 
             # Random Forest
             # TrainSingleModel.rf_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                           idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                           idx=idx, grid_search_tuple=grid_search_tuple)
 
             # Extra Trees
             # TrainSingleModel.et_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                           idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                           idx=idx, grid_search_tuple=grid_search_tuple)
 
             # AdaBoost
             # TrainSingleModel.ab_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                           idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                           idx=idx, grid_search_tuple=grid_search_tuple)
 
             # GradientBoosting
             # TrainSingleModel.gb_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                           idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                           idx=idx, grid_search_tuple=grid_search_tuple)
 
             # XGBoost
             # TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                            idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                            idx=idx, grid_search_tuple=grid_search_tuple)
             # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True,
-            #                                    idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                                    idx=idx, grid_search_tuple=grid_search_tuple)
 
             # LightGBM
             TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True,
-                                       idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+                                       idx=str(param) + '_' + str(i+1), grid_search_tuple=grid_search_tuple)
             # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True,
-            #                                    idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                                    idx=idx, grid_search_tuple=grid_search_tuple)
 
             # CatBoost
             # TrainSingleModel.cb_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                           idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                           idx=idx, grid_search_tuple=grid_search_tuple)
 
             # DNN
             # TrainSingleModel.dnn_tf_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                               idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                               idx=idx, grid_search_tuple=grid_search_tuple)
             # TrainSingleModel.dnn_keras_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                                  idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                                  idx=idx, grid_search_tuple=grid_search_tuple)
 
             # Champion Model
             # ChampionModel.Christ1991(train_seed, cv_seed, save_auto_train_results=True,
-            #                          idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                          idx=idx, grid_search_tuple=grid_search_tuple)
 
             print('======================================================')
             print('Auto Training Epoch Done!')
