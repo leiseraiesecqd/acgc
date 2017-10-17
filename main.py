@@ -1748,7 +1748,7 @@ def auto_train():
         Automatically training a model for many times
     """
 
-    n_epoch = 100
+    n_epoch = 50
 
     for i in range(n_epoch):
 
@@ -1776,7 +1776,7 @@ def auto_train():
         # TrainSingleModel.gb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # XGBoost
-        # TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
         # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # LightGBM
@@ -1877,10 +1877,10 @@ if __name__ == "__main__":
     # PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
 
     # Auto Training
-    # auto_train()
+    auto_train()
 
     # Auto Training
-    auto_grid_search()
+    # auto_grid_search()
 
     print('======================================================')
     print('All Task Done!')
