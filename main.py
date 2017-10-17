@@ -1679,7 +1679,7 @@ def auto_grid_search():
         Automatically Grid Searching
     """
 
-    parameter_grid = ['num_leaves', (80, 85, 90)]
+    parameter_grid = ['learning_rate', (0.002, 0.003, 0.005)]
     n_epoch = 100
 
     for param in parameter_grid[1]:
@@ -1893,8 +1893,8 @@ if __name__ == "__main__":
     # Auto Training
     # auto_train()
 
-    # Auto Training
-    # auto_grid_search()
+    # Auto Grid Searching
+    auto_grid_search()
 
     print('======================================================')
     print('All Task Done!')
