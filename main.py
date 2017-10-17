@@ -400,7 +400,7 @@ class TrainSingleModel:
         # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
         LGBM.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
-                   n_valid=4, n_cv=20, n_era=20, train_seed=train_seed, auto_train_pred_path=auto_train_path,
+                   n_valid=4, n_cv=5, n_era=20, train_seed=train_seed, auto_train_pred_path=auto_train_path,
                    cv_seed=cv_seed, parameters=parameters, show_importance=False, save_cv_pred=False,
                    show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
@@ -1679,7 +1679,7 @@ def auto_grid_search():
         Automatically Grid Searching
     """
 
-    parameter_grid = ['learning_rate', (0.002, 0.003, 0.005)]
+    parameter_grid = ['max_depth', (7, 8, 9, 10)]
     n_epoch = 200
 
     for param in parameter_grid[1]:
@@ -1893,10 +1893,10 @@ if __name__ == "__main__":
     # PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
 
     # Auto Training
-    auto_train()
+    # auto_train()
 
     # Auto Grid Searching
-    # auto_grid_search()
+    auto_grid_search()
 
     print('======================================================')
     print('All Task Done!')
