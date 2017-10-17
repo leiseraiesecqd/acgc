@@ -397,12 +397,12 @@ class TrainSingleModel:
 
         # cv_generator = CrossValidation.era_k_fold_with_weight_all_random
         # cv_generator = CrossValidation.random_split_with_weight
-        cv_generator = CrossValidation.era_k_fold_with_weight_balance
+        # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
         LGBM.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
                    n_valid=4, n_cv=20, n_era=20, train_seed=train_seed, auto_train_pred_path=auto_train_path,
                    cv_seed=cv_seed, parameters=parameters, show_importance=False, save_cv_pred=False,
-                   show_accuracy=True, save_csv_log=True, csv_idx=idx, cv_generator=cv_generator)
+                   show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
     def lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=False, idx=None, grid_search_tuple=None):
@@ -1887,7 +1887,7 @@ if __name__ == "__main__":
     # TrainSingleModel.stack_lgb_train(213, 33, auto_idx='2')
 
     # Prejudge
-    PrejudgeTraining.binary_train(global_train_seed, global_cv_seed)
+    # PrejudgeTraining.binary_train(global_train_seed, global_cv_seed)
     # PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
 
     # Auto Training
