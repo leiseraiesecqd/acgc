@@ -10,8 +10,8 @@ from sklearn.model_selection import StratifiedShuffleSplit
 train_csv_path = './inputs/stock_train_data_20171013.csv'
 test_csv_path = './inputs/stock_test_data_20171013.csv'
 preprocessed_path = './data/preprocessed_data/'
-negative_era_list = [1, 2, 3, 4, 7, 8, 9, 15, 17]
-positive_era_list = [5, 6, 10, 11, 12, 13, 14, 16, 18, 19, 20]
+negative_era_list = [2, 3, 4, 5, 8, 10, 12, 16]
+positive_era_list = [1, 6, 7, 9, 11, 13, 14, 15, 17, 18, 19, 20]
 
 # train_csv_path = './inputs/stock_train_data_20170923.csv'
 # test_csv_path = './inputs/stock_test_data_20170923.csv'
@@ -122,7 +122,7 @@ class DataPreProcess:
 
     # Drop Outlier of a Feature by Value
     def drop_feature_outliers_by_value(self, feature, upper_train=None, lower_train=None):
-        
+
         # Drop upper outliers in self.x_train
         if upper_train is not None:
             self.x_train[feature].loc[self.x_train[feature] > upper_train] = upper_train
@@ -141,13 +141,13 @@ class DataPreProcess:
         self.drop_feature_outliers_by_value('feature2', None, None)
         self.drop_feature_outliers_by_value('feature3', 7.65, None)
         self.drop_feature_outliers_by_value('feature4', 5.35, None)
-        self.drop_feature_outliers_by_value('feature5', 4.4, None)
+        self.drop_feature_outliers_by_value('feature5', None, None)
         self.drop_feature_outliers_by_value('feature6', None, None)
         self.drop_feature_outliers_by_value('feature7', 21.02, None)
         self.drop_feature_outliers_by_value('feature8', 10.8, None)
         self.drop_feature_outliers_by_value('feature9', None, None)
         self.drop_feature_outliers_by_value('feature10', None, None)
-        self.drop_feature_outliers_by_value('feature11', 17.17, None)
+        self.drop_feature_outliers_by_value('feature11', 20, None)
         self.drop_feature_outliers_by_value('feature12', 4.23, None)
         self.drop_feature_outliers_by_value('feature13', None, None)
         self.drop_feature_outliers_by_value('feature14', None, None)
@@ -156,26 +156,26 @@ class DataPreProcess:
         self.drop_feature_outliers_by_value('feature17', None, None)
         self.drop_feature_outliers_by_value('feature18', None, None)
         self.drop_feature_outliers_by_value('feature19', 6.44, None)
-        self.drop_feature_outliers_by_value('feature20', 13.93, None)
+        self.drop_feature_outliers_by_value('feature20', 15.4, None)
         self.drop_feature_outliers_by_value('feature21', 13.36, None)
-        self.drop_feature_outliers_by_value('feature22', 11.67, None)
+        self.drop_feature_outliers_by_value('feature22', 14, None)
         self.drop_feature_outliers_by_value('feature23', None, None)
         self.drop_feature_outliers_by_value('feature24', None, None)
         self.drop_feature_outliers_by_value('feature25', None, None)
         self.drop_feature_outliers_by_value('feature26', None, None)
         self.drop_feature_outliers_by_value('feature27', 11.88, None)
         self.drop_feature_outliers_by_value('feature28', None, None)
-        self.drop_feature_outliers_by_value('feature29', 10.01, None)
-        self.drop_feature_outliers_by_value('feature30', 19, None)
+        self.drop_feature_outliers_by_value('feature29', 12.05, None)
+        self.drop_feature_outliers_by_value('feature30', 22.5, None)
         self.drop_feature_outliers_by_value('feature31', 23.45, None)
         self.drop_feature_outliers_by_value('feature32', 8.35, None)
-        self.drop_feature_outliers_by_value('feature33', 14.34, None)
-        self.drop_feature_outliers_by_value('feature34', 5.28, None)
-        self.drop_feature_outliers_by_value('feature35', 14.19, -13.48)
-        self.drop_feature_outliers_by_value('feature36', 20.53, None)
+        self.drop_feature_outliers_by_value('feature33', 15.74, None)
+        self.drop_feature_outliers_by_value('feature34', 5.82, None)
+        self.drop_feature_outliers_by_value('feature35', None, None)
+        self.drop_feature_outliers_by_value('feature36', 32.7, None)
         self.drop_feature_outliers_by_value('feature37', None, None)
         self.drop_feature_outliers_by_value('feature38', None, -6.06)
-        self.drop_feature_outliers_by_value('feature39', 10.29, -19.73)
+        self.drop_feature_outliers_by_value('feature39', 10.29, -24.66)
         self.drop_feature_outliers_by_value('feature40', None, None)
         self.drop_feature_outliers_by_value('feature41', None, None)
         self.drop_feature_outliers_by_value('feature42', 6.73, None)
@@ -191,28 +191,28 @@ class DataPreProcess:
         self.drop_feature_outliers_by_value('feature52', 5.24, None)
         self.drop_feature_outliers_by_value('feature53', 5.11, None)
         self.drop_feature_outliers_by_value('feature54', 4.72, None)
-        self.drop_feature_outliers_by_value('feature55', 5.36, None)
+        self.drop_feature_outliers_by_value('feature55', None, None)
         self.drop_feature_outliers_by_value('feature56', 5.6, None)
         self.drop_feature_outliers_by_value('feature57', None, None)
         self.drop_feature_outliers_by_value('feature58', 6.07, None)
         self.drop_feature_outliers_by_value('feature59', None, None)
         self.drop_feature_outliers_by_value('feature60', 23.11, None)
-        self.drop_feature_outliers_by_value('feature61', 14.08, -10.03)
+        self.drop_feature_outliers_by_value('feature61', 14.08, -11.57)
         self.drop_feature_outliers_by_value('feature62', None, None)
         self.drop_feature_outliers_by_value('feature63', None, None)
-        self.drop_feature_outliers_by_value('feature64', 19.05, None)
-        self.drop_feature_outliers_by_value('feature65', 4.48, None)
-        self.drop_feature_outliers_by_value('feature66', 14.02, None)
+        self.drop_feature_outliers_by_value('feature64', 20.65, None)
+        self.drop_feature_outliers_by_value('feature65', None, None)
+        self.drop_feature_outliers_by_value('feature66', None, None)
         self.drop_feature_outliers_by_value('feature67', None, None)
         self.drop_feature_outliers_by_value('feature68', None, None)
         self.drop_feature_outliers_by_value('feature69', 11.58, None)
-        self.drop_feature_outliers_by_value('feature70', -7.34, None)
+        self.drop_feature_outliers_by_value('feature70', None, -7.34)
         self.drop_feature_outliers_by_value('feature71', None, None)
         self.drop_feature_outliers_by_value('feature72', None, None)
         self.drop_feature_outliers_by_value('feature73', None, None)
-        self.drop_feature_outliers_by_value('feature74', 9.64, None)
-        self.drop_feature_outliers_by_value('feature75', 6, None)
-        self.drop_feature_outliers_by_value('feature76', 30.46, None)
+        self.drop_feature_outliers_by_value('feature74', 10.98, None)
+        self.drop_feature_outliers_by_value('feature75', None, None)
+        self.drop_feature_outliers_by_value('feature76', 32, None)
         self.drop_feature_outliers_by_value('feature77', None, None)
         self.drop_feature_outliers_by_value('feature78', None, None)
         self.drop_feature_outliers_by_value('feature79', 4.34, None)
@@ -493,7 +493,7 @@ class DataPreProcess:
         self.load_data_pd()
 
         # Drop outliers
-        # self.drop_outliers_by_value()
+        self.drop_outliers_by_value()
         # self.drop_outliers_by_quantile()
 
         # Scale features

@@ -294,6 +294,9 @@ class PrejudgeBinary:
         # Save Predictions
         utils.save_pred_to_csv(self.pred_path + 'final_results/prejudge_', self.id_test, prob_test)
 
+        # Print Prediction of Positive Era Rate
+        utils.print_positive_rate_test(era_sign_test)
+
         total_time = time.time() - start_time
         print('======================================================')
         print('Training Done!')

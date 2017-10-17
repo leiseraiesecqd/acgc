@@ -61,12 +61,12 @@ class TrainSingleModel:
         """
 
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        
+
         if save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None
-            
+
         parameters = {'C': 1.0,
                       'class_weight': None,
                       'dual': False,
@@ -209,10 +209,10 @@ class TrainSingleModel:
         clf_et = models.ExtraTreesClassifier(**et_parameters)
 
         parameters = {'algorithm': 'SAMME.R',
-                         'base_estimator': clf_et,
-                         'learning_rate': 0.0051,
-                         'n_estimators': 9,
-                         'random_state': train_seed}
+                      'base_estimator': clf_et,
+                      'learning_rate': 0.0051,
+                      'n_estimators': 9,
+                      'random_state': train_seed}
         # Grid Search
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
@@ -397,12 +397,12 @@ class TrainSingleModel:
 
         # cv_generator = CrossValidation.era_k_fold_with_weight_all_random
         # cv_generator = CrossValidation.random_split_with_weight
-        cv_generator = CrossValidation.era_k_fold_with_weight_balance
+        # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
         LGBM.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
                    n_valid=4, n_cv=20, n_era=20, train_seed=train_seed, auto_train_pred_path=auto_train_path,
                    cv_seed=cv_seed, parameters=parameters, show_importance=False, save_cv_pred=False,
-                   show_accuracy=True, save_csv_log=True, csv_idx=idx, cv_generator=cv_generator)
+                   show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
     def lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=False, idx=None, grid_search_tuple=None):
@@ -660,19 +660,19 @@ class ChampionModel:
             auto_train_path = None
 
         parameters = {'application': 'binary',
-                          'learning_rate': 0.002,
-                          'num_leaves': 128,              # <2^(max_depth)
-                          'tree_learner': 'serial',
-                          'max_depth': 8,                 # default=-1
-                          'min_data_in_leaf': 20,         # default=20
-                          'feature_fraction': 0.8,        # default=1
-                          'bagging_fraction': 0.8,        # default=1
-                          'bagging_freq': 5,              # default=0 perform bagging every k iteration
-                          'bagging_seed': 6,              # default=3
-                          'early_stopping_rounds': 50,
-                          'max_bin': 255,
-                          'metric': 'binary_logloss',
-                          'verbosity': 1}
+                      'learning_rate': 0.002,
+                      'num_leaves': 128,              # <2^(max_depth)
+                      'tree_learner': 'serial',
+                      'max_depth': 8,                 # default=-1
+                      'min_data_in_leaf': 20,         # default=20
+                      'feature_fraction': 0.8,        # default=1
+                      'bagging_fraction': 0.8,        # default=1
+                      'bagging_freq': 5,              # default=0 perform bagging every k iteration
+                      'bagging_seed': 6,              # default=3
+                      'early_stopping_rounds': 50,
+                      'max_bin': 255,
+                      'metric': 'binary_logloss',
+                      'verbosity': 1}
 
         # Grid Search
         if grid_search_tuple is not None:
@@ -680,12 +680,12 @@ class ChampionModel:
 
         LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=65)
 
-        # cv_generator = CrossValidation.era_k_fold_with_weight_all_random
+        cv_generator = CrossValidation.era_k_fold_with_weight_all_random
 
         LGBM.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'christ1991_',
                    n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                    cv_seed=cv_seed, parameters=parameters, show_importance=False, show_accuracy=False,
-                   save_csv_log=True, csv_idx=idx, cv_generator=None, auto_train_pred_path=auto_train_path)
+                   save_csv_log=True, csv_idx=idx, cv_generator=cv_generator, auto_train_pred_path=auto_train_path)
 
 
 class GridSearch:
@@ -1132,20 +1132,20 @@ class PrejudgeTraining:
 
         era_training_params = {'application': 'binary',
                                'boosting': 'gbdt',               # gdbt,rf,dart,goss
-                               'learning_rate': 0.003,           # default=0.1
+                               'learning_rate': 0.1,             # default=0.1
                                'num_leaves': 88,                 # default=31       <2^(max_depth)
-                               'max_depth': 10,                   # default=-1
+                               'max_depth': 10,                  # default=-1
                                'min_data_in_leaf': 2500,         # default=20       reduce over-fit
                                'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
-                               'feature_fraction': 0.5,            # default=1
+                               'feature_fraction': 0.5,          # default=1
                                'feature_fraction_seed': 10,      # default=2
                                'bagging_fraction': 0.8,          # default=1
                                'bagging_freq': 1,                # default=0        perform bagging every k iteration
                                'bagging_seed': 19,               # default=3
-                               'lambda_l1': 0,                   # default=0
-                               'lambda_l2': 0,                   # default=0
+                               'lambda_l1': 5,                   # default=0
+                               'lambda_l2': 5,                   # default=0
                                'min_gain_to_split': 0,           # default=0
-                               'max_bin': 225,                  # default=255
+                               'max_bin': 225,                   # default=255
                                'min_data_in_bin': 5,             # default=5
                                'metric': 'binary_logloss',
                                'num_threads': -1,
@@ -1154,35 +1154,49 @@ class PrejudgeTraining:
                                'seed': train_seed}
 
         positive_params = {'application': 'binary',
-                           'learning_rate': 0.002,
-                           'num_leaves': 80,                # <2^(max_depth)
-                           'tree_learner': 'serial',
-                           'max_depth': 7,                  # default=-1
-                           'min_data_in_leaf': 2000,        # default=20
-                           'feature_fraction': 0.5,         # default=1
-                           'bagging_fraction': 0.6,         # default=1
-                           'bagging_freq': 5,               # default=0 perform bagging every k iteration
-                           'bagging_seed': 1,               # default=3
-                           'early_stopping_rounds': 65,
-                           'max_bin': 50,
+                           'boosting': 'gbdt',               # gdbt,rf,dart,goss
+                           'learning_rate': 0.003,           # default=0.1
+                           'num_leaves': 88,                 # default=31       <2^(max_depth)
+                           'max_depth': 10,                  # default=-1
+                           'min_data_in_leaf': 2500,         # default=20       reduce over-fit
+                           'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
+                           'feature_fraction': 0.5,          # default=1
+                           'feature_fraction_seed': 10,      # default=2
+                           'bagging_fraction': 0.8,          # default=1
+                           'bagging_freq': 1,                # default=0        perform bagging every k iteration
+                           'bagging_seed': 19,               # default=3
+                           'lambda_l1': 0,                   # default=0
+                           'lambda_l2': 0,                   # default=0
+                           'min_gain_to_split': 0,           # default=0
+                           'max_bin': 225,                   # default=255
+                           'min_data_in_bin': 5,             # default=5
                            'metric': 'binary_logloss',
+                           'num_threads': -1,
                            'verbosity': 1,
+                           'early_stopping_rounds': 50,      # default=0
                            'seed': train_seed}
 
         negative_params = {'application': 'binary',
-                           'learning_rate': 0.001,
-                           'num_leaves': 88,                # <2^(max_depth)
-                           'tree_learner': 'serial',
-                           'max_depth': 7,                  # default=-1
-                           'min_data_in_leaf': 2000,        # default=20
-                           'feature_fraction': 0.5,         # default=1
-                           'bagging_fraction': 0.6,         # default=1
-                           'bagging_freq': 5,               # default=0 perform bagging every k iteration
-                           'bagging_seed': 1,               # default=3
-                           'early_stopping_rounds': 65,
-                           'max_bin': 50,
+                           'boosting': 'gbdt',               # gdbt,rf,dart,goss
+                           'learning_rate': 0.003,           # default=0.1
+                           'num_leaves': 88,                 # default=31       <2^(max_depth)
+                           'max_depth': 10,                  # default=-1
+                           'min_data_in_leaf': 2500,         # default=20       reduce over-fit
+                           'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
+                           'feature_fraction': 0.5,          # default=1
+                           'feature_fraction_seed': 10,      # default=2
+                           'bagging_fraction': 0.8,          # default=1
+                           'bagging_freq': 1,                # default=0        perform bagging every k iteration
+                           'bagging_seed': 19,               # default=3
+                           'lambda_l1': 0,                   # default=0
+                           'lambda_l2': 0,                   # default=0
+                           'min_gain_to_split': 0,           # default=0
+                           'max_bin': 225,                   # default=255
+                           'min_data_in_bin': 5,             # default=5
                            'metric': 'binary_logloss',
+                           'num_threads': -1,
                            'verbosity': 1,
+                           'early_stopping_rounds': 50,      # default=0
                            'seed': train_seed}
 
         models_parameters = [era_training_params, positive_params, negative_params]
@@ -1253,7 +1267,7 @@ class PrejudgeTraining:
         hyper_parameters = {'cv_seed': cv_seed,
                             'train_seed': train_seed,
                             'n_splits_e': 10,
-                            'num_boost_round_e': 1000,
+                            'num_boost_round_e': 2000,
                             'n_cv_e': 10,
                             'n_valid_p': 2,
                             'n_cv_p': 18,
@@ -1261,7 +1275,7 @@ class PrejudgeTraining:
                             'num_boost_round_p': 65,
                             'era_list_p': positive_era_list,
                             'n_valid_n': 1,
-                            'n_cv_n': 9,
+                            'n_cv_n': 8,
                             'n_era_n': len(negative_era_list),
                             'num_boost_round_n': 65,
                             'era_list_n': negative_era_list,
@@ -1277,7 +1291,7 @@ class PrejudgeTraining:
                                       loss_log_path=prejudge_loss_log_path, csv_log_path=csv_log_path + 'prejudge_',
                                       models_parameters=models_parameters, hyper_parameters=hyper_parameters)
 
-        PES.train(load_pickle=True, load_pickle_path=None)
+        PES.train(load_pickle=False, load_pickle_path=None)
 
     @staticmethod
     def multiclass_train(train_seed, cv_seed):
@@ -1665,8 +1679,8 @@ def auto_grid_search():
         Automatically Grid Searching
     """
 
-    parameter_grid = ['num_leaves', (80, 85, 90)]
-    n_epoch = 100
+    parameter_grid = ['learning_rate', (0.002, 0.003, 0.005)]
+    n_epoch = 200
 
     for param in parameter_grid[1]:
 
@@ -1680,55 +1694,57 @@ def auto_grid_search():
             cv_seed = random.randint(0, 300)
             epoch_start_time = time.time()
 
+            idx = parameter_grid[0] + '-' + str(param) + '-' + str(i+1)
+
             print('======================================================')
-            print('Auto Training... | Parameter:{} | Epoch: {}/{}'.format(param, i+1, n_epoch))
+            print('Auto Training... | Parameter: {} | Epoch: {}/{}'.format(param, i+1, n_epoch))
             print('======================================================')
 
             # Logistic Regression
             # TrainSingleModel.lr_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                           idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                           idx=idx, grid_search_tuple=grid_search_tuple)
 
             # Random Forest
             # TrainSingleModel.rf_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                           idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                           idx=idx, grid_search_tuple=grid_search_tuple)
 
             # Extra Trees
             # TrainSingleModel.et_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                           idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                           idx=idx, grid_search_tuple=grid_search_tuple)
 
             # AdaBoost
             # TrainSingleModel.ab_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                           idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                           idx=idx, grid_search_tuple=grid_search_tuple)
 
             # GradientBoosting
             # TrainSingleModel.gb_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                           idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                           idx=idx, grid_search_tuple=grid_search_tuple)
 
             # XGBoost
             # TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                            idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                            idx=idx, grid_search_tuple=grid_search_tuple)
             # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True,
-            #                                    idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                                    idx=idx, grid_search_tuple=grid_search_tuple)
 
             # LightGBM
             TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True,
-                                       idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+                                       idx=idx, grid_search_tuple=grid_search_tuple)
             # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True,
-            #                                    idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                                    idx=idx, grid_search_tuple=grid_search_tuple)
 
             # CatBoost
             # TrainSingleModel.cb_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                           idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                           idx=idx, grid_search_tuple=grid_search_tuple)
 
             # DNN
             # TrainSingleModel.dnn_tf_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                               idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                               idx=idx, grid_search_tuple=grid_search_tuple)
             # TrainSingleModel.dnn_keras_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                                  idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                                  idx=idx, grid_search_tuple=grid_search_tuple)
 
             # Champion Model
             # ChampionModel.Christ1991(train_seed, cv_seed, save_auto_train_results=True,
-            #                          idx=str(param) + str(i+1), grid_search_tuple=grid_search_tuple)
+            #                          idx=idx, grid_search_tuple=grid_search_tuple)
 
             print('======================================================')
             print('Auto Training Epoch Done!')
@@ -1767,7 +1783,7 @@ def auto_train():
         # TrainSingleModel.rf_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # Extra Trees
-        # TrainSingleModel.et_train(train_seed, cv_seed, save_auto_train_results=True, idx=+1)
+        # TrainSingleModel.et_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # AdaBoost
         # TrainSingleModel.ab_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
@@ -1784,7 +1800,7 @@ def auto_train():
         # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # CatBoost
-        TrainSingleModel.cb_train(train_seed, cv_seed, idx=i+1)
+        # TrainSingleModel.cb_train(train_seed, cv_seed, idx=i+1)
 
         # DNN
         # TrainSingleModel.dnn_tf_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
@@ -1844,7 +1860,7 @@ if __name__ == "__main__":
     # TrainSingleModel.xgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # LightGBM
-    #  TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
+    # TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
     # TrainSingleModel.lgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # CatBoost
@@ -1879,7 +1895,7 @@ if __name__ == "__main__":
     # Auto Training
     auto_train()
 
-    # Auto Training
+    # Auto Grid Searching
     # auto_grid_search()
 
     print('======================================================')
