@@ -209,10 +209,10 @@ class TrainSingleModel:
         clf_et = models.ExtraTreesClassifier(**et_parameters)
 
         parameters = {'algorithm': 'SAMME.R',
-                         'base_estimator': clf_et,
-                         'learning_rate': 0.0051,
-                         'n_estimators': 9,
-                         'random_state': train_seed}
+                      'base_estimator': clf_et,
+                      'learning_rate': 0.0051,
+                      'n_estimators': 9,
+                      'random_state': train_seed}
         # Grid Search
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
@@ -680,12 +680,12 @@ class ChampionModel:
 
         LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=65)
 
-        # cv_generator = CrossValidation.era_k_fold_with_weight_all_random
+        cv_generator = CrossValidation.era_k_fold_with_weight_all_random
 
         LGBM.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'christ1991_',
                    n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
                    cv_seed=cv_seed, parameters=parameters, show_importance=False, show_accuracy=False,
-                   save_csv_log=True, csv_idx=idx, cv_generator=None, auto_train_pred_path=auto_train_path)
+                   save_csv_log=True, csv_idx=idx, cv_generator=cv_generator, auto_train_pred_path=auto_train_path)
 
 
 class GridSearch:
