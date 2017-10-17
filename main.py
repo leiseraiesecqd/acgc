@@ -1728,7 +1728,7 @@ def auto_grid_search():
 
             # LightGBM
             TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True,
-                                       idx=str(param) + '_' + str(i+1), grid_search_tuple=grid_search_tuple)
+                                       idx=idx, grid_search_tuple=grid_search_tuple)
             # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True,
             #                                    idx=idx, grid_search_tuple=grid_search_tuple)
 
