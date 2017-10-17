@@ -1680,7 +1680,7 @@ def auto_grid_search():
     """
 
     parameter_grid = ['learning_rate', (0.002, 0.003, 0.005)]
-    n_epoch = 100
+    n_epoch = 200
 
     for param in parameter_grid[1]:
 
