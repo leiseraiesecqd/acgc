@@ -1888,14 +1888,14 @@ if __name__ == "__main__":
     # Stacking
     # ModelStacking.deep_stack_train(global_train_seed, global_cv_seed)
     # ModelStacking.stack_tree_train(global_train_seed, global_cv_seed)
-    # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed, auto_idx='1')
+    TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed, auto_idx='1')
 
     # Prejudge
     # PrejudgeTraining.binary_train(global_train_seed, global_cv_seed)
     # PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
 
     # Auto Training
-    auto_train()
+    # auto_train()
 
     # Auto Grid Searching
     # auto_grid_search()
