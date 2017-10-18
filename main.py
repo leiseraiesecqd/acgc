@@ -1679,7 +1679,7 @@ def auto_grid_search():
         Automatically Grid Searching
     """
 
-    parameter_grid = ['bagging_fraction', (0.6, 0.7, 0.8, 0.9, 1.0)]
+    parameter_grid = ['max_depth', (7, 8, 9, 10)]
     n_epoch = 200
 
     for param in parameter_grid[1]:
