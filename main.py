@@ -290,7 +290,7 @@ class TrainSingleModel:
                       'lambda': 0,
                       'alpha': 0,
                       'early_stopping_rounds': 30,
-                      'nthread': -1,
+                      'n_jobs': -1,
                       'objective': 'binary:logistic',
                       'eval_metric': 'logloss',
                       'seed': train_seed}
@@ -302,7 +302,7 @@ class TrainSingleModel:
         XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test, num_boost_round=35)
 
         XGB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
-                  n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+                  n_valid=4, n_cv=5, n_era=20, train_seed=train_seed,
                   cv_seed=cv_seed, parameters=parameters, show_importance=False,
                   show_accuracy=True, save_csv_log=True, csv_idx=idx, auto_train_pred_path=auto_train_path)
 
@@ -370,10 +370,10 @@ class TrainSingleModel:
                       'boosting': 'gbdt',               # gdbt,rf,dart,goss
                       'learning_rate': 0.003,           # default=0.1
                       'num_leaves': 88,                 # default=31       <2^(max_depth)
-                      'max_depth': 10,                   # default=-1
+                      'max_depth': 10,                  # default=-1
                       'min_data_in_leaf': 2500,         # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
-                      'feature_fraction': 0.5,            # default=1
+                      'feature_fraction': 0.5,          # default=1
                       'feature_fraction_seed': 10,      # default=2
                       'bagging_fraction': 0.8,          # default=1
                       'bagging_freq': 1,                # default=0        perform bagging every k iteration
@@ -381,7 +381,7 @@ class TrainSingleModel:
                       'lambda_l1': 0,                   # default=0
                       'lambda_l2': 0,                   # default=0
                       'min_gain_to_split': 0,           # default=0
-                      'max_bin': 225,                  # default=255
+                      'max_bin': 225,                   # default=255
                       'min_data_in_bin': 5,             # default=5
                       'metric': 'binary_logloss',
                       'num_threads': -1,
@@ -505,7 +505,7 @@ class TrainSingleModel:
 
         CB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
                  n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                 cv_seed=cv_seed, parameters=parameters, show_importance=True,
+                 cv_seed=cv_seed, parameters=parameters, show_importance=False,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx, auto_train_pred_path=auto_train_path)
 
     @staticmethod
@@ -567,7 +567,8 @@ class TrainSingleModel:
     #     dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=20, cv_seed=cv_seed)
 
     @staticmethod
-    def stack_lgb_train(train_seed, cv_seed, save_auto_train_results=False, idx=None, grid_search_tuple=None, auto_idx=None):
+    def stack_lgb_train(train_seed, cv_seed, save_auto_train_results=False, idx=None,
+                        grid_search_tuple=None, auto_idx=None):
         """
             LightGBM for stack layer
         """
@@ -603,26 +604,26 @@ class TrainSingleModel:
         blender_test_g_tree = np.column_stack((blender_test_tree, g_test))
 
         parameters = {'application': 'binary',
-                      'boosting': 'gbdt',                   # gdbt,rf,dart,goss
-                      'learning_rate': 0.002,               # default=0.1
-                      'num_leaves': 80,                     # default=31       <2^(max_depth)
-                      'max_depth': 7,                       # default=-1
-                      'min_data_in_leaf': 2000,             # default=20       reduce over-fit
-                      'min_sum_hessian_in_leaf': 1e-3,      # default=1e-3     reduce over-fit
-                      'feature_fraction': 0.8,              # default=1
-                      'feature_fraction_seed': train_seed,  # default=2
-                      'bagging_fraction': 0.6,              # default=1
-                      'bagging_freq': 5,                    # default=0        perform bagging every k iteration
-                      'bagging_seed': train_seed,           # default=3
-                      'lambda_l1': 0,                       # default=0
-                      'lambda_l2': 0,                       # default=0
-                      'min_gain_to_split': 0,               # default=0
-                      'max_bin': 2250,                      # default=255
-                      'min_data_in_bin': 5,                 # default=5
+                      'boosting': 'gbdt',               # gdbt,rf,dart,goss
+                      'learning_rate': 0.003,           # default=0.1
+                      'num_leaves': 88,                 # default=31       <2^(max_depth)
+                      'max_depth': 10,                  # default=-1
+                      'min_data_in_leaf': 2500,         # default=20       reduce over-fit
+                      'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
+                      'feature_fraction': 0.5,          # default=1
+                      'feature_fraction_seed': 10,      # default=2
+                      'bagging_fraction': 0.8,          # default=1
+                      'bagging_freq': 1,                # default=0        perform bagging every k iteration
+                      'bagging_seed': 19,               # default=3
+                      'lambda_l1': 0,                   # default=0
+                      'lambda_l2': 0,                   # default=0
+                      'min_gain_to_split': 0,           # default=0
+                      'max_bin': 225,                   # default=255
+                      'min_data_in_bin': 5,             # default=5
                       'metric': 'binary_logloss',
                       'num_threads': -1,
                       'verbosity': 1,
-                      'early_stopping_rounds': 50,          # default=0
+                      'early_stopping_rounds': 50,      # default=0
                       'seed': train_seed}
 
         # Grid Search
@@ -1374,7 +1375,7 @@ class ModelStacking:
                       'lambda': 0,
                       'alpha': 0,
                       'early_stopping_rounds': 30,
-                      'nthread': -1,
+                      'n_jobs': -1,
                       'objective': 'binary:logistic',
                       'eval_metric': 'logloss',
                       'seed': train_seed}
@@ -1650,7 +1651,7 @@ class ModelStacking:
                         'train_seed': train_seed,
                         'cv_seed': cv_seed,
                         'num_boost_round_lgb_l1': 65,
-                        'num_boost_round_xgb_l1': 65,
+                        'num_boost_round_xgb_l1': 35,
                         'num_boost_round_final': 65,
                         'show_importance': False,
                         'show_accuracy': True,
@@ -1679,8 +1680,8 @@ def auto_grid_search():
         Automatically Grid Searching
     """
 
-    parameter_grid = ['max_depth', (7, 8, 9, 10, 11)]
-    n_epoch = 200
+    parameter_grid = ['colsample_bylevel', (0.5, 0.6, 0.7, 0.8)]
+    n_epoch = 100
 
     for param in parameter_grid[1]:
 
@@ -1721,14 +1722,14 @@ def auto_grid_search():
             #                           idx=idx, grid_search_tuple=grid_search_tuple)
 
             # XGBoost
-            # TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                            idx=idx, grid_search_tuple=grid_search_tuple)
+            TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True,
+                                       idx=idx, grid_search_tuple=grid_search_tuple)
             # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True,
             #                                    idx=idx, grid_search_tuple=grid_search_tuple)
 
             # LightGBM
-            TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True,
-                                       idx=idx, grid_search_tuple=grid_search_tuple)
+            # TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True,
+            #                            idx=idx, grid_search_tuple=grid_search_tuple)
             # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True,
             #                                    idx=idx, grid_search_tuple=grid_search_tuple)
 
@@ -1764,7 +1765,7 @@ def auto_train():
         Automatically training a model for many times
     """
 
-    n_epoch = 50
+    n_epoch = 10
 
     for i in range(n_epoch):
 
@@ -1792,7 +1793,7 @@ def auto_train():
         # TrainSingleModel.gb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # XGBoost
-        TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        # TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
         # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # LightGBM
@@ -1810,11 +1811,12 @@ def auto_train():
         # ChampionModel.Christ1991(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # Stacking
-        #  ModelStacking.stack_tree_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
-        #  for ii in range(5):
-        #      t_seed = random.randint(0, 300)
-        #      c_seed = random.randint(0, 300)
-        #      TrainSingleModel.stack_lgb_train(t_seed, c_seed, idx='auto_{}_epoch_{}'.format(i+1, ii+1), i+1)
+        ModelStacking.stack_tree_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        for ii in range(10):
+            t_seed = random.randint(0, 300)
+            c_seed = random.randint(0, 300)
+            TrainSingleModel.stack_lgb_train(t_seed, c_seed, idx='auto_{}_epoch_{}'.format(i+1, ii+1),
+                                             save_auto_train_results=True, auto_idx=i+1)
 
         print('======================================================')
         print('Auto Training Epoch Done!')
@@ -1886,7 +1888,7 @@ if __name__ == "__main__":
     # Stacking
     # ModelStacking.deep_stack_train(global_train_seed, global_cv_seed)
     # ModelStacking.stack_tree_train(global_train_seed, global_cv_seed)
-    # TrainSingleModel.stack_lgb_train(213, 33, auto_idx='2')
+    # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed, auto_idx='1')
 
     # Prejudge
     # PrejudgeTraining.binary_train(global_train_seed, global_cv_seed)
