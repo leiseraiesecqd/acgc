@@ -1680,7 +1680,7 @@ def auto_grid_search():
         Automatically Grid Searching
     """
 
-    parameter_grid = ['', (bagging_freq1, 2, 3, 4, 5)]
+    parameter_grid = ['bagging_freq', (1, 2, 3, 4, 5)]
     n_epoch = 200
 
     for param in parameter_grid[1]:
