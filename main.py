@@ -370,10 +370,10 @@ class TrainSingleModel:
                       'boosting': 'gbdt',               # gdbt,rf,dart,goss
                       'learning_rate': 0.003,           # default=0.1
                       'num_leaves': 88,                 # default=31       <2^(max_depth)
-                      'max_depth': 10,                   # default=-1
+                      'max_depth': 10,                  # default=-1
                       'min_data_in_leaf': 2500,         # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
-                      'feature_fraction': 0.5,            # default=1
+                      'feature_fraction': 0.5,          # default=1
                       'feature_fraction_seed': 10,      # default=2
                       'bagging_fraction': 0.8,          # default=1
                       'bagging_freq': 1,                # default=0        perform bagging every k iteration
@@ -381,7 +381,7 @@ class TrainSingleModel:
                       'lambda_l1': 0,                   # default=0
                       'lambda_l2': 0,                   # default=0
                       'min_gain_to_split': 0,           # default=0
-                      'max_bin': 225,                  # default=255
+                      'max_bin': 225,                   # default=255
                       'min_data_in_bin': 5,             # default=5
                       'metric': 'binary_logloss',
                       'num_threads': -1,
@@ -604,26 +604,26 @@ class TrainSingleModel:
         blender_test_g_tree = np.column_stack((blender_test_tree, g_test))
 
         parameters = {'application': 'binary',
-                      'boosting': 'gbdt',                   # gdbt,rf,dart,goss
-                      'learning_rate': 0.002,               # default=0.1
-                      'num_leaves': 80,                     # default=31       <2^(max_depth)
-                      'max_depth': 7,                       # default=-1
-                      'min_data_in_leaf': 2000,             # default=20       reduce over-fit
-                      'min_sum_hessian_in_leaf': 1e-3,      # default=1e-3     reduce over-fit
-                      'feature_fraction': 0.8,              # default=1
-                      'feature_fraction_seed': train_seed,  # default=2
-                      'bagging_fraction': 0.6,              # default=1
-                      'bagging_freq': 5,                    # default=0        perform bagging every k iteration
-                      'bagging_seed': train_seed,           # default=3
-                      'lambda_l1': 0,                       # default=0
-                      'lambda_l2': 0,                       # default=0
-                      'min_gain_to_split': 0,               # default=0
-                      'max_bin': 2250,                      # default=255
-                      'min_data_in_bin': 5,                 # default=5
+                      'boosting': 'gbdt',               # gdbt,rf,dart,goss
+                      'learning_rate': 0.003,           # default=0.1
+                      'num_leaves': 88,                 # default=31       <2^(max_depth)
+                      'max_depth': 10,                  # default=-1
+                      'min_data_in_leaf': 2500,         # default=20       reduce over-fit
+                      'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
+                      'feature_fraction': 0.5,          # default=1
+                      'feature_fraction_seed': 10,      # default=2
+                      'bagging_fraction': 0.8,          # default=1
+                      'bagging_freq': 1,                # default=0        perform bagging every k iteration
+                      'bagging_seed': 19,               # default=3
+                      'lambda_l1': 0,                   # default=0
+                      'lambda_l2': 0,                   # default=0
+                      'min_gain_to_split': 0,           # default=0
+                      'max_bin': 225,                   # default=255
+                      'min_data_in_bin': 5,             # default=5
                       'metric': 'binary_logloss',
                       'num_threads': -1,
                       'verbosity': 1,
-                      'early_stopping_rounds': 50,          # default=0
+                      'early_stopping_rounds': 50,      # default=0
                       'seed': train_seed}
 
         # Grid Search
@@ -1680,7 +1680,7 @@ def auto_grid_search():
         Automatically Grid Searching
     """
 
-    parameter_grid = ['bagging_freq', (1, 2, 3, 4, 5)]
+    parameter_grid = ['', (bagging_freq1, 2, 3, 4, 5)]
     n_epoch = 200
 
     for param in parameter_grid[1]:
@@ -1888,7 +1888,7 @@ if __name__ == "__main__":
     # Stacking
     # ModelStacking.deep_stack_train(global_train_seed, global_cv_seed)
     # ModelStacking.stack_tree_train(global_train_seed, global_cv_seed)
-    # TrainSingleModel.stack_lgb_train(213, 33, auto_idx='2')
+    TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed, auto_idx='1')
 
     # Prejudge
     # PrejudgeTraining.binary_train(global_train_seed, global_cv_seed)
@@ -1898,7 +1898,7 @@ if __name__ == "__main__":
     # auto_train()
 
     # Auto Grid Searching
-    auto_grid_search()
+    # auto_grid_search()
 
     print('======================================================')
     print('All Task Done!')
