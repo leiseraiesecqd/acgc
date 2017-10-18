@@ -505,7 +505,7 @@ class TrainSingleModel:
 
         CB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
                  n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
-                 cv_seed=cv_seed, parameters=parameters, show_importance=True,
+                 cv_seed=cv_seed, parameters=parameters, show_importance=False,
                  show_accuracy=True, save_csv_log=True, csv_idx=idx, auto_train_pred_path=auto_train_path)
 
     @staticmethod
@@ -1651,7 +1651,7 @@ class ModelStacking:
                         'train_seed': train_seed,
                         'cv_seed': cv_seed,
                         'num_boost_round_lgb_l1': 65,
-                        'num_boost_round_xgb_l1': 65,
+                        'num_boost_round_xgb_l1': 35,
                         'num_boost_round_final': 65,
                         'show_importance': False,
                         'show_accuracy': True,
@@ -1866,7 +1866,7 @@ if __name__ == "__main__":
     # TrainSingleModel.lgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # CatBoost
-    # TrainSingleModel.cb_train(global_train_seed, global_cv_seed)
+    TrainSingleModel.cb_train(global_train_seed, global_cv_seed)
 
     # DNN
     # TrainSingleModel.dnn_tf_train(global_train_seed, global_cv_seed)
@@ -1898,7 +1898,7 @@ if __name__ == "__main__":
     # auto_train()
 
     # Auto Grid Searching
-    auto_grid_search()
+    # auto_grid_search()
 
     print('======================================================')
     print('All Task Done!')
