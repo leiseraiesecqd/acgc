@@ -302,7 +302,7 @@ class TrainSingleModel:
         XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test, num_boost_round=35)
 
         XGB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
-                  n_valid=4, n_cv=20, n_era=20, train_seed=train_seed,
+                  n_valid=4, n_cv=5, n_era=20, train_seed=train_seed,
                   cv_seed=cv_seed, parameters=parameters, show_importance=False,
                   show_accuracy=True, save_csv_log=True, csv_idx=idx, auto_train_pred_path=auto_train_path)
 
@@ -1679,7 +1679,7 @@ def auto_grid_search():
         Automatically Grid Searching
     """
 
-    parameter_grid = ['bagging_fraction', (0.6, 0.7, 0.8, 0.9, 1.0)]
+    parameter_grid = ['subsample', (0.6, 0.7, 0.8, 0.9)]
     n_epoch = 200
 
     for param in parameter_grid[1]:
@@ -1721,14 +1721,14 @@ def auto_grid_search():
             #                           idx=idx, grid_search_tuple=grid_search_tuple)
 
             # XGBoost
-            # TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                            idx=idx, grid_search_tuple=grid_search_tuple)
+            TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True,
+                                       idx=idx, grid_search_tuple=grid_search_tuple)
             # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True,
             #                                    idx=idx, grid_search_tuple=grid_search_tuple)
 
             # LightGBM
-            TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True,
-                                       idx=idx, grid_search_tuple=grid_search_tuple)
+            # TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True,
+            #                            idx=idx, grid_search_tuple=grid_search_tuple)
             # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True,
             #                                    idx=idx, grid_search_tuple=grid_search_tuple)
 
