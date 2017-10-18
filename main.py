@@ -1375,7 +1375,7 @@ class ModelStacking:
                       'lambda': 0,
                       'alpha': 0,
                       'early_stopping_rounds': 30,
-                      'nthread': -1,
+                      'n_jobs': -1,
                       'objective': 'binary:logistic',
                       'eval_metric': 'logloss',
                       'seed': train_seed}
@@ -1887,8 +1887,8 @@ if __name__ == "__main__":
 
     # Stacking
     # ModelStacking.deep_stack_train(global_train_seed, global_cv_seed)
-    # ModelStacking.stack_tree_train(global_train_seed, global_cv_seed)
-    TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed, auto_idx='1')
+    ModelStacking.stack_tree_train(global_train_seed, global_cv_seed)
+    # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed, auto_idx='1')
 
     # Prejudge
     # PrejudgeTraining.binary_train(global_train_seed, global_cv_seed)
