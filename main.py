@@ -1765,7 +1765,7 @@ def auto_train():
         Automatically training a model for many times
     """
 
-    n_epoch = 5
+    n_epoch = 10
 
     for i in range(n_epoch):
 
@@ -1812,7 +1812,7 @@ def auto_train():
 
         # Stacking
         ModelStacking.stack_tree_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
-        for ii in range(5):
+        for ii in range(10):
             t_seed = random.randint(0, 300)
             c_seed = random.randint(0, 300)
             TrainSingleModel.stack_lgb_train(t_seed, c_seed, idx='auto_{}_epoch_{}'.format(i+1, ii+1),
@@ -1888,7 +1888,7 @@ if __name__ == "__main__":
     # Stacking
     # ModelStacking.deep_stack_train(global_train_seed, global_cv_seed)
     # ModelStacking.stack_tree_train(global_train_seed, global_cv_seed)
-    TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed, auto_idx='1')
+    # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed, auto_idx='1')
 
     # Prejudge
     # PrejudgeTraining.binary_train(global_train_seed, global_cv_seed)
@@ -1898,7 +1898,7 @@ if __name__ == "__main__":
     # auto_train()
 
     # Auto Grid Searching
-    # auto_grid_search()
+    auto_grid_search()
 
     print('======================================================')
     print('All Task Done!')
