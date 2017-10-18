@@ -1680,8 +1680,8 @@ def auto_grid_search():
         Automatically Grid Searching
     """
 
-    parameter_grid = ['subsample', (0.7, 0.8, 0.9)]
-    n_epoch = 100
+    parameter_grid = ['num_leaves', (70, 75, 88, 95)]
+    n_epoch = 200
 
     for param in parameter_grid[1]:
 
@@ -1722,14 +1722,14 @@ def auto_grid_search():
             #                           idx=idx, grid_search_tuple=grid_search_tuple)
 
             # XGBoost
-            TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True,
-                                       idx=idx, grid_search_tuple=grid_search_tuple)
+            # TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True,
+            #                            idx=idx, grid_search_tuple=grid_search_tuple)
             # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True,
             #                                    idx=idx, grid_search_tuple=grid_search_tuple)
 
             # LightGBM
-            # TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                            idx=idx, grid_search_tuple=grid_search_tuple)
+            TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True,
+                                       idx=idx, grid_search_tuple=grid_search_tuple)
             # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True,
             #                                    idx=idx, grid_search_tuple=grid_search_tuple)
 
@@ -1866,7 +1866,7 @@ if __name__ == "__main__":
     # TrainSingleModel.lgb_train_sklearn(global_train_seed, global_cv_seed)
 
     # CatBoost
-    TrainSingleModel.cb_train(global_train_seed, global_cv_seed)
+    # TrainSingleModel.cb_train(global_train_seed, global_cv_seed)
 
     # DNN
     # TrainSingleModel.dnn_tf_train(global_train_seed, global_cv_seed)
@@ -1898,7 +1898,7 @@ if __name__ == "__main__":
     # auto_train()
 
     # Auto Grid Searching
-    # auto_grid_search()
+    auto_grid_search()
 
     print('======================================================')
     print('All Task Done!')
