@@ -1895,10 +1895,10 @@ if __name__ == "__main__":
     # PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
 
     # Auto Training
-    # auto_train()
+    auto_train()
 
     # Auto Grid Searching
-    auto_grid_search()
+    # auto_grid_search()
 
     print('======================================================')
     print('All Task Done!')
