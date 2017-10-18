@@ -290,7 +290,7 @@ class TrainSingleModel:
                       'lambda': 0,
                       'alpha': 0,
                       'early_stopping_rounds': 30,
-                      'nthread': -1,
+                      'n_jobs': -1,
                       'objective': 'binary:logistic',
                       'eval_metric': 'logloss',
                       'seed': train_seed}
@@ -1680,8 +1680,8 @@ def auto_grid_search():
         Automatically Grid Searching
     """
 
-    parameter_grid = ['bagging_freq', (1, 2, 3, 4, 5)]
-    n_epoch = 200
+    parameter_grid = ['subsample', (0.7, 0.8, 0.9)]
+    n_epoch = 100
 
     for param in parameter_grid[1]:
 
@@ -1722,14 +1722,14 @@ def auto_grid_search():
             #                           idx=idx, grid_search_tuple=grid_search_tuple)
 
             # XGBoost
-            # TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True,
-            #                            idx=idx, grid_search_tuple=grid_search_tuple)
+            TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True,
+                                       idx=idx, grid_search_tuple=grid_search_tuple)
             # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True,
             #                                    idx=idx, grid_search_tuple=grid_search_tuple)
 
             # LightGBM
-            TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True,
-                                       idx=idx, grid_search_tuple=grid_search_tuple)
+            # TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True,
+            #                            idx=idx, grid_search_tuple=grid_search_tuple)
             # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True,
             #                                    idx=idx, grid_search_tuple=grid_search_tuple)
 
@@ -1887,7 +1887,7 @@ if __name__ == "__main__":
 
     # Stacking
     # ModelStacking.deep_stack_train(global_train_seed, global_cv_seed)
-    ModelStacking.stack_tree_train(global_train_seed, global_cv_seed)
+    # ModelStacking.stack_tree_train(global_train_seed, global_cv_seed)
     # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed, auto_idx='1')
 
     # Prejudge
@@ -1898,7 +1898,7 @@ if __name__ == "__main__":
     # auto_train()
 
     # Auto Grid Searching
-    # auto_grid_search()
+    auto_grid_search()
 
     print('======================================================')
     print('All Task Done!')
