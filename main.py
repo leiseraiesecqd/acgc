@@ -1680,7 +1680,7 @@ def auto_grid_search():
         Automatically Grid Searching
     """
 
-    parameter_grid = ['subsample', [0.6]]
+    parameter_grid = ['eta', (0.002, 0.003, 0.005, 0.01)]
     n_epoch = 100
 
     for param in parameter_grid[1]:
