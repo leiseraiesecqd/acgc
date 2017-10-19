@@ -6,8 +6,6 @@ import numpy as np
 import tensorflow as tf
 
 gan_prob_path = './data/gan_outputs/'
-utils.check_dir([gan_prob_path])
-
 
 class AdversarialValidation(object):
     """
@@ -303,6 +301,8 @@ class AdversarialValidation(object):
 
 
 def generate_validation_set(x_train, x_test, train_seed=None):
+
+    utils.check_dir([gan_prob_path])
 
     if train_seed is None:
         train_seed = random.randint(0, 500)
