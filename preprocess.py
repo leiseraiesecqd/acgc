@@ -11,6 +11,7 @@ from sklearn.model_selection import StratifiedShuffleSplit
 train_csv_path = './inputs/stock_train_data_20171013.csv'
 test_csv_path = './inputs/stock_test_data_20171013.csv'
 preprocessed_path = './data/preprocessed_data/'
+gan_prob_path = './data/gan_outputs/'
 negative_era_list = [2, 3, 4, 5, 8, 10, 12, 16]
 positive_era_list = [1, 6, 7, 9, 11, 13, 14, 15, 17, 18, 19, 20]
 
@@ -374,7 +375,7 @@ class DataPreProcess:
     # Split Adversarial Validation Set by GAN
     def split_data_by_gan(self, sample_ratio=None, sample_by_era=True, generate_mode='valid'):
 
-        similarity_prob = generate_validation_set(self.x_train, self.x_test, train_seed=None)
+        similarity_prob = utils.load_pkl_to_np(gan_prob_path + 'similarity_prob.p')
 
         if sample_by_era:
 

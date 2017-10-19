@@ -6,7 +6,8 @@ import numpy as np
 import tensorflow as tf
 from sklearn import preprocessing
 
-gan_prob_path = './data/gan_outputs/'
+gan_prob_path = preprocess.gan_prob_path
+
 
 class AdversarialValidation(object):
     """
@@ -212,7 +213,7 @@ class AdversarialValidation(object):
 
             yield batch_x
 
-    def train(self, similarity_prob_path=None, global_epochs=1):
+    def train(self, similarity_prob_path=None, global_epochs=1, return_similarity_prob=False):
         """
             Train the GAN
         """
@@ -243,7 +244,7 @@ class AdversarialValidation(object):
 
         with tf.Session(graph=train_graph) as sess:
 
-            start_time = time.time()
+            local_start_time = time.time()
 
             for global_epoch_i in range(global_epochs):
 
@@ -279,7 +280,7 @@ class AdversarialValidation(object):
                             d_cost = d_loss.eval({inputs_real: x_batch, inputs_z: batch_z, keep_prob: 1.0})
                             g_cost = g_loss.eval({inputs_z: batch_z, keep_prob: 1.0})
 
-                            total_time = time.time() - start_time
+                            total_time = time.time() - local_start_time
 
                             print('Global_Epoch: {}/{} |'.format(global_epoch_i+1, global_epochs),
                                   'Epoch: {}/{} |'.format(epoch_i + 1, self.epochs),
@@ -301,7 +302,8 @@ class AdversarialValidation(object):
 
             utils.save_np_to_pkl(similarity_prob_mean, similarity_prob_path + 'similarity_prob.p')
 
-            return similarity_prob_mean
+            if return_similarity_prob is True:
+                return similarity_prob_mean
 
 
 def generate_validation_set(x_train, x_test, train_seed=None):
@@ -316,17 +318,15 @@ def generate_validation_set(x_train, x_test, train_seed=None):
                   'n_discriminator_units': [64, 32, 16],
                   'n_generator_units': [32, 48, 72],
                   'z_dim': 24,
-                  'beta1': 0.5,
+                  'beta1': 0.8,
                   'batch_size': 128,
-                  'keep_prob': 0.9,
+                  'keep_prob': 0.75,
                   'display_step': 100,
                   'train_seed': train_seed}
 
     AV = AdversarialValidation(x_train, x_test, parameters)
 
-    similarity_prob = AV.train(similarity_prob_path=gan_prob_path, global_epochs=10)
-
-    return similarity_prob
+    AV.train(similarity_prob_path=gan_prob_path, global_epochs=10)
 
 
 if __name__ == '__main__':
@@ -340,7 +340,7 @@ if __name__ == '__main__':
 
     _x_train, _, _, _, _x_test, _ = utils.load_preprocessed_pd_data(preprocess.preprocessed_path)
 
-    _ = generate_validation_set(_x_train, _x_test, global_train_seed)
+    generate_validation_set(_x_train, _x_test, global_train_seed)
 
     print('======================================================')
     print('All Tasks Done!')
