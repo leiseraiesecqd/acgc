@@ -34,9 +34,9 @@ class AdversarialValidation(object):
             Create the model inputs
         """
         n_feature = self.x_train.shape[1]
-        inputs_real = tf.placeholder(tf.float64, (None, n_feature), name='inputs_real')
-        inputs_z = tf.placeholder(tf.float64, (None, self.z_dim), name='inputs_z')
-        keep_prob = tf.placeholder(tf.float64, name='keep_prob')
+        inputs_real = tf.placeholder(tf.float32, (None, n_feature), name='inputs_real')
+        inputs_z = tf.placeholder(tf.float32, (None, self.z_dim), name='inputs_z')
+        keep_prob = tf.placeholder(tf.float32, name='keep_prob')
 
         return inputs_real, inputs_z, keep_prob
 
@@ -47,7 +47,7 @@ class AdversarialValidation(object):
         # x_shape = features.get_shape().as_list()
         # weights_initializer = tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
         # weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN')
-        weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float64, seed=self.train_seed)
+        weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
         weights_reg = tf.contrib.layers.l2_regularizer(1e-3)
         normalizer_fn = tf.contrib.layers.batch_norm
         normalizer_params = {'is_training': is_training}
@@ -63,8 +63,7 @@ class AdversarialValidation(object):
                                                           weights_regularizer=weights_reg,
                                                           normalizer_fn=normalizer_fn,
                                                           normalizer_params=normalizer_params,
-                                                          # biases_initializer=tf.zeros_initializer(dtype=tf.float64)
-                                                          )
+                                                          biases_initializer=tf.zeros_initializer(dtype=tf.float32))
 
                 tf.summary.histogram('fc_layer', layer)
 
@@ -83,8 +82,7 @@ class AdversarialValidation(object):
                                                           weights_regularizer=weights_reg,
                                                           normalizer_fn=normalizer_fn,
                                                           normalizer_params=normalizer_params,
-                                                          # biases_initializer=tf.zeros_initializer(dtype=tf.float64)
-                                                          )
+                                                          biases_initializer=tf.zeros_initializer(dtype=tf.float32))
 
                 tf.summary.histogram('fc_layer', layer)
 
@@ -113,7 +111,7 @@ class AdversarialValidation(object):
         # x_shape = features.get_shape().as_list()
         # weights_initializer = tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
         # weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN')
-        weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float64, seed=self.train_seed)
+        weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
         weights_reg = tf.contrib.layers.l2_regularizer(1e-3)
         normalizer_fn = tf.contrib.layers.batch_norm
         normalizer_params = {'is_training': is_training}
@@ -129,8 +127,7 @@ class AdversarialValidation(object):
                                                           weights_regularizer=weights_reg,
                                                           normalizer_fn=normalizer_fn,
                                                           normalizer_params=normalizer_params,
-                                                          # biases_initializer=tf.zeros_initializer(dtype=tf.float64)
-                                                          )
+                                                          biases_initializer=tf.zeros_initializer(dtype=tf.float32))
 
                 tf.summary.histogram('fc_layer', layer)
 
