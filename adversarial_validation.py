@@ -4,6 +4,7 @@ import random
 import preprocess
 import numpy as np
 import tensorflow as tf
+from sklearn import preprocessing
 
 gan_prob_path = './data/gan_outputs/'
 
@@ -14,8 +15,11 @@ class AdversarialValidation(object):
 
     def __init__(self, x_tr, x_te, parameters):
 
-        self.x_train = x_tr
-        self.x_test = x_te
+        # Min Max Scaling:
+        min_max_scaler = preprocessing.MinMaxScaler(feature_range=(0, 1))
+        self.x_train = min_max_scaler.fit_transform(x_tr)
+        self.x_test = min_max_scaler.fit_transform(x_te)
+
         self.learning_rate = parameters['learning_rate']
         self.epochs = parameters['epochs']
         self.n_discriminator_units = parameters['n_discriminator_units']
@@ -46,9 +50,9 @@ class AdversarialValidation(object):
         """
         # x_shape = features.get_shape().as_list()
         # weights_initializer = tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
-        weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN')
-        # weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
-        weights_reg = None  # tf.contrib.layers.l2_regularizer(1e-3)
+        # weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN')
+        weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
+        weights_reg = tf.contrib.layers.l2_regularizer(1e-3)
         normalizer_fn = tf.contrib.layers.batch_norm
         normalizer_params = {'is_training': is_training}
 
@@ -61,8 +65,8 @@ class AdversarialValidation(object):
                                                           activation_fn=tf.nn.sigmoid,
                                                           weights_initializer=weights_initializer,
                                                           weights_regularizer=weights_reg,
-                                                          # normalizer_fn=normalizer_fn,
-                                                          # normalizer_params=normalizer_params,
+                                                          normalizer_fn=normalizer_fn,
+                                                          normalizer_params=normalizer_params,
                                                           biases_initializer=tf.zeros_initializer(dtype=tf.float32))
 
                 tf.summary.histogram('fc_layer', layer)
@@ -80,8 +84,8 @@ class AdversarialValidation(object):
                                                           activation_fn=None,
                                                           weights_initializer=weights_initializer,
                                                           weights_regularizer=weights_reg,
-                                                          # normalizer_fn=normalizer_fn,
-                                                          # normalizer_params=normalizer_params,
+                                                          normalizer_fn=normalizer_fn,
+                                                          normalizer_params=normalizer_params,
                                                           biases_initializer=tf.zeros_initializer(dtype=tf.float32))
 
                 tf.summary.histogram('fc_layer', layer)
@@ -112,9 +116,9 @@ class AdversarialValidation(object):
         """
         # x_shape = features.get_shape().as_list()
         # weights_initializer = tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
-        weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN')
-        # weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
-        weights_reg = None  # tf.contrib.layers.l2_regularizer(1e-3)
+        # weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN')
+        weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
+        weights_reg = tf.contrib.layers.l2_regularizer(1e-3)
         normalizer_fn = tf.contrib.layers.batch_norm
         normalizer_params = {'is_training': is_training}
 
@@ -127,8 +131,8 @@ class AdversarialValidation(object):
                                                           activation_fn=tf.nn.sigmoid,
                                                           weights_initializer=weights_initializer,
                                                           weights_regularizer=weights_reg,
-                                                          # normalizer_fn=normalizer_fn,
-                                                          # normalizer_params=normalizer_params,
+                                                          normalizer_fn=normalizer_fn,
+                                                          normalizer_params=normalizer_params,
                                                           biases_initializer=tf.zeros_initializer(dtype=tf.float32))
 
                 tf.summary.histogram('fc_layer', layer)
@@ -158,8 +162,8 @@ class AdversarialValidation(object):
         d_logits_real, d_outputs_real = self.discriminator(inputs_real, keep_prob, is_training=True, reuse=False)
         d_logits_fake, d_outputs_fake = self.discriminator(g_outputs, keep_prob, is_training=True, reuse=True)
 
-        d_labels_real = tf.ones_like(d_outputs_real)
-        d_labels_fake = tf.zeros_like(d_outputs_fake)
+        d_labels_real = tf.ones_like(d_outputs_real) * (1 - 0.1) + np.random.uniform(-0.05, 0.05)
+        d_labels_fake = tf.zeros_like(d_outputs_fake) + np.random.uniform(0.0, 0.1)
         g_labels = tf.ones_like(d_outputs_fake)
 
         d_loss_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=d_logits_real,
