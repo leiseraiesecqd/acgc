@@ -158,8 +158,8 @@ class AdversarialValidation(object):
         d_logits_real, d_outputs_real = self.discriminator(inputs_real, keep_prob, is_training=True, reuse=False)
         d_logits_fake, d_outputs_fake = self.discriminator(g_outputs, keep_prob, is_training=True, reuse=True)
 
-        d_labels_real = tf.ones_like(d_outputs_real) * (1 - 0.1) + np.random.uniform(-0.05, 0.05)
-        d_labels_fake = tf.zeros_like(d_outputs_fake) + np.random.uniform(0.0, 0.1)
+        d_labels_real = tf.ones_like(d_outputs_real)
+        d_labels_fake = tf.zeros_like(d_outputs_fake)
         g_labels = tf.ones_like(d_outputs_fake)
 
         d_loss_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=d_logits_real,
