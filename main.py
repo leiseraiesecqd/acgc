@@ -1741,12 +1741,12 @@ def auto_train():
     """
         Automatically training a model for many times
     """
-    n_epoch = 100
+    n_epoch = 10
 
     for i in range(n_epoch):
 
-        train_seed = random.randint(0, 300)
-        cv_seed = random.randint(0, 300)
+        train_seed = random.randint(0, 500)
+        cv_seed = random.randint(0, 500)
         epoch_start_time = time.time()
 
         print('======================================================')
@@ -1768,7 +1768,7 @@ def auto_train():
         # TrainSingleModel.gb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # XGBoost
-        TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        # TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
         # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # LightGBM
@@ -1786,12 +1786,12 @@ def auto_train():
         # ChampionModel.Christ1991(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # Stacking
-        # ModelStacking.stack_tree_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
-        # for ii in range(10):
-        #     t_seed = random.randint(0, 300)
-        #     c_seed = random.randint(0, 300)
-        #     TrainSingleModel.stack_lgb_train(t_seed, c_seed, idx='auto_{}_epoch_{}'.format(i+1, ii+1),
-        #                                      save_auto_train_results=True, auto_idx=i+1)
+        ModelStacking.stack_tree_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        for ii in range(10):
+            t_seed = random.randint(0, 500)
+            c_seed = random.randint(0, 500)
+            TrainSingleModel.stack_lgb_train(t_seed, c_seed, idx='auto_{}_epoch_{}'.format(i+1, ii+1),
+                                             save_auto_train_results=True, auto_idx=i+1)
 
         print('======================================================')
         print('Auto Training Epoch Done!')
