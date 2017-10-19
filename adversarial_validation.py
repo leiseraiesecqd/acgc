@@ -65,8 +65,8 @@ class AdversarialValidation(object):
                                                           activation_fn=tf.nn.sigmoid,
                                                           weights_initializer=weights_initializer,
                                                           weights_regularizer=weights_reg,
-                                                          normalizer_fn=normalizer_fn,
-                                                          normalizer_params=normalizer_params,
+                                                          # normalizer_fn=normalizer_fn,
+                                                          # normalizer_params=normalizer_params,
                                                           biases_initializer=tf.zeros_initializer(dtype=tf.float32))
 
                 tf.summary.histogram('fc_layer', layer)
@@ -84,8 +84,8 @@ class AdversarialValidation(object):
                                                           activation_fn=None,
                                                           weights_initializer=weights_initializer,
                                                           weights_regularizer=weights_reg,
-                                                          normalizer_fn=normalizer_fn,
-                                                          normalizer_params=normalizer_params,
+                                                          # normalizer_fn=normalizer_fn,
+                                                          # normalizer_params=normalizer_params,
                                                           biases_initializer=tf.zeros_initializer(dtype=tf.float32))
 
                 tf.summary.histogram('fc_layer', layer)
@@ -131,8 +131,8 @@ class AdversarialValidation(object):
                                                           activation_fn=tf.nn.sigmoid,
                                                           weights_initializer=weights_initializer,
                                                           weights_regularizer=weights_reg,
-                                                          normalizer_fn=normalizer_fn,
-                                                          normalizer_params=normalizer_params,
+                                                          # normalizer_fn=normalizer_fn,
+                                                          # normalizer_params=normalizer_params,
                                                           biases_initializer=tf.zeros_initializer(dtype=tf.float32))
 
                 tf.summary.histogram('fc_layer', layer)
