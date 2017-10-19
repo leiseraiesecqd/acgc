@@ -55,6 +55,11 @@ class DataPreProcess:
         self.e_train_n = pd.DataFrame()
         self.id_test_n = pd.DataFrame()
 
+        # Validation Set
+        self.x_valid = np.array([])
+        self.x_g_valid = np.array([])
+        self.y_valid = np.array([])
+
     # Load CSV Files
     def load_csv_np(self):
 
@@ -366,18 +371,19 @@ class DataPreProcess:
         # print('Shape of x_train with group dummies: {}'.format(self.x_train.shape))
         # print('Shape of x_test with group dummies: {}'.format(self.x_test.shape))
 
-    # Generate Adversarial Validation Set by GAN
-    def generate_validation_by_gan(self, sample_ratio=None, sample_by_era=True, generate_mode='valid'):
+    # Split Adversarial Validation Set by GAN
+    def split_data_by_gan(self, sample_ratio=None, sample_by_era=True, generate_mode='valid'):
 
         similarity_prob = generate_validation_set(self.x_train, self.x_test, train_seed=None)
 
         if sample_by_era:
 
-            most_similar_idx_all = []
             similarity_prob_e = []
             index_e = []
             similarity_prob_all = []
             index_all = []
+            valid_idx = []
+            train_idx = []
             era_tag = 1
             era_all = [era_tag]
 
@@ -400,10 +406,37 @@ class DataPreProcess:
                     index_e = [idx]
 
             for i, similarity_prob_i in enumerate(similarity_prob_all):
+
                 n_sample_e = int(len(similarity_prob_i) * sample_ratio)
                 most_similar_idx_e = np.argsort(similarity_prob_i)[:, :-(n_sample_e+1):-1]
+                least_similar_idx_e = np.argsort(similarity_prob_i)[:, :len(similarity_prob_i)-n_sample_e]
+
                 if generate_mode == 'valid':
-                    list(index_all[i][most_similar_idx_e])
+                    valid_idx = list(index_all[i][most_similar_idx_e])
+                    train_idx = list(index_all[i][least_similar_idx_e])
+                elif generate_mode == 'train':
+                    train_idx = list(index_all[i][most_similar_idx_e])
+                    valid_idx = list(index_all[i][least_similar_idx_e])
+                else:
+                    raise ValueError("Wrong 'generate_mode'!")
+
+            # Generate Validation Set
+            self.x_valid = self.x_train[valid_idx]
+            self.x_g_valid = self.x_g_train[valid_idx]
+            self.y_valid = self.x_train[valid_idx]
+
+            # Generate Training Set
+            self.x_train = self.x_train[train_idx]
+            self.x_g_train = self.x_g_train[train_idx]
+            self.y_train = self.y_train[train_idx]
+            self.w_train = self.w_train[train_idx]
+            self.e_train = self.e_train[train_idx]
+
+            # Save Adversarial Validation Set
+            print('Saving Adversarial Validation Set...')
+            self.x_valid.to_pickle(self.preprocess_path + 'x_valid.p')
+            self.x_g_valid.to_pickle(self.preprocess_path + 'x_g_valid.p')
+            self.y_valid.to_pickle(self.preprocess_path + 'y_valid.p')
 
     # Split Positive and Negative Era Set
     def split_data_by_era_distribution(self):
@@ -543,11 +576,14 @@ class DataPreProcess:
         # Convert column 'group' to dummies
         self.convert_group_to_dummies()
 
-        # Save Data to pickle files
-        self.save_data_pd()
+        # Split Adversarial Validation Set by GAN
+        # self.split_data_by_gan(sample_ratio=0.2, sample_by_era=True, generate_mode='valid')
 
         # Split Positive and Negative Era Set
         self.split_data_by_era_distribution()
+
+        # Save Data to pickle files
+        self.save_data_pd()
 
         # Save Data Split by Era Distribution
         self.save_data_by_era_distribution_pd()
