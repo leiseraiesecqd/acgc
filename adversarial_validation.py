@@ -46,9 +46,9 @@ class AdversarialValidation(object):
         """
         # x_shape = features.get_shape().as_list()
         # weights_initializer = tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
-        # weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN')
-        weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
-        weights_reg = tf.contrib.layers.l2_regularizer(1e-3)
+        weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN')
+        # weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
+        weights_reg = None  # tf.contrib.layers.l2_regularizer(1e-3)
         normalizer_fn = tf.contrib.layers.batch_norm
         normalizer_params = {'is_training': is_training}
 
@@ -112,9 +112,9 @@ class AdversarialValidation(object):
         """
         # x_shape = features.get_shape().as_list()
         # weights_initializer = tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
-        # weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN')
-        weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
-        weights_reg = tf.contrib.layers.l2_regularizer(1e-3)
+        weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN')
+        # weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
+        weights_reg = None  # tf.contrib.layers.l2_regularizer(1e-3)
         normalizer_fn = tf.contrib.layers.batch_norm
         normalizer_params = {'is_training': is_training}
 
