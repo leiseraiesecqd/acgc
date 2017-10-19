@@ -148,8 +148,8 @@ class ModelBase(object):
         return loss_train, loss_valid, loss_train_w, loss_valid_w
 
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, n_valid=4, n_cv=20, n_era=20,
-              train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
-              show_accuracy=False, save_cv_pred=True, save_cv_prob_train=False, save_csv_log=True,
+              train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False, show_accuracy=False, 
+              save_final_pred=True, save_cv_pred=True, save_cv_prob_train=False, save_csv_log=True,
               csv_idx=None, cv_generator=None, return_prob_test=False, auto_train_pred_path=None):
 
         # Check if directories exit or not
@@ -244,7 +244,7 @@ class ModelBase(object):
                                    self.id_test, prob_test_mean)
             utils.save_prob_train_to_csv(pred_path + 'final_prob_train/' + model_name + '_',
                                          prob_train_mean, self.y_train)
-        else:
+        elif save_final_pred is True:
             utils.save_pred_to_csv(auto_train_pred_path + model_name + str(csv_idx) + '_' + str(train_seed) + '_' + str(cv_seed) + '_',
                                    self.id_test, prob_test_mean)
 
@@ -1125,10 +1125,11 @@ class DeepNeuralNetworks(ModelBase):
         return model_name
 
     # Input Tensors
-    @staticmethod
-    def input_tensor(n_feature):
+    def input_tensor(self):
 
-        inputs_ = tf.placeholder(tf.float64, [None, n_feature], name='inputs')
+        feature_num = self.x_train.shape[1]
+
+        inputs_ = tf.placeholder(tf.float64, [None, feature_num], name='inputs')
         labels_ = tf.placeholder(tf.float64, None, name='labels')
         loss_weights_ = tf.placeholder(tf.float64, None, name='loss_weights')
         learning_rate_ = tf.placeholder(tf.float64, name='learning_rate')
@@ -1282,8 +1283,8 @@ class DeepNeuralNetworks(ModelBase):
 
     # Training
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, n_valid=4, n_cv=20, n_era=20,
-              train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
-              show_accuracy=False, save_cv_pred=True, save_cv_prob_train=False, save_csv_log=True,
+              train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False, show_accuracy=False, 
+              save_final_pred=True, save_cv_pred=True, save_cv_prob_train=False, save_csv_log=True,
               csv_idx=None, cv_generator=None, return_prob_test=False, auto_train_pred_path=None):
 
         # Check if directories exit or not
@@ -1296,8 +1297,7 @@ class DeepNeuralNetworks(ModelBase):
         with train_graph.as_default():
 
             # Inputs
-            feature_num = self.x_train.shape[1]
-            inputs, labels, weights, lr, keep_prob, is_train = self.input_tensor(feature_num)
+            inputs, labels, weights, lr, keep_prob, is_train = self.input_tensor()
 
             # Logits
             logits = self.model(inputs, self.unit_number, keep_prob, is_train)
@@ -1471,7 +1471,7 @@ class DeepNeuralNetworks(ModelBase):
                                        self.id_test, prob_test_mean)
                 utils.save_prob_train_to_csv(pred_path + 'final_prob_train/' + model_name + '_',
                                              prob_train_mean, self.y_train)
-            else:
+            elif save_final_pred is True:
                 utils.save_pred_to_csv(auto_train_pred_path + model_name + str(csv_idx) + '_' + str(train_seed) + '_' + str(cv_seed) + '_',
                                        self.id_test, prob_test_mean)
 
@@ -1511,8 +1511,7 @@ class DeepNeuralNetworks(ModelBase):
         with train_graph.as_default():
 
             # Inputs
-            feature_num = x_train.shape[1]
-            inputs, labels, weights, lr, keep_prob, is_train = self.input_tensor(feature_num)
+            inputs, labels, weights, lr, keep_prob, is_train = self.input_tensor()
 
             # Logits
             logits = self.model(inputs, self.unit_number, keep_prob, is_train)

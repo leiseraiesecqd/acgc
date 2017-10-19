@@ -4,6 +4,7 @@ import os
 import numpy as np
 import pandas as pd
 from os.path import isdir
+from adversarial_validation import generate_validation_set
 from sklearn.model_selection import StratifiedShuffleSplit
 
 
@@ -364,6 +365,45 @@ class DataPreProcess:
 
         # print('Shape of x_train with group dummies: {}'.format(self.x_train.shape))
         # print('Shape of x_test with group dummies: {}'.format(self.x_test.shape))
+
+    # Generate Adversarial Validation Set by GAN
+    def generate_validation_by_gan(self, sample_ratio=None, sample_by_era=True, generate_mode='valid'):
+
+        similarity_prob = generate_validation_set(self.x_train, self.x_test, train_seed=None)
+
+        if sample_by_era:
+
+            most_similar_idx_all = []
+            similarity_prob_e = []
+            index_e = []
+            similarity_prob_all = []
+            index_all = []
+            era_tag = 1
+            era_all = [era_tag]
+
+            for idx, era in enumerate(self.e_train):
+
+                if idx == len(self.e_train) - 1:
+                    similarity_prob_e.append(similarity_prob[idx])
+                    index_e.append(idx)
+                    similarity_prob_all.append(similarity_prob_e)
+                    index_all.append(index_e)
+                elif era_tag == era:
+                    similarity_prob_e.append(similarity_prob[idx])
+                    index_e.append(idx)
+                else:
+                    era_tag = era
+                    era_all.append(era)
+                    similarity_prob_all.append(similarity_prob_e)
+                    index_all.append(index_e)
+                    similarity_prob_e = [similarity_prob[idx]]
+                    index_e = [idx]
+
+            for i, similarity_prob_i in enumerate(similarity_prob_all):
+                n_sample_e = int(len(similarity_prob_i) * sample_ratio)
+                most_similar_idx_e = np.argsort(similarity_prob_i)[:, :-(n_sample_e+1):-1]
+                if generate_mode == 'valid':
+                    list(index_all[i][most_similar_idx_e])
 
     # Split Positive and Negative Era Set
     def split_data_by_era_distribution(self):
