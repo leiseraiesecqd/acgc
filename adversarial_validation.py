@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow as tf
 from sklearn import preprocessing
 
-gan_prob_path = preprocess.gan_prob_path
+gan_prob_path = './data/gan_outputs/'
 
 
 class AdversarialValidation(object):
