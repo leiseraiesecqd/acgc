@@ -163,8 +163,11 @@ class AdversarialValidation(object):
         d_logits_real, d_outputs_real = self.discriminator(inputs_real, keep_prob, is_training=True, reuse=False)
         d_logits_fake, d_outputs_fake = self.discriminator(g_outputs, keep_prob, is_training=True, reuse=True)
 
-        d_labels_real = tf.ones_like(d_outputs_real) * (1 - 0.1) + np.random.uniform(-0.05, 0.05)
-        d_labels_fake = tf.zeros_like(d_outputs_fake) + np.random.uniform(0.0, 0.1)
+        #  d_labels_real = tf.ones_like(d_outputs_real) * (1 - 0.1) + np.random.uniform(-0.05, 0.05)
+        #  d_labels_fake = tf.zeros_like(d_outputs_fake) + np.random.uniform(0.0, 0.1)
+        #  g_labels = tf.ones_like(d_outputs_fake)
+        d_labels_real = tf.ones_like(d_outputs_real)
+        d_labels_fake = tf.zeros_like(d_outputs_fake)
         g_labels = tf.ones_like(d_outputs_fake)
 
         d_loss_real = tf.reduce_mean(tf.nn.sigmoid_cross_entropy_with_logits(logits=d_logits_real,
@@ -267,12 +270,12 @@ class AdversarialValidation(object):
                         batch_z = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
 
                         # Run optimizers
-                        _ = sess.run(d_train_opt, feed_dict={inputs_real: x_batch,
-                                                             inputs_z: batch_z,
-                                                             keep_prob: self.keep_prob})
-                        _ = sess.run(g_train_opt, feed_dict={inputs_real: x_batch,
-                                                             inputs_z: batch_z,
-                                                             keep_prob: self.keep_prob})
+                        sess.run(d_train_opt, feed_dict={inputs_real: x_batch,
+                                                         inputs_z: batch_z,
+                                                         keep_prob: self.keep_prob})
+                        sess.run(g_train_opt, feed_dict={inputs_real: x_batch,
+                                                         inputs_z: batch_z,
+                                                         keep_prob: self.keep_prob})
 
                         if batch_counter % self.display_step == 0 and batch_i > 0:
 
@@ -313,14 +316,14 @@ def generate_validation_set(x_train, x_test, train_seed=None):
     if train_seed is None:
         train_seed = random.randint(0, 500)
 
-    parameters = {'learning_rate': 0.0001,
-                  'epochs': 100,
+    parameters = {'learning_rate': 0.001,
+                  'epochs': 30,
                   'n_discriminator_units': [64, 32, 16],
                   'n_generator_units': [32, 48, 72],
                   'z_dim': 24,
-                  'beta1': 0.8,
+                  'beta1': 0.9,
                   'batch_size': 128,
-                  'keep_prob': 0.75,
+                  'keep_prob': 0.9,
                   'display_step': 100,
                   'train_seed': train_seed}
 
