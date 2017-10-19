@@ -5,8 +5,14 @@ import preprocess
 import numpy as np
 import tensorflow as tf
 
+gan_prob_path = './data/gan_outputs/'
+utils.check_dir([gan_prob_path])
+
 
 class AdversarialValidation(object):
+    """
+        Generate Adversarial Validation Set Using GAN
+    """
 
     def __init__(self, x_tr, x_te, parameters):
 
@@ -297,9 +303,6 @@ class AdversarialValidation(object):
 
 
 def generate_validation_set(x_train, x_test, train_seed=None):
-
-    gan_prob_path = '/data/gan_outputs/'
-    utils.check_dir([gan_prob_path])
 
     if train_seed is None:
         train_seed = random.randint(0, 500)
