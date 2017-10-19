@@ -39,7 +39,6 @@ class ModelBase(object):
     """
         Base Model Class of Models in scikit-learn Module
     """
-
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
 
         self.x_train = x_tr
@@ -302,7 +301,6 @@ class LRegression(ModelBase):
     """
         Logistic Regression
     """
-
     @staticmethod
     def get_clf(parameters):
 
@@ -339,7 +337,6 @@ class KNearestNeighbor(ModelBase):
     """
         k-Nearest Neighbor Classifier
     """
-
     @staticmethod
     def get_clf(parameters):
 
@@ -364,7 +361,6 @@ class SupportVectorClustering(ModelBase):
     """
         SVM - Support Vector Clustering
     """
-
     @staticmethod
     def get_clf(parameters):
 
@@ -389,7 +385,6 @@ class Gaussian(ModelBase):
     """
         Gaussian NB
     """
-
     @staticmethod
     def get_clf(parameters):
 
@@ -414,7 +409,6 @@ class DecisionTree(ModelBase):
     """
         Decision Tree
     """
-
     @staticmethod
     def get_clf(parameters):
 
@@ -439,7 +433,6 @@ class RandomForest(ModelBase):
     """
         Random Forest
     """
-
     @staticmethod
     def get_clf(parameters):
 
@@ -464,7 +457,6 @@ class ExtraTrees(ModelBase):
     """
         Extra Trees
     """
-
     @staticmethod
     def get_clf(parameters):
 
@@ -489,7 +481,6 @@ class AdaBoost(ModelBase):
     """
         AdaBoost
     """
-
     @staticmethod
     def get_clf(parameters):
 
@@ -514,7 +505,6 @@ class GradientBoosting(ModelBase):
     """
         Gradient Boosting
     """
-
     @staticmethod
     def get_clf(parameters):
 
@@ -539,7 +529,6 @@ class XGBoost(ModelBase):
     """
         XGBoost
     """
-
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, num_boost_round):
 
         super(XGBoost, self).__init__(x_tr, y_tr, w_tr, e_tr, x_te, id_te)
@@ -627,7 +616,6 @@ class SKLearnXGBoost(ModelBase):
     """
         XGBoost using sklearn module
     """
-
     @staticmethod
     def get_clf(parameters=None):
 
@@ -689,7 +677,6 @@ class LightGBM(ModelBase):
     """
         LightGBM
     """
-
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, num_boost_round):
 
         super(LightGBM, self).__init__(x_tr, y_tr, w_tr, e_tr, x_te, id_te)
@@ -980,7 +967,6 @@ class SKLearnLightGBM(ModelBase):
     """
         LightGBM using sklearn module
     """
-
     @staticmethod
     def get_clf(parameters=None):
 
@@ -1039,7 +1025,6 @@ class CatBoost(ModelBase):
     """
         CatBoost
     """
-
     @staticmethod
     def get_clf(parameters=None):
 
@@ -1111,7 +1096,6 @@ class DeepNeuralNetworks(ModelBase):
     """
         Deep Neural Networks
     """
-
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, parameters):
 
         super(DeepNeuralNetworks, self).__init__(x_tr, y_tr, w_tr, e_tr, x_te, id_te)
@@ -1625,7 +1609,6 @@ class DeepNeuralNetworks(ModelBase):
 #     """
 #         Deep Neural Networks
 #     """
-#
 #     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, parameters):
 #
 #         super(KerasDeepNeuralNetworks, self).__init__(x_tr, y_tr, w_tr, e_tr, x_te, id_te)
@@ -1721,7 +1704,6 @@ def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, n_era, cv_seed, 
     """
          Grid Search
     """
-
     start_time = time.time()
 
     grid_search_model = GridSearchCV(estimator=clf,

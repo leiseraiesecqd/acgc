@@ -9,7 +9,6 @@ class PrejudgeBinary:
     """
         Prejudge - Training by Binary Class of Split Era sign
     """
-
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_g_tr, x_tr_p, y_tr_p, w_tr_p, e_tr_p, x_g_tr_p,
                  x_tr_n, y_tr_n, w_tr_n, e_tr_n, x_g_tr_n, x_te, id_te, x_g_te,
                  pred_path, prejudged_data_path, loss_log_path, csv_log_path,
@@ -65,7 +64,6 @@ class PrejudgeBinary:
         """
             Load era sign from existed csv file
         """
-
         f = np.loadtxt(pred_path, dtype=np.float64, skiprows=1, delimiter=",")
         era_prob_test = f[:, -1]
 
@@ -77,7 +75,6 @@ class PrejudgeBinary:
         """
             Initialize model for era prejudging
         """
-
         LGB_E = models.LightGBM(self.x_g_train, era_sign_train, self.w_train, self.e_train,
                                 self.x_g_test, self.id_test, num_boost_round=self.num_boost_round_e)
         # XGB_E = models.XGBoost(self.x_train, era_sign_train, self.w_train, self.e_train,
@@ -93,7 +90,6 @@ class PrejudgeBinary:
         """
             Initialize model for positive eras
         """
-
         LGB_P = models.LightGBM(self.x_g_train_p, self.y_train_p, self.w_train_p, self.e_train_p,
                                 x_g_test_p, id_test_p, num_boost_round=self.num_boost_round_p)
         # XGB_P = models.XGBoost(self.x_train_p, self.y_train_p, self.w_train_p, self.e_train_p,
@@ -109,7 +105,6 @@ class PrejudgeBinary:
         """
             Initialize model for negative eras
         """
-
         LGB_N = models.LightGBM(self.x_g_train_n, self.y_train_n, self.w_train_n, self.e_train_n,
                                 x_g_test_n, id_test_n, num_boost_round=self.num_boost_round_n)
         # XGB_N = models.XGBoost(self.x_train_n, self.y_train_n, self.w_train_n, self.e_train_n,
@@ -157,7 +152,6 @@ class PrejudgeBinary:
         """
             Split whole data set to positive and negative set using era sign
         """
-
         if self.cv_seed is not None:
             np.random.seed(self.cv_seed)
 
@@ -189,7 +183,6 @@ class PrejudgeBinary:
         """
             Training positive and negative model using data set respectively
         """
-
         print('======================================================')
         print('Training Models by Era Sign...')
 
@@ -246,7 +239,6 @@ class PrejudgeBinary:
         """
             Training the model
         """
-
         start_time = time.time()
 
         path_list = [self.pred_path + 'positive/',
@@ -308,7 +300,6 @@ class PrejudgeMultiClass:
     """
         Prejudge - Training by Multi Class of Split Era sign
     """
-
     def __init__(self, x_tr, y_tr, w_tr, e_tr, x_g_tr, x_te, id_te, x_g_te,
                  pred_path, prejudged_data_path, loss_log_path, csv_log_path,
                  models_parameters, hyper_parameters):
@@ -344,7 +335,6 @@ class PrejudgeMultiClass:
         """
             Initialize model for era prejudging
         """
-
         LGB_E = models.LightGBM(self.x_g_train, e_train, self.w_train, self.e_train,
                                 self.x_g_test, self.id_test, num_boost_round=self.num_boost_round_e)
         # XGB_E = models.XGBoost(self.x_train, e_train, self.w_train, self.e_train,
@@ -361,7 +351,6 @@ class PrejudgeMultiClass:
         """
             Initialize model for positive eras
         """
-
         LGB_M = models.LightGBM(x_g_train_era, y_train_era, w_train_era, e_train_era,
                                 x_g_test_era, id_test_era, num_boost_round=self.num_boost_round_m)
         # XGB_M = models.XGBoost(x_train_era, y_train_era, w_train_era, e_train_era,
@@ -377,7 +366,6 @@ class PrejudgeMultiClass:
         """
             Training and predict era signs of instances
         """
-
         print('======================================================')
         print('Training Era Sign...')
 
@@ -407,7 +395,6 @@ class PrejudgeMultiClass:
         """
             Split test data set to n_era sets using era signs
         """
-
         if self.cv_seed is not None:
             np.random.seed(self.cv_seed)
 
@@ -435,7 +422,6 @@ class PrejudgeMultiClass:
         """
             Split train data set to n_era sets
         """
-
         x_train_e = []
         x_g_train_e = []
         y_train_e = []
@@ -487,7 +473,6 @@ class PrejudgeMultiClass:
         """
             Training Models for Different Eras
         """
-
         print('======================================================')
         print('Training Models by Era Sign...')
 
@@ -541,7 +526,6 @@ class PrejudgeMultiClass:
         """
             Training the model
         """
-
         start_time = time.time()
 
         path_list = [self.pred_path + 'multiclass/',

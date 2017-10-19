@@ -9,7 +9,6 @@ class CrossValidation:
     """
         Cross Validation
     """
-
     def __init__(self):
 
         self.trained_cv = []
