@@ -50,8 +50,8 @@ class AdversarialValidation(object):
         """
         # x_shape = features.get_shape().as_list()
         # weights_initializer = tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
-        # weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN')
-        weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
+        weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN')
+        # weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
         weights_reg = tf.contrib.layers.l2_regularizer(1e-3)
         normalizer_fn = tf.contrib.layers.batch_norm
         normalizer_params = {'is_training': is_training}
@@ -65,8 +65,8 @@ class AdversarialValidation(object):
                                                           activation_fn=tf.nn.sigmoid,
                                                           weights_initializer=weights_initializer,
                                                           weights_regularizer=weights_reg,
-                                                          # normalizer_fn=normalizer_fn,
-                                                          # normalizer_params=normalizer_params,
+                                                          normalizer_fn=normalizer_fn,
+                                                          normalizer_params=normalizer_params,
                                                           biases_initializer=tf.zeros_initializer(dtype=tf.float32))
 
                 tf.summary.histogram('fc_layer', layer)
@@ -84,8 +84,8 @@ class AdversarialValidation(object):
                                                           activation_fn=None,
                                                           weights_initializer=weights_initializer,
                                                           weights_regularizer=weights_reg,
-                                                          # normalizer_fn=normalizer_fn,
-                                                          # normalizer_params=normalizer_params,
+                                                          normalizer_fn=normalizer_fn,
+                                                          normalizer_params=normalizer_params,
                                                           biases_initializer=tf.zeros_initializer(dtype=tf.float32))
 
                 tf.summary.histogram('fc_layer', layer)
@@ -116,8 +116,8 @@ class AdversarialValidation(object):
         """
         # x_shape = features.get_shape().as_list()
         # weights_initializer = tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
-        # weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN')
-        weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
+        weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN')
+        # weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
         weights_reg = tf.contrib.layers.l2_regularizer(1e-3)
         normalizer_fn = tf.contrib.layers.batch_norm
         normalizer_params = {'is_training': is_training}
@@ -131,8 +131,8 @@ class AdversarialValidation(object):
                                                           activation_fn=tf.nn.sigmoid,
                                                           weights_initializer=weights_initializer,
                                                           weights_regularizer=weights_reg,
-                                                          # normalizer_fn=normalizer_fn,
-                                                          # normalizer_params=normalizer_params,
+                                                          normalizer_fn=normalizer_fn,
+                                                          normalizer_params=normalizer_params,
                                                           biases_initializer=tf.zeros_initializer(dtype=tf.float32))
 
                 tf.summary.histogram('fc_layer', layer)
@@ -291,7 +291,7 @@ class AdversarialValidation(object):
                 print('------------------------------------------------------')
                 print('Calculating Similarities of Train Set...')
                 similarity_prob = \
-                    sess.run(similarities, feed_dict={inputs_real: self.x_train, keep_prob: self.keep_prob})
+                    sess.run(similarities, feed_dict={inputs_real: self.x_train, keep_prob: 1.0})
 
                 similarity_prob_total.append(similarity_prob)
 
@@ -311,14 +311,14 @@ def generate_validation_set(x_train, x_test, train_seed=None):
     if train_seed is None:
         train_seed = random.randint(0, 500)
 
-    parameters = {'learning_rate': 0.00001,
-                  'epochs': 30,
+    parameters = {'learning_rate': 0.0001,
+                  'epochs': 100,
                   'n_discriminator_units': [64, 32, 16],
-                  'n_generator_units': [32, 64, 128],
-                  'z_dim': 16,
+                  'n_generator_units': [32, 48, 72],
+                  'z_dim': 24,
                   'beta1': 0.5,
                   'batch_size': 128,
-                  'keep_prob': 0.75,
+                  'keep_prob': 0.9,
                   'display_step': 100,
                   'train_seed': train_seed}
 
