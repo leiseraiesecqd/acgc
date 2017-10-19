@@ -63,7 +63,8 @@ class AdversarialValidation(object):
                                                           weights_regularizer=weights_reg,
                                                           normalizer_fn=normalizer_fn,
                                                           normalizer_params=normalizer_params,
-                                                          biases_initializer=tf.zeros_initializer(dtype=tf.float64))
+                                                          # biases_initializer=tf.zeros_initializer(dtype=tf.float64)
+                                                          )
 
                 tf.summary.histogram('fc_layer', layer)
 
@@ -82,7 +83,8 @@ class AdversarialValidation(object):
                                                           weights_regularizer=weights_reg,
                                                           normalizer_fn=normalizer_fn,
                                                           normalizer_params=normalizer_params,
-                                                          biases_initializer=tf.zeros_initializer(dtype=tf.float64))
+                                                          # biases_initializer=tf.zeros_initializer(dtype=tf.float64)
+                                                          )
 
                 tf.summary.histogram('fc_layer', layer)
 
@@ -127,7 +129,8 @@ class AdversarialValidation(object):
                                                           weights_regularizer=weights_reg,
                                                           normalizer_fn=normalizer_fn,
                                                           normalizer_params=normalizer_params,
-                                                          biases_initializer=tf.zeros_initializer(dtype=tf.float64))
+                                                          # biases_initializer=tf.zeros_initializer(dtype=tf.float64)
+                                                          )
 
                 tf.summary.histogram('fc_layer', layer)
 
