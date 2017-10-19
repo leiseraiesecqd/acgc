@@ -307,7 +307,7 @@ def generate_validation_set(x_train, x_test, train_seed=None):
     if train_seed is None:
         train_seed = random.randint(0, 500)
 
-    parameters = {'learning_rate': 0.0001,
+    parameters = {'learning_rate': 0.00001,
                   'epochs': 30,
                   'n_discriminator_units': [64, 32, 16],
                   'n_generator_units': [32, 64, 128],
