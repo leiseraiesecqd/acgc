@@ -359,7 +359,7 @@ class TrainSingleModel:
 
         parameters = {'application': 'binary',
                       'boosting': 'gbdt',               # gdbt,rf,dart,goss
-                      'learning_rate': 0.003,           # default=0.1
+                      'learning_rate': 0.002,           # default=0.1
                       'num_leaves': 88,                 # default=31       <2^(max_depth)
                       'max_depth': 7,                   # default=-1
                       'min_data_in_leaf': 2500,         # default=20       reduce over-fit
@@ -384,7 +384,7 @@ class TrainSingleModel:
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
 
-        LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=65)
+        LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=80)
 
         # cv_generator = CrossValidation.era_k_fold_with_weight_all_random
         # cv_generator = CrossValidation.random_split_with_weight
