@@ -98,11 +98,13 @@ class AdversarialValidation(object):
 
                 fc.append(fc_layer(fc[i], 'fc{}'.format(i + 1), self.n_discriminator_units[i]))
 
-            outputs = fc[len(self.n_discriminator_units)]
+            fc_final = fc[len(self.n_discriminator_units)]
 
-            logits = output_layer(outputs, 'output', 1)
+            logits = output_layer(fc_final, 'output', 1)
 
-        return outputs, logits
+            outputs = tf.sigmoid(logits)
+
+        return logits, outputs
 
     def generator(self, z, keep_prob, is_training=True):
         """
@@ -153,8 +155,8 @@ class AdversarialValidation(object):
             Get the loss for the discriminator and generator
         """
         g_outputs = self.generator(inputs_z, keep_prob, is_training=True)
-        d_outputs_real, d_logits_real = self.discriminator(inputs_real, keep_prob, is_training=True, reuse=False)
-        d_outputs_fake, d_logits_fake = self.discriminator(g_outputs, keep_prob, is_training=True, reuse=True)
+        d_logits_real, d_outputs_real = self.discriminator(inputs_real, keep_prob, is_training=True, reuse=False)
+        d_logits_fake, d_outputs_fake = self.discriminator(g_outputs, keep_prob, is_training=True, reuse=True)
 
         d_labels_real = tf.ones_like(d_outputs_real) * (1 - 0.1) + np.random.uniform(-0.05, 0.05)
         d_labels_fake = tf.zeros_like(d_outputs_fake) + np.random.uniform(0.0, 0.1)
@@ -188,11 +190,9 @@ class AdversarialValidation(object):
 
     def get_similarity(self, inputs_real, keep_prob):
 
-        _, d_logits_similarity = self.discriminator(inputs_real, keep_prob, is_training=False, reuse=True)
+        _, similarity_prob = self.discriminator(inputs_real, keep_prob, is_training=False, reuse=True)
 
-        similarities = tf.nn.sigmoid(d_logits_similarity, name='similarities')
-
-        return similarities
+        return similarity_prob
 
     @staticmethod
     def get_batches(x, batch_size):
@@ -208,7 +208,7 @@ class AdversarialValidation(object):
 
             yield batch_x
 
-    def train(self, gan_prob_path=None, global_epochs=1):
+    def train(self, similarity_prob_path=None, global_epochs=1):
         """
             Train the GAN
         """
@@ -295,7 +295,7 @@ class AdversarialValidation(object):
             print('Calculating Final Similarities of Train Set...')
             similarity_prob_mean = np.mean(np.array(similarity_prob_total), axis=0)
 
-            utils.save_np_to_pkl(similarity_prob_mean, gan_prob_path + 'similarity_prob.p')
+            utils.save_np_to_pkl(similarity_prob_mean, similarity_prob_path + 'similarity_prob.p')
 
             return similarity_prob_mean
 
@@ -320,7 +320,7 @@ def generate_validation_set(x_train, x_test, train_seed=None):
 
     AV = AdversarialValidation(x_train, x_test, parameters)
 
-    similarity_prob = AV.train(gan_prob_path=gan_prob_path, global_epochs=10)
+    similarity_prob = AV.train(similarity_prob_path=gan_prob_path, global_epochs=10)
 
     return similarity_prob
 

@@ -367,7 +367,7 @@ class TrainSingleModel:
 
         parameters = {'application': 'binary',
                       'boosting': 'gbdt',               # gdbt,rf,dart,goss
-                      'learning_rate': 0.002,           # default=0.1
+                      'learning_rate': 0.003,           # default=0.1
                       'num_leaves': 88,                 # default=31       <2^(max_depth)
                       'max_depth': 7,                   # default=-1
                       'min_data_in_leaf': 2500,         # default=20       reduce over-fit
@@ -392,7 +392,7 @@ class TrainSingleModel:
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
 
-        LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=80)
+        LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=65)
 
         # cv_generator = CrossValidation.era_k_fold_with_weight_all_random
         # cv_generator = CrossValidation.random_split_with_weight
@@ -1328,10 +1328,10 @@ class ModelStacking:
                       'boosting': 'gbdt',               # gdbt,rf,dart,goss
                       'learning_rate': 0.003,           # default=0.1
                       'num_leaves': 88,                 # default=31       <2^(max_depth)
-                      'max_depth': 10,                   # default=-1
+                      'max_depth': 7,                   # default=-1
                       'min_data_in_leaf': 2500,         # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
-                      'feature_fraction': 0.5,            # default=1
+                      'feature_fraction': 0.5,          # default=1
                       'feature_fraction_seed': 10,      # default=2
                       'bagging_fraction': 0.8,          # default=1
                       'bagging_freq': 1,                # default=0        perform bagging every k iteration
@@ -1339,7 +1339,7 @@ class ModelStacking:
                       'lambda_l1': 0,                   # default=0
                       'lambda_l2': 0,                   # default=0
                       'min_gain_to_split': 0,           # default=0
-                      'max_bin': 225,                  # default=255
+                      'max_bin': 225,                   # default=255
                       'min_data_in_bin': 5,             # default=5
                       'metric': 'binary_logloss',
                       'num_threads': -1,
@@ -1494,10 +1494,10 @@ class ModelStacking:
                       'boosting': 'gbdt',               # gdbt,rf,dart,goss
                       'learning_rate': 0.003,           # default=0.1
                       'num_leaves': 88,                 # default=31       <2^(max_depth)
-                      'max_depth': 10,                   # default=-1
+                      'max_depth': 7,                   # default=-1
                       'min_data_in_leaf': 2500,         # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
-                      'feature_fraction': 0.5,            # default=1
+                      'feature_fraction': 0.5,          # default=1
                       'feature_fraction_seed': 10,      # default=2
                       'bagging_fraction': 0.8,          # default=1
                       'bagging_freq': 1,                # default=0        perform bagging every k iteration
@@ -1505,7 +1505,7 @@ class ModelStacking:
                       'lambda_l1': 0,                   # default=0
                       'lambda_l2': 0,                   # default=0
                       'min_gain_to_split': 0,           # default=0
-                      'max_bin': 225,                  # default=255
+                      'max_bin': 225,                   # default=255
                       'min_data_in_bin': 5,             # default=5
                       'metric': 'binary_logloss',
                       'num_threads': -1,
@@ -1543,10 +1543,10 @@ class ModelStacking:
                       'boosting': 'gbdt',               # gdbt,rf,dart,goss
                       'learning_rate': 0.003,           # default=0.1
                       'num_leaves': 88,                 # default=31       <2^(max_depth)
-                      'max_depth': 10,                   # default=-1
+                      'max_depth': 7,                   # default=-1
                       'min_data_in_leaf': 2500,         # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
-                      'feature_fraction': 0.5,            # default=1
+                      'feature_fraction': 0.5,          # default=1
                       'feature_fraction_seed': 10,      # default=2
                       'bagging_fraction': 0.8,          # default=1
                       'bagging_freq': 1,                # default=0        perform bagging every k iteration
@@ -1554,7 +1554,7 @@ class ModelStacking:
                       'lambda_l1': 0,                   # default=0
                       'lambda_l2': 0,                   # default=0
                       'min_gain_to_split': 0,           # default=0
-                      'max_bin': 225,                  # default=255
+                      'max_bin': 225,                   # default=255
                       'min_data_in_bin': 5,             # default=5
                       'metric': 'binary_logloss',
                       'num_threads': -1,
@@ -1587,7 +1587,7 @@ class ModelStacking:
                         'train_seed': train_seed,
                         'cv_seed': cv_seed,
                         'num_boost_round_lgb_l1': 65,
-                        'num_boost_round_xgb_l1': 50,
+                        'num_boost_round_xgb_l1': 35,
                         'num_boost_round_lgb_l2': 65,
                         'num_boost_round_final': 65,
                         'show_importance': False,
