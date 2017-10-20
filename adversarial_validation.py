@@ -339,7 +339,7 @@ if __name__ == '__main__':
 
     start_time = time.time()
 
-    global_train_seed = random.randint(0, 300)
+    global_train_seed = random.randint(0, 500)
 
     _x_train, _, _, _, _x_test, _ = utils.load_preprocessed_pd_data(preprocess.preprocessed_path)
 
