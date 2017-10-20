@@ -1625,7 +1625,7 @@ class ModelStacking:
 
         hyper_params = {'n_valid': (4, 4),
                         'n_era': (20, 20),
-                        'n_epoch': (1, 8),
+                        'n_epoch': (1, 16),
                         'final_n_cv': 20,
                         'train_seed': train_seed,
                         'cv_seed': cv_seed,
@@ -1741,7 +1741,7 @@ def auto_train():
     """
         Automatically training a model for many times
     """
-    n_epoch = 200
+    n_epoch = 2
 
     for i in range(n_epoch):
 
@@ -1772,7 +1772,7 @@ def auto_train():
         # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # LightGBM
-        TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        # TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
         # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # CatBoost
@@ -1786,12 +1786,12 @@ def auto_train():
         # ChampionModel.Christ1991(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # Stacking
-        # ModelStacking.stack_tree_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
-        # for ii in range(10):
-        #     t_seed = random.randint(0, 500)
-        #     c_seed = random.randint(0, 500)
-        #     TrainSingleModel.stack_lgb_train(t_seed, c_seed, idx='auto_{}_epoch_{}'.format(i+1, ii+1),
-        #                                      save_auto_train_results=True, auto_idx=i+1)
+        ModelStacking.stack_tree_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        for ii in range(10):
+            t_seed = random.randint(0, 500)
+            c_seed = random.randint(0, 500)
+            TrainSingleModel.stack_lgb_train(t_seed, c_seed, idx='auto_{}_epoch_{}'.format(i+1, ii+1),
+                                             save_auto_train_results=True, auto_idx=i+1)
 
         print('======================================================')
         print('Auto Training Epoch Done!')
@@ -1866,14 +1866,14 @@ if __name__ == "__main__":
     # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed, auto_idx='1')
 
     # Prejudge
-    PrejudgeTraining.binary_train(global_train_seed, global_cv_seed)
+    # PrejudgeTraining.binary_train(global_train_seed, global_cv_seed)
     # PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
 
     # Auto Grid Searching
     # auto_grid_search()
 
     # Auto Training
-    # auto_train()
+    auto_train()
 
     print('======================================================')
     print('All Tasks Done!')
