@@ -1254,7 +1254,7 @@ class PrejudgeTraining:
         hyper_parameters = {'cv_seed': cv_seed,
                             'train_seed': train_seed,
                             'n_splits_e': 10,
-                            'num_boost_round_e': 2000,
+                            'num_boost_round_e': 3000,
                             'n_cv_e': 10,
                             'n_valid_p': 2,
                             'n_cv_p': 18,
@@ -1866,7 +1866,7 @@ if __name__ == "__main__":
     # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed, auto_idx='1')
 
     # Prejudge
-    PrejudgeTraining.binary_train(global_train_seed, global_cv_seed, load_pickle=True)
+    PrejudgeTraining.binary_train(global_train_seed, global_cv_seed, load_pickle=False)
     # PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
 
     # Auto Grid Searching
