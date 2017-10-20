@@ -1741,7 +1741,7 @@ def auto_train():
     """
         Automatically training a model for many times
     """
-    n_epoch = 2
+    n_epoch = 100
 
     for i in range(n_epoch):
 
