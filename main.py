@@ -279,9 +279,9 @@ class TrainSingleModel:
         else:
             auto_train_path = None
 
-        parameters = {'eta': 0.003,
+        parameters = {'eta': 0.0035,
                       'gamma': 0,                       # 如果loss function小于设定值，停止产生子节点
-                      'max_depth': 9,                   # default=6
+                      'max_depth': 8,                   # default=6
                       'min_child_weight': 18,           # default=1，建立每个模型所需最小样本权重和
                       'subsample': 0.9,                 # 建立树模型时抽取子样本占整个样本的比例
                       'colsample_bytree': 0.7,          # 建立树时对特征随机采样的比例
@@ -1768,7 +1768,7 @@ def auto_train():
         # TrainSingleModel.gb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # XGBoost
-        # TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
         # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # LightGBM
@@ -1786,12 +1786,12 @@ def auto_train():
         # ChampionModel.Christ1991(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # Stacking
-        ModelStacking.stack_tree_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
-        for ii in range(10):
-            t_seed = random.randint(0, 500)
-            c_seed = random.randint(0, 500)
-            TrainSingleModel.stack_lgb_train(t_seed, c_seed, idx='auto_{}_epoch_{}'.format(i+1, ii+1),
-                                             save_auto_train_results=True, auto_idx=i+1)
+        # ModelStacking.stack_tree_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        # for ii in range(10):
+        #     t_seed = random.randint(0, 500)
+        #     c_seed = random.randint(0, 500)
+        #     TrainSingleModel.stack_lgb_train(t_seed, c_seed, idx='auto_{}_epoch_{}'.format(i+1, ii+1),
+        #                                      save_auto_train_results=True, auto_idx=i+1)
 
         print('======================================================')
         print('Auto Training Epoch Done!')
