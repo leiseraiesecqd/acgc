@@ -1235,7 +1235,7 @@ class PrejudgeTraining:
         return models_parameters
 
     @staticmethod
-    def binary_train(train_seed, cv_seed):
+    def binary_train(train_seed, cv_seed, load_pickle=False):
         """
             Training model of PrejudgeBinary
         """
@@ -1278,7 +1278,7 @@ class PrejudgeTraining:
                                       loss_log_path=prejudge_loss_log_path, csv_log_path=csv_log_path + 'prejudge_',
                                       models_parameters=models_parameters, hyper_parameters=hyper_parameters)
 
-        PES.train(load_pickle=False, load_pickle_path=None)
+        PES.train(load_pickle=load_pickle, load_pickle_path=None)
 
     @staticmethod
     def multiclass_train(train_seed, cv_seed):
@@ -1866,14 +1866,14 @@ if __name__ == "__main__":
     # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed, auto_idx='1')
 
     # Prejudge
-    # PrejudgeTraining.binary_train(global_train_seed, global_cv_seed)
+    PrejudgeTraining.binary_train(global_train_seed, global_cv_seed, load_pickle=True)
     # PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
 
     # Auto Grid Searching
     # auto_grid_search()
 
     # Auto Training
-    auto_train()
+    # auto_train()
 
     print('======================================================')
     print('All Tasks Done!')

@@ -245,7 +245,7 @@ class ModelBase(object):
             utils.save_prob_train_to_csv(pred_path + 'final_prob_train/' + model_name + '_',
                                          prob_train_mean, self.y_train)
         elif save_final_pred is True:
-            utils.save_pred_to_csv(auto_train_pred_path + model_name + str(csv_idx) + '_' + str(train_seed) + '_' + str(cv_seed) + '_',
+            utils.save_pred_to_csv(auto_train_pred_path + model_name + '_' + str(csv_idx) + '_t' + str(train_seed) + '_c' + str(cv_seed) + '_',
                                    self.id_test, prob_test_mean)
 
         # Print Total Losses
@@ -690,7 +690,7 @@ class LightGBM(ModelBase):
         print('Training LightGBM...')
         print('------------------------------------------------------')
 
-        model_name = 'lgb_'
+        model_name = 'lgb'
 
         return model_name
 
@@ -1472,7 +1472,7 @@ class DeepNeuralNetworks(ModelBase):
                 utils.save_prob_train_to_csv(pred_path + 'final_prob_train/' + model_name + '_',
                                              prob_train_mean, self.y_train)
             elif save_final_pred is True:
-                utils.save_pred_to_csv(auto_train_pred_path + model_name + str(csv_idx) + '_' + str(train_seed) + '_' + str(cv_seed) + '_',
+                utils.save_pred_to_csv(auto_train_pred_path + model_name + '_' + str(csv_idx) + '_' + str(train_seed) + '_' + str(cv_seed) + '_',
                                        self.id_test, prob_test_mean)
 
             # Print Total Losses
