@@ -690,7 +690,7 @@ class LightGBM(ModelBase):
         print('Training LightGBM...')
         print('------------------------------------------------------')
 
-        model_name = 'lgb'
+        model_name = 'lgb_'
 
         return model_name
 
