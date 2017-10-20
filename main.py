@@ -605,7 +605,7 @@ class TrainSingleModel:
                       'boosting': 'gbdt',               # gdbt,rf,dart,goss
                       'learning_rate': 0.003,           # default=0.1
                       'num_leaves': 88,                 # default=31       <2^(max_depth)
-                      'max_depth': 9,                   # default=-1
+                      'max_depth': 7,                   # default=-1
                       'min_data_in_leaf': 2500,         # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
                       'feature_fraction': 0.5,          # default=1
@@ -1786,7 +1786,7 @@ def auto_train():
         # ChampionModel.Christ1991(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # Stacking
-        # ModelStacking.stack_tree_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        ModelStacking.stack_tree_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
         for ii in range(10):
             t_seed = random.randint(0, 500)
             c_seed = random.randint(0, 500)
