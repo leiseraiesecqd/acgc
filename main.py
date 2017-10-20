@@ -1461,7 +1461,7 @@ class ModelStacking:
 
         # Parameters of Deep Neural Network
         dnn_params = {'version': '1.0',
-                      'epochs': 5,
+                      'epochs': 4,
                       'unit_number': [48, 24, 12],
                       'learning_rate': 0.0001,
                       'keep_probability': 0.4,
@@ -1625,13 +1625,13 @@ class ModelStacking:
 
         hyper_params = {'n_valid': (4, 4),
                         'n_era': (20, 20),
-                        'n_epoch': (1, 16),
+                        'n_epoch': (1, 8),
                         'final_n_cv': 20,
                         'train_seed': train_seed,
                         'cv_seed': cv_seed,
                         'num_boost_round_lgb_l1': 65,
                         'num_boost_round_xgb_l1': 35,
-                        'num_boost_round_final': 65,
+                        'num_boost_round_final': 55,
                         'show_importance': False,
                         'show_accuracy': True,
                         'save_epoch_results': False}
@@ -1866,14 +1866,14 @@ if __name__ == "__main__":
     # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed, auto_idx='1')
 
     # Prejudge
-    PrejudgeTraining.binary_train(global_train_seed, global_cv_seed, load_pickle=False)
+    # PrejudgeTraining.binary_train(global_train_seed, global_cv_seed, load_pickle=False)
     # PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
 
     # Auto Grid Searching
     # auto_grid_search()
 
     # Auto Training
-    # auto_train()
+    auto_train()
 
     print('======================================================')
     print('All Tasks Done!')
