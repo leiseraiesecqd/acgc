@@ -605,7 +605,7 @@ class TrainSingleModel:
                       'boosting': 'gbdt',               # gdbt,rf,dart,goss
                       'learning_rate': 0.003,           # default=0.1
                       'num_leaves': 88,                 # default=31       <2^(max_depth)
-                      'max_depth': 10,                  # default=-1
+                      'max_depth': 9,                   # default=-1
                       'min_data_in_leaf': 2500,         # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
                       'feature_fraction': 0.5,          # default=1
@@ -629,7 +629,7 @@ class TrainSingleModel:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
 
         LGB = models.LightGBM(blender_x_g_tree, y_train, w_train, e_train,
-                              blender_test_g_tree, id_test, num_boost_round=65)
+                              blender_test_g_tree, id_test, num_boost_round=50)
 
         # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
@@ -1741,7 +1741,7 @@ def auto_train():
     """
         Automatically training a model for many times
     """
-    n_epoch = 100
+    n_epoch = 10
 
     for i in range(n_epoch):
 
@@ -1768,7 +1768,7 @@ def auto_train():
         # TrainSingleModel.gb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # XGBoost
-        TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        # TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
         # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
 
         # LightGBM
@@ -1787,11 +1787,11 @@ def auto_train():
 
         # Stacking
         # ModelStacking.stack_tree_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
-        # for ii in range(10):
-        #     t_seed = random.randint(0, 500)
-        #     c_seed = random.randint(0, 500)
-        #     TrainSingleModel.stack_lgb_train(t_seed, c_seed, idx='auto_{}_epoch_{}'.format(i+1, ii+1),
-        #                                      save_auto_train_results=True, auto_idx=i+1)
+        for ii in range(10):
+            t_seed = random.randint(0, 500)
+            c_seed = random.randint(0, 500)
+            TrainSingleModel.stack_lgb_train(t_seed, c_seed, idx='auto_{}_epoch_{}'.format(i+1, ii+1),
+                                             save_auto_train_results=True, auto_idx=i+1)
 
         print('======================================================')
         print('Auto Training Epoch Done!')
