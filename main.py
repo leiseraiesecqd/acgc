@@ -629,7 +629,7 @@ class TrainSingleModel:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
 
         LGB = models.LightGBM(blender_x_g_tree, y_train, w_train, e_train,
-                              blender_test_g_tree, id_test, num_boost_round=50)
+                              blender_test_g_tree, id_test, num_boost_round=35)
 
         # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
