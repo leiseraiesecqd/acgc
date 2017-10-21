@@ -525,7 +525,7 @@ class AdversarialValidation(object):
                             # At losses
                             generator_outputs = sess.run(g_outputs, feed_dict={inputs_z: example_z, keep_prob: 1.0})
                             discriminator_outputs = \
-                                sess.run(similarities, feed_dict={inputs_real: self.x_train, keep_prob: 1.0})
+                                sess.run(similarities, feed_dict={inputs_real: generator_outputs, keep_prob: 1.0})
 
                             print('------------------------------------------------------')
                             print('Generator Outputs:\n', generator_outputs[0])
