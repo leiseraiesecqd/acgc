@@ -336,7 +336,7 @@ class AdversarialValidation(object):
         print('Saving Preprocessed Data...')
 
         utils.save_np_to_pkl(self.x_train, self.preprocessed_path + 'x_train_gan.p')
-        utils.save_np_to_pkl(self.x_train, self.preprocessed_path + 'x_test_gan.p')
+        utils.save_np_to_pkl(self.x_test, self.preprocessed_path + 'x_test_gan.p')
 
     def model_inputs(self):
         """
