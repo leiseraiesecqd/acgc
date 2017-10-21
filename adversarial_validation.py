@@ -524,13 +524,17 @@ class AdversarialValidation(object):
 
                             # At losses
                             generator_outputs = sess.run(g_outputs, feed_dict={inputs_z: example_z, keep_prob: 1.0})
-                            discriminator_outputs = \
+                            g_similarity_prob = \
                                 sess.run(similarities, feed_dict={inputs_real: generator_outputs, keep_prob: 1.0})
+                            t_similarity_prob = \
+                                sess.run(similarities, feed_dict={inputs_real: self.x_train, keep_prob: 1.0})
 
                             print('------------------------------------------------------')
                             print('Generator Outputs:\n', generator_outputs[0])
                             print('------------------------------------------------------')
-                            print('Discriminator Outputs:\n', discriminator_outputs[:50].reshape(1, -1))
+                            print('Similarity Prob of Generator Outputs:\n', g_similarity_prob[:50].reshape(1, -1))
+                            print('------------------------------------------------------')
+                            print('Similarity Prob of Train Set:\n', t_similarity_prob[:50].reshape(1, -1))
                             print('------------------------------------------------------')
                             
                 print('------------------------------------------------------')
