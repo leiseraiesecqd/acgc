@@ -516,8 +516,8 @@ def generate_validation_set(train_path=None, test_path=None, similarity_prob_pat
                   'beta1': 0.9,
                   'batch_size': 128,
                   'keep_prob': 0.9,
-                  'display_step': 10,
-                  'show_step': 200,
+                  'display_step': 100,
+                  'show_step': 1000,
                   'train_seed': train_seed}
 
     AV = AdversarialValidation(train_path=train_path, test_path=test_path, parameters=parameters)
