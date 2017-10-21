@@ -687,7 +687,8 @@ if __name__ == '__main__':
     global_train_seed = random.randint(0, 500)
 
     generate_validation_set(train_path=train_csv_path, test_path=test_csv_path,
-                            similarity_prob_path=gan_prob_path, load_preprocessed_data=True,
+                            similarity_prob_path=gan_prob_path,
+                            # load_preprocessed_data=True,
                             gan_preprocess_path=gan_preprocessed_data_path,
                             train_seed=global_train_seed, global_epochs=1)
 
