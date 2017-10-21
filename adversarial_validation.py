@@ -61,6 +61,10 @@ class AdversarialValidation(object):
         # Convert column 'group' to dummies
         self.convert_group_to_dummies()
 
+        # Convert pandas DataFrame to numpy array
+        self.x_train = np.array(self.x_train, dtype=np.float64)
+        self.x_test = np.array(self.x_test, dtype=np.float64)
+
     def drop_test_feature_outliers_by_value(self, feature, upper_test=None, lower_test=None):
 
         # Drop upper outliers in self.x_train
