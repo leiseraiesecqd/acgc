@@ -6,6 +6,7 @@ import pandas as pd
 import tensorflow as tf
 
 gan_prob_path = './data/gan_outputs/'
+gan_preprocessed_data_path = './data/gan_preprocessed_data/'
 train_csv_path = './inputs/stock_train_data_20171013.csv'
 test_csv_path = './inputs/stock_test_data_20171013.csv'
 
@@ -15,10 +16,12 @@ class AdversarialValidation(object):
         Generate Adversarial Validation Set Using GAN
     """
 
-    def __init__(self, train_path=None, test_path=None, parameters=None):
+    def __init__(self, parameters=None, train_path=None, test_path=None,
+                 gan_preprocess_path=None, load_preprocessed_data=False):
 
         self.train_path = train_path
         self.test_path = test_path
+        self.preprocessed_path = gan_preprocess_path
 
         self.learning_rate = parameters['learning_rate']
         self.epochs = parameters['epochs']
@@ -34,7 +37,42 @@ class AdversarialValidation(object):
 
         np.random.seed(self.train_seed)
 
-        # Load Data
+        if load_preprocessed_data is True:
+
+            # Load Preprocessed Data from pickle File
+            self.x_train, self.x_test = self.load_data_from_pickle()
+
+        else:
+
+            # Load Data
+            self.x_train, self.x_test, self.g_train, self.g_test = self.load_data_from_csv()
+
+            # Drop outliers
+            self.drop_test_outliers_by_value()
+
+            # Min Max Scale
+            self.min_max_scale()
+
+            # Convert column 'group' to dummies
+            self.convert_group_to_dummies()
+
+            # Convert pandas DataFrame to numpy array
+            self.convert_pd_to_np()
+
+            # Save Preprocessed Data to pickle File
+            self.save_data()
+
+    def load_data_from_pickle(self):
+
+        print('Loading Preprocessed Data...')
+
+        x_train = utils.load_pkl_to_np(self.preprocessed_path + 'x_train_gan.p')
+        x_test = utils.load_pkl_to_np(self.preprocessed_path + 'x_test_gan.p')
+
+        return x_train, x_test
+
+    def load_data_from_csv(self):
+
         try:
             print('Loading data...')
             train_f = pd.read_csv(self.train_path, header=0, dtype=np.float64)
@@ -45,22 +83,12 @@ class AdversarialValidation(object):
 
         # Drop Unnecessary Columns
         # self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era'], axis=1)
-        self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era', 'feature43'], axis=1)
-        self.x_test = test_f.drop(['id', 'group', 'feature43'], axis=1)
-        self.g_train = train_f['group']
-        self.g_test = test_f['group']
+        x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era', 'feature43'], axis=1)
+        x_test = test_f.drop(['id', 'group', 'feature43'], axis=1)
+        g_train = train_f['group']
+        g_test = test_f['group']
 
-        # Drop outliers
-        self.drop_test_outliers_by_value()
-
-        # Min Max Scale
-        self.min_max_scale()
-
-        # Convert column 'group' to dummies
-        self.convert_group_to_dummies()
-
-        # Convert pandas DataFrame to numpy array
-        self.convert_pd_to_np()
+        return x_train, x_test, g_train, g_test
 
     def drop_test_feature_outliers_by_value(self, feature, upper_test=None, lower_test=None):
 
@@ -300,6 +328,13 @@ class AdversarialValidation(object):
 
         self.x_train = np.array(self.x_train, dtype=np.float64)
         self.x_test = np.array(self.x_test, dtype=np.float64)
+
+    def save_data(self):
+
+        print('Saving Preprocessed Data...')
+
+        utils.save_np_to_pkl(self.x_train, self.preprocessed_path + 'x_train_gan.p')
+        utils.save_np_to_pkl(self.x_train, self.preprocessed_path + 'x_test_gan.p')
 
     def model_inputs(self):
         """
@@ -546,9 +581,10 @@ class AdversarialValidation(object):
                         batch_z = np.random.uniform(0, 1, size=(self.batch_size, self.z_dim))
 
                         # Run optimizers
-                        sess.run(d_train_opt, feed_dict={inputs_real: x_batch,
-                                                         inputs_z: batch_z,
-                                                         keep_prob: self.keep_prob})
+                        for i in range(10):
+                            sess.run(d_train_opt, feed_dict={inputs_real: x_batch,
+                                                             inputs_z: batch_z,
+                                                             keep_prob: self.keep_prob})
                         sess.run(g_train_opt, feed_dict={inputs_real: x_batch,
                                                          inputs_z: batch_z,
                                                          keep_prob: self.keep_prob})
@@ -601,6 +637,7 @@ class AdversarialValidation(object):
 
 
 def generate_validation_set(train_path=None, test_path=None, similarity_prob_path=None,
+                            load_preprocessed_data=False, gan_preprocess_path=None,
                             train_seed=None, global_epochs=1, return_similarity_prob=False):
 
     if train_seed is None:
@@ -618,7 +655,9 @@ def generate_validation_set(train_path=None, test_path=None, similarity_prob_pat
                   'show_step': 1000,
                   'train_seed': train_seed}
 
-    AV = AdversarialValidation(train_path=train_path, test_path=test_path, parameters=parameters)
+    AV = AdversarialValidation(parameters=parameters, train_path=train_path,
+                               load_preprocessed_data=load_preprocessed_data,
+                               test_path=test_path, gan_preprocess_path=gan_preprocess_path)
 
     if return_similarity_prob is True:
         similarity_prob = AV.train(similarity_prob_path=similarity_prob_path, global_epochs=global_epochs,
@@ -636,9 +675,13 @@ if __name__ == '__main__':
 
     start_time = time.time()
 
+    utils.check_dir([gan_prob_path, gan_preprocessed_data_path])
+
     global_train_seed = random.randint(0, 500)
 
-    generate_validation_set(train_path=train_csv_path, test_path=test_csv_path, similarity_prob_path=gan_prob_path,
+    generate_validation_set(train_path=train_csv_path, test_path=test_csv_path,
+                            similarity_prob_path=gan_prob_path,
+                            gan_preprocess_path=gan_preprocessed_data_path,
                             train_seed=global_train_seed, global_epochs=1)
 
     print('======================================================')

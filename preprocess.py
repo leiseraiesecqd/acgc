@@ -379,7 +379,8 @@ class DataPreProcess:
         else:
             similarity_prob = \
                 generate_validation_set(train_path=train_csv_path, test_path=test_csv_path, global_epochs=1,
-                                        similarity_prob_path=gan_prob_path, return_similarity_prob=True)
+                                        similarity_prob_path=gan_prob_path, return_similarity_prob=True,
+                                        load_preprocessed_data=True)
 
         valid_idx = []
         train_idx = []
