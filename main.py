@@ -279,7 +279,7 @@ class TrainSingleModel:
         else:
             auto_train_path = None
 
-        parameters = {'eta': 0.0035,
+        parameters = {'eta': 0.003,
                       'gamma': 0,                       # 如果loss function小于设定值，停止产生子节点
                       'max_depth': 8,                   # default=6
                       'min_child_weight': 18,           # default=1，建立每个模型所需最小样本权重和
@@ -301,7 +301,7 @@ class TrainSingleModel:
         XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test, num_boost_round=35)
 
         XGB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
-                  n_valid=4, n_cv=20, n_era=20, train_seed=train_seed, save_final_pred=save_final_pred,
+                  n_valid=4, n_cv=5, n_era=20, train_seed=train_seed, save_final_pred=save_final_pred,
                   cv_seed=cv_seed, parameters=parameters, show_importance=False,
                   show_accuracy=True, save_csv_log=True, csv_idx=idx, auto_train_pred_path=auto_train_path)
 
@@ -1658,7 +1658,7 @@ def auto_grid_search():
     """
         Automatically Grid Searching
     """
-    parameter_grid = ['eta', (0.002, 0.003, 0.005, 0.01)]
+    parameter_grid = ['subsample', (0.6, 0.7, 0.8)]
     n_epoch = 100
 
     for param in parameter_grid[1]:
@@ -1870,10 +1870,10 @@ if __name__ == "__main__":
     # PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
 
     # Auto Grid Searching
-    # auto_grid_search()
+    auto_grid_search()
 
     # Auto Training
-    auto_train()
+    # auto_train()
 
     print('======================================================')
     print('All Tasks Done!')

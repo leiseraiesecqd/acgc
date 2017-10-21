@@ -567,7 +567,7 @@ class DataPreProcess:
         self.load_data_pd()
 
         # Drop outliers
-        self.drop_outliers_by_value()
+        # self.drop_outliers_by_value()
         # self.drop_outliers_by_quantile()
 
         # Scale features
