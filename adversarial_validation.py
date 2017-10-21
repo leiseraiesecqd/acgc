@@ -445,8 +445,6 @@ class AdversarialValidation(object):
         print('Training GAN for Adversarial Validation Set...')
         print('------------------------------------------------------')
 
-        print(self.x_train[0], self.x_test[0])
-
         # Build Network
         tf.reset_default_graph()
         train_graph = tf.Graph()
@@ -532,7 +530,7 @@ class AdversarialValidation(object):
                             print('------------------------------------------------------')
                             print('Generator Outputs:\n', generator_outputs[0])
                             print('------------------------------------------------------')
-                            print('Discriminator Outputs:\n', discriminator_outputs[50])
+                            print('Discriminator Outputs:\n', discriminator_outputs[:50])
                             print('------------------------------------------------------')
                             
                 print('------------------------------------------------------')
@@ -566,11 +564,11 @@ def generate_validation_set(train_path=None, test_path=None, similarity_prob_pat
                   'z_dim': 24,
                   'beta1': 0.9,
                   'batch_size': 16,
-                  'd_epochs': 2,
+                  'd_epochs': 1,
                   'g_epochs': 1,
                   'keep_prob': 0.9,
                   'display_step': 100,
-                  'show_step': 1000,
+                  'show_step': 2000,
                   'train_seed': train_seed}
 
     AV = AdversarialValidation(parameters=parameters, train_path=train_path,
