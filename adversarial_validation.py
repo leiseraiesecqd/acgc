@@ -30,6 +30,8 @@ class AdversarialValidation(object):
         self.z_dim = parameters['z_dim']
         self.beta1 = parameters['beta1']
         self.batch_size = parameters['batch_size']
+        self.d_epochs = parameters['d_epochs']
+        self.g_epochs = parameters['g_epochs']
         self.keep_prob = parameters['keep_prob']
         self.display_step = parameters['display_step']
         self.show_step = parameters['show_step']
@@ -581,13 +583,14 @@ class AdversarialValidation(object):
                         batch_z = np.random.uniform(0, 1, size=(self.batch_size, self.z_dim))
 
                         # Run optimizers
-                        for i in range(10):
+                        for _ in range(self.d_epochs):
                             sess.run(d_train_opt, feed_dict={inputs_real: x_batch,
                                                              inputs_z: batch_z,
                                                              keep_prob: self.keep_prob})
-                        sess.run(g_train_opt, feed_dict={inputs_real: x_batch,
-                                                         inputs_z: batch_z,
-                                                         keep_prob: self.keep_prob})
+                        for _ in range(self.g_epochs):
+                            sess.run(g_train_opt, feed_dict={inputs_real: x_batch,
+                                                             inputs_z: batch_z,
+                                                             keep_prob: self.keep_prob})
 
                         if batch_counter % self.display_step == 0 and batch_i > 0:
 
@@ -649,7 +652,9 @@ def generate_validation_set(train_path=None, test_path=None, similarity_prob_pat
                   'n_generator_units': [32, 48, 72],
                   'z_dim': 24,
                   'beta1': 0.9,
-                  'batch_size': 128,
+                  'batch_size': 16,
+                  'd_epochs': 2,
+                  'g_epochs': 1,
                   'keep_prob': 0.9,
                   'display_step': 100,
                   'show_step': 1000,
