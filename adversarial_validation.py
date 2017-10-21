@@ -567,7 +567,7 @@ def generate_validation_set(train_path=None, test_path=None, similarity_prob_pat
                   'n_generator_units': [32, 48, 72],
                   'z_dim': 24,
                   'beta1': 0.9,
-                  'batch_size': 16,
+                  'batch_size': 128,
                   'd_epochs': 1,
                   'g_epochs': 1,
                   'keep_prob': 0.9,
