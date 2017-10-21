@@ -56,7 +56,7 @@ class AdversarialValidation(object):
             self.min_max_scale()
 
             # Convert column 'group' to dummies
-            self.convert_group_to_dummies()
+            # self.convert_group_to_dummies()
 
             # Convert pandas DataFrame to numpy array
             self.convert_pd_to_np()
