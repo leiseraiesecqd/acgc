@@ -530,7 +530,7 @@ class AdversarialValidation(object):
                             print('------------------------------------------------------')
                             print('Generator Outputs:\n', generator_outputs[0])
                             print('------------------------------------------------------')
-                            print('Discriminator Outputs:\n', discriminator_outputs[:50])
+                            print('Discriminator Outputs:\n', discriminator_outputs[:50].reshape(1, -1))
                             print('------------------------------------------------------')
                             
                 print('------------------------------------------------------')
