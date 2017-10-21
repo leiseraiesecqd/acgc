@@ -3,10 +3,13 @@ import utils
 import random
 import preprocess
 import numpy as np
+import pandas as pd
 import tensorflow as tf
 from sklearn import preprocessing
 
 gan_prob_path = './data/gan_outputs/'
+train_csv_path = './inputs/stock_train_data_20171013.csv'
+test_csv_path = './inputs/stock_test_data_20171013.csv'
 
 
 class AdversarialValidation(object):
@@ -14,12 +17,10 @@ class AdversarialValidation(object):
         Generate Adversarial Validation Set Using GAN
     """
 
-    def __init__(self, x_tr, x_te, parameters):
+    def __init__(self, train_path=None, test_path=None, parameters=None):
 
-        # Min Max Scaling:
-        min_max_scaler = preprocessing.MinMaxScaler(feature_range=(0, 1))
-        self.x_train = min_max_scaler.fit_transform(x_tr)
-        self.x_test = min_max_scaler.fit_transform(x_te)
+        self.train_path = train_path
+        self.test_path = test_path
 
         self.learning_rate = parameters['learning_rate']
         self.epochs = parameters['epochs']
@@ -30,9 +31,180 @@ class AdversarialValidation(object):
         self.batch_size = parameters['batch_size']
         self.keep_prob = parameters['keep_prob']
         self.display_step = parameters['display_step']
+        self.show_step = parameters['show_step']
         self.train_seed = parameters['train_seed']
 
         np.random.seed(self.train_seed)
+
+        # Load Data
+        try:
+            print('Loading data...')
+            train_f = pd.read_csv(self.train_path, header=0, dtype=np.float64)
+            test_f = pd.read_csv(self.test_path, header=0, dtype=np.float64)
+        except Exception as e:
+            print('Unable to read data: ', e)
+            raise
+
+        # Drop Unnecessary Columns
+        # self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era'], axis=1)
+        self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era', 'feature43'], axis=1)
+        self.x_test = test_f.drop(['id', 'group', 'feature43'], axis=1)
+        self.g_train = train_f['group']
+        self.g_test = test_f['group']
+
+        # Drop outliers
+        self.drop_test_outliers_by_value()
+
+        # Min Max Scale
+        self.min_max_scale()
+
+        # Convert column 'group' to dummies
+        self.convert_group_to_dummies()
+
+    def drop_test_feature_outliers_by_value(self, feature, upper_test=None, lower_test=None):
+
+        # Drop upper outliers in self.x_train
+        if upper_test is not None:
+            self.x_test[feature].loc[self.x_test[feature] > upper_test] = upper_test
+
+        # Drop lower outlines in self.x_train
+        if lower_test is not None:
+            self.x_test[feature].loc[self.x_test[feature] < lower_test] = lower_test
+
+    def drop_train_feature_outliers_by_value(self, feature, upper_train=None, lower_train=None):
+
+        # Drop upper outliers in self.x_train
+        if upper_train is not None:
+            self.x_train[feature].loc[self.x_test[feature] > upper_train] = upper_train
+
+        # Drop lower outlines in self.x_train
+        if lower_train is not None:
+            self.x_train[feature].loc[self.x_test[feature] < lower_train] = lower_train
+
+    def drop_test_outliers_by_value(self):
+
+        print('Dropping outliers...')
+
+        self.drop_test_feature_outliers_by_value('feature0', None, None)
+        self.drop_test_feature_outliers_by_value('feature1', 19.75, None)
+        self.drop_test_feature_outliers_by_value('feature2', None, None)
+        self.drop_test_feature_outliers_by_value('feature3', 7.65, None)
+        self.drop_test_feature_outliers_by_value('feature4', 5.35, None)
+        self.drop_test_feature_outliers_by_value('feature5', None, None)
+        self.drop_test_feature_outliers_by_value('feature6', None, None)
+        self.drop_test_feature_outliers_by_value('feature7', 21.02, None)
+        self.drop_test_feature_outliers_by_value('feature8', 10.8, None)
+        self.drop_test_feature_outliers_by_value('feature9', None, None)
+        self.drop_test_feature_outliers_by_value('feature10', None, None)
+        self.drop_test_feature_outliers_by_value('feature11', 20, None)
+        self.drop_test_feature_outliers_by_value('feature12', 4.23, None)
+        self.drop_test_feature_outliers_by_value('feature13', None, None)
+        self.drop_test_feature_outliers_by_value('feature14', None, None)
+        self.drop_test_feature_outliers_by_value('feature15', 14.26, None)
+        self.drop_test_feature_outliers_by_value('feature16', None, None)
+        self.drop_test_feature_outliers_by_value('feature17', None, None)
+        self.drop_test_feature_outliers_by_value('feature18', None, None)
+        self.drop_test_feature_outliers_by_value('feature19', 6.44, None)
+        self.drop_test_feature_outliers_by_value('feature20', 15.4, None)
+        self.drop_test_feature_outliers_by_value('feature21', 13.36, None)
+        self.drop_test_feature_outliers_by_value('feature22', 14, None)
+        self.drop_test_feature_outliers_by_value('feature23', None, None)
+        self.drop_test_feature_outliers_by_value('feature24', None, None)
+        self.drop_test_feature_outliers_by_value('feature25', None, None)
+        self.drop_test_feature_outliers_by_value('feature26', None, None)
+        self.drop_test_feature_outliers_by_value('feature27', 11.88, None)
+        self.drop_test_feature_outliers_by_value('feature28', None, None)
+        self.drop_test_feature_outliers_by_value('feature29', 12.05, None)
+        self.drop_test_feature_outliers_by_value('feature30', 22.5, None)
+        self.drop_test_feature_outliers_by_value('feature31', 23.45, None)
+        self.drop_test_feature_outliers_by_value('feature32', 8.35, None)
+        self.drop_test_feature_outliers_by_value('feature33', 15.74, None)
+        self.drop_test_feature_outliers_by_value('feature34', 5.82, None)
+        self.drop_test_feature_outliers_by_value('feature35', None, None)
+        self.drop_test_feature_outliers_by_value('feature36', 32.7, None)
+        self.drop_test_feature_outliers_by_value('feature37', None, None)
+        self.drop_test_feature_outliers_by_value('feature38', None, -6.06)
+        self.drop_test_feature_outliers_by_value('feature39', 10.29, -24.66)
+        self.drop_test_feature_outliers_by_value('feature40', None, None)
+        self.drop_test_feature_outliers_by_value('feature41', None, None)
+        self.drop_test_feature_outliers_by_value('feature42', 6.73, None)
+        # self.drop_feature_outliers_by_value('feature43', None, None)
+        self.drop_test_feature_outliers_by_value('feature44', None, None)
+        self.drop_test_feature_outliers_by_value('feature45', 5.62, None)
+        self.drop_test_feature_outliers_by_value('feature46', 31.25, None)
+        self.drop_test_feature_outliers_by_value('feature47', None, None)
+        self.drop_test_feature_outliers_by_value('feature48', None, None)
+        self.drop_test_feature_outliers_by_value('feature49', 6.49, None)
+        self.drop_test_feature_outliers_by_value('feature50', None, None)
+        self.drop_test_feature_outliers_by_value('feature51', None, None)
+        self.drop_test_feature_outliers_by_value('feature52', 5.24, None)
+        self.drop_test_feature_outliers_by_value('feature53', 5.11, None)
+        self.drop_test_feature_outliers_by_value('feature54', 4.72, None)
+        self.drop_test_feature_outliers_by_value('feature55', None, None)
+        self.drop_test_feature_outliers_by_value('feature56', 5.6, None)
+        self.drop_test_feature_outliers_by_value('feature57', None, None)
+        self.drop_test_feature_outliers_by_value('feature58', 6.07, None)
+        self.drop_test_feature_outliers_by_value('feature59', None, None)
+        self.drop_test_feature_outliers_by_value('feature60', 23.11, None)
+        self.drop_test_feature_outliers_by_value('feature61', 14.08, -11.57)
+        self.drop_test_feature_outliers_by_value('feature62', None, None)
+        self.drop_test_feature_outliers_by_value('feature63', None, None)
+        self.drop_test_feature_outliers_by_value('feature64', 20.65, None)
+        self.drop_test_feature_outliers_by_value('feature65', None, None)
+        self.drop_test_feature_outliers_by_value('feature66', None, None)
+        self.drop_test_feature_outliers_by_value('feature67', None, None)
+        self.drop_test_feature_outliers_by_value('feature68', None, None)
+        self.drop_test_feature_outliers_by_value('feature69', 11.58, None)
+        self.drop_test_feature_outliers_by_value('feature70', None, -7.34)
+        self.drop_test_feature_outliers_by_value('feature71', None, None)
+        self.drop_test_feature_outliers_by_value('feature72', None, None)
+        self.drop_test_feature_outliers_by_value('feature73', None, None)
+        self.drop_test_feature_outliers_by_value('feature74', 10.98, None)
+        self.drop_test_feature_outliers_by_value('feature75', None, None)
+        self.drop_test_feature_outliers_by_value('feature76', 32, None)
+        self.drop_test_feature_outliers_by_value('feature77', None, None)
+        self.drop_test_feature_outliers_by_value('feature78', None, None)
+        self.drop_test_feature_outliers_by_value('feature79', 4.34, None)
+        self.drop_test_feature_outliers_by_value('feature80', None, None)
+        self.drop_test_feature_outliers_by_value('feature81', None, None)
+        self.drop_test_feature_outliers_by_value('feature82', 13, None)
+        self.drop_test_feature_outliers_by_value('feature83', None, None)
+        self.drop_test_feature_outliers_by_value('feature84', None, None)
+        self.drop_test_feature_outliers_by_value('feature85', None, None)
+        self.drop_test_feature_outliers_by_value('feature86', None, None)
+        self.drop_test_feature_outliers_by_value('feature87', 25.52, None)
+
+    # Min Max scale
+    def min_max_scale(self):
+
+        print('Min Max Scaling Data...')
+        x_min = np.zeros(len(self.x_train.columns), dtype=np.float64)
+        x_max = np.zeros(len(self.x_train.columns), dtype=np.float64)
+
+        for i, each in enumerate(self.x_test.columns):
+            x_max[i], x_min[i] = self.x_test[each].max(), self.x_test[each].min()
+            self.x_test.loc[:, each] = (self.x_test[each] - x_min[i]) / (x_max[i] - x_min[i])
+
+        for i, each in enumerate(self.x_train.columns):
+            self.x_train.loc[:, each] = (self.x_train[each] - x_min[i]) / (x_max[i] - x_min[i])
+
+        # Drop outliers of train set
+        print('Dropping Outliers of Train Set...')
+        for i in range(88):
+            if i != 43:
+                self.drop_test_feature_outliers_by_value('feature' + str(i), 1., 0.)
+
+                # Convert Column 'group' to Dummies
+
+    def convert_group_to_dummies(self):
+
+        print('Converting Groups to Dummies...')
+
+        group_train_dummies = pd.get_dummies(self.g_train, prefix='group')
+        self.x_train = self.x_train.join(group_train_dummies)
+
+        group_test_dummies = pd.get_dummies(self.g_test, prefix='group')
+        self.x_test = self.x_test.join(group_test_dummies)
 
     def model_inputs(self):
         """
@@ -111,7 +283,7 @@ class AdversarialValidation(object):
 
         return logits, outputs
 
-    def generator(self, z, keep_prob, is_training=True):
+    def generator(self, z, keep_prob, is_training=True, reuse=False):
         """
             Create the generator network
         """
@@ -142,7 +314,7 @@ class AdversarialValidation(object):
 
             return layer
 
-        with tf.variable_scope('generator', reuse=not is_training):
+        with tf.variable_scope('generator', reuse=reuse):
 
             fc = [z]
 
@@ -159,7 +331,7 @@ class AdversarialValidation(object):
         """
             Get the loss for the discriminator and generator
         """
-        g_outputs = self.generator(inputs_z, keep_prob, is_training=True)
+        g_outputs = self.generator(inputs_z, keep_prob, is_training=True, reuse=False)
         d_logits_real, d_outputs_real = self.discriminator(inputs_real, keep_prob, is_training=True, reuse=False)
         d_logits_fake, d_outputs_fake = self.discriminator(g_outputs, keep_prob, is_training=True, reuse=True)
 
@@ -267,7 +439,7 @@ class AdversarialValidation(object):
                         batch_counter += 1
 
                         # Sample random noise
-                        batch_z = np.random.uniform(-1, 1, size=(self.batch_size, self.z_dim))
+                        batch_z = np.random.uniform(0, 1, size=(self.batch_size, self.z_dim))
 
                         # Run optimizers
                         sess.run(d_train_opt, feed_dict={inputs_real: x_batch,
@@ -292,6 +464,19 @@ class AdversarialValidation(object):
                                   'd_Loss: {:.8f} |'.format(d_cost),
                                   'g_Loss: {:.8f}'.format(g_cost))
 
+                        if batch_counter % self.show_step == 0 and batch_i > 0:
+
+                            g_outputs = self.generator(inputs_z, keep_prob, is_training=False, reuse=True)
+
+                            example_z = np.random.uniform(0, 1, size=(self.batch_size, self.z_dim))
+
+                            # At losses
+                            generator_outputs = sess.run(g_outputs, feed_dict={inputs_z: example_z, keep_prob: 1.0})
+
+                            print('------------------------------------------------------')
+                            print('Generator Outputs:\n', generator_outputs[:5])
+                            print('------------------------------------------------------')
+
                 print('------------------------------------------------------')
                 print('Calculating Similarities of Train Set...')
                 similarity_prob = \
@@ -309,9 +494,8 @@ class AdversarialValidation(object):
                 return similarity_prob_mean
 
 
-def generate_validation_set(x_train, x_test, train_seed=None):
-
-    utils.check_dir([gan_prob_path])
+def generate_validation_set(train_path=None, test_path=None, similarity_prob_path=None,
+                            train_seed=None, global_epochs=1, return_similarity_prob=False):
 
     if train_seed is None:
         train_seed = random.randint(0, 500)
@@ -327,9 +511,15 @@ def generate_validation_set(x_train, x_test, train_seed=None):
                   'display_step': 100,
                   'train_seed': train_seed}
 
-    AV = AdversarialValidation(x_train, x_test, parameters)
+    AV = AdversarialValidation(train_path=train_path, test_path=test_path, parameters=parameters)
 
-    AV.train(similarity_prob_path=gan_prob_path, global_epochs=10)
+    if return_similarity_prob is True:
+        similarity_prob = AV.train(similarity_prob_path=similarity_prob_path, global_epochs=global_epochs,
+                                   return_similarity_prob=return_similarity_prob)
+        return similarity_prob
+    else:
+        AV.train(similarity_prob_path=similarity_prob_path, global_epochs=global_epochs,
+                 return_similarity_prob=return_similarity_prob)
 
 
 if __name__ == '__main__':
@@ -341,9 +531,8 @@ if __name__ == '__main__':
 
     global_train_seed = random.randint(0, 500)
 
-    _x_train, _, _, _, _x_test, _ = utils.load_preprocessed_pd_data(preprocess.preprocessed_path)
-
-    generate_validation_set(_x_train, _x_test, global_train_seed)
+    generate_validation_set(train_path=train_csv_path, test_path=test_csv_path, similarity_prob_path=gan_prob_path,
+                            train_seed=global_train_seed, global_epochs=1)
 
     print('======================================================')
     print('All Tasks Done!')

@@ -348,6 +348,8 @@ class DataPreProcess:
     # Min Max scale
     def min_max_scale(self):
 
+        print('Min Max Scaling Data...')
+
         for each in self.x_train.columns:
             x_max, x_min = self.x_train[each].max(),  self.x_train[each].min()
             self.x_train.loc[:, each] = (self.x_train[each] - x_min)/(x_max - x_min)
@@ -369,22 +371,25 @@ class DataPreProcess:
         self.x_g_test = self.x_test.join(self.g_test)
         self.x_test = self.x_test.join(group_test_dummies)
 
-        # print('Shape of x_train with group dummies: {}'.format(self.x_train.shape))
-        # print('Shape of x_test with group dummies: {}'.format(self.x_test.shape))
-
     # Split Adversarial Validation Set by GAN
-    def split_data_by_gan(self, sample_ratio=None, sample_by_era=True, generate_mode='valid'):
+    def split_data_by_gan(self, load_pickle=True, sample_ratio=None, sample_by_era=True, generate_mode='valid'):
 
-        similarity_prob = utils.load_pkl_to_np(gan_prob_path + 'similarity_prob.p')
+        if load_pickle is True:
+            similarity_prob = utils.load_pkl_to_np(gan_prob_path + 'similarity_prob.p')
+        else:
+            similarity_prob = \
+                generate_validation_set(train_path=train_csv_path, test_path=test_csv_path, global_epochs=1,
+                                        similarity_prob_path=gan_prob_path, return_similarity_prob=True)
 
-        if sample_by_era:
+        valid_idx = []
+        train_idx = []
+
+        if sample_by_era is True:
 
             similarity_prob_e = []
             index_e = []
             similarity_prob_all = []
             index_all = []
-            valid_idx = []
-            train_idx = []
             era_tag = 1
             era_all = [era_tag]
 
@@ -406,38 +411,52 @@ class DataPreProcess:
                     similarity_prob_e = [similarity_prob[idx]]
                     index_e = [idx]
 
-            for i, similarity_prob_i in enumerate(similarity_prob_all):
+            for e, similarity_prob_e in enumerate(similarity_prob_all):
 
-                n_sample_e = int(len(similarity_prob_i) * sample_ratio)
-                most_similar_idx_e = np.argsort(similarity_prob_i)[:, :-(n_sample_e+1):-1]
-                least_similar_idx_e = np.argsort(similarity_prob_i)[:, :len(similarity_prob_i)-n_sample_e]
+                n_sample_e = int(len(similarity_prob_e) * sample_ratio)
+                most_similar_idx_e = np.argsort(similarity_prob_e)[:, :-(n_sample_e+1):-1]
+                least_similar_idx_e = np.argsort(similarity_prob_e)[:, :len(similarity_prob_e)-n_sample_e]
 
                 if generate_mode == 'valid':
-                    valid_idx = list(index_all[i][most_similar_idx_e])
-                    train_idx = list(index_all[i][least_similar_idx_e])
+                    valid_idx += list(index_all[e][most_similar_idx_e])
+                    train_idx += list(index_all[e][least_similar_idx_e])
                 elif generate_mode == 'train':
-                    train_idx = list(index_all[i][most_similar_idx_e])
-                    valid_idx = list(index_all[i][least_similar_idx_e])
+                    train_idx += list(index_all[e][most_similar_idx_e])
+                    valid_idx += list(index_all[e][least_similar_idx_e])
                 else:
                     raise ValueError("Wrong 'generate_mode'!")
+        else:
 
-            # Generate Validation Set
-            self.x_valid = self.x_train[valid_idx]
-            self.x_g_valid = self.x_g_train[valid_idx]
-            self.y_valid = self.x_train[valid_idx]
+            n_sample = int(len(similarity_prob) * sample_ratio)
+            most_similar_idx = np.argsort(similarity_prob)[:, :-(n_sample + 1):-1]
+            least_similar_idx = np.argsort(similarity_prob)[:, :len(similarity_prob) - n_sample]
 
-            # Generate Training Set
-            self.x_train = self.x_train[train_idx]
-            self.x_g_train = self.x_g_train[train_idx]
-            self.y_train = self.y_train[train_idx]
-            self.w_train = self.w_train[train_idx]
-            self.e_train = self.e_train[train_idx]
+            if generate_mode == 'valid':
+                valid_idx = most_similar_idx
+                train_idx = least_similar_idx
+            elif generate_mode == 'train':
+                train_idx = least_similar_idx
+                valid_idx = most_similar_idx
+            else:
+                raise ValueError("Wrong 'generate_mode'!")
 
-            # Save Adversarial Validation Set
-            print('Saving Adversarial Validation Set...')
-            self.x_valid.to_pickle(self.preprocess_path + 'x_valid.p')
-            self.x_g_valid.to_pickle(self.preprocess_path + 'x_g_valid.p')
-            self.y_valid.to_pickle(self.preprocess_path + 'y_valid.p')
+        # Generate Validation Set
+        self.x_valid = self.x_train[valid_idx]
+        self.x_g_valid = self.x_g_train[valid_idx]
+        self.y_valid = self.x_train[valid_idx]
+
+        # Generate Training Set
+        self.x_train = self.x_train[train_idx]
+        self.x_g_train = self.x_g_train[train_idx]
+        self.y_train = self.y_train[train_idx]
+        self.w_train = self.w_train[train_idx]
+        self.e_train = self.e_train[train_idx]
+
+        # Save Adversarial Validation Set
+        print('Saving Adversarial Validation Set...')
+        self.x_valid.to_pickle(self.preprocess_path + 'x_valid.p')
+        self.x_g_valid.to_pickle(self.preprocess_path + 'x_g_valid.p')
+        self.y_valid.to_pickle(self.preprocess_path + 'y_valid.p')
 
     # Split Positive and Negative Era Set
     def split_data_by_era_distribution(self):
@@ -567,7 +586,7 @@ class DataPreProcess:
         self.load_data_pd()
 
         # Drop outliers
-        # self.drop_outliers_by_value()
+        self.drop_outliers_by_value()
         # self.drop_outliers_by_quantile()
 
         # Scale features
