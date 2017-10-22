@@ -1658,7 +1658,7 @@ def auto_grid_search():
     """
         Automatically Grid Searching
     """
-    parameter_grid = ['colsample_bylevel', (0.5, 0.6, 0.7, 0.8)]
+    parameter_grid = ['max_depth', (7, 8, 9, 10)]
     n_epoch = 100
 
     for param in parameter_grid[1]:
