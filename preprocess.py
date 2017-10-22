@@ -8,18 +8,12 @@ from adversarial_validation import generate_validation_set
 from sklearn.model_selection import StratifiedShuffleSplit
 
 
-train_csv_path = './inputs/stock_train_data_20171013.csv'
-test_csv_path = './inputs/stock_test_data_20171013.csv'
+train_csv_path = './inputs/stock_train_data_20171020.csv'
+test_csv_path = './inputs/stock_test_data_20171020.csv'
 preprocessed_path = './data/preprocessed_data/'
 gan_prob_path = './data/gan_outputs/'
 negative_era_list = [2, 3, 4, 5, 8, 10, 12, 16]
 positive_era_list = [1, 6, 7, 9, 11, 13, 14, 15, 17, 18, 19, 20]
-
-# train_csv_path = './inputs/stock_train_data_20170923.csv'
-# test_csv_path = './inputs/stock_test_data_20170923.csv'
-# preprocessed_path = './data//preprocessed_data/'
-# negative_era_list = [1, 3, 4, 5, 8, 10, 12, 16]
-# positive_era_list = [2, 6, 7, 9, 11, 13, 14, 15, 17, 18, 19, 20]
 
 
 class DataPreProcess:
@@ -587,7 +581,7 @@ class DataPreProcess:
         self.load_data_pd()
 
         # Drop outliers
-        self.drop_outliers_by_value()
+        # self.drop_outliers_by_value()
         # self.drop_outliers_by_quantile()
 
         # Scale features
