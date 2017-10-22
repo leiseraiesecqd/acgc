@@ -1658,7 +1658,7 @@ def auto_grid_search():
     """
         Automatically Grid Searching
     """
-    parameter_grid = ['subsample', (0.6, 0.7, 0.8, 0.9)]
+    parameter_grid = ['colsample_bytree', (0.6, 0.7, 0.8, 0.9)]
     n_epoch = 100
 
     for param in parameter_grid[1]:
