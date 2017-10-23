@@ -1722,7 +1722,7 @@ def auto_grid_search():
     pg_5 = ['num_leaves', (70, 75, 80, 85, 90)]
     # pg_6 = ['min_data_in_bin', (1, 3, 5, 7, 9)]
 
-    parameter_grid_list = [pg_1, pg_4]
+    parameter_grid_list = [pg_2, pg_5]
     n_epoch = 200
 
     for parameter_grid in parameter_grid_list:
