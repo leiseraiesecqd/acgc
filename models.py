@@ -143,8 +143,8 @@ class ModelBase(object):
 
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, n_valid=4, n_cv=20, n_era=20,
               train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False, show_accuracy=False, 
-              save_final_pred=True, save_cv_pred=True, save_cv_prob_train=False, save_csv_log=True,
-              csv_idx=None, cv_generator=None, return_prob_test=False, auto_train_pred_path=None):
+              save_final_pred=True, save_cv_pred=True, save_final_prob_train=False, save_cv_prob_train=False,
+              save_csv_log=True, csv_idx=None, cv_generator=None, return_prob_test=False, auto_train_pred_path=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -234,10 +234,12 @@ class ModelBase(object):
 
         # Save Final Result
         if auto_train_pred_path is None:
-            utils.save_pred_to_csv(pred_path + 'final_results/' + model_name + '_',
-                                   self.id_test, prob_test_mean)
-            utils.save_prob_train_to_csv(pred_path + 'final_prob_train/' + model_name + '_',
-                                         prob_train_mean, self.y_train)
+            if save_final_pred is True:
+                utils.save_pred_to_csv(pred_path + 'final_results/' + model_name + '_',
+                                       self.id_test, prob_test_mean)
+            if save_final_prob_train is True:
+                utils.save_prob_train_to_csv(pred_path + 'final_prob_train/' + model_name + '_',
+                                             prob_train_mean, self.y_train)
         elif save_final_pred is True:
             utils.save_pred_to_csv(auto_train_pred_path + model_name + '_' + str(csv_idx) + '_t' + str(train_seed) + '_c' + str(cv_seed) + '_',
                                    self.id_test, prob_test_mean)
@@ -699,8 +701,8 @@ class LightGBM(ModelBase):
         d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
 
         # Booster
-        bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
-                        valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
+        bst = lgb.train_model(parameters, d_train, num_boost_round=self.num_boost_round,
+                              valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
 
         return bst
 
@@ -715,8 +717,8 @@ class LightGBM(ModelBase):
         d_valid = lgb.Dataset(x_g_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
 
         # Booster
-        bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
-                        valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
+        bst = lgb.train_model(parameters, d_train, num_boost_round=self.num_boost_round,
+                              valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
 
         return bst
 
@@ -839,8 +841,8 @@ class LightGBM(ModelBase):
                 d_valid = lgb.Dataset(x_valid, label=y_valid, categorical_feature=idx_category)
 
             # Booster
-            bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
-                            valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
+            bst = lgb.train_model(parameters, d_train, num_boost_round=self.num_boost_round,
+                                  valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
 
             # Feature Importance
             if show_importance is True:
@@ -922,8 +924,8 @@ class LightGBM(ModelBase):
                 d_valid = lgb.Dataset(x_valid, label=y_valid, categorical_feature=idx_category)
 
             # Booster
-            bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
-                            valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
+            bst = lgb.train_model(parameters, d_train, num_boost_round=self.num_boost_round,
+                                  valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
 
             # Feature Importance
             if show_importance is True:
@@ -1278,8 +1280,8 @@ class DeepNeuralNetworks(ModelBase):
     # Training
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, n_valid=4, n_cv=20, n_era=20,
               train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False, show_accuracy=False, 
-              save_final_pred=True, save_cv_pred=True, save_cv_prob_train=False, save_csv_log=True,
-              csv_idx=None, cv_generator=None, return_prob_test=False, auto_train_pred_path=None):
+              save_final_pred=True, save_cv_pred=True, save_cv_prob_train=False, save_final_prob_train=False,
+              save_csv_log=True, csv_idx=None, cv_generator=None, return_prob_test=False, auto_train_pred_path=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -1461,10 +1463,12 @@ class DeepNeuralNetworks(ModelBase):
 
             # Save Final Result
             if auto_train_pred_path is None:
-                utils.save_pred_to_csv(pred_path + 'final_results/' + model_name + '_',
-                                       self.id_test, prob_test_mean)
-                utils.save_prob_train_to_csv(pred_path + 'final_prob_train/' + model_name + '_',
-                                             prob_train_mean, self.y_train)
+                if save_final_pred is True:
+                    utils.save_pred_to_csv(pred_path + 'final_results/' + model_name + '_',
+                                           self.id_test, prob_test_mean)
+                if save_final_prob_train is True:
+                    utils.save_prob_train_to_csv(pred_path + 'final_prob_train/' + model_name + '_',
+                                                 prob_train_mean, self.y_train)
             elif save_final_pred is True:
                 utils.save_pred_to_csv(auto_train_pred_path + model_name + '_' + str(csv_idx) + '_' + str(train_seed) + '_' + str(cv_seed) + '_',
                                        self.id_test, prob_test_mean)

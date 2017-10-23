@@ -596,10 +596,10 @@ class StackLayer:
         model = self.models_initializer(blender_x_tree, blender_test_tree, blender_x_g_tree,
                                         blender_test_g_tree, params=self.params)
 
-        model.train(self.pred_path, self.loss_log_path, csv_log_path=self.csv_log_path, n_valid=self.n_valid,
-                    n_cv=self.n_cv_final, n_era=self.n_era, train_seed=self.train_seed, cv_seed=self.cv_seed,
-                    parameters=self.params, show_importance=self.show_importance, show_accuracy=self.show_accuracy,
-                    save_csv_log=self.save_csv_log, csv_idx=self.csv_idx, auto_train_pred_path=self.auto_train_pred_path)
+        model.train_model(self.pred_path, self.loss_log_path, csv_log_path=self.csv_log_path, n_valid=self.n_valid,
+                          n_cv=self.n_cv_final, n_era=self.n_era, train_seed=self.train_seed, cv_seed=self.cv_seed,
+                          parameters=self.params, show_importance=self.show_importance, show_accuracy=self.show_accuracy,
+                          save_csv_log=self.save_csv_log, csv_idx=self.csv_idx, auto_train_pred_path=self.auto_train_pred_path)
 
     def train(self, i_epoch=1):
 
@@ -617,7 +617,7 @@ class StackLayer:
                 epoch_start_time = time.time()
 
                 # Training Lower layer
-                blender_x_e, blender_test_e, _, _ = self.input_layer.train(epoch + 1)
+                blender_x_e, blender_test_e, _, _ = self.input_layer.train_model(epoch + 1)
 
                 # Print Shape
                 print('------------------------------------------------------')

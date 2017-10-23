@@ -46,55 +46,25 @@ path_list = [pred_path,
              dnn_checkpoint_path]
 
 
-class SingleModel:
+class TrainSingleModel:
     """
         Train single model
     """
-    def __init__(self, save_auto_train_results=True, grid_search_n_cv=None, options=None):
+    def __init__(self):
+        pass
 
-        self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
-            = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        self.x_g_train, self.x_g_test\
-            = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
-
-        self.single_model_pred_path = single_model_pred_path
-        self.loss_log_path = loss_log_path
-        self.csv_log_path = csv_log_path + 'single_'
-        self.train_seed = 0
-        self.cv_seed = 0
-        self.save_auto_train_results = save_auto_train_results
-        self.grid_search_n_cv = grid_search_n_cv
-        self.options = options
-
-    def train_model(self, model=None, parameters=None, idx=None, cv_generator=None, grid_search_tuple=None):
-
-        if self.save_auto_train_results is True:
-            auto_train_path = auto_train_pred_path
-        else:
-            auto_train_path = None
-
-        # Grid Search
-        if grid_search_tuple is not None:
-            parameters[grid_search_tuple[0]] = grid_search_tuple[1]
-
-        if self.grid_search_n_cv is not None:
-            n_cv = self.grid_search_n_cv
-        else:
-            n_cv = 20
-
-        # Parameters for Train
-        model.train(pred_path=self.single_model_pred_path, loss_log_path=self.loss_log_path,
-                    csv_log_path=self.csv_log_path, n_valid=4, n_cv=n_cv, n_era=20, train_seed=self.train_seed,
-                    cv_seed=self.cv_seed, era_list=None, parameters=parameters, csv_idx=idx,
-                    cv_generator=cv_generator, auto_train_pred_path=auto_train_path, **self.options)
-
-    def lr_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+    @staticmethod
+    def lr_train(train_seed, cv_seed, save_auto_train_results=False, idx=None,
+                 grid_search_tuple=None, grid_search_n_cv=None, save_final_pred=True):
         """
             Logistic Regression
         """
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
 
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
+        if save_auto_train_results is True:
+            auto_train_path = auto_train_pred_path
+        else:
+            auto_train_path = None
 
         parameters = {'C': 1.0,
                       'class_weight': None,
@@ -112,16 +82,33 @@ class SingleModel:
                       'verbose': 1,
                       'warm_start': False}
 
-        model = models.LRegression(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
+        # Grid Search
+        if grid_search_tuple is not None:
+            parameters[grid_search_tuple[0]] = grid_search_tuple[1]
+        if grid_search_n_cv is None:
+            n_cv = 20
+        else:
+            n_cv = grid_search_n_cv
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        LR = models.LRegression(x_train, y_train, w_train, e_train, x_test, id_test)
 
-    def rf_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+        LR.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
+                 n_valid=4, n_cv=n_cv, n_era=20, train_seed=train_seed, save_final_pred=save_final_pred,
+                 cv_seed=cv_seed, parameters=parameters, show_importance=False,
+                 show_accuracy=True, save_csv_log=True, csv_idx=idx, auto_train_pred_path=auto_train_path)
+
+    @staticmethod
+    def rf_train(train_seed, cv_seed, save_auto_train_results=False, idx=None,
+                 grid_search_tuple=None, grid_search_n_cv=None, save_final_pred=True):
         """
             Random Forest
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
+        if save_auto_train_results is True:
+            auto_train_path = auto_train_pred_path
+        else:
+            auto_train_path = None
 
         parameters = {'bootstrap': True,
                       'class_weight': None,
@@ -140,16 +127,33 @@ class SingleModel:
                       'verbose': 2,
                       'warm_start': False}
 
-        model = models.RandomForest(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
+        # Grid Search
+        if grid_search_tuple is not None:
+            parameters[grid_search_tuple[0]] = grid_search_tuple[1]
+        if grid_search_n_cv is None:
+            n_cv = 20
+        else:
+            n_cv = grid_search_n_cv
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        RF = models.RandomForest(x_train, y_train, w_train, e_train, x_test, id_test)
 
-    def et_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+        RF.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
+                 n_valid=4, n_cv=n_cv, n_era=20, train_seed=train_seed, save_final_pred=save_final_pred,
+                 cv_seed=cv_seed, parameters=parameters, show_importance=False,
+                 show_accuracy=True, save_csv_log=True, csv_idx=idx, auto_train_pred_path=auto_train_path)
+
+    @staticmethod
+    def et_train(train_seed, cv_seed, save_auto_train_results=False, idx=None,
+                 grid_search_tuple=None, grid_search_n_cv=None, save_final_pred=True):
         """
             Extra Trees
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
+        if save_auto_train_results is True:
+            auto_train_path = auto_train_pred_path
+        else:
+            auto_train_path = None
 
         parameters = {'bootstrap': True,
                       'class_weight': None,
@@ -168,16 +172,33 @@ class SingleModel:
                       'verbose': 2,
                       'warm_start': False}
 
-        model = models.ExtraTrees(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
+        # Grid Search
+        if grid_search_tuple is not None:
+            parameters[grid_search_tuple[0]] = grid_search_tuple[1]
+        if grid_search_n_cv is None:
+            n_cv = 20
+        else:
+            n_cv = grid_search_n_cv
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        ET = models.ExtraTrees(x_train, y_train, w_train, e_train, x_test, id_test)
 
-    def ab_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+        ET.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
+                 n_valid=4, n_cv=n_cv, n_era=20, train_seed=train_seed, save_final_pred=save_final_pred,
+                 cv_seed=cv_seed, parameters=parameters, show_importance=False,
+                 show_accuracy=True, save_csv_log=True, csv_idx=idx, auto_train_pred_path=auto_train_path)
+
+    @staticmethod
+    def ab_train(train_seed, cv_seed, save_auto_train_results=False, idx=None,
+                 grid_search_tuple=None, grid_search_n_cv=None, save_final_pred=True):
         """
             AdaBoost
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
+        if save_auto_train_results is True:
+            auto_train_path = auto_train_pred_path
+        else:
+            auto_train_path = None
 
         et_parameters = {'bootstrap': True,
                          'class_weight': None,
@@ -203,17 +224,33 @@ class SingleModel:
                       'learning_rate': 0.0051,
                       'n_estimators': 9,
                       'random_state': train_seed}
+        # Grid Search
+        if grid_search_tuple is not None:
+            parameters[grid_search_tuple[0]] = grid_search_tuple[1]
+        if grid_search_n_cv is None:
+            n_cv = 20
+        else:
+            n_cv = grid_search_n_cv
 
-        model = models.AdaBoost(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
+        AB = models.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        AB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
+                 n_valid=4, n_cv=n_cv, n_era=20, train_seed=train_seed, save_final_pred=save_final_pred,
+                 cv_seed=cv_seed, parameters=parameters, show_importance=False,
+                 show_accuracy=True, save_csv_log=True, csv_idx=idx, auto_train_pred_path=auto_train_path)
 
-    def gb_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+    @staticmethod
+    def gb_train(train_seed, cv_seed, save_auto_train_results=False, idx=None,
+                 grid_search_tuple=None, grid_search_n_cv=None, save_final_pred=True):
         """
             GradientBoosting
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
+        if save_auto_train_results is True:
+            auto_train_path = auto_train_pred_path
+        else:
+            auto_train_path = None
 
         parameters = {'criterion': 'friedman_mse',
                       'init': None,
@@ -234,16 +271,33 @@ class SingleModel:
                       'verbose': 2,
                       'warm_start': False}
 
-        model = models.GradientBoosting(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
+        # Grid Search
+        if grid_search_tuple is not None:
+            parameters[grid_search_tuple[0]] = grid_search_tuple[1]
+        if grid_search_n_cv is None:
+            n_cv = 20
+        else:
+            n_cv = grid_search_n_cv
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        GB = models.GradientBoosting(x_train, y_train, w_train, e_train, x_test, id_test)
 
-    def xgb_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+        GB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
+                 n_valid=4, n_cv=n_cv, n_era=20, train_seed=train_seed, save_final_pred=save_final_pred,
+                 cv_seed=cv_seed, parameters=parameters, show_importance=False,
+                 show_accuracy=True, save_csv_log=True, csv_idx=idx, auto_train_pred_path=auto_train_path)
+
+    @staticmethod
+    def xgb_train(train_seed, cv_seed, save_auto_train_results=False, idx=None,
+                  grid_search_tuple=None, grid_search_n_cv=None, save_final_pred=True):
         """
             XGBoost
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
+        if save_auto_train_results is True:
+            auto_train_path = auto_train_pred_path
+        else:
+            auto_train_path = None
 
         parameters = {'eta': 0.003,
                       'gamma': 0,                       # 如果loss function小于设定值，停止产生子节点
@@ -260,17 +314,33 @@ class SingleModel:
                       'eval_metric': 'logloss',
                       'seed': train_seed}
 
-        model = models.XGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
-                               self.x_test, self.id_test, num_boost_round=35)
+        # Grid Search
+        if grid_search_tuple is not None:
+            parameters[grid_search_tuple[0]] = grid_search_tuple[1]
+        if grid_search_n_cv is None:
+            n_cv = 20
+        else:
+            n_cv = grid_search_n_cv
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        XGB = models.XGBoost(x_train, y_train, w_train, e_train, x_test, id_test, num_boost_round=35)
 
-    def xgb_train_sklearn(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+        XGB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
+                  n_valid=4, n_cv=n_cv, n_era=20, train_seed=train_seed, save_final_pred=save_final_pred,
+                  cv_seed=cv_seed, parameters=parameters, show_importance=False,
+                  show_accuracy=True, save_csv_log=True, csv_idx=idx, auto_train_pred_path=auto_train_path)
+
+    @staticmethod
+    def xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=False, idx=None,
+                          grid_search_tuple=None, grid_search_n_cv=None, save_final_pred=True):
         """
             XGBoost using scikit-learn module
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
+        if save_auto_train_results is True:
+            auto_train_path = auto_train_pred_path
+        else:
+            auto_train_path = None
 
         parameters = {'max_depth': 3,
                       'learning_rate': 0.1,
@@ -294,16 +364,34 @@ class SingleModel:
                       'seed': train_seed,
                       'missing': None}
 
-        model = models.SKLearnXGBoost(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
+        # Grid Search
+        if grid_search_tuple is not None:
+            parameters[grid_search_tuple[0]] = grid_search_tuple[1]
+        if grid_search_n_cv is None:
+            n_cv = 20
+        else:
+            n_cv = grid_search_n_cv
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        XGB = models.SKLearnXGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
-    def lgb_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+        XGB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
+                  n_valid=4, n_cv=n_cv, n_era=20, train_seed=train_seed, save_final_pred=save_final_pred,
+                  cv_seed=cv_seed, parameters=parameters, show_importance=True,
+                  show_accuracy=True, save_csv_log=True, csv_idx=idx, auto_train_pred_path=auto_train_path)
+
+    @staticmethod
+    def lgb_train(train_seed, cv_seed, save_auto_train_results=False, idx=None,
+                  grid_search_tuple=None, grid_search_n_cv=None, save_final_pred=True):
         """
             LightGBM
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+
+        if save_auto_train_results is True:
+            auto_train_path = auto_train_pred_path
+        else:
+            auto_train_path = None
 
         parameters = {'application': 'binary',
                       'boosting': 'gbdt',               # gdbt,rf,dart,goss
@@ -328,21 +416,38 @@ class SingleModel:
                       'early_stopping_rounds': 50,      # default=0
                       'seed': train_seed}
 
-        model = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
-                                self.x_g_test, self.id_test, num_boost_round=65)
+        # Grid Search
+        if grid_search_tuple is not None:
+            parameters[grid_search_tuple[0]] = grid_search_tuple[1]
+        if grid_search_n_cv is None:
+            n_cv = 20
+        else:
+            n_cv = grid_search_n_cv
+
+        LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=65)
 
         # cv_generator = CrossValidation.era_k_fold_with_weight_all_random
         # cv_generator = CrossValidation.random_split_with_weight
         # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
-        self.train_model(model=model, parameters=parameters, idx=idx, cv_generator=None, grid_search_tuple=grid_search_tuple)
+        LGBM.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
+                   n_valid=4, n_cv=n_cv, n_era=20, train_seed=train_seed, auto_train_pred_path=auto_train_path,
+                   cv_seed=cv_seed, parameters=parameters, show_importance=False, save_cv_pred=False,
+                   save_final_pred=save_final_pred, show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
-    def lgb_train_sklearn(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+    @staticmethod
+    def lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=False, idx=None,
+                          grid_search_tuple=None, grid_search_n_cv=None, save_final_pred=True):
         """
             LightGBM using scikit-learn module
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+
+        if save_auto_train_results is True:
+            auto_train_path = auto_train_pred_path
+        else:
+            auto_train_path = None
 
         parameters = {'learning_rate': 0.003,
                       'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
@@ -366,17 +471,34 @@ class SingleModel:
                       'silent': False,
                       'seed': train_seed}
 
-        model = models.SKLearnLightGBM(self.x_g_train, self.y_train, self.w_train,
-                                       self.e_train, self.x_g_test, self.id_test)
+        # Grid Search
+        if grid_search_tuple is not None:
+            parameters[grid_search_tuple[0]] = grid_search_tuple[1]
+        if grid_search_n_cv is None:
+            n_cv = 20
+        else:
+            n_cv = grid_search_n_cv
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        LGBM = models.SKLearnLightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test)
 
-    def cb_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+        LGBM.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
+                   n_valid=4, n_cv=n_cv, n_era=20, train_seed=train_seed, save_final_pred=save_final_pred,
+                   cv_seed=cv_seed, parameters=parameters, show_importance=False,
+                   show_accuracy=True, save_csv_log=True, csv_idx=idx, auto_train_pred_path=auto_train_path)
+
+    @staticmethod
+    def cb_train(train_seed, cv_seed, save_auto_train_results=False, idx=None,
+                 grid_search_tuple=None, grid_search_n_cv=None, save_final_pred=True):
         """
             CatBoost
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+
+        if save_auto_train_results is True:
+            auto_train_path = auto_train_pred_path
+        else:
+            auto_train_path = None
 
         parameters = {'iterations': 50,
                       'learning_rate': 0.003,
@@ -410,16 +532,33 @@ class SingleModel:
                       'eval_metric': 'Logloss',
                       'class_weights': None}
 
-        model = models.CatBoost(self.x_g_train, self.y_train, self.w_train, self.e_train, self.x_g_test, self.id_test)
+        # Grid Search
+        if grid_search_tuple is not None:
+            parameters[grid_search_tuple[0]] = grid_search_tuple[1]
+        if grid_search_n_cv is None:
+            n_cv = 20
+        else:
+            n_cv = grid_search_n_cv
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        CB = models.CatBoost(x_g_train, y_train, w_train, e_train, x_g_test, id_test)
 
-    def dnn_tf_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+        CB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
+                 n_valid=4, n_cv=n_cv, n_era=20, train_seed=train_seed, save_final_pred=save_final_pred,
+                 cv_seed=cv_seed, parameters=parameters, show_importance=False,
+                 show_accuracy=True, save_csv_log=True, csv_idx=idx, auto_train_pred_path=auto_train_path)
+
+    @staticmethod
+    def dnn_tf_train(train_seed, cv_seed, save_auto_train_results=False, idx=None,
+                     grid_search_tuple=None, grid_search_n_cv=None, save_final_pred=True):
         """
             Deep Neural Networks
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+
+        if save_auto_train_results is True:
+            auto_train_path = auto_train_pred_path
+        else:
+            auto_train_path = None
 
         # HyperParameters
         parameters = {'version': '1.0',
@@ -433,28 +572,68 @@ class SingleModel:
                       'save_path': dnn_checkpoint_path,
                       'log_path': dnn_log_path}
 
-        model = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
-                                          self.e_train, self.x_test, self.id_test, parameters)
+        # Grid Search
+        if grid_search_tuple is not None:
+            parameters[grid_search_tuple[0]] = grid_search_tuple[1]
+        if grid_search_n_cv is None:
+            n_cv = 20
+        else:
+            n_cv = grid_search_n_cv
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        print('Loading data set...')
 
-    def stack_lgb_train(self, train_seed, cv_seed, idx=None, auto_idx=None, grid_search_tuple=None):
+        dnn = models.DeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, parameters)
+
+        dnn.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'single_',
+                  n_valid=4, n_cv=n_cv, n_era=20, train_seed=train_seed, cv_seed=cv_seed, show_accuracy=True,
+                  save_final_pred=save_final_pred, save_csv_log=True, csv_idx=idx, auto_train_pred_path=auto_train_path)
+
+    # # DNN using Keras
+    # @staticmethod
+    # def dnn_keras_train(train_seed, cv_seed, save_auto_train_results=False, idx=None, grid_search_tuple=None):
+    #
+    #     x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+    #
+    #     # HyperParameters
+    #     hyper_parameters = {'epochs': 200,
+    #                         'unit_number': [64, 32, 16, 8, 4, 1],
+    #                         'learning_rate': 0.00001,
+    #                         'keep_probability': 0.8,
+    #                         'batch_size': 256}
+
+        # # Grid Search
+        # if grid_search_tuple is not None:
+        #     parameters[grid_search_tuple[0]] = grid_search_tuple[1]
+        # if grid_search_n_cv is None:
+        #     n_cv = 20
+        # else:
+        #     n_cv = grid_search_n_cv
+    #
+    #     dnn = models.KerasDeepNeuralNetworks(x_train, y_train, w_train, e_train, x_test, id_test, hyper_parameters)
+    #
+    #     dnn.train(pred_path, loss_log_path, n_valid=4, n_cv=n_cv, cv_seed=cv_seed)
+
+    @staticmethod
+    def stack_lgb_train(train_seed, cv_seed, save_auto_train_results=False, idx=None,
+                        grid_search_tuple=None, grid_search_n_cv=None, auto_idx=None, save_final_pred=True):
         """
             LightGBM for stack layer
         """
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
         blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree\
             = utils.load_stacked_data(stack_output_path + 'auto_{}_l2_'.format(auto_idx))
 
-        if self.save_auto_train_results is True:
+        if save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None
 
-        g_train = self.x_g_train[:, -1]
-        g_test = self.x_g_test[:, -1]
+        g_train = x_g_train[:, -1]
+        g_test = x_g_test[:, -1]
 
-        x_train_reuse = self.x_train[:, :87]
-        x_test_reuse = self.x_test[:, :87]
+        x_train_reuse = x_train[:, :87]
+        x_test_reuse = x_test[:, :87]
 
         print('------------------------------------------------------')
         print('Stacking Reused Features of Train Set...')
@@ -496,73 +675,40 @@ class SingleModel:
         # Grid Search
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
-        if self.grid_search_n_cv is None:
+        if grid_search_n_cv is None:
             n_cv = 20
         else:
-            n_cv = self.grid_search_n_cv
+            n_cv = grid_search_n_cv
 
-        LGB = models.LightGBM(blender_x_g_tree, self.y_train, self.w_train, self.e_train,
-                              blender_test_g_tree, self.id_test, num_boost_round=65)
+        LGB = models.LightGBM(blender_x_g_tree, y_train, w_train, e_train,
+                              blender_test_g_tree, id_test, num_boost_round=35)
 
         # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
         LGB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'stack_final_',
-                  n_valid=4, n_cv=n_cv, n_era=20, train_seed=train_seed, cv_seed=cv_seed, parameters=parameters,
-                  csv_idx=idx, auto_train_pred_path=auto_train_path, **self.options)
+                  n_valid=4, n_cv=n_cv, n_era=20, train_seed=train_seed, save_final_pred=save_final_pred,
+                  cv_seed=cv_seed, parameters=parameters, show_importance=False,
+                  show_accuracy=True, save_csv_log=True, csv_idx=idx, auto_train_pred_path=auto_train_path)
 
 
 class ChampionModel:
 
-    def __init__(self, save_final_pred=True, save_auto_train_results=True, grid_search_n_cv=None):
+    def __init__(self):
+        pass
 
-        self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
-            = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        self.x_g_train, self.x_g_test\
-            = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
-
-        self.single_model_pred_path = single_model_pred_path
-        self.loss_log_path = loss_log_path
-        self.csv_log_path = csv_log_path + 'christ1991_'
-        self.train_seed = 0
-        self.cv_seed = 0
-        self.save_final_pred = save_final_pred
-        self.save_auto_train_results = save_auto_train_results
-        self.grid_search_n_cv = grid_search_n_cv
-
-    def train_model(self, model=None, parameters=None, idx=None, cv_generator=None, grid_search_tuple=None):
-
-        if self.save_auto_train_results is True:
-            auto_train_path = auto_train_pred_path
-        else:
-            auto_train_path = None
-
-        # Grid Search
-        if grid_search_tuple is not None:
-            parameters[grid_search_tuple[0]] = grid_search_tuple[1]
-
-        if self.grid_search_n_cv is not None:
-            n_cv = self.grid_search_n_cv
-        else:
-            n_cv = 20
-
-        # Parameters for Train
-        train_parameters = {'pred_path': self.single_model_pred_path, 'loss_log_path': self.loss_log_path,
-                            'csv_log_path': self.csv_log_path, 'n_valid': 4, 'n_cv': n_cv, 'n_era': 20,
-                            'train_seed': self.train_seed, 'cv_seed': self.cv_seed, 'era_list': None,
-                            'parameters': parameters, 'show_importance': False, 'show_accuracy': True,
-                            'save_final_pred': self.save_final_pred, 'save_cv_pred': False,
-                            'save_final_prob_train': False, 'save_cv_prob_train': False,
-                            'save_csv_log': True, 'csv_idx': idx, 'cv_generator': cv_generator,
-                            'auto_train_pred_path': auto_train_path}
-
-        model.train(**train_parameters)
-
-    def Christ1991(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+    @staticmethod
+    def Christ1991(train_seed, cv_seed, save_auto_train_results=False, idx=None,
+                   grid_search_tuple=None, grid_search_n_cv=None, save_final_pred=True):
         """
             Model of week3 champion
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+
+        if save_auto_train_results is True:
+            auto_train_path = auto_train_pred_path
+        else:
+            auto_train_path = None
 
         parameters = {'application': 'binary',
                       'learning_rate': 0.002,
@@ -579,13 +725,22 @@ class ChampionModel:
                       'metric': 'binary_logloss',
                       'verbosity': 1}
 
-        model = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
-                                self.x_g_test, self.id_test, num_boost_round=65)
+        # Grid Search
+        if grid_search_tuple is not None:
+            parameters[grid_search_tuple[0]] = grid_search_tuple[1]
+        if grid_search_n_cv is None:
+            n_cv = 20
+        else:
+            n_cv = grid_search_n_cv
+
+        LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=65)
 
         cv_generator = CrossValidation.era_k_fold_with_weight_all_random
 
-        self.train_model(model=model, parameters=parameters, idx=idx,
-                         cv_generator=cv_generator, grid_search_tuple=grid_search_tuple)
+        LGBM.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'christ1991_',
+                   n_valid=4, n_cv=n_cv, n_era=20, train_seed=train_seed, save_final_pred=save_final_pred,
+                   cv_seed=cv_seed, parameters=parameters, show_importance=False, show_accuracy=False,
+                   save_csv_log=True, csv_idx=idx, cv_generator=cv_generator, auto_train_pred_path=auto_train_path)
 
 
 class GridSearch:
@@ -1012,19 +1167,8 @@ class PrejudgeTraining:
     """
         Prejudge - Training by Split Era sign
     """
-    def __init__(self, load_pickle=False, options=None):
-        
-        self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
-            = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        self.x_g_train, self.x_g_test\
-            = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
-        self.x_train_p, self.y_train_p, self.w_train_p, self.e_train_p, self.x_g_train_p \
-            = utils.load_preprocessed_positive_pd_data(preprocessed_data_path)
-        self.x_train_n, self.y_train_n, self.w_train_n, self.e_train_n, self.x_g_train_n \
-            = utils.load_preprocessed_negative_pd_data(preprocessed_data_path)
-        self.load_pickle = load_pickle
-        self.show_importance = options['show_importance']
-        self.show_accuracy = options['show_accuracy']
+    def __init__(self):
+        pass
 
     @staticmethod
     def get_binary_models_parameters(train_seed):
@@ -1146,11 +1290,18 @@ class PrejudgeTraining:
 
         return models_parameters
 
-    def binary_train(self, train_seed, cv_seed):
+    @staticmethod
+    def binary_train(train_seed, cv_seed, load_pickle=False):
         """
             Training model of PrejudgeBinary
         """
-        
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+        x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p \
+            = utils.load_preprocessed_positive_pd_data(preprocessed_data_path)
+        x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n \
+            = utils.load_preprocessed_negative_pd_data(preprocessed_data_path)
+
         models_parameters = PrejudgeTraining.get_binary_models_parameters(train_seed)
 
         positive_era_list = preprocess.positive_era_list
@@ -1173,23 +1324,25 @@ class PrejudgeTraining:
                             'era_list_n': negative_era_list,
                             'force_convert_era': True,
                             'use_weight': True,
-                            'show_importance': self.show_importance,
-                            'show_accuracy': self.show_accuracy}
+                            'show_importance': False,
+                            'show_accuracy': True}
 
-        PB = prejudge.PrejudgeBinary(self.x_train, self.y_train, self.w_train, self.e_train, self.x_g_train, 
-                                     self.x_train_p, self.y_train_p, self.w_train_p, self.e_train_p, self.x_g_train_p, 
-                                     self.x_train_n, self.y_train_n, self.w_train_n, self.e_train_n, self.x_g_train_n, 
-                                     self.x_test, self.id_test, self.x_g_test,
-                                     pred_path=prejudge_pred_path, prejudged_data_path=prejudged_data_path,
-                                     loss_log_path=prejudge_loss_log_path, csv_log_path=csv_log_path + 'prejudge_',
-                                     models_parameters=models_parameters, hyper_parameters=hyper_parameters)
+        PES = prejudge.PrejudgeBinary(x_train, y_train, w_train, e_train, x_g_train, x_train_p,
+                                      y_train_p, w_train_p, e_train_p, x_g_train_p, x_train_n, y_train_n,
+                                      w_train_n, e_train_n, x_g_train_n, x_test, id_test, x_g_test,
+                                      pred_path=prejudge_pred_path, prejudged_data_path=prejudged_data_path,
+                                      loss_log_path=prejudge_loss_log_path, csv_log_path=csv_log_path + 'prejudge_',
+                                      models_parameters=models_parameters, hyper_parameters=hyper_parameters)
 
-        PB.train(load_pickle=self.load_pickle, load_pickle_path=None)
+        PES.train(load_pickle=load_pickle, load_pickle_path=None)
 
-    def multiclass_train(self, train_seed, cv_seed):
+    @staticmethod
+    def multiclass_train(train_seed, cv_seed):
         """
             Training model of PrejudgeMultiClass
         """
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
 
         models_parameters = PrejudgeTraining.get_multiclass_models_parameters(train_seed)
 
@@ -1203,32 +1356,23 @@ class PrejudgeTraining:
                             'n_cv_m': 20,
                             'num_boost_round_m': 65,
                             'use_weight': True,
-                            'show_importance': self.show_importance,
-                            'show_accuracy': self.show_accuracy}
+                            'show_importance': False,
+                            'show_accuracy': True}
 
-        PB = prejudge.PrejudgeMultiClass(self.x_train, self.y_train, self.w_train, self.e_train, self.x_g_train,
-                                         self.x_test, self.id_test, self.x_g_test,
-                                         pred_path=prejudge_pred_path, prejudged_data_path=prejudged_data_path,
-                                         loss_log_path=prejudge_loss_log_path, csv_log_path=csv_log_path + 'prejudge_',
-                                         models_parameters=models_parameters, hyper_parameters=hyper_parameters)
+        PES = prejudge.PrejudgeMultiClass(x_train, y_train, w_train, e_train, x_g_train, x_test, id_test, x_g_test,
+                                          pred_path=prejudge_pred_path, prejudged_data_path=prejudged_data_path,
+                                          loss_log_path=prejudge_loss_log_path, csv_log_path=csv_log_path + 'prejudge_',
+                                          models_parameters=models_parameters, hyper_parameters=hyper_parameters)
 
-        PB.train(load_pickle=self.load_pickle, load_pickle_path=None)
+        PES.train(load_pickle=True, load_pickle_path=None)
 
 
 class ModelStacking:
     """
         Stacking
     """
-    def __init__(self, save_auto_train_results=True, options=None):
-
-        self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
-            = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        self.x_g_train, self.x_g_test\
-            = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
-        self.save_auto_train_results = save_auto_train_results
-        self.show_importance = options['show_importance']
-        self.show_accuracy = options['show_accuracy']
-        self.save_csv_log = options['save_csv_log']
+    def __init__(self):
+        pass
 
     @staticmethod
     def get_layer1_params(train_seed):
@@ -1525,11 +1669,12 @@ class ModelStacking:
 
         STK.stack()
 
-    def stack_tree_train(self, train_seed, cv_seed, idx=None):
+    @staticmethod
+    def stack_tree_train(train_seed, cv_seed, save_auto_train_results=False, idx=None):
         """
             Training model using StackTree model
         """
-        if self.save_auto_train_results is True:
+        if save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None
@@ -1543,8 +1688,8 @@ class ModelStacking:
                         'num_boost_round_lgb_l1': 65,
                         'num_boost_round_xgb_l1': 35,
                         'num_boost_round_final': 55,
-                        'show_importance': self.show_importance,
-                        'show_accuracy': self.show_accuracy,
+                        'show_importance': False,
+                        'show_accuracy': True,
                         'save_epoch_results': False}
 
         layer1_params = ModelStacking.get_layer1_params(train_seed)
@@ -1555,209 +1700,181 @@ class ModelStacking:
                          # layer2_params,
                          final_layer_params]
 
-        STK = stacking.StackTree(self.x_train, self.y_train, self.w_train, self.e_train,
-                                 self.x_test, self.id_test, self.x_g_train, self.x_g_test,
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+
+        STK = stacking.StackTree(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test,
                                  layers_params=layers_params, hyper_params=hyper_params)
 
         STK.stack(pred_path=stack_pred_path, auto_train_pred_path=auto_train_path,
                   loss_log_path=loss_log_path, stack_output_path=stack_output_path,
-                  csv_log_path=csv_log_path+'stack_final_', save_csv_log=self.save_csv_log, csv_idx=idx)
-        
+                  csv_log_path=csv_log_path+'stack_final_', save_csv_log=True, csv_idx=idx)
 
-class TrainingMode:
-    
-    def __init__(self):
-        pass
 
-    @staticmethod
-    def get_train_function(train_mode, model_name, grid_search_n_cv=None, load_pickle=False, options=None):
+def auto_grid_search():
+    """
+        Automatically Grid Searching
+    """
+    # pg_1 = ['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]
+    # pg_2 = ['bagging_fraction', (0.6, 0.7, 0.8, 0.9)]
+    pg_3 = ['bagging_freq', (1, 2, 3, 4, 5)]
+    # pg_4 = ['max_depth', (7, 8, 9, 10)]
+    # pg_5 = ['num_leaves', (70, 75, 80, 85, 90)]
+    pg_6 = ['min_data_in_bin', (1, 3, 5, 7, 9)]
 
-        if train_mode == 'train_single_model':
-            model_arg = {'options': options}
-        elif train_mode == 'auto_grid_search':
-            options['save_final_pred'] = False
-            model_arg = {'save_auto_train_results': False, 'grid_search_n_cv': grid_search_n_cv, 'options': options}
-        elif train_mode == 'auto_train':
-            model_arg = {'save_auto_train_results': True, 'options': options}
-        else:
-            raise ValueError('Wrong Training Mode!')
+    parameter_grid_list = [pg_3, pg_6]
+    n_epoch = 200
 
-        if model_name in ['lr', 'rf', 'et', 'ab', 'gb', 'xgb', 'xgb_sk',
-                          'lgb', 'lgb_sk', 'cb', 'dnn', 'stack_lgb']:
-            SM = SingleModel(**model_arg)
-            train_functions = {'lr': SM.lr_train,
-                               'rf': SM.rf_train,
-                               'et': SM.et_train,
-                               'ab': SM.ab_train,
-                               'gb': SM.gb_train,
-                               'xgb': SM.xgb_train,
-                               'xgb_sk': SM.xgb_train_sklearn,
-                               'lgb': SM.lgb_train,
-                               'lgb_sk': SM.lgb_train_sklearn,
-                               'cb': SM.cb_train,
-                               'dnn': SM.dnn_tf_train,
-                               'stack_lgb': SM.stack_lgb_train}
-            return train_functions['model_name']
+    for parameter_grid in parameter_grid_list:
 
-        elif model_name == 'christ':
-            CM = ChampionModel(**model_arg)
-            return CM.Christ1991
+        gs_start_time = time.time()
 
-        elif model_name == 'stack_t':
-            STK = ModelStacking(**model_arg)
-            return STK.stack_tree_train
+        print('======================================================')
+        print('Auto Grid Searching Parameter: {}'.format(parameter_grid[0]))
+        print('======================================================')
 
-        elif model_name == 'prejudge_b':
-            PJ = PrejudgeTraining(load_pickle=load_pickle)
-            return PJ.binary_train
+        for param in parameter_grid[1]:
 
-        elif model_name == 'prejudge_m':
-            PJ = PrejudgeTraining(load_pickle=load_pickle)
-            return PJ.multiclass_train
+            param_start_time = time.time()
+            grid_search_tuple = (parameter_grid[0], param)
 
-        else:
-            raise ValueError('Wrong Model Name!')
+            for i in range(n_epoch):
 
-    def train_single_model(self, model_name, train_seed, cv_seed, load_pickle=False, options=None):
-        """
-            Training Single Model
-        """
-        # Get Train Function
-        train_function = self.get_train_function('train_single_model', model_name,
-                                                 load_pickle=load_pickle, options=options)
+                train_seed = random.randint(0, 300)
+                cv_seed = random.randint(0, 300)
+                epoch_start_time = time.time()
 
-        # Training Model
-        train_function(train_seed, cv_seed)
+                idx = parameter_grid[0] + '_' + str(param) + '_' + str(i+1)
 
-    def auto_grid_search(self, model_name=None, parameter_grid_list=None, n_epoch=1, grid_search_n_cv=5, options=None):
-        """
-            Automatically Grid Searching
-        """
-        # Get Train Function
-        train_function = self.get_train_function('auto_grid_search', model_name,
-                                                 grid_search_n_cv=grid_search_n_cv, options=options)
-    
-        for parameter_grid in parameter_grid_list:
-    
-            gs_start_time = time.time()
-    
-            print('======================================================')
-            print('Auto Grid Searching Parameter: {}'.format(parameter_grid[0]))
-            print('======================================================')
-    
-            for param in parameter_grid[1]:
-    
-                param_start_time = time.time()
-                grid_search_tuple = (parameter_grid[0], param)
-    
-                for i in range(n_epoch):
-    
-                    train_seed = random.randint(0, 300)
-                    cv_seed = random.randint(0, 300)
-                    epoch_start_time = time.time()
-                    idx = parameter_grid[0] + '_' + str(param) + '_' + str(i+1)
-    
-                    print('======================================================')
-                    print('Parameter: {}-{} | Epoch: {}/{}'.format(parameter_grid[0], param, i+1, n_epoch))
-
-                    # Training Model
-                    train_function(train_seed, cv_seed, idx=idx, grid_search_tuple=grid_search_tuple)
-    
-                    print('======================================================')
-                    print('Auto Training Epoch Done!')
-                    print('Train Seed: {}'.format(train_seed))
-                    print('Cross Validation Seed: {}'.format(cv_seed))
-                    print('Epoch Time: {}s'.format(time.time() - epoch_start_time))
-                    print('======================================================')
-    
                 print('======================================================')
-                print('One Parameter Done!')
-                print('Parameter Time: {}s'.format(time.time() - param_start_time))
+                print('Parameter: {}-{} | Epoch: {}/{}'.format(parameter_grid[0], param, i+1, n_epoch))
+
+                # Logistic Regression
+                # TrainSingleModel.lr_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                           grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                #
+                # Random Forest
+                # TrainSingleModel.rf_train(train_seed, cv_seed, save_auto_train_results=True,idx=idx,
+                #                           grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                #
+                # Extra Trees
+                # TrainSingleModel.et_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                           grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                #
+                # AdaBoost
+                # TrainSingleModel.ab_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                           grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                #
+                # GradientBoosting
+                # TrainSingleModel.gb_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                           grid_search_tuple=grid_search_tuple, save_final_pred=False)
+
+                # XGBoost
+                # TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                            grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                                    grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+
+                # LightGBM
+                TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                                           grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                                    grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                #
+                # CatBoost
+                # TrainSingleModel.cb_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                           grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                #
+                # DNN
+                # TrainSingleModel.dnn_tf_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                               grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                # TrainSingleModel.dnn_keras_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                                  grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                #
+                # Champion Model
+                # ChampionModel.Christ1991(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                          grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+
                 print('======================================================')
-    
+                print('Auto Training Epoch Done!')
+                print('Train Seed: {}'.format(train_seed))
+                print('Cross Validation Seed: {}'.format(cv_seed))
+                print('Epoch Time: {}s'.format(time.time() - epoch_start_time))
+                print('======================================================')
+
             print('======================================================')
-            print('All Parameter Done!')
-            print('Grid Searching Time: {}s'.format(time.time() - gs_start_time))
+            print('One Parameter Done!')
+            print('Parameter Time: {}s'.format(time.time() - param_start_time))
             print('======================================================')
 
-    def auto_train(self, model_name=None, n_epoch=1, stack_final_epochs=None, options=None):
-        """
-            Automatically training a model for many times
-        """
+        print('======================================================')
+        print('All Parameter Done!')
+        print('Grid Searching Time: {}s'.format(time.time() - gs_start_time))
+        print('======================================================')
 
-        # Get Train Function
-        train_function = self.get_train_function('auto_train', model_name, options=options)
-    
-        for i in range(n_epoch):
-    
-            train_seed = random.randint(0, 500)
-            cv_seed = random.randint(0, 500)
-            epoch_start_time = time.time()
-    
-            print('======================================================')
-            print('Auto Training Epoch {}/{}...'.format(i+1, n_epoch))
-    
-            if model_name == 'stack_tree':
-                train_function(train_seed, cv_seed, idx=i+1)
-                train_function_s = self.get_train_function('auto_train', 'stack_lgb', options=options)
-                for ii in range(stack_final_epochs):
-                    t_seed = random.randint(0, 500)
-                    c_seed = random.randint(0, 500)
-                    train_function_s(t_seed, c_seed, idx='auto_{}_epoch_{}'.format(i+1, ii+1), auto_idx=i+1)
-            else:
-                train_function(train_seed, cv_seed, idx=i + 1)
-    
-            print('======================================================')
-            print('Auto Training Epoch Done!')
-            print('Train Seed: {}'.format(train_seed))
-            print('Cross Validation Seed: {}'.format(cv_seed))
-            print('Epoch Time: {}s'.format(time.time() - epoch_start_time))
-            print('======================================================')
-    
-    def training(self, train_seed, cv_seed):
-        """
-            Model Name:
-            'lr':           Logistic Regression
-            'rf':           Random Forest
-            'et':           Extra Trees
-            'ab':           AdaBoost
-            'gb':           GradientBoosting
-            'xgb':          XGBoost
-            'xgb_sk':       XGBoost using scikit-learn module
-            'lgb':          LightGBM
-            'lgb_sk':       LightGBM using scikit-learn module
-            'cb':           CatBoost
-            'dnn':          Deep Neural Networks
-            'stack_lgb':    LightGBM for stack layer
-            'christ':       Christ1991
-            'prejudge_b':   PrejudgeBinary
-            'prejudge_m':   PrejudgeMultiClass
-            'stack_t':      StackTree
-        """
 
-        options = {'show_importance': False,
-                   'show_accuracy': False,
-                   'save_final_pred': True,
-                   'save_final_prob_train': False,
-                   'save_cv_pred': False,
-                   'save_cv_prob_train': False,
-                   'save_csv_log': True}
-        
-        self.train_single_model(model_name='lgb', train_seed=train_seed, cv_seed=cv_seed, options=options)
+def auto_train():
+    """
+        Automatically training a model for many times
+    """
+    n_epoch = 10
 
-        # pg_list = [
-        #            ['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)],
-        #            ['bagging_fraction', (0.6, 0.7, 0.8, 0.9)],
-        #            ['bagging_freq', (1, 2, 3, 4, 5)],
-        #            ['max_depth', (7, 8, 9, 10)],
-        #            ['num_leaves', (70, 75, 80, 85, 90)],
-        #            ['min_data_in_bin', (1, 3, 5, 7, 9)]
-        #            ]
+    for i in range(n_epoch):
 
-        # self.auto_grid_search(model_name='lgb', parameter_grid_list=pg_list,
-        #                       n_epoch=200, grid_search_n_cv=5, options=options)
+        train_seed = random.randint(0, 500)
+        cv_seed = random.randint(0, 500)
+        epoch_start_time = time.time()
 
-        # self.auto_train(model_name='lgb', n_epoch=100, options=options)
+        print('======================================================')
+        print('Auto Training Epoch {}/{}...'.format(i+1, n_epoch))
+
+        # Logistic Regression
+        # TrainSingleModel.lr_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+
+        # Random Forest
+        # TrainSingleModel.rf_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+
+        # Extra Trees
+        # TrainSingleModel.et_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+
+        # AdaBoost
+        # TrainSingleModel.ab_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+
+        # GradientBoosting
+        # TrainSingleModel.gb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+
+        # XGBoost
+        # TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+
+        # LightGBM
+        TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+
+        # CatBoost
+        # TrainSingleModel.cb_train(train_seed, cv_seed, idx=i+1)
+
+        # DNN
+        # TrainSingleModel.dnn_tf_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        # TrainSingleModel.dnn_keras_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+
+        # Champion Model
+        # ChampionModel.Christ1991(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+
+        # Stacking
+        # ModelStacking.stack_tree_train(train_seed, cv_seed, save_auto_train_results=True, idx=i+1)
+        # for ii in range(10):
+        #     t_seed = random.randint(0, 500)
+        #     c_seed = random.randint(0, 500)
+        #     TrainSingleModel.stack_lgb_train(t_seed, c_seed, idx='auto_{}_epoch_{}'.format(i+1, ii+1),
+        #                                      save_auto_train_results=True, auto_idx=i+1)
+
+        print('======================================================')
+        print('Auto Training Epoch Done!')
+        print('Train Seed: {}'.format(train_seed))
+        print('Cross Validation Seed: {}'.format(cv_seed))
+        print('Epoch Time: {}s'.format(time.time() - epoch_start_time))
+        print('======================================================')
 
 
 if __name__ == "__main__":
@@ -1776,8 +1893,63 @@ if __name__ == "__main__":
     print('======================================================')
     print('Start Training...')
 
-    T = TrainingMode()
-    T.training(global_train_seed, global_cv_seed)
+    # Logistic Regression
+    # TrainSingleModel.lr_train(global_train_seed, global_cv_seed)
+
+    # Random Forest
+    # TrainSingleModel.rf_train(global_train_seed, global_cv_seed)
+
+    # Extra Trees
+    # TrainSingleModel.et_train(global_train_seed, global_cv_seed)
+
+    # AdaBoost
+    # TrainSingleModel.ab_train(global_train_seed, global_cv_seed)
+
+    # GradientBoosting
+    # TrainSingleModel.gb_train(global_train_seed, global_cv_seed)
+
+    # XGBoost
+    # TrainSingleModel.xgb_train(global_train_seed, global_cv_seed)
+    # TrainSingleModel.xgb_train_sklearn(global_train_seed, global_cv_seed)
+
+    # LightGBM
+    # TrainSingleModel.lgb_train(global_train_seed, global_cv_seed)
+    # TrainSingleModel.lgb_train_sklearn(global_train_seed, global_cv_seed)
+
+    # CatBoost
+    # TrainSingleModel.cb_train(global_train_seed, global_cv_seed)
+
+    # DNN
+    # TrainSingleModel.dnn_tf_train(global_train_seed, global_cv_seed)
+    # TrainSingleModel.dnn_keras_train(global_train_seed, global_cv_seed)
+
+    # Champion Model
+    # ChampionModel.Christ1991(global_train_seed, global_cv_seed)
+
+    # Grid Search
+    # GridSearch.lr_grid_search(global_train_seed, global_cv_seed)
+    # GridSearch.rf_grid_search(global_train_seed, global_cv_seed)
+    # GridSearch.et_grid_search(global_train_seed, global_cv_seed)
+    # GridSearch.ab_grid_search(global_train_seed, global_cv_seed)
+    # GridSearch.gb_grid_search(global_train_seed, global_cv_seed)
+    # GridSearch.xgb_grid_search(global_train_seed, global_cv_seed)
+    # GridSearch.lgb_grid_search(global_train_seed, global_cv_seed)
+    # GridSearch.stack_lgb_grid_search(global_train_seed, global_cv_seed)
+
+    # Stacking
+    # ModelStacking.deep_stack_train(global_train_seed, global_cv_seed)
+    # ModelStacking.stack_tree_train(global_train_seed, global_cv_seed)
+    # TrainSingleModel.stack_lgb_train(global_train_seed, global_cv_seed, auto_idx='1')
+
+    # Prejudge
+    # PrejudgeTraining.binary_train(global_train_seed, global_cv_seed, load_pickle=False)
+    # PrejudgeTraining.multiclass_train(global_train_seed, global_cv_seed)
+
+    # Auto Grid Searching
+    auto_grid_search()
+
+    # Auto Training
+    # auto_train()
 
     print('======================================================')
     print('All Tasks Done!')
