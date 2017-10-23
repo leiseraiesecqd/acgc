@@ -85,8 +85,8 @@ class AdversarialValidation(object):
 
         # Drop Unnecessary Columns
         # self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era'], axis=1)
-        x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era', 'feature43'], axis=1)
-        x_test = test_f.drop(['id', 'group', 'feature43'], axis=1)
+        x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era', 'feature82'], axis=1)
+        x_test = test_f.drop(['id', 'group', 'feature82'], axis=1)
         g_train = train_f['group']
         g_test = test_f['group']
 
