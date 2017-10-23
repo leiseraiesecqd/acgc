@@ -1,11 +1,8 @@
 import time
 import utils
-import os
 import numpy as np
 import pandas as pd
-from os.path import isdir
 from adversarial_validation import generate_validation_set
-from sklearn.model_selection import StratifiedShuffleSplit
 
 
 train_csv_path = './inputs/stock_train_data_20171020.csv'
@@ -55,32 +52,8 @@ class DataPreProcess:
         self.x_g_valid = np.array([])
         self.y_valid = np.array([])
 
-    # Load CSV Files
-    def load_csv_np(self):
-
-        train_f = np.loadtxt(self.train_path, dtype=np.float64, skiprows=1, delimiter=",")
-        test_f = np.loadtxt(self.test_path, dtype=np.float64, skiprows=1, delimiter=",")
-
-        return train_f, test_f
-
-    # Load Data
-    def load_data_np(self):
-
-        try:
-            print('Loading data...')
-            train_f, test_f = self.load_csv_np()
-        except Exception as e:
-            print('Unable to read data: ', e)
-            raise
-
-        self.x_train = train_f[:, 1:]                  # feature + weight + label + group + era
-        self.w_train = train_f[:, 89]                  # weight
-        np.delete(self.x_train, [88, 89, 90], axis=1)  # feature + era
-        self.y_train = train_f[:, 90]                  # label
-        self.x_test = test_f                           # feature + group
-
     # Load CSV Files Using Pandas
-    def load_csv_pd(self):
+    def load_csv(self):
 
         train_f = pd.read_csv(self.train_path, header=0, dtype=np.float64)
         test_f = pd.read_csv(self.test_path, header=0, dtype=np.float64)
@@ -88,11 +61,11 @@ class DataPreProcess:
         return train_f, test_f
 
     # Load Data Using Pandas
-    def load_data_pd(self):
+    def load_data(self):
 
         try:
             print('Loading data...')
-            train_f, test_f = self.load_csv_pd()
+            train_f, test_f = self.load_csv()
         except Exception as e:
             print('Unable to read data: ', e)
             raise
@@ -369,7 +342,7 @@ class DataPreProcess:
     def split_data_by_gan(self, load_pickle=True, sample_ratio=None, sample_by_era=True, generate_mode='valid'):
 
         if load_pickle is True:
-            similarity_prob = utils.load_pkl_to_np(gan_prob_path + 'similarity_prob.p')
+            similarity_prob = utils.load_pkl_to_data(gan_prob_path + 'similarity_prob.p')
         else:
             similarity_prob = \
                 generate_validation_set(train_path=train_csv_path, test_path=test_csv_path, global_epochs=1,
@@ -483,44 +456,8 @@ class DataPreProcess:
         self.w_train_n = self.w_train.ix[negative_index]
         self.e_train_n = self.e_train.ix[negative_index]
 
-    # Shuffle and Split Data Set
-    def random_spit_data(self):
-
-        print('Shuffling and splitting data...')
-
-        ss_train = StratifiedShuffleSplit(n_splits=10, test_size=0.1)
-        train_idx, valid_idx = next(ss_train.split(self.x_train, self.y_train))
-
-        x_valid, y_valid = self.x_train[valid_idx], self.y_train[valid_idx]
-        x_train, y_train = self.x_train[train_idx], self.y_train[train_idx]
-
-        w_train = x_train[:, -2]
-        x_train = x_train[:, :-2]
-        w_valid = x_valid[:, -2]
-        x_valid = x_valid[:, :-2]
-
-        return x_train, y_train, w_train, x_valid, y_valid, w_valid
-
     # Save Data
-    def save_data_np(self):
-
-        if not isdir(self.preprocess_path):
-            os.mkdir(self.preprocess_path)
-
-        print('Saving data...')
-
-        utils.save_np_to_pkl(self.x_train, self.preprocess_path + 'x_train.p')
-        utils.save_np_to_pkl(self.x_g_train, self.preprocess_path + 'x_g_train.p')
-        utils.save_np_to_pkl(self.y_train, self.preprocess_path + 'y_train.p')
-        utils.save_np_to_pkl(self.w_train, self.preprocess_path + 'w_train.p')
-        utils.save_np_to_pkl(self.x_test, self.preprocess_path + 'x_test.p')
-        utils.save_np_to_pkl(self.x_g_test, self.preprocess_path + 'x_g_test.p')
-
-    # Save Data
-    def save_data_pd(self):
-
-        if not isdir(self.preprocess_path):
-            os.mkdir(self.preprocess_path)
+    def save_data(self):
 
         print('Saving data...')
 
@@ -536,8 +473,7 @@ class DataPreProcess:
     # Save Data Split by Era Distribution
     def save_data_by_era_distribution_pd(self):
 
-        if not isdir(self.preprocess_path):
-            os.mkdir(self.preprocess_path)
+        print('Saving Data Split by Era Distribution...')
 
         # Positive Data
         print('Saving Positive Data...')
@@ -555,30 +491,13 @@ class DataPreProcess:
         self.w_train_n.to_pickle(self.preprocess_path + 'w_train_n.p')
         self.e_train_n.to_pickle(self.preprocess_path + 'e_train_n.p')
 
-    # Preprocessing
-    def preprocess_np(self):
-
-        start_time = time.time()
-
-        self.load_data_np()
-
-        # x_train, y_train, w_train, x_valid, y_valid, w_valid = self.random_spit_data(train_data_x, train_data_y)
-
-        self.save_data_np()
-
-        end_time = time.time()
-        total_time = end_time - start_time
-
-        print('Done!')
-        print('Using {:.3}s'.format(total_time))
-
     # Preprocess
-    def preprocess_pd(self):
+    def preprocess(self):
 
         start_time = time.time()
 
         # Load original data
-        self.load_data_pd()
+        self.load_data()
 
         # Drop outliers
         self.drop_outliers_by_value()
@@ -598,7 +517,7 @@ class DataPreProcess:
         self.split_data_by_era_distribution()
 
         # Save Data to pickle files
-        self.save_data_pd()
+        self.save_data()
 
         # Save Data Split by Era Distribution
         self.save_data_by_era_distribution_pd()
@@ -613,4 +532,4 @@ if __name__ == '__main__':
 
     utils.check_dir(['./data/', preprocessed_path])
     DPP = DataPreProcess(train_csv_path, test_csv_path, preprocessed_path)
-    DPP.preprocess_pd()
+    DPP.preprocess()

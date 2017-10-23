@@ -257,9 +257,9 @@ class PrejudgeBinary:
 
             # Load era_sign_test
             if load_pickle_path is None:
-                era_sign_test = utils.load_pkl_to_np(self.prejudged_data_path + 'binary_era_sign_test.p')
+                era_sign_test = utils.load_pkl_to_data(self.prejudged_data_path + 'binary_era_sign_test.p')
             else:
-                era_sign_test = utils.load_pkl_to_np(load_pickle_path)
+                era_sign_test = utils.load_pkl_to_data(load_pickle_path)
 
         else:
 
@@ -269,7 +269,7 @@ class PrejudgeBinary:
             # era_sign_test = self.load_era_sign_csv(self.pred_path + 'pred_era/final_results/lgb_result.csv')
 
             # Save era_sign_test to Pickle File
-            utils.save_np_to_pkl(era_sign_test, self.prejudged_data_path + 'binary_era_sign_test.p')
+            utils.save_data_to_pkl(era_sign_test, self.prejudged_data_path + 'binary_era_sign_test.p')
 
         # Print Prediction of Positive Era Rate
         utils.print_positive_rate_test(era_sign_test)
@@ -507,7 +507,7 @@ class PrejudgeMultiClass:
                                         save_csv_log=True, csv_idx='era_{}'.format(model_iter+1),
                                         cv_generator=cv_generator)
 
-            utils.save_np_to_pkl(prob_test, self.prejudged_data_path + 'multi_prob_test_era_{}.p'.format(model_iter+1))
+            utils.save_data_to_pkl(prob_test, self.prejudged_data_path + 'multi_prob_test_era_{}.p'.format(model_iter + 1))
 
             for idx_era, prob_era in zip(x_test_idx_era, prob_test_era):
                 if prob_test[idx_era][0] == 0.:
@@ -515,7 +515,7 @@ class PrejudgeMultiClass:
                 else:
                     prob_test[idx_era].append(prob_era)
 
-        utils.save_np_to_pkl(prob_test, self.prejudged_data_path + 'multi_prob_test.p')
+        utils.save_data_to_pkl(prob_test, self.prejudged_data_path + 'multi_prob_test.p')
 
         # Calculate Mean of prob_test
         prob_test = np.mean(prob_test, axis=1, dtype=np.float64)
@@ -541,9 +541,9 @@ class PrejudgeMultiClass:
 
             # Load era_sign_test
             if load_pickle_path is None:
-                era_sign_test = utils.load_pkl_to_np(self.prejudged_data_path + 'multiclass_era_sign_test.p')
+                era_sign_test = utils.load_pkl_to_data(self.prejudged_data_path + 'multiclass_era_sign_test.p')
             else:
-                era_sign_test = utils.load_pkl_to_np(load_pickle_path)
+                era_sign_test = utils.load_pkl_to_data(load_pickle_path)
 
         else:
 
@@ -553,7 +553,7 @@ class PrejudgeMultiClass:
             # era_sign_test = self.load_era_sign_csv(self.pred_path + 'pred_era/final_results/lgb_result.csv')
 
             # Save era_sign_test to Pickle File
-            utils.save_np_to_pkl(era_sign_test, self.prejudged_data_path + 'multiclass_era_sign_test.p')
+            utils.save_data_to_pkl(era_sign_test, self.prejudged_data_path + 'multiclass_era_sign_test.p')
 
         # Get Split Data
         x_test, x_g_test, id_test, x_test_idx = self.split_test_set_by_era_sign(era_sign_test)

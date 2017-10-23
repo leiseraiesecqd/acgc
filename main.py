@@ -404,8 +404,8 @@ class TrainSingleModel:
                    save_final_pred=save_final_pred, show_accuracy=True, save_csv_log=True, csv_idx=idx)
 
     @staticmethod
-    def lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=False, idx=None
-                          , grid_search_tuple=None, save_final_pred=True):
+    def lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=False, idx=None,
+                          grid_search_tuple=None, save_final_pred=True):
         """
             LightGBM using scikit-learn module
         """
@@ -1650,7 +1650,8 @@ class ModelStacking:
         STK = stacking.StackTree(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test,
                                  layers_params=layers_params, hyper_params=hyper_params)
 
-        STK.stack(pred_path=stack_pred_path, loss_log_path=loss_log_path, stack_output_path=stack_output_path,
+        STK.stack(pred_path=stack_pred_path, auto_train_pred_path=auto_train_path,
+                  loss_log_path=loss_log_path, stack_output_path=stack_output_path,
                   csv_log_path=csv_log_path+'stack_final_', save_csv_log=True, csv_idx=idx)
 
 

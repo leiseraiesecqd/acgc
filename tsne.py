@@ -24,7 +24,7 @@ class MultiCoreTSNE:
         tsne = TSNE(**parameters)
         tsne_outputs = tsne.fit_transform(self.x_train)
 
-        utils.save_np_to_pkl(tsne_outputs, tsne_outputs_path + 'tsne_outputs.p')
+        utils.save_data_to_pkl(tsne_outputs, tsne_outputs_path + 'tsne_outputs.p')
 
 
 def tsne_train(seed):

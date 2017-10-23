@@ -11,7 +11,7 @@ from os.path import isdir
 
 
 # Save Data
-def save_np_to_pkl(data, data_path):
+def save_data_to_pkl(data, data_path):
 
     print('Saving ' + data_path + '...')
 
@@ -185,14 +185,14 @@ def save_stack_outputs(output_path, x_outputs, test_outputs, x_g_outputs, test_g
 
     print('Saving Stacking Outputs of Layer...')
 
-    save_np_to_pkl(x_outputs, output_path + 'x_outputs.p')
-    save_np_to_pkl(test_outputs, output_path + 'test_outputs.p')
-    save_np_to_pkl(x_g_outputs, output_path + 'x_g_outputs.p')
-    save_np_to_pkl(test_g_outputs, output_path + 'test_g_outputs.p')
+    save_data_to_pkl(x_outputs, output_path + 'x_outputs.p')
+    save_data_to_pkl(test_outputs, output_path + 'test_outputs.p')
+    save_data_to_pkl(x_g_outputs, output_path + 'x_g_outputs.p')
+    save_data_to_pkl(test_g_outputs, output_path + 'test_g_outputs.p')
 
 
 # Load Data
-def load_pkl_to_np(data_path):
+def load_pkl_to_data(data_path):
 
     print('Loading ' + data_path + '...')
 
@@ -207,24 +207,12 @@ def load_stacked_data(output_path):
 
     print('Loading Stacked Data...')
 
-    x_outputs = load_pkl_to_np(output_path + 'x_outputs.p')
-    test_outputs = load_pkl_to_np(output_path + 'test_outputs.p')
-    x_g_outputs = load_pkl_to_np(output_path + 'x_g_outputs.p')
-    test_g_outputs = load_pkl_to_np(output_path + 'test_g_outputs.p')
+    x_outputs = load_pkl_to_data(output_path + 'x_outputs.p')
+    test_outputs = load_pkl_to_data(output_path + 'test_outputs.p')
+    x_g_outputs = load_pkl_to_data(output_path + 'x_g_outputs.p')
+    test_g_outputs = load_pkl_to_data(output_path + 'test_g_outputs.p')
 
     return x_outputs, test_outputs, x_g_outputs, test_g_outputs
-
-
-# Load Preprocessed Data
-def load_preprocessed_np_data(data_file_path):
-
-    print('Loading preprocessed data...')
-
-    x_train = load_pkl_to_np(data_file_path + 'x_train.p')
-    y_train = load_pkl_to_np(data_file_path + 'y_train.p')
-    w_train = load_pkl_to_np(data_file_path + 'w_train.p')
-
-    return x_train, y_train, w_train
 
 
 # Load Preprocessed Data
@@ -434,7 +422,7 @@ def print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_v
 def print_positive_rate_test(era_sign_test=None):
 
     if era_sign_test is None:
-        era_sign_test = load_pkl_to_np(main.prejudged_data_path + 'binary_era_sign_test.p')
+        era_sign_test = load_pkl_to_data(main.prejudged_data_path + 'binary_era_sign_test.p')
 
     positive_rate_test = np.sum(era_sign_test) / len(era_sign_test)
 
@@ -463,7 +451,7 @@ def check_dir_model(pred_path, loss_log_path=None):
     else:
         path_list = [pred_path,
                      pred_path + 'cv_results/',
-                     pred_path + 'cv_prob_train/',]
+                     pred_path + 'cv_prob_train/']
 
     check_dir(path_list)
 

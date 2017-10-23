@@ -7,8 +7,8 @@ import tensorflow as tf
 
 gan_prob_path = './data/gan_outputs/'
 gan_preprocessed_data_path = './data/gan_preprocessed_data/'
-train_csv_path = './inputs/stock_train_data_20171013.csv'
-test_csv_path = './inputs/stock_test_data_20171013.csv'
+train_csv_path = './inputs/stock_train_data_20171020.csv'
+test_csv_path = './inputs/stock_test_data_20171020.csv'
 
 
 class AdversarialValidation(object):
@@ -68,8 +68,8 @@ class AdversarialValidation(object):
 
         print('Loading Preprocessed Data...')
 
-        x_train = utils.load_pkl_to_np(self.preprocessed_path + 'x_train_gan.p')
-        x_test = utils.load_pkl_to_np(self.preprocessed_path + 'x_test_gan.p')
+        x_train = utils.load_pkl_to_data(self.preprocessed_path + 'x_train_gan.p')
+        x_test = utils.load_pkl_to_data(self.preprocessed_path + 'x_test_gan.p')
 
         return x_train, x_test
 
@@ -246,8 +246,8 @@ class AdversarialValidation(object):
 
         print('Saving Preprocessed Data...')
 
-        utils.save_np_to_pkl(self.x_train, self.preprocessed_path + 'x_train_gan.p')
-        utils.save_np_to_pkl(self.x_test, self.preprocessed_path + 'x_test_gan.p')
+        utils.save_data_to_pkl(self.x_train, self.preprocessed_path + 'x_train_gan.p')
+        utils.save_data_to_pkl(self.x_test, self.preprocessed_path + 'x_test_gan.p')
 
     def model_inputs(self):
         """
@@ -548,7 +548,7 @@ class AdversarialValidation(object):
             print('Calculating Final Similarities of Train Set...')
             similarity_prob_mean = np.mean(np.array(similarity_prob_total), axis=0)
 
-            utils.save_np_to_pkl(similarity_prob_mean, similarity_prob_path + 'similarity_prob.p')
+            utils.save_data_to_pkl(similarity_prob_mean, similarity_prob_path + 'similarity_prob.p')
 
             if return_similarity_prob is True:
                 return similarity_prob_mean
