@@ -1715,83 +1715,95 @@ def auto_grid_search():
     """
         Automatically Grid Searching
     """
-    parameter_grid = ['bagging_freq', (1, 2, 3, 4, 5)]
+    pg_1 = ['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]
+    # pg_2 = ['bagging_fraction', (0.6, 0.7, 0.8, 0.9)]
+    # pg_3 = ['bagging_freq', (1, 2, 3, 4, 5)]
+    pg_4 = ['max_depth', (7, 8, 9, 10)]
+    # pg_5 = ['num_leaves', (70, 75, 80, 85, 90)]
+    # pg_6 = ['min_data_in_bin', (1, 3, 5, 7, 9)]
+
+    parameter_grid_list = [pg_1, pg_4]
     n_epoch = 200
 
-    for param in parameter_grid[1]:
-
-        param_start_time = time.time()
-
-        grid_search_tuple = (parameter_grid[0], param)
-
-        for i in range(n_epoch):
-
-            train_seed = random.randint(0, 300)
-            cv_seed = random.randint(0, 300)
-            epoch_start_time = time.time()
-
-            idx = parameter_grid[0] + '_' + str(param) + '_' + str(i+1)
-
-            print('======================================================')
-            print('Auto Training... | Parameter: {} | Epoch: {}/{}'.format(param, i+1, n_epoch))
-
-            # Logistic Regression
-            # TrainSingleModel.lr_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
-            #                           grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
-            #
-            # Random Forest
-            # TrainSingleModel.rf_train(train_seed, cv_seed, save_auto_train_results=True,idx=idx,
-            #                           grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
-            #
-            # Extra Trees
-            # TrainSingleModel.et_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
-            #                           grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
-            #
-            # AdaBoost
-            # TrainSingleModel.ab_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
-            #                           grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
-            #
-            # GradientBoosting
-            # TrainSingleModel.gb_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
-            #                           grid_search_tuple=grid_search_tuple, save_final_pred=False)
-
-            # XGBoost
-            # TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
-            #                            grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
-            # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
-            #                                    grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
-
-            # LightGBM
-            TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
-                                       grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
-            # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
-            #                                    grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
-            #
-            # CatBoost
-            # TrainSingleModel.cb_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
-            #                           grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
-            #
-            # DNN
-            # TrainSingleModel.dnn_tf_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
-            #                               grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
-            # TrainSingleModel.dnn_keras_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
-            #                                  grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
-            #
-            # Champion Model
-            # ChampionModel.Christ1991(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
-            #                          grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
-
-            print('======================================================')
-            print('Auto Training Epoch Done!')
-            print('Train Seed: {}'.format(train_seed))
-            print('Cross Validation Seed: {}'.format(cv_seed))
-            print('Epoch Time: {}s'.format(time.time() - epoch_start_time))
-            print('======================================================')
+    for parameter_grid in parameter_grid_list:
 
         print('======================================================')
-        print('One Parameter Done!')
-        print('Epoch Time: {}s'.format(time.time() - param_start_time))
+        print('Auto Grid Searching Parameter: {}'.format(parameter_grid[0]))
         print('======================================================')
+
+        for param in parameter_grid[1]:
+
+            param_start_time = time.time()
+            grid_search_tuple = (parameter_grid[0], param)
+
+            for i in range(n_epoch):
+
+                train_seed = random.randint(0, 300)
+                cv_seed = random.randint(0, 300)
+                epoch_start_time = time.time()
+
+                idx = parameter_grid[0] + '_' + str(param) + '_' + str(i+1)
+
+                print('======================================================')
+                print('Parameter: {}-{} | Epoch: {}/{}'.format(parameter_grid[0], param, i+1, n_epoch))
+
+                # Logistic Regression
+                # TrainSingleModel.lr_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                           grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                #
+                # Random Forest
+                # TrainSingleModel.rf_train(train_seed, cv_seed, save_auto_train_results=True,idx=idx,
+                #                           grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                #
+                # Extra Trees
+                # TrainSingleModel.et_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                           grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                #
+                # AdaBoost
+                # TrainSingleModel.ab_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                           grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                #
+                # GradientBoosting
+                # TrainSingleModel.gb_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                           grid_search_tuple=grid_search_tuple, save_final_pred=False)
+
+                # XGBoost
+                # TrainSingleModel.xgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                            grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                # TrainSingleModel.xgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                                    grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+
+                # LightGBM
+                TrainSingleModel.lgb_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                                           grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                # TrainSingleModel.lgb_train_sklearn(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                                    grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                #
+                # CatBoost
+                # TrainSingleModel.cb_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                           grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                #
+                # DNN
+                # TrainSingleModel.dnn_tf_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                               grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                # TrainSingleModel.dnn_keras_train(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                                  grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+                #
+                # Champion Model
+                # ChampionModel.Christ1991(train_seed, cv_seed, save_auto_train_results=True, idx=idx,
+                #                          grid_search_tuple=grid_search_tuple, grid_search_n_cv=5, save_final_pred=False)
+
+                print('======================================================')
+                print('Auto Training Epoch Done!')
+                print('Train Seed: {}'.format(train_seed))
+                print('Cross Validation Seed: {}'.format(cv_seed))
+                print('Epoch Time: {}s'.format(time.time() - epoch_start_time))
+                print('======================================================')
+
+            print('======================================================')
+            print('One Parameter Done!')
+            print('Epoch Time: {}s'.format(time.time() - param_start_time))
+            print('======================================================')
 
 
 def auto_train():
