@@ -1716,13 +1716,13 @@ def auto_grid_search():
         Automatically Grid Searching
     """
     # pg_1 = ['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]
-    pg_2 = ['bagging_fraction', (0.6, 0.7, 0.8, 0.9)]
-    # pg_3 = ['bagging_freq', (1, 2, 3, 4, 5)]
+    # pg_2 = ['bagging_fraction', (0.6, 0.7, 0.8, 0.9)]
+    pg_3 = ['bagging_freq', (1, 2, 3, 4, 5)]
     # pg_4 = ['max_depth', (7, 8, 9, 10)]
-    pg_5 = ['num_leaves', (70, 75, 80, 85, 90)]
-    # pg_6 = ['min_data_in_bin', (1, 3, 5, 7, 9)]
+    # pg_5 = ['num_leaves', (70, 75, 80, 85, 90)]
+    pg_6 = ['min_data_in_bin', (1, 3, 5, 7, 9)]
 
-    parameter_grid_list = [pg_2, pg_5]
+    parameter_grid_list = [pg_3, pg_6]
     n_epoch = 200
 
     for parameter_grid in parameter_grid_list:
