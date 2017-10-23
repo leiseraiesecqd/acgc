@@ -1608,11 +1608,11 @@ class TrainingMode:
             return STK.stack_tree_train
 
         elif model_name == 'prejudge_b':
-            PJ = PrejudgeTraining(load_pickle=load_pickle)
+            PJ = PrejudgeTraining(load_pickle=load_pickle, options=options)
             return PJ.binary_train
 
         elif model_name == 'prejudge_m':
-            PJ = PrejudgeTraining(load_pickle=load_pickle)
+            PJ = PrejudgeTraining(load_pickle=load_pickle, options=options)
             return PJ.multiclass_train
 
         else:
