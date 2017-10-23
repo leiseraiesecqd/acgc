@@ -1757,7 +1757,9 @@ class TrainingMode:
         # self.auto_grid_search(model_name='lgb', parameter_grid_list=pg_list,
         #                       n_epoch=200, grid_search_n_cv=5, options=options)
 
-        self.auto_train(model_name='lgb', n_epoch=100, options=options)
+        # self.auto_train(model_name='lgb', n_epoch=100, options=options)
+
+        self.auto_train(model_name='stack_t', n_epoch=100, stack_final_epochs=10, options=options)
 
 
 if __name__ == "__main__":
