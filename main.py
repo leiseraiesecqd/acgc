@@ -1584,6 +1584,7 @@ class TrainingMode:
 
         if model_name in ['lr', 'rf', 'et', 'ab', 'gb', 'xgb', 'xgb_sk',
                           'lgb', 'lgb_sk', 'cb', 'dnn', 'stack_lgb']:
+
             SM = SingleModel(**model_arg)
             train_functions = {'lr': SM.lr_train,
                                'rf': SM.rf_train,
@@ -1597,6 +1598,7 @@ class TrainingMode:
                                'cb': SM.cb_train,
                                'dnn': SM.dnn_tf_train,
                                'stack_lgb': SM.stack_lgb_train}
+
             return train_functions[model_name]
 
         elif model_name == 'christ':
@@ -1742,26 +1744,26 @@ class TrainingMode:
                    'save_cv_pred': False,
                    'save_cv_prob_train': False,
                    'save_csv_log': True}
-        
-        # self.train_single_model(model_name='lgb', train_seed=train_seed, cv_seed=cv_seed, options=options)
 
-        self.train_single_model(model_name='prejudge_b', train_seed=train_seed,
-                                cv_seed=cv_seed, load_pickle=False, options=options)
+        # Train Single Model
+        self.train_single_model(model_name='lgb', train_seed=train_seed, cv_seed=cv_seed, options=options)
+        # self.train_single_model(model_name='prejudge_b', train_seed=train_seed,
+        #                         cv_seed=cv_seed, load_pickle=False, options=options)
 
+        # Auto Grid Search
         # pg_list = [
         #            ['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)],
-        #            ['bagging_fraction', (0.6, 0.7, 0.8, 0.9)],
-        #            ['bagging_freq', (1, 2, 3, 4, 5)],
-        #            ['max_depth', (7, 8, 9, 10)],
-        #            ['num_leaves', (70, 75, 80, 85, 90)],
-        #            ['min_data_in_bin', (1, 3, 5, 7, 9)]
+        #            # ['bagging_fraction', (0.6, 0.7, 0.8, 0.9)],
+        #            # ['bagging_freq', (1, 2, 3, 4, 5)],
+        #            # ['max_depth', (7, 8, 9, 10)],
+        #            # ['num_leaves', (70, 75, 80, 85, 90)],
+        #            # ['min_data_in_bin', (1, 3, 5, 7, 9)]
         #            ]
-
         # self.auto_grid_search(model_name='lgb', parameter_grid_list=pg_list,
         #                       n_epoch=200, grid_search_n_cv=5, options=options)
 
+        # Auto Train
         # self.auto_train(model_name='lgb', n_epoch=100, options=options)
-
         # self.auto_train(model_name='stack_t', n_epoch=100, stack_final_epochs=10, options=options)
 
 
