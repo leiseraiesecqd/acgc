@@ -1597,7 +1597,7 @@ class TrainingMode:
                                'cb': SM.cb_train,
                                'dnn': SM.dnn_tf_train,
                                'stack_lgb': SM.stack_lgb_train}
-            return train_functions['model_name']
+            return train_functions[model_name]
 
         elif model_name == 'christ':
             CM = ChampionModel(**model_arg)
