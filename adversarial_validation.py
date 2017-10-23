@@ -106,11 +106,11 @@ class AdversarialValidation(object):
 
         # Drop upper outliers in self.x_train
         if upper_train is not None:
-            self.x_train[feature].loc[self.x_test[feature] > upper_train] = upper_train
+            self.x_train[feature].loc[self.x_train[feature] > upper_train] = upper_train
 
         # Drop lower outlines in self.x_train
         if lower_train is not None:
-            self.x_train[feature].loc[self.x_test[feature] < lower_train] = lower_train
+            self.x_train[feature].loc[self.x_train[feature] < lower_train] = lower_train
 
     def drop_test_outliers_by_value(self):
 
