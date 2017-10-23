@@ -579,6 +579,7 @@ class XGBoost(ModelBase):
 
     def predict(self, model, x_test, pred_path=None):
 
+        print('------------------------------------------------------')
         print('Predicting...')
 
         prob_test = model.predict(xgb.DMatrix(x_test))
@@ -590,6 +591,7 @@ class XGBoost(ModelBase):
 
     def get_prob_train(self, model, x_train, pred_path=None):
 
+        print('------------------------------------------------------')
         print('Predicting...')
 
         prob_train = model.predict(xgb.DMatrix(x_train))
@@ -747,6 +749,7 @@ class LightGBM(ModelBase):
 
     def predict(self, bst, x_test, pred_path=None):
 
+        print('------------------------------------------------------')
         print('Predicting...')
 
         prob_test = bst.predict(x_test)
@@ -758,6 +761,7 @@ class LightGBM(ModelBase):
 
     def get_prob_train(self, bst, x_train, pred_path=None):
 
+        print('------------------------------------------------------')
         print('Predicting...')
 
         prob_train = bst.predict(x_train)
@@ -1579,6 +1583,7 @@ class DeepNeuralNetworks(ModelBase):
                               'Valid_Loss: {:>.8f}'.format(cost_valid))
 
             # Prediction
+            print('------------------------------------------------------')
             print('Predicting...')
 
             logits_pred_train = sess.run(logits, {inputs: x_train, keep_prob: 1.0, is_train: False})

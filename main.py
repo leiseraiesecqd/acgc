@@ -1743,7 +1743,10 @@ class TrainingMode:
                    'save_cv_prob_train': False,
                    'save_csv_log': True}
         
-        # self.train_single_model(model_name='xgb', train_seed=train_seed, cv_seed=cv_seed, options=options)
+        # self.train_single_model(model_name='lgb', train_seed=train_seed, cv_seed=cv_seed, options=options)
+
+        self.train_single_model(model_name='prejudge_b', train_seed=train_seed,
+                                cv_seed=cv_seed, load_pickle=False, options=options)
 
         # pg_list = [
         #            ['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)],
@@ -1759,7 +1762,7 @@ class TrainingMode:
 
         # self.auto_train(model_name='lgb', n_epoch=100, options=options)
 
-        self.auto_train(model_name='stack_t', n_epoch=100, stack_final_epochs=10, options=options)
+        # self.auto_train(model_name='stack_t', n_epoch=100, stack_final_epochs=10, options=options)
 
 
 if __name__ == "__main__":

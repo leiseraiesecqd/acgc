@@ -385,7 +385,7 @@ def print_loss_xgb(model, x_t, y_t, w_t, x_v, y_v, w_v):
     print('Train LogLoss: {:>.8f}\n'.format(loss_train),
           'Validation LogLoss: {:>.8f}\n'.format(loss_valid),
           'Train LogLoss with Weight: {:>.8f}\n'.format(loss_train_w),
-          'Validation LogLoss with Weight: {:>.8f}\n'.format(loss_valid_w))
+          'Validation LogLoss with Weight: {:>.8f}'.format(loss_valid_w))
 
     return loss_train, loss_valid, loss_train_w, loss_valid_w
 
