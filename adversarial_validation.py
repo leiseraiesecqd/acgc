@@ -159,7 +159,7 @@ class AdversarialValidation(object):
         self.drop_test_feature_outliers_by_value('feature40', None, -3.5)
         self.drop_test_feature_outliers_by_value('feature41', None, None)
         self.drop_test_feature_outliers_by_value('feature42', 4, -2)
-        # self.drop_test_feature_outliers_by_value('feature43', None, None)
+        self.drop_test_feature_outliers_by_value('feature43', None, None)
         self.drop_test_feature_outliers_by_value('feature44', 8, None)
         self.drop_test_feature_outliers_by_value('feature45', 3.5, None)
         self.drop_test_feature_outliers_by_value('feature46', 5, None)
@@ -198,7 +198,7 @@ class AdversarialValidation(object):
         self.drop_test_feature_outliers_by_value('feature79', 4, -2.5)
         self.drop_test_feature_outliers_by_value('feature80', 4.2, None)
         self.drop_test_feature_outliers_by_value('feature81', 4.8, None)
-        self.drop_test_feature_outliers_by_value('feature82', 4.5, None)
+        # self.drop_test_feature_outliers_by_value('feature82', 4.5, None)
         self.drop_test_feature_outliers_by_value('feature83', 3, -2.8)
         self.drop_test_feature_outliers_by_value('feature84', None, -3)
         self.drop_test_feature_outliers_by_value('feature85', 3.6, None)
@@ -222,7 +222,7 @@ class AdversarialValidation(object):
         # Drop outliers of train set
         print('Dropping Outliers of Train Set...')
         for i in range(88):
-            if i != 43:
+            if i != 82:
                 self.drop_test_feature_outliers_by_value('feature' + str(i), 1, 0)
 
     def convert_group_to_dummies(self):

@@ -85,7 +85,7 @@ class TrainSingleModel:
         # Grid Search
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
-        if grid_search_n_cv is not None:
+        if grid_search_n_cv is None:
             n_cv = 20
         else:
             n_cv = grid_search_n_cv
@@ -130,7 +130,7 @@ class TrainSingleModel:
         # Grid Search
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
-        if grid_search_n_cv is not None:
+        if grid_search_n_cv is None:
             n_cv = 20
         else:
             n_cv = grid_search_n_cv
@@ -175,7 +175,7 @@ class TrainSingleModel:
         # Grid Search
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
-        if grid_search_n_cv is not None:
+        if grid_search_n_cv is None:
             n_cv = 20
         else:
             n_cv = grid_search_n_cv
@@ -227,7 +227,7 @@ class TrainSingleModel:
         # Grid Search
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
-        if grid_search_n_cv is not None:
+        if grid_search_n_cv is None:
             n_cv = 20
         else:
             n_cv = grid_search_n_cv
@@ -274,7 +274,7 @@ class TrainSingleModel:
         # Grid Search
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
-        if grid_search_n_cv is not None:
+        if grid_search_n_cv is None:
             n_cv = 20
         else:
             n_cv = grid_search_n_cv
@@ -317,7 +317,7 @@ class TrainSingleModel:
         # Grid Search
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
-        if grid_search_n_cv is not None:
+        if grid_search_n_cv is None:
             n_cv = 20
         else:
             n_cv = grid_search_n_cv
@@ -367,7 +367,7 @@ class TrainSingleModel:
         # Grid Search
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
-        if grid_search_n_cv is not None:
+        if grid_search_n_cv is None:
             n_cv = 20
         else:
             n_cv = grid_search_n_cv
@@ -419,7 +419,7 @@ class TrainSingleModel:
         # Grid Search
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
-        if grid_search_n_cv is not None:
+        if grid_search_n_cv is None:
             n_cv = 20
         else:
             n_cv = grid_search_n_cv
@@ -474,7 +474,7 @@ class TrainSingleModel:
         # Grid Search
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
-        if grid_search_n_cv is not None:
+        if grid_search_n_cv is None:
             n_cv = 20
         else:
             n_cv = grid_search_n_cv
@@ -535,7 +535,7 @@ class TrainSingleModel:
         # Grid Search
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
-        if grid_search_n_cv is not None:
+        if grid_search_n_cv is None:
             n_cv = 20
         else:
             n_cv = grid_search_n_cv
@@ -575,7 +575,7 @@ class TrainSingleModel:
         # Grid Search
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
-        if grid_search_n_cv is not None:
+        if grid_search_n_cv is None:
             n_cv = 20
         else:
             n_cv = grid_search_n_cv
@@ -604,7 +604,7 @@ class TrainSingleModel:
         # # Grid Search
         # if grid_search_tuple is not None:
         #     parameters[grid_search_tuple[0]] = grid_search_tuple[1]
-        # if grid_search_n_cv is not None:
+        # if grid_search_n_cv is None:
         #     n_cv = 20
         # else:
         #     n_cv = grid_search_n_cv
@@ -675,7 +675,7 @@ class TrainSingleModel:
         # Grid Search
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
-        if grid_search_n_cv is not None:
+        if grid_search_n_cv is None:
             n_cv = 20
         else:
             n_cv = grid_search_n_cv
@@ -728,7 +728,7 @@ class ChampionModel:
         # Grid Search
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
-        if grid_search_n_cv is not None:
+        if grid_search_n_cv is None:
             n_cv = 20
         else:
             n_cv = grid_search_n_cv
