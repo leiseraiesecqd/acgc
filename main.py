@@ -1727,6 +1727,8 @@ def auto_grid_search():
 
     for parameter_grid in parameter_grid_list:
 
+        gs_start_time = time.time()
+
         print('======================================================')
         print('Auto Grid Searching Parameter: {}'.format(parameter_grid[0]))
         print('======================================================')
@@ -1802,8 +1804,13 @@ def auto_grid_search():
 
             print('======================================================')
             print('One Parameter Done!')
-            print('Epoch Time: {}s'.format(time.time() - param_start_time))
+            print('Parameter Time: {}s'.format(time.time() - param_start_time))
             print('======================================================')
+
+        print('======================================================')
+        print('All Parameter Done!')
+        print('Grid Searching Time: {}s'.format(time.time() - gs_start_time))
+        print('======================================================')
 
 
 def auto_train():
