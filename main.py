@@ -308,20 +308,20 @@ class SingleModel:
         parameters = {'application': 'binary',
                       'boosting': 'gbdt',                   # gdbt,rf,dart,goss
                       'learning_rate': 0.003,               # default=0.1
-                      'num_leaves': 88,                     # default=31       <2^(max_depth)
+                      'num_leaves': 75,                     # default=31       <2^(max_depth)
                       'max_depth': 9,                       # default=-1
                       'min_data_in_leaf': 2500,             # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,      # default=1e-3     reduce over-fit
                       'feature_fraction': 0.5,              # default=1
                       'feature_fraction_seed': train_seed,  # default=2
                       'bagging_fraction': 0.8,              # default=1
-                      'bagging_freq': 1,                    # default=0        perform bagging every k iteration
+                      'bagging_freq': 2,                    # default=0        perform bagging every k iteration
                       'bagging_seed': train_seed,           # default=3
                       'lambda_l1': 0,                       # default=0
                       'lambda_l2': 0,                       # default=0
                       'min_gain_to_split': 0,               # default=0
                       'max_bin': 225,                       # default=255
-                      'min_data_in_bin': 5,                 # default=5
+                      'min_data_in_bin': 9,                 # default=5
                       'metric': 'binary_logloss',
                       'num_threads': -1,
                       'verbosity': 1,
@@ -1033,72 +1033,72 @@ class PrejudgeTraining:
             Set Parameters for models of PrejudgeBinary
         """
         era_training_params = {'application': 'binary',
-                               'boosting': 'gbdt',               # gdbt,rf,dart,goss
-                               'learning_rate': 0.1,             # default=0.1
-                               'num_leaves': 88,                 # default=31       <2^(max_depth)
-                               'max_depth': 7,                   # default=-1
-                               'min_data_in_leaf': 2500,         # default=20       reduce over-fit
-                               'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
-                               'feature_fraction': 0.5,          # default=1
-                               'feature_fraction_seed': 10,      # default=2
-                               'bagging_fraction': 0.8,          # default=1
-                               'bagging_freq': 1,                # default=0        perform bagging every k iteration
-                               'bagging_seed': 19,               # default=3
-                               'lambda_l1': 5,                   # default=0
-                               'lambda_l2': 5,                   # default=0
-                               'min_gain_to_split': 0,           # default=0
-                               'max_bin': 225,                   # default=255
-                               'min_data_in_bin': 5,             # default=5
+                               'boosting': 'gbdt',                   # gdbt,rf,dart,goss
+                               'learning_rate': 0.003,               # default=0.1
+                               'num_leaves': 75,                     # default=31       <2^(max_depth)
+                               'max_depth': 9,                       # default=-1
+                               'min_data_in_leaf': 2500,             # default=20       reduce over-fit
+                               'min_sum_hessian_in_leaf': 1e-3,      # default=1e-3     reduce over-fit
+                               'feature_fraction': 0.5,              # default=1
+                               'feature_fraction_seed': train_seed,  # default=2
+                               'bagging_fraction': 0.8,              # default=1
+                               'bagging_freq': 2,                    # default=0        perform bagging every k iteration
+                               'bagging_seed': train_seed,           # default=3
+                               'lambda_l1': 0,                       # default=0
+                               'lambda_l2': 0,                       # default=0
+                               'min_gain_to_split': 0,               # default=0
+                               'max_bin': 225,                       # default=255
+                               'min_data_in_bin': 9,                 # default=5
                                'metric': 'binary_logloss',
                                'num_threads': -1,
                                'verbosity': 1,
-                               'early_stopping_rounds': 50,      # default=0
+                               'early_stopping_rounds': 50,          # default=0
                                'seed': train_seed}
 
         positive_params = {'application': 'binary',
-                           'boosting': 'gbdt',               # gdbt,rf,dart,goss
-                           'learning_rate': 0.003,           # default=0.1
-                           'num_leaves': 88,                 # default=31       <2^(max_depth)
-                           'max_depth': 7,                   # default=-1
-                           'min_data_in_leaf': 2500,         # default=20       reduce over-fit
-                           'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
-                           'feature_fraction': 0.5,          # default=1
-                           'feature_fraction_seed': 10,      # default=2
-                           'bagging_fraction': 0.8,          # default=1
-                           'bagging_freq': 1,                # default=0        perform bagging every k iteration
-                           'bagging_seed': 19,               # default=3
-                           'lambda_l1': 0,                   # default=0
-                           'lambda_l2': 0,                   # default=0
-                           'min_gain_to_split': 0,           # default=0
-                           'max_bin': 225,                   # default=255
-                           'min_data_in_bin': 5,             # default=5
+                           'boosting': 'gbdt',                   # gdbt,rf,dart,goss
+                           'learning_rate': 0.003,               # default=0.1
+                           'num_leaves': 75,                     # default=31       <2^(max_depth)
+                           'max_depth': 9,                       # default=-1
+                           'min_data_in_leaf': 2500,             # default=20       reduce over-fit
+                           'min_sum_hessian_in_leaf': 1e-3,      # default=1e-3     reduce over-fit
+                           'feature_fraction': 0.5,              # default=1
+                           'feature_fraction_seed': train_seed,  # default=2
+                           'bagging_fraction': 0.8,              # default=1
+                           'bagging_freq': 2,                    # default=0        perform bagging every k iteration
+                           'bagging_seed': train_seed,           # default=3
+                           'lambda_l1': 0,                       # default=0
+                           'lambda_l2': 0,                       # default=0
+                           'min_gain_to_split': 0,               # default=0
+                           'max_bin': 225,                       # default=255
+                           'min_data_in_bin': 9,                 # default=5
                            'metric': 'binary_logloss',
                            'num_threads': -1,
                            'verbosity': 1,
-                           'early_stopping_rounds': 50,      # default=0
+                           'early_stopping_rounds': 50,          # default=0
                            'seed': train_seed}
 
         negative_params = {'application': 'binary',
-                           'boosting': 'gbdt',               # gdbt,rf,dart,goss
-                           'learning_rate': 0.003,           # default=0.1
-                           'num_leaves': 88,                 # default=31       <2^(max_depth)
-                           'max_depth': 7,                   # default=-1
-                           'min_data_in_leaf': 2500,         # default=20       reduce over-fit
-                           'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
-                           'feature_fraction': 0.5,          # default=1
-                           'feature_fraction_seed': 10,      # default=2
-                           'bagging_fraction': 0.8,          # default=1
-                           'bagging_freq': 1,                # default=0        perform bagging every k iteration
-                           'bagging_seed': 19,               # default=3
-                           'lambda_l1': 0,                   # default=0
-                           'lambda_l2': 0,                   # default=0
-                           'min_gain_to_split': 0,           # default=0
-                           'max_bin': 225,                   # default=255
-                           'min_data_in_bin': 5,             # default=5
+                           'boosting': 'gbdt',                   # gdbt,rf,dart,goss
+                           'learning_rate': 0.003,               # default=0.1
+                           'num_leaves': 75,                     # default=31       <2^(max_depth)
+                           'max_depth': 9,                       # default=-1
+                           'min_data_in_leaf': 2500,             # default=20       reduce over-fit
+                           'min_sum_hessian_in_leaf': 1e-3,      # default=1e-3     reduce over-fit
+                           'feature_fraction': 0.5,              # default=1
+                           'feature_fraction_seed': train_seed,  # default=2
+                           'bagging_fraction': 0.8,              # default=1
+                           'bagging_freq': 2,                    # default=0        perform bagging every k iteration
+                           'bagging_seed': train_seed,           # default=3
+                           'lambda_l1': 0,                       # default=0
+                           'lambda_l2': 0,                       # default=0
+                           'min_gain_to_split': 0,               # default=0
+                           'max_bin': 225,                       # default=255
+                           'min_data_in_bin': 9,                 # default=5
                            'metric': 'binary_logloss',
                            'num_threads': -1,
                            'verbosity': 1,
-                           'early_stopping_rounds': 50,      # default=0
+                           'early_stopping_rounds': 50,          # default=0
                            'seed': train_seed}
 
         models_parameters = [era_training_params, positive_params, negative_params]
@@ -1163,14 +1163,14 @@ class PrejudgeTraining:
                             'num_boost_round_e': 3000,
                             'n_cv_e': 10,
                             'n_valid_p': 2,
-                            'n_cv_p': 18,
+                            'n_cv_p': 12,
                             'n_era_p': len(positive_era_list),
-                            'num_boost_round_p': 65,
+                            'num_boost_round_p': 80,
                             'era_list_p': positive_era_list,
                             'n_valid_n': 1,
                             'n_cv_n': 8,
                             'n_era_n': len(negative_era_list),
-                            'num_boost_round_n': 65,
+                            'num_boost_round_n': 80,
                             'era_list_n': negative_era_list,
                             'force_convert_era': True,
                             'use_weight': True,
@@ -1749,9 +1749,8 @@ class TrainingMode:
         """
             Train Single Model
         """
-        # self.train_single_model(model_name='lgb', train_seed=train_seed, cv_seed=cv_seed, options=options)
-        # self.train_single_model(model_name='prejudge_b', train_seed=train_seed,
-        #                         cv_seed=cv_seed, load_pickle=False, options=options)
+        # self.train_single_model('lgb', train_seed, cv_seed, options=options)
+        self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False, options=options)
 
         """
             Auto Grid Search
@@ -1765,14 +1764,13 @@ class TrainingMode:
         #            # ['num_leaves', (70, 75, 80, 85, 90)],
         #            # ['min_data_in_bin', (1, 3, 5, 7, 9)]
         #            ]
-        # self.auto_grid_search(model_name='xgb', parameter_grid_list=pg_list,
-        #                       n_epoch=100, grid_search_n_cv=5, options=options)
+        # self.auto_grid_search('xgb', parameter_grid_list=pg_list, n_epoch=100, grid_search_n_cv=5, options=options)
 
         """
             Auto Train
         """
-        self.auto_train(model_name='lgb', n_epoch=500, options=options)
-        # self.auto_train(model_name='stack_t', n_epoch=100, stack_final_epochs=10, options=options)
+        # self.auto_train('lgb', n_epoch=500, options=options)
+        # self.auto_train('stack_t', n_epoch=100, stack_final_epochs=10, options=options)
 
 
 if __name__ == "__main__":
