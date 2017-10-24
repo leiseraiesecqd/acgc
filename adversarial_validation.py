@@ -562,10 +562,10 @@ def generate_validation_set(train_path=None, test_path=None, similarity_prob_pat
         train_seed = random.randint(0, 500)
 
     parameters = {'learning_rate': 0.001,
-                  'epochs': 30,
+                  'epochs': 200,
                   'n_discriminator_units': [64, 32, 16],
-                  'n_generator_units': [32, 48, 72],
-                  'z_dim': 24,
+                  'n_generator_units': [48, 72, 128],
+                  'z_dim': 32,
                   'beta1': 0.9,
                   'batch_size': 128,
                   'd_epochs': 1,
@@ -599,11 +599,9 @@ if __name__ == '__main__':
 
     global_train_seed = random.randint(0, 500)
 
-    generate_validation_set(train_path=train_csv_path, test_path=test_csv_path,
-                            similarity_prob_path=gan_prob_path,
-                            # load_preprocessed_data=True,
-                            gan_preprocess_path=gan_preprocessed_data_path,
-                            train_seed=global_train_seed, global_epochs=1)
+    generate_validation_set(train_path=train_csv_path, test_path=test_csv_path, global_epochs=1,
+                            similarity_prob_path=gan_prob_path, load_preprocessed_data=False,
+                            gan_preprocess_path=gan_preprocessed_data_path, train_seed=global_train_seed)
 
     print('======================================================')
     print('All Tasks Done!')

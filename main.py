@@ -1736,7 +1736,7 @@ class TrainingMode:
             'prejudge_m':   PrejudgeMultiClass
             'stack_t':      StackTree
         """
-
+        # Training Options
         options = {'show_importance': False,
                    'show_accuracy': True,
                    'save_final_pred': True,
@@ -1745,12 +1745,16 @@ class TrainingMode:
                    'save_cv_prob_train': False,
                    'save_csv_log': True}
 
-        # Train Single Model
+        """
+            Train Single Model
+        """
         # self.train_single_model(model_name='lgb', train_seed=train_seed, cv_seed=cv_seed, options=options)
         # self.train_single_model(model_name='prejudge_b', train_seed=train_seed,
         #                         cv_seed=cv_seed, load_pickle=False, options=options)
 
-        # Auto Grid Search
+        """
+            Auto Grid Search
+        """
         pg_list = [
                    ['min_child_weight', (15, 18, 21, 24)],
                    # ['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)],
@@ -1763,7 +1767,9 @@ class TrainingMode:
         self.auto_grid_search(model_name='xgb', parameter_grid_list=pg_list,
                               n_epoch=100, grid_search_n_cv=5, options=options)
 
-        # Auto Train
+        """
+            Auto Train
+        """
         # self.auto_train(model_name='lgb', n_epoch=100, options=options)
         # self.auto_train(model_name='stack_t', n_epoch=100, stack_final_epochs=10, options=options)
 
