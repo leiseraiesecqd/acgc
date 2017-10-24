@@ -1750,21 +1750,21 @@ class TrainingMode:
             Train Single Model
         """
         # self.train_single_model('lgb', train_seed, cv_seed, options=options)
-        self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False, options=options)
+        # self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False, options=options)
 
         """
             Auto Grid Search
         """
-        # pg_list = [
-        #            ['min_child_weight', (15, 18, 21, 24)],
-        #            # ['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)],
-        #            # ['bagging_fraction', (0.6, 0.7, 0.8, 0.9)],
-        #            # ['bagging_freq', (1, 2, 3, 4, 5)],
-        #            # ['max_depth', (7, 8, 9, 10)],
-        #            # ['num_leaves', (70, 75, 80, 85, 90)],
-        #            # ['min_data_in_bin', (1, 3, 5, 7, 9)]
-        #            ]
-        # self.auto_grid_search('xgb', parameter_grid_list=pg_list, n_epoch=100, grid_search_n_cv=5, options=options)
+        pg_list = [
+                   # ['min_child_weight', (15, 18, 21, 24)],
+                   # ['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)],
+                   # ['bagging_fraction', (0.6, 0.7, 0.8, 0.9)],
+                   # ['bagging_freq', (1, 2, 3, 4, 5)],
+                   # ['max_depth', (7, 8, 9, 10)],
+                   ['num_leaves', (75, 77, 79, 81, 83, 85)],
+                   # ['min_data_in_bin', (1, 3, 5, 7, 9)]
+                   ]
+        self.auto_grid_search('lgb', parameter_grid_list=pg_list, n_epoch=200, grid_search_n_cv=5, options=options)
 
         """
             Auto Train
