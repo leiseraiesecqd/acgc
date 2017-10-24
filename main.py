@@ -329,7 +329,7 @@ class SingleModel:
                       'seed': train_seed}
 
         model = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
-                                self.x_g_test, self.id_test, num_boost_round=80)
+                                self.x_g_test, self.id_test, num_boost_round=65)
 
         # cv_generator = CrossValidation.era_k_fold_with_weight_all_random
         # cv_generator = CrossValidation.random_split_with_weight
