@@ -308,20 +308,20 @@ class SingleModel:
         parameters = {'application': 'binary',
                       'boosting': 'gbdt',                   # gdbt,rf,dart,goss
                       'learning_rate': 0.003,               # default=0.1
-                      'num_leaves': 75,                     # default=31       <2^(max_depth)
+                      'num_leaves': 88,                     # default=31       <2^(max_depth)
                       'max_depth': 9,                       # default=-1
                       'min_data_in_leaf': 2500,             # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,      # default=1e-3     reduce over-fit
                       'feature_fraction': 0.5,              # default=1
                       'feature_fraction_seed': train_seed,  # default=2
                       'bagging_fraction': 0.8,              # default=1
-                      'bagging_freq': 2,                    # default=0        perform bagging every k iteration
+                      'bagging_freq': 1,                    # default=0        perform bagging every k iteration
                       'bagging_seed': train_seed,           # default=3
                       'lambda_l1': 0,                       # default=0
                       'lambda_l2': 0,                       # default=0
                       'min_gain_to_split': 0,               # default=0
                       'max_bin': 225,                       # default=255
-                      'min_data_in_bin': 9,                 # default=5
+                      'min_data_in_bin': 5,                 # default=5
                       'metric': 'binary_logloss',
                       'num_threads': -1,
                       'verbosity': 1,
@@ -329,13 +329,14 @@ class SingleModel:
                       'seed': train_seed}
 
         model = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
-                                self.x_g_test, self.id_test, num_boost_round=65)
+                                self.x_g_test, self.id_test, num_boost_round=80)
 
         # cv_generator = CrossValidation.era_k_fold_with_weight_all_random
         # cv_generator = CrossValidation.random_split_with_weight
         # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
-        self.train_model(model=model, parameters=parameters, idx=idx, cv_generator=None, grid_search_tuple=grid_search_tuple)
+        self.train_model(model=model, parameters=parameters, idx=idx,
+                         cv_generator=None, grid_search_tuple=grid_search_tuple)
 
     def lgb_train_sklearn(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
         """
