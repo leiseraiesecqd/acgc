@@ -1750,7 +1750,7 @@ class Training:
         """
             Train Single Model
         """
-        # self.train_single_model('christ', train_seed, cv_seed, options=options)
+        self.train_single_model('lgb', train_seed, cv_seed, options=options)
         # self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False, options=options)
 
         """
@@ -1771,7 +1771,7 @@ class Training:
             Auto Train
         """
         # self.auto_train('xgb', n_epoch=200, options=options)
-        self.auto_train('stack_t', n_epoch=1, stack_final_epochs=10, options=options)
+        # self.auto_train('stack_t', n_epoch=1, stack_final_epochs=10, options=options)
 
         print('======================================================')
         print('Global Train Seed: {}'.format(train_seed))
