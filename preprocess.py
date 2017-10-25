@@ -377,6 +377,7 @@ class DataPreProcess:
         group_train_dummies = np.array(pd.get_dummies(self.g_train, prefix='group'))
         print(self.x_train.shape, group_train_dummies.shape)
         self.x_g_train = np.column_stack((self.x_train, np.array(self.g_train)))
+        print(self.x_g_train.shape, np.array(self.g_train).shape)
         self.x_train = np.concatenate((self.x_train, group_train_dummies), axis=1)
 
         group_test_dummies = np.array(pd.get_dummies(self.g_test, prefix='group'))
