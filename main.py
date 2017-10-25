@@ -583,7 +583,7 @@ class ChampionModel:
                          cv_generator=cv_generator, grid_search_tuple=grid_search_tuple)
 
 
-class GridSearch:
+class SKGridSearch:
     """
         Grid Search
     """
@@ -1559,7 +1559,7 @@ class ModelStacking:
                   csv_log_path=csv_log_path+'stack_final_', save_csv_log=self.save_csv_log, csv_idx=idx)
         
 
-class TrainingMode:
+class Training:
     
     def __init__(self):
         pass
@@ -1711,7 +1711,7 @@ class TrainingMode:
             print('Epoch Time: {}s'.format(time.time() - epoch_start_time))
             print('======================================================')
     
-    def training(self, train_seed=None, cv_seed=None):
+    def train(self):
         """
             Model Name:
             'lr':           Logistic Regression
@@ -1731,6 +1731,21 @@ class TrainingMode:
             'prejudge_m':   PrejudgeMultiClass
             'stack_t':      StackTree
         """
+
+        start_time = time.time()
+
+        # Check if directories exit or not
+        utils.check_dir(path_list)
+
+        # Create Global Seed for Training and Cross Validation
+        global_train_seed = random.randint(0, 300)
+        global_cv_seed = random.randint(0, 300)
+        # global_train_seed = 65
+        # global_cv_seed = 6
+
+        print('======================================================')
+        print('Start Training...')
+
         # Training Options
         options = {'show_importance': False,
                    'show_accuracy': True,
@@ -1743,7 +1758,7 @@ class TrainingMode:
         """
             Train Single Model
         """
-        self.train_single_model('christ', train_seed, cv_seed, options=options)
+        # self.train_single_model('christ', train_seed, cv_seed, options=options)
         # self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False, options=options)
 
         """
@@ -1764,31 +1779,17 @@ class TrainingMode:
             Auto Train
         """
         # self.auto_train('lgb', n_epoch=500, options=options)
-        # self.auto_train('stack_t', n_epoch=100, stack_final_epochs=10, options=options)
+        self.auto_train('stack_t', n_epoch=1, stack_final_epochs=10, options=options)
+
+        print('======================================================')
+        print('All Tasks Done!')
+        print('Global Train Seed: {}'.format(global_train_seed))
+        print('Global Cross Validation Seed: {}'.format(global_cv_seed))
+        print('Total Time: {}s'.format(time.time() - start_time))
+        print('======================================================')
 
 
 if __name__ == "__main__":
 
-    start_time = time.time()
-
-    # Check if directories exit or not
-    utils.check_dir(path_list)
-
-    # Create Global Seed for Training and Cross Validation
-    global_train_seed = random.randint(0, 300)
-    global_cv_seed = random.randint(0, 300)
-    # global_train_seed = 65
-    # global_cv_seed = 6
-
-    print('======================================================')
-    print('Start Training...')
-
-    T = TrainingMode()
-    T.training(global_train_seed, global_cv_seed)
-
-    print('======================================================')
-    print('All Tasks Done!')
-    print('Global Train Seed: {}'.format(global_train_seed))
-    print('Global Cross Validation Seed: {}'.format(global_cv_seed))
-    print('Total Time: {}s'.format(time.time() - start_time))
-    print('======================================================')
+    T = Training()
+    T.train()

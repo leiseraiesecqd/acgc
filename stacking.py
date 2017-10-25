@@ -403,7 +403,7 @@ class StackLayer:
         self.x_test_reuse = x_test_reuse
         self.dnn_param = dnn_param
         self.pred_path = pred_path
-        self.auto_train_pred_path=auto_train_pred_path
+        self.auto_train_pred_path = auto_train_pred_path
         self.loss_log_path = loss_log_path
         self.stack_output_path = stack_output_path
         self.csv_log_path = csv_log_path
@@ -601,6 +601,21 @@ class StackLayer:
                     parameters=self.params, show_importance=self.show_importance, show_accuracy=self.show_accuracy,
                     save_csv_log=self.save_csv_log, csv_idx=self.csv_idx, auto_train_pred_path=self.auto_train_pred_path)
 
+    # Min Max scale
+    @staticmethod
+    def min_max_scale(x_train, x_test):
+
+        print('Min Max Scaling Data...')
+
+        x_min = np.min(x_train, axis=0)
+        x_max = np.max(x_train, axis=0)
+
+        for i_col in range(x_train.shape[1]):
+            x_train[:, i_col] = (x_train[:, i_col] - x_min[i_col]) / (x_max[i_col] - x_min[i_col])
+            x_test[:, i_col] = (x_test[:, i_col] - x_min[i_col]) / (x_max[i_col] - x_min[i_col])
+
+        return x_train, x_test
+
     def train(self, i_epoch=1):
 
         print('======================================================')
@@ -645,7 +660,10 @@ class StackLayer:
                     self.save_predict(self.pred_path + 'epochs_results/stack_l{}_e{}_'.format(self.i_layer, epoch+1),
                                       blender_test_tree)
 
-                # Stack Group Features
+            # Scale Blenders
+            blender_x_tree, blender_test_tree = self.min_max_scale(blender_x_tree, blender_test_tree)
+
+            # Stack Group Features
             print('------------------------------------------------------')
             print('Stacking Group Features...')
             blender_x_g_tree = np.column_stack((blender_x_tree, self.g_train))
