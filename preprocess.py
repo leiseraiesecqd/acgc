@@ -11,6 +11,7 @@ preprocessed_path = './data/preprocessed_data/'
 gan_prob_path = './data/gan_outputs/'
 negative_era_list = [2, 3, 4, 5, 8, 10, 12, 16]
 positive_era_list = [1, 6, 7, 9, 11, 13, 14, 15, 17, 18, 19, 20]
+drop_feature_list = [82]
 
 
 class DataPreProcess:
@@ -52,6 +53,8 @@ class DataPreProcess:
         self.x_g_valid = np.array([])
         self.y_valid = np.array([])
 
+        self.drop_feature_list = ['feature' + str(f_num) for f_num in drop_feature_list]
+
     # Load CSV Files Using Pandas
     def load_csv(self):
 
@@ -70,40 +73,50 @@ class DataPreProcess:
             print('Unable to read data: ', e)
             raise
 
+        print('Dropped Features:\n\t', self.drop_feature_list)
+
         # Drop Unnecessary Columns
         # self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era'], axis=1)
-        self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era', 'feature82'], axis=1)
+        self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era', *self.drop_feature_list], axis=1)
         self.y_train = train_f['label']
         self.w_train = train_f['weight']
         self.g_train = train_f['group']
         self.e_train = train_f['era']
-        self.x_test = test_f.drop(['id', 'group', 'feature82'], axis=1)
+        self.x_test = test_f.drop(['id', 'group', *self.drop_feature_list], axis=1)
         self.id_test = test_f['id']
         self.g_test = test_f['group']
 
     # Drop Outlier of a Feature by Quantile
     def drop_feature_outliers_by_quantile(self, feature, upper_quantile_train=None, lower_quantile_train=None):
 
-        # Drop upper outliers in self.x_train
-        if upper_quantile_train is not None:
-            upper_train = self.x_train[feature].quantile(upper_quantile_train)
-            self.x_train[feature].loc[self.x_train[feature] > upper_train] = upper_train
+        if feature in self.drop_feature_list:
+            pass
+        else:
 
-        # Drop lower outlines in self.x_train
-        if lower_quantile_train is not None:
-            lower_train = self.x_train[feature].quantile(lower_quantile_train)
-            self.x_train[feature].loc[self.x_train[feature] < lower_train] = lower_train
+            # Drop upper outliers in self.x_train
+            if upper_quantile_train is not None:
+                upper_train = self.x_train[feature].quantile(upper_quantile_train)
+                self.x_train[feature].loc[self.x_train[feature] > upper_train] = upper_train
+
+            # Drop lower outlines in self.x_train
+            if lower_quantile_train is not None:
+                lower_train = self.x_train[feature].quantile(lower_quantile_train)
+                self.x_train[feature].loc[self.x_train[feature] < lower_train] = lower_train
 
     # Drop Outlier of a Feature by Value
     def drop_feature_outliers_by_value(self, feature, upper_train=None, lower_train=None):
 
-        # Drop upper outliers in self.x_train
-        if upper_train is not None:
-            self.x_train[feature].loc[self.x_train[feature] > upper_train] = upper_train
+        if feature in self.drop_feature_list:
+            pass
+        else:
 
-        # Drop lower outlines in self.x_train
-        if lower_train is not None:
-            self.x_train[feature].loc[self.x_train[feature] < lower_train] = lower_train
+            # Drop upper outliers in self.x_train
+            if upper_train is not None:
+                self.x_train[feature].loc[self.x_train[feature] > upper_train] = upper_train
+
+            # Drop lower outlines in self.x_train
+            if lower_train is not None:
+                self.x_train[feature].loc[self.x_train[feature] < lower_train] = lower_train
 
     # Dropping Outliers
     def drop_outliers_by_value(self):
