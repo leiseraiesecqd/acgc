@@ -1568,7 +1568,7 @@ class Training:
     def get_train_function(train_mode, model_name, grid_search_n_cv=None, load_pickle=False, options=None):
 
         if train_mode == 'train_single_model':
-            model_arg = {'options': options}
+            model_arg = {'save_auto_train_results': False, 'options': options}
         elif train_mode == 'auto_grid_search':
             options['save_final_pred'] = False
             model_arg = {'save_auto_train_results': False, 'grid_search_n_cv': grid_search_n_cv, 'options': options}
