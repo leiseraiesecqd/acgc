@@ -250,8 +250,8 @@ class SingleModel:
                       'max_depth': 9,                   # default=6
                       'min_child_weight': 18,           # default=1，建立每个模型所需最小样本权重和
                       'subsample': 0.9,                 # 建立树模型时抽取子样本占整个样本的比例
-                      'colsample_bytree': 0.7,          # 建立树时对特征随机采样的比例
-                      'colsample_bylevel': 0.6,
+                      'colsample_bytree': 0.8,          # 建立树时对特征随机采样的比例
+                      'colsample_bylevel': 0.7,
                       'lambda': 0,
                       'alpha': 0,
                       'early_stopping_rounds': 30,
@@ -1822,8 +1822,8 @@ class Training:
         """
             Auto Grid Search Number of Boost Round
         """
-        grid_boost_round_tuple = tuple(range(5, 201, 5))
-        self.auto_grid_boost_round('lgb', grid_boost_round_tuple=grid_boost_round_tuple,
+        grid_boost_round_tuple = tuple(range(5, 201, 10))
+        self.auto_grid_boost_round('xgb', grid_boost_round_tuple=grid_boost_round_tuple,
                                    n_epoch=5, grid_search_n_cv=20, options=options)
 
         """
