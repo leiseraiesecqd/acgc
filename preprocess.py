@@ -67,13 +67,15 @@ class DataPreProcess:
     def load_data(self):
 
         try:
+            print('------------------------------------------------------')
             print('Loading data...')
             train_f, test_f = self.load_csv()
         except Exception as e:
             print('Unable to read data: ', e)
             raise
 
-        print('Dropped Features:\n\t', self.drop_feature_list)
+        print('------------------------------------------------------')
+        print('Dropping Features:\n\t', self.drop_feature_list)
 
         # Drop Unnecessary Columns
         # self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era'], axis=1)
@@ -118,10 +120,11 @@ class DataPreProcess:
             if lower_train is not None:
                 self.x_train[feature].loc[self.x_train[feature] < lower_train] = lower_train
 
-    # Dropping Outliers
+    # Dropping Outliers by Value
     def drop_outliers_by_value(self):
 
-        print('Dropping outliers...')
+        print('------------------------------------------------------')
+        print('Dropping Outliers by Value...')
 
         self.drop_feature_outliers_by_value('feature0', 6.22, None)
         self.drop_feature_outliers_by_value('feature1', None, None)
@@ -205,7 +208,7 @@ class DataPreProcess:
         self.drop_feature_outliers_by_value('feature79', 22.3, None)
         self.drop_feature_outliers_by_value('feature80', None, None)
         self.drop_feature_outliers_by_value('feature81', 25.32, None)
-        # self.drop_feature_outliers_by_value('feature82', 13, None)
+        self.drop_feature_outliers_by_value('feature82', 13, None)
         self.drop_feature_outliers_by_value('feature83', None, None)
         self.drop_feature_outliers_by_value('feature84', 4.48, None)
         self.drop_feature_outliers_by_value('feature85', 16.17, None)
@@ -215,7 +218,8 @@ class DataPreProcess:
     # Drop Outliers by Quantile
     def drop_outliers_by_quantile(self):
 
-        print('Dropping outliers...')
+        print('------------------------------------------------------')
+        print('Dropping Outliers by Quantile...')
 
         # for i in range(88):
         #     if i != 77:
@@ -313,6 +317,7 @@ class DataPreProcess:
     # Standard Scale
     def standard_scale(self):
 
+        print('------------------------------------------------------')
         print('Standard Scaling Data...')
 
         mean = np.zeros(len(self.x_train.columns), dtype=np.float64)
@@ -328,7 +333,8 @@ class DataPreProcess:
     # Min Max scale
     def min_max_scale(self):
 
-        print('Min Max Scaling Data...')
+        print('------------------------------------------------------')
+        print('Min-Max Scaling Data...')
 
         for each in self.x_train.columns:
             x_max, x_min = self.x_train[each].max(),  self.x_train[each].min()
@@ -341,6 +347,9 @@ class DataPreProcess:
     # Convert pandas DataFrames to numpy arrays
     def convert_pd_to_np(self):
 
+        print('------------------------------------------------------')
+        print('Converting pandas DataFrames to numpy arrays...')
+
         self.x_train = np.array(self.x_train, dtype=np.float64)
         self.y_train = np.array(self.y_train, dtype=np.float64)
         self.w_train = np.array(self.w_train, dtype=np.float64)
@@ -351,6 +360,9 @@ class DataPreProcess:
     # Add Polynomial Features
     def add_polynomial_features(self):
 
+        print('------------------------------------------------------')
+        print('Adding Polynomial Features...')
+
         poly = PolynomialFeatures(degree=2, interaction_only=True, include_bias=False)
 
         self.x_train = poly.fit_transform(self.x_train)
@@ -359,6 +371,7 @@ class DataPreProcess:
     # Convert Column 'group' to Dummies
     def convert_group_to_dummies(self):
 
+        print('------------------------------------------------------')
         print('Converting Groups to Dummies...')
 
         group_train_dummies = np.array(pd.get_dummies(self.g_train, prefix='group'))
@@ -371,6 +384,9 @@ class DataPreProcess:
 
     # Split Adversarial Validation Set by GAN
     def split_data_by_gan(self, load_pickle=True, sample_ratio=None, sample_by_era=True, generate_mode='valid'):
+
+        print('------------------------------------------------------')
+        print('Splitting Adversarial Validation Set by GAN...')
 
         if load_pickle is True:
             similarity_prob = utils.load_pkl_to_data(gan_prob_path + 'similarity_prob.p')
@@ -460,6 +476,7 @@ class DataPreProcess:
     # Split Positive and Negative Era Set
     def split_data_by_era_distribution(self):
 
+        print('------------------------------------------------------')
         print('Splitting Positive and Negative Era Set...')
         print('Negative Eras: ', negative_era_list)
 
@@ -490,7 +507,8 @@ class DataPreProcess:
     # Save Data
     def save_data(self):
 
-        print('Saving data...')
+        print('------------------------------------------------------')
+        print('Saving Preprocessed Data...')
         utils.save_data_to_pkl(self.x_train, self.preprocess_path + 'x_train.p')
         utils.save_data_to_pkl(self.x_g_train, self.preprocess_path + 'x_g_train.p')
         utils.save_data_to_pkl(self.y_train, self.preprocess_path + 'y_train.p')
@@ -503,7 +521,8 @@ class DataPreProcess:
     # Save Data Split by Era Distribution
     def save_data_by_era_distribution_pd(self):
 
-        print('Saving Data Split by Era Distribution...')
+        print('------------------------------------------------------')
+        print('Saving Preprocessed Data Split by Era Distribution...')
 
         # Positive Data
         print('Saving Positive Data...')
@@ -523,6 +542,9 @@ class DataPreProcess:
 
     # Preprocess
     def preprocess(self):
+
+        print('======================================================')
+        print('Start Preprocessing...')
 
         start_time = time.time()
 
@@ -560,8 +582,10 @@ class DataPreProcess:
 
         end_time = time.time()
 
+        print('======================================================')
         print('Done!')
         print('Using {:.3}s'.format(end_time - start_time))
+        print('======================================================')
 
 
 if __name__ == '__main__':
