@@ -375,14 +375,19 @@ class DataPreProcess:
         print('Converting Groups to Dummies...')
 
         group_train_dummies = np.array(pd.get_dummies(self.g_train, prefix='group'))
-        print(self.x_train.shape, group_train_dummies.shape)
         self.x_g_train = np.column_stack((self.x_train, np.array(self.g_train)))
-        print(self.x_g_train.shape, np.array(self.g_train).shape)
-        self.x_train = np.concatenate((self.x_train, group_train_dummies), axis=1)
+        self.x_train = list(self.x_train)
+        for i in len(self.x_train):
+            self.x_train[i] = np.concatenate((row, group_train_dummies[i]))
+        self.x_train = np.array(self.x_train, dtype=np.float64)
 
         group_test_dummies = np.array(pd.get_dummies(self.g_test, prefix='group'))
         self.x_g_test = np.column_stack((self.x_test, np.array(self.g_test)))
         self.x_test = np.concatenate((self.x_test, group_test_dummies), axis=1)
+        self.x_test = self.x_test.tolist()
+        for i, row in enumerate(self.x_train):
+            row.extend(group_test_dummies[i])
+        self.x_test = np.array(self.x_test, dtype=np.float64)
 
     # Split Adversarial Validation Set by GAN
     def split_data_by_gan(self, load_pickle=True, sample_ratio=None, sample_by_era=True, generate_mode='valid'):
