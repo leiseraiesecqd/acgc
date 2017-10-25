@@ -261,7 +261,7 @@ class SingleModel:
                       'seed': train_seed}
 
         model = models.XGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
-                               self.x_test, self.id_test, num_boost_round=35)
+                               self.x_test, self.id_test, num_boost_round=30)
 
         self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
 
@@ -308,7 +308,7 @@ class SingleModel:
         parameters = {'application': 'binary',
                       'boosting': 'gbdt',                   # gdbt,rf,dart,goss
                       'learning_rate': 0.003,               # default=0.1
-                      'num_leaves': 75,                     # default=31       <2^(max_depth)
+                      'num_leaves': 83,                     # default=31       <2^(max_depth)
                       'max_depth': 9,                       # default=-1
                       'min_data_in_leaf': 2500,             # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,      # default=1e-3     reduce over-fit
@@ -1234,7 +1234,7 @@ class ModelStacking:
         lgb_params = {'application': 'binary',
                       'boosting': 'gbdt',                   # gdbt,rf,dart,goss
                       'learning_rate': 0.003,               # default=0.1
-                      'num_leaves': 75,                     # default=31       <2^(max_depth)
+                      'num_leaves': 83,                     # default=31       <2^(max_depth)
                       'max_depth': 9,                       # default=-1
                       'min_data_in_leaf': 2500,             # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,      # default=1e-3     reduce over-fit
@@ -1400,7 +1400,7 @@ class ModelStacking:
         lgb_params = {'application': 'binary',
                       'boosting': 'gbdt',                   # gdbt,rf,dart,goss
                       'learning_rate': 0.003,               # default=0.1
-                      'num_leaves': 75,                     # default=31       <2^(max_depth)
+                      'num_leaves': 83,                     # default=31       <2^(max_depth)
                       'max_depth': 9,                       # default=-1
                       'min_data_in_leaf': 2500,             # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,      # default=1e-3     reduce over-fit
@@ -1449,7 +1449,7 @@ class ModelStacking:
         lgb_params = {'application': 'binary',
                       'boosting': 'gbdt',                   # gdbt,rf,dart,goss
                       'learning_rate': 0.003,               # default=0.1
-                      'num_leaves': 75,                     # default=31       <2^(max_depth)
+                      'num_leaves': 83,                     # default=31       <2^(max_depth)
                       'max_depth': 9,                       # default=-1
                       'min_data_in_leaf': 2500,             # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,      # default=1e-3     reduce over-fit
@@ -1494,7 +1494,7 @@ class ModelStacking:
                         'train_seed': train_seed,
                         'cv_seed': cv_seed,
                         'num_boost_round_lgb_l1': 65,
-                        'num_boost_round_xgb_l1': 35,
+                        'num_boost_round_xgb_l1': 30,
                         'num_boost_round_lgb_l2': 65,
                         'num_boost_round_final': 65,
                         'show_importance': False,
@@ -1535,9 +1535,9 @@ class ModelStacking:
                         'final_n_cv': 20,
                         'train_seed': train_seed,
                         'cv_seed': cv_seed,
-                        'num_boost_round_lgb_l1': 65,
-                        'num_boost_round_xgb_l1': 35,
-                        'num_boost_round_final': 55,
+                        'num_boost_round_lgb_l1': 80,
+                        'num_boost_round_xgb_l1': 30,
+                        'num_boost_round_final': 80,
                         'show_importance': self.show_importance,
                         'show_accuracy': self.show_accuracy,
                         'save_epoch_results': False}
@@ -1694,7 +1694,7 @@ class Training:
             print('======================================================')
             print('Auto Training Epoch {}/{}...'.format(i+1, n_epoch))
     
-            if model_name == 'stack_tree':
+            if model_name == 'stack_t':
                 train_function(train_seed, cv_seed, idx=i+1)
                 train_function_s = self.get_train_function('auto_train', 'stack_lgb', options=options)
                 for ii in range(stack_final_epochs):
@@ -1732,19 +1732,11 @@ class Training:
             'stack_t':      StackTree
         """
 
-        start_time = time.time()
-
-        # Check if directories exit or not
-        utils.check_dir(path_list)
-
         # Create Global Seed for Training and Cross Validation
-        global_train_seed = random.randint(0, 300)
-        global_cv_seed = random.randint(0, 300)
+        global_train_seed = random.randint(0, 500)
+        global_cv_seed = random.randint(0, 500)
         # global_train_seed = 65
         # global_cv_seed = 6
-
-        print('======================================================')
-        print('Start Training...')
 
         # Training Options
         options = {'show_importance': False,
@@ -1778,18 +1770,28 @@ class Training:
         """
             Auto Train
         """
-        # self.auto_train('lgb', n_epoch=500, options=options)
-        self.auto_train('stack_t', n_epoch=1, stack_final_epochs=10, options=options)
+        self.auto_train('xgb', n_epoch=200, options=options)
+        # self.auto_train('stack_t', n_epoch=1, stack_final_epochs=10, options=options)
 
         print('======================================================')
-        print('All Tasks Done!')
         print('Global Train Seed: {}'.format(global_train_seed))
         print('Global Cross Validation Seed: {}'.format(global_cv_seed))
-        print('Total Time: {}s'.format(time.time() - start_time))
-        print('======================================================')
 
 
 if __name__ == "__main__":
 
+    start_time = time.time()
+
+    # Check if directories exit or not
+    utils.check_dir(path_list)
+
+    print('======================================================')
+    print('Start Training...')
+
     T = Training()
     T.train()
+
+    print('------------------------------------------------------')
+    print('All Tasks Done!')
+    print('Total Time: {}s'.format(time.time() - start_time))
+    print('======================================================')
