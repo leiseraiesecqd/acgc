@@ -238,7 +238,7 @@ class SingleModel:
 
         self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
 
-    def xgb_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+    def xgb_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None, grid_boost_round=None):
         """
             XGBoost
         """
@@ -260,8 +260,13 @@ class SingleModel:
                       'eval_metric': 'logloss',
                       'seed': train_seed}
 
+        if grid_boost_round is not None:
+            num_boost_round = grid_boost_round
+        else:
+            num_boost_round = 80
+
         model = models.XGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
-                               self.x_test, self.id_test, num_boost_round=30)
+                               self.x_test, self.id_test, num_boost_round=num_boost_round)
 
         self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
 
@@ -298,7 +303,7 @@ class SingleModel:
 
         self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
 
-    def lgb_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+    def lgb_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None, grid_boost_round=None):
         """
             LightGBM
         """
@@ -328,8 +333,13 @@ class SingleModel:
                       'early_stopping_rounds': 50,          # default=0
                       'seed': train_seed}
 
+        if grid_boost_round is not None:
+            num_boost_round = grid_boost_round
+        else:
+            num_boost_round = 80
+
         model = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
-                                self.x_g_test, self.id_test, num_boost_round=80)
+                                self.x_g_test, self.id_test, num_boost_round=num_boost_round)
 
         # cv_generator = CrossValidation.era_k_fold_with_weight_all_random
         # cv_generator = CrossValidation.random_split_with_weight
@@ -1572,6 +1582,8 @@ class Training:
         elif train_mode == 'auto_grid_search':
             options['save_final_pred'] = False
             model_arg = {'save_auto_train_results': False, 'grid_search_n_cv': grid_search_n_cv, 'options': options}
+        elif train_mode == 'auto_grid_boost_round':
+            model_arg = {'save_auto_train_results': True, 'grid_search_n_cv': grid_search_n_cv, 'options': options}
         elif train_mode == 'auto_train':
             model_arg = {'save_auto_train_results': True, 'options': options}
         else:
@@ -1677,6 +1689,58 @@ class Training:
             print('Grid Searching Time: {}s'.format(time.time() - gs_start_time))
             print('======================================================')
 
+    def auto_grid_boost_round(self, model_name=None, grid_boost_round_tuple=None,
+                              n_epoch=1, grid_search_n_cv=20, options=None):
+        """
+            Automatically Grid Searching
+        """
+
+        def _random_int_list(start, stop, length):
+            start, stop = (int(start), int(stop)) if start <= stop else (int(stop), int(start))
+            length = int(abs(length)) if length else 0
+            random_list = []
+            for _ in range(length):
+                random_list.append(random.randint(start, stop))
+            return random_list
+
+        train_seed_list = _random_int_list(0, 500, n_epoch)
+        cv_seed_list = _random_int_list(0, 500, n_epoch)
+
+        # Get Train Function
+        train_function = self.get_train_function('auto_grid_boost_round', model_name,
+                                                 grid_search_n_cv=grid_search_n_cv, options=options)
+
+        print('======================================================')
+        print('Auto Grid Searching num_boost_round...')
+        print('======================================================')
+
+        for num_boost_round in grid_boost_round_tuple:
+
+            param_start_time = time.time()
+
+            for i, (train_seed, cv_seed) in enumerate(zip(train_seed_list, cv_seed_list)):
+
+                epoch_start_time = time.time()
+                idx = 'boost_round_' + str(num_boost_round) + '_' + str(i + 1)
+
+                print('======================================================')
+                print('num_boost_round: {} | Epoch: {}/{}'.format(num_boost_round, i + 1, n_epoch))
+
+                # Training Model
+                train_function(train_seed, cv_seed, idx=idx, grid_boost_round=num_boost_round)
+
+                print('======================================================')
+                print('Auto Training Epoch Done!')
+                print('Train Seed: {}'.format(train_seed))
+                print('Cross Validation Seed: {}'.format(cv_seed))
+                print('Epoch Time: {}s'.format(time.time() - epoch_start_time))
+                print('======================================================')
+
+            print('======================================================')
+            print('One Parameter Done!')
+            print('Parameter Time: {}s'.format(time.time() - param_start_time))
+            print('======================================================')
+
     def auto_train(self, model_name=None, n_epoch=1, stack_final_epochs=None, options=None):
         """
             Automatically training a model for many times
@@ -1750,11 +1814,18 @@ class Training:
         """
             Train Single Model
         """
-        self.train_single_model('lgb', train_seed, cv_seed, options=options)
+        # self.train_single_model('lgb', train_seed, cv_seed, options=options)
         # self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False, options=options)
 
         """
-            Auto Grid Search
+            Auto Grid Search Number of Boost Round
+        """
+        grid_boost_round_tuple = tuple(range(5, 201, 5))
+        self.auto_grid_boost_round('lgb', grid_boost_round_tuple=grid_boost_round_tuple,
+                                   n_epoch=5, grid_search_n_cv=20, options=options)
+
+        """
+            Auto Grid Search Parameters
         """
         # pg_list = [
         #            # ['min_child_weight', (15, 18, 21, 24)],
