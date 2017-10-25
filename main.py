@@ -514,7 +514,7 @@ class SingleModel:
 
 class ChampionModel:
 
-    def __init__(self, save_final_pred=True, save_auto_train_results=True, grid_search_n_cv=None):
+    def __init__(self, save_auto_train_results=True, grid_search_n_cv=None, options=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
             = utils.load_preprocessed_pd_data(preprocessed_data_path)
@@ -526,9 +526,9 @@ class ChampionModel:
         self.csv_log_path = csv_log_path + 'christ1991_'
         self.train_seed = 0
         self.cv_seed = 0
-        self.save_final_pred = save_final_pred
         self.save_auto_train_results = save_auto_train_results
         self.grid_search_n_cv = grid_search_n_cv
+        self.options = options
 
     def train_model(self, model=None, parameters=None, idx=None, cv_generator=None, grid_search_tuple=None):
 
@@ -547,16 +547,10 @@ class ChampionModel:
             n_cv = 20
 
         # Parameters for Train
-        train_parameters = {'pred_path': self.single_model_pred_path, 'loss_log_path': self.loss_log_path,
-                            'csv_log_path': self.csv_log_path, 'n_valid': 4, 'n_cv': n_cv, 'n_era': 20,
-                            'train_seed': self.train_seed, 'cv_seed': self.cv_seed, 'era_list': None,
-                            'parameters': parameters, 'show_importance': False, 'show_accuracy': True,
-                            'save_final_pred': self.save_final_pred, 'save_cv_pred': False,
-                            'save_final_prob_train': False, 'save_cv_prob_train': False,
-                            'save_csv_log': True, 'csv_idx': idx, 'cv_generator': cv_generator,
-                            'auto_train_pred_path': auto_train_path}
-
-        model.train(**train_parameters)
+        model.train(pred_path=self.single_model_pred_path, loss_log_path=self.loss_log_path,
+                    csv_log_path=self.csv_log_path, n_valid=4, n_cv=n_cv, n_era=20, train_seed=self.train_seed,
+                    cv_seed=self.cv_seed, era_list=None, parameters=parameters, csv_idx=idx,
+                    cv_generator=cv_generator, auto_train_pred_path=auto_train_path, **self.options)
 
     def Christ1991(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
         """
@@ -1749,22 +1743,22 @@ class TrainingMode:
         """
             Train Single Model
         """
-        # self.train_single_model('lgb', train_seed, cv_seed, options=options)
+        self.train_single_model('christ', train_seed, cv_seed, options=options)
         # self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False, options=options)
 
         """
             Auto Grid Search
         """
-        pg_list = [
-                   # ['min_child_weight', (15, 18, 21, 24)],
-                   # ['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)],
-                   # ['bagging_fraction', (0.6, 0.7, 0.8, 0.9)],
-                   # ['bagging_freq', (1, 2, 3, 4, 5)],
-                   # ['max_depth', (7, 8, 9, 10)],
-                   ['num_leaves', (75, 77, 79, 81, 83, 85)],
-                   # ['min_data_in_bin', (1, 3, 5, 7, 9)]
-                   ]
-        self.auto_grid_search('lgb', parameter_grid_list=pg_list, n_epoch=200, grid_search_n_cv=5, options=options)
+        # pg_list = [
+        #            # ['min_child_weight', (15, 18, 21, 24)],
+        #            # ['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)],
+        #            # ['bagging_fraction', (0.6, 0.7, 0.8, 0.9)],
+        #            # ['bagging_freq', (1, 2, 3, 4, 5)],
+        #            # ['max_depth', (7, 8, 9, 10)],
+        #            ['num_leaves', (75, 77, 79, 81, 83, 85)],
+        #            # ['min_data_in_bin', (1, 3, 5, 7, 9)]
+        #            ]
+        # self.auto_grid_search('lgb', parameter_grid_list=pg_list, n_epoch=200, grid_search_n_cv=5, options=options)
 
         """
             Auto Train
