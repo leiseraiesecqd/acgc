@@ -384,9 +384,9 @@ class DataPreProcess:
         group_test_dummies = np.array(pd.get_dummies(self.g_test, prefix='group'))
         self.x_g_test = np.column_stack((self.x_test, np.array(self.g_test)))
         self.x_test = np.concatenate((self.x_test, group_test_dummies), axis=1)
-        self.x_test = self.x_test.tolist()
-        for i, row in enumerate(self.x_train):
-            row.extend(group_test_dummies[i])
+        self.x_test = list(self.x_test)
+        for i in range(len(self.x_test)):
+            self.x_test[i] = np.concatenate((self.x_test[i], group_test_dummies[i]))
         self.x_test = np.array(self.x_test, dtype=np.float64)
 
     # Split Adversarial Validation Set by GAN
