@@ -1667,7 +1667,8 @@ class Training:
                     idx = parameter_grid[0] + '_' + str(param) + '_' + str(i+1)
     
                     print('======================================================')
-                    print('Parameter: {}-{} | Epoch: {}/{}'.format(parameter_grid[0], param, i+1, n_epoch))
+                    print('Parameter: {}-{} | Epoch: {}/{} | train_seed: {} | cv_seed: {}'
+                          .format(parameter_grid[0], param, i+1, n_epoch, train_seed, cv_seed))
 
                     # Training Model
                     train_function(train_seed, cv_seed, idx=idx, grid_search_tuple=grid_search_tuple)
@@ -1724,7 +1725,8 @@ class Training:
                 idx = 'boost_round_' + str(num_boost_round) + '_' + str(i + 1)
 
                 print('======================================================')
-                print('num_boost_round: {} | Epoch: {}/{}'.format(num_boost_round, i + 1, n_epoch))
+                print('num_boost_round: {} | Epoch: {}/{} | train_seed: {} | cv_seed: {}'
+                      .format(num_boost_round, i + 1, n_epoch, train_seed, cv_seed))
 
                 # Training Model
                 train_function(train_seed, cv_seed, idx=idx, grid_boost_round=num_boost_round)
@@ -1820,9 +1822,9 @@ class Training:
         """
             Auto Grid Search Number of Boost Round
         """
-        # grid_boost_round_tuple = tuple(range(5, 201, 5))
-        # self.auto_grid_boost_round('lgb', grid_boost_round_tuple=grid_boost_round_tuple,
-        #                            n_epoch=5, grid_search_n_cv=20, options=options)
+        grid_boost_round_tuple = tuple(range(5, 201, 5))
+        self.auto_grid_boost_round('lgb', grid_boost_round_tuple=grid_boost_round_tuple,
+                                   n_epoch=5, grid_search_n_cv=20, options=options)
 
         """
             Auto Grid Search Parameters
@@ -1841,7 +1843,7 @@ class Training:
         """
             Auto Train
         """
-        self.auto_train('xgb', n_epoch=200, options=options)
+        # self.auto_train('xgb', n_epoch=200, options=options)
         # self.auto_train('stack_t', n_epoch=1, stack_final_epochs=10, options=options)
 
         print('======================================================')
