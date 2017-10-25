@@ -29,7 +29,7 @@ class MultiCoreTSNE:
 
 def tsne_train(seed):
 
-    x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+    x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
     parameters = {'n_components': 2,
                   'perplexity': 30.0,

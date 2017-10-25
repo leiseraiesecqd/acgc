@@ -53,9 +53,9 @@ class SingleModel:
     def __init__(self, save_auto_train_results=True, grid_search_n_cv=None, options=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
-            = utils.load_preprocessed_pd_data(preprocessed_data_path)
+            = utils.load_preprocessed_data(preprocessed_data_path)
         self.x_g_train, self.x_g_test\
-            = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+            = utils.load_preprocessed_data_g(preprocessed_data_path)
 
         self.single_model_pred_path = single_model_pred_path
         self.loss_log_path = loss_log_path
@@ -517,9 +517,9 @@ class ChampionModel:
     def __init__(self, save_auto_train_results=True, grid_search_n_cv=None, options=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
-            = utils.load_preprocessed_pd_data(preprocessed_data_path)
+            = utils.load_preprocessed_data(preprocessed_data_path)
         self.x_g_train, self.x_g_test\
-            = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+            = utils.load_preprocessed_data_g(preprocessed_data_path)
 
         self.single_model_pred_path = single_model_pred_path
         self.loss_log_path = loss_log_path
@@ -597,7 +597,7 @@ class SKGridSearch:
         """
         _log_path = grid_search_log_path + 'lr_'
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
         parameters = {'C': 1.0,
                       'class_weight': None,
@@ -638,7 +638,7 @@ class SKGridSearch:
         """
         _log_path = grid_search_log_path + 'rf_'
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
         parameters = {'n_estimators': 32,
                       'bootstrap': True,
@@ -683,7 +683,7 @@ class SKGridSearch:
         """
         _log_path = grid_search_log_path + 'et_'
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(
             preprocessed_data_path)
 
         parameters = {'bootstrap': True,
@@ -729,7 +729,7 @@ class SKGridSearch:
         """
         _log_path = grid_search_log_path + 'ab_'
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
         et_for_ab_params = {'bootstrap': True,
                             'class_weight': None,
@@ -780,7 +780,7 @@ class SKGridSearch:
         """
         _log_path = grid_search_log_path + 'gb_'
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
         parameters = {'criterion': 'friedman_mse',
                       'init': None,
@@ -829,7 +829,7 @@ class SKGridSearch:
         """
         _log_path = grid_search_log_path + 'xgb_'
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
         parameters = {'objective': 'binary:logistic',
                       'learning_rate': 0.002,
@@ -884,8 +884,8 @@ class SKGridSearch:
         """
         _log_path = grid_search_log_path + 'lgb_'
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_data_g(preprocessed_data_path)
 
         parameters = {'learning_rate': 0.006,
                       'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
@@ -941,8 +941,8 @@ class SKGridSearch:
 
         _log_path = grid_search_log_path + 'stk_lgb_'
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_data_g(preprocessed_data_path)
         blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree \
             = utils.load_stacked_data(stack_output_path + 'l2_')
 
@@ -1010,13 +1010,13 @@ class PrejudgeTraining:
     def __init__(self, load_pickle=False, options=None):
         
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
-            = utils.load_preprocessed_pd_data(preprocessed_data_path)
+            = utils.load_preprocessed_data(preprocessed_data_path)
         self.x_g_train, self.x_g_test\
-            = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+            = utils.load_preprocessed_data_g(preprocessed_data_path)
         self.x_train_p, self.y_train_p, self.w_train_p, self.e_train_p, self.x_g_train_p \
-            = utils.load_preprocessed_positive_pd_data(preprocessed_data_path)
+            = utils.load_preprocessed_positive_data(preprocessed_data_path)
         self.x_train_n, self.y_train_n, self.w_train_n, self.e_train_n, self.x_g_train_n \
-            = utils.load_preprocessed_negative_pd_data(preprocessed_data_path)
+            = utils.load_preprocessed_negative_data(preprocessed_data_path)
         self.load_pickle = load_pickle
         self.show_importance = options['show_importance']
         self.show_accuracy = options['show_accuracy']
@@ -1217,9 +1217,9 @@ class ModelStacking:
     def __init__(self, save_auto_train_results=True, options=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
-            = utils.load_preprocessed_pd_data(preprocessed_data_path)
+            = utils.load_preprocessed_data(preprocessed_data_path)
         self.x_g_train, self.x_g_test\
-            = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+            = utils.load_preprocessed_data_g(preprocessed_data_path)
         self.save_auto_train_results = save_auto_train_results
         self.show_importance = options['show_importance']
         self.show_accuracy = options['show_accuracy']
@@ -1510,8 +1510,8 @@ class ModelStacking:
                          # layer3_prams
                          ]
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_data_g(preprocessed_data_path)
 
         STK = stacking.DeepStack(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test,
                                  pred_path=stack_pred_path, loss_log_path=loss_log_path,

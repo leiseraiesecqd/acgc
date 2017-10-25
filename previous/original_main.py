@@ -59,7 +59,7 @@ class TrainSingleModel:
         """
             Logistic Regression
         """
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
         if save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
@@ -103,7 +103,7 @@ class TrainSingleModel:
         """
             Random Forest
         """
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
         if save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
@@ -148,7 +148,7 @@ class TrainSingleModel:
         """
             Extra Trees
         """
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
         if save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
@@ -193,7 +193,7 @@ class TrainSingleModel:
         """
             AdaBoost
         """
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
         if save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
@@ -245,7 +245,7 @@ class TrainSingleModel:
         """
             GradientBoosting
         """
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
         if save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
@@ -292,7 +292,7 @@ class TrainSingleModel:
         """
             XGBoost
         """
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
         if save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
@@ -335,7 +335,7 @@ class TrainSingleModel:
         """
             XGBoost using scikit-learn module
         """
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
         if save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
@@ -385,8 +385,8 @@ class TrainSingleModel:
         """
             LightGBM
         """
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_data_g(preprocessed_data_path)
 
         if save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
@@ -441,8 +441,8 @@ class TrainSingleModel:
         """
             LightGBM using scikit-learn module
         """
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_data_g(preprocessed_data_path)
 
         if save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
@@ -492,8 +492,8 @@ class TrainSingleModel:
         """
             CatBoost
         """
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_data_g(preprocessed_data_path)
 
         if save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
@@ -553,7 +553,7 @@ class TrainSingleModel:
         """
             Deep Neural Networks
         """
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
         if save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
@@ -619,8 +619,8 @@ class TrainSingleModel:
         """
             LightGBM for stack layer
         """
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_data_g(preprocessed_data_path)
         blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree\
             = utils.load_stacked_data(stack_output_path + 'auto_{}_l2_'.format(auto_idx))
 
@@ -702,8 +702,8 @@ class ChampionModel:
         """
             Model of week3 champion
         """
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_data_g(preprocessed_data_path)
 
         if save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
@@ -757,7 +757,7 @@ class GridSearch:
         """
         _log_path = grid_search_log_path + 'lr_'
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
         parameters = {'C': 1.0,
                       'class_weight': None,
@@ -798,7 +798,7 @@ class GridSearch:
         """
         _log_path = grid_search_log_path + 'rf_'
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
         parameters = {'n_estimators': 32,
                       'bootstrap': True,
@@ -843,7 +843,7 @@ class GridSearch:
         """
         _log_path = grid_search_log_path + 'et_'
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(
             preprocessed_data_path)
 
         parameters = {'bootstrap': True,
@@ -889,7 +889,7 @@ class GridSearch:
         """
         _log_path = grid_search_log_path + 'ab_'
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
         et_for_ab_params = {'bootstrap': True,
                             'class_weight': None,
@@ -940,7 +940,7 @@ class GridSearch:
         """
         _log_path = grid_search_log_path + 'gb_'
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
         parameters = {'criterion': 'friedman_mse',
                       'init': None,
@@ -989,7 +989,7 @@ class GridSearch:
         """
         _log_path = grid_search_log_path + 'xgb_'
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
         parameters = {'objective': 'binary:logistic',
                       'learning_rate': 0.002,
@@ -1044,8 +1044,8 @@ class GridSearch:
         """
         _log_path = grid_search_log_path + 'lgb_'
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_data_g(preprocessed_data_path)
 
         parameters = {'learning_rate': 0.006,
                       'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
@@ -1101,8 +1101,8 @@ class GridSearch:
 
         _log_path = grid_search_log_path + 'stk_lgb_'
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_data_g(preprocessed_data_path)
         blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree \
             = utils.load_stacked_data(stack_output_path + 'l2_')
 
@@ -1295,12 +1295,12 @@ class PrejudgeTraining:
         """
             Training model of PrejudgeBinary
         """
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_data_g(preprocessed_data_path)
         x_train_p, y_train_p, w_train_p, e_train_p, x_g_train_p \
-            = utils.load_preprocessed_positive_pd_data(preprocessed_data_path)
+            = utils.load_preprocessed_positive_data(preprocessed_data_path)
         x_train_n, y_train_n, w_train_n, e_train_n, x_g_train_n \
-            = utils.load_preprocessed_negative_pd_data(preprocessed_data_path)
+            = utils.load_preprocessed_negative_data(preprocessed_data_path)
 
         models_parameters = PrejudgeTraining.get_binary_models_parameters(train_seed)
 
@@ -1341,8 +1341,8 @@ class PrejudgeTraining:
         """
             Training model of PrejudgeMultiClass
         """
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_data_g(preprocessed_data_path)
 
         models_parameters = PrejudgeTraining.get_multiclass_models_parameters(train_seed)
 
@@ -1659,8 +1659,8 @@ class ModelStacking:
                          # layer3_prams
                          ]
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_data_g(preprocessed_data_path)
 
         STK = stacking.DeepStack(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test,
                                  pred_path=stack_pred_path, loss_log_path=loss_log_path,
@@ -1700,8 +1700,8 @@ class ModelStacking:
                          # layer2_params,
                          final_layer_params]
 
-        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_pd_data(preprocessed_data_path)
-        x_g_train, x_g_test = utils.load_preprocessed_pd_data_g(preprocessed_data_path)
+        x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
+        x_g_train, x_g_test = utils.load_preprocessed_data_g(preprocessed_data_path)
 
         STK = stacking.StackTree(x_train, y_train, w_train, e_train, x_test, id_test, x_g_train, x_g_test,
                                  layers_params=layers_params, hyper_params=hyper_params)

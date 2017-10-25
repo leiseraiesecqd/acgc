@@ -3,7 +3,7 @@ import utils
 import numpy as np
 import pandas as pd
 from adversarial_validation import generate_validation_set
-
+from sklearn.preprocessing import PolynomialFeatures
 
 train_csv_path = './inputs/stock_train_data_20171020.csv'
 test_csv_path = './inputs/stock_test_data_20171020.csv'
@@ -338,18 +338,36 @@ class DataPreProcess:
             x_max, x_min = self.x_test[each].max(), self.x_test[each].min()
             self.x_test.loc[:, each] = (self.x_test[each] - x_min)/(x_max - x_min)
 
+    # Convert pandas DataFrames to numpy arrays
+    def convert_pd_to_np(self):
+
+        self.x_train = np.array(self.x_train, dtype=np.float64)
+        self.y_train = np.array(self.y_train, dtype=np.float64)
+        self.w_train = np.array(self.w_train, dtype=np.float64)
+        self.e_train = np.array(self.e_train, dtype=int)
+        self.x_test = np.array(self.x_test, dtype=np.float64)
+        self.id_test = np.array(self.id_test, dtype=int)
+
+    # Add Polynomial Features
+    def add_polynomial_features(self):
+
+        poly = PolynomialFeatures(degree=2, interaction_only=True, include_bias=False)
+
+        self.x_train = poly.fit_transform(self.x_train)
+        self.x_test = poly.fit_transform(self.x_test)
+
     # Convert Column 'group' to Dummies
     def convert_group_to_dummies(self):
 
         print('Converting Groups to Dummies...')
 
-        group_train_dummies = pd.get_dummies(self.g_train, prefix='group')
-        self.x_g_train = self.x_train.join(self.g_train)
-        self.x_train = self.x_train.join(group_train_dummies)
+        group_train_dummies = np.array(pd.get_dummies(self.g_train, prefix='group'))
+        self.x_g_train = np.column_stack((self.x_train, self.g_train))
+        self.x_train = np.column_stack((self.x_train, group_train_dummies))
 
-        group_test_dummies = pd.get_dummies(self.g_test, prefix='group')
-        self.x_g_test = self.x_test.join(self.g_test)
-        self.x_test = self.x_test.join(group_test_dummies)
+        group_test_dummies = np.array(pd.get_dummies(self.g_test, prefix='group'))
+        self.x_g_test = np.column_stack((self.x_test, self.g_test))
+        self.x_test = np.column_stack((self.x_test, group_test_dummies))
 
     # Split Adversarial Validation Set by GAN
     def split_data_by_gan(self, load_pickle=True, sample_ratio=None, sample_by_era=True, generate_mode='valid'):
@@ -435,9 +453,9 @@ class DataPreProcess:
 
         # Save Adversarial Validation Set
         print('Saving Adversarial Validation Set...')
-        self.x_valid.to_pickle(self.preprocess_path + 'x_valid.p')
-        self.x_g_valid.to_pickle(self.preprocess_path + 'x_g_valid.p')
-        self.y_valid.to_pickle(self.preprocess_path + 'y_valid.p')
+        utils.save_data_to_pkl(self.x_valid, self.preprocess_path + 'x_valid.p')
+        utils.save_data_to_pkl(self.x_g_valid, self.preprocess_path + 'x_g_valid.p')
+        utils.save_data_to_pkl(self.y_valid, self.preprocess_path + 'y_valid.p')
 
     # Split Positive and Negative Era Set
     def split_data_by_era_distribution(self):
@@ -473,15 +491,14 @@ class DataPreProcess:
     def save_data(self):
 
         print('Saving data...')
-
-        self.x_train.to_pickle(self.preprocess_path + 'x_train.p')
-        self.x_g_train.to_pickle(self.preprocess_path + 'x_g_train.p')
-        self.y_train.to_pickle(self.preprocess_path + 'y_train.p')
-        self.w_train.to_pickle(self.preprocess_path + 'w_train.p')
-        self.e_train.to_pickle(self.preprocess_path + 'e_train.p')
-        self.x_test.to_pickle(self.preprocess_path + 'x_test.p')
-        self.x_g_test.to_pickle(self.preprocess_path + 'x_g_test.p')
-        self.id_test.to_pickle(self.preprocess_path + 'id_test.p')
+        utils.save_data_to_pkl(self.x_train, self.preprocess_path + 'x_train.p')
+        utils.save_data_to_pkl(self.x_g_train, self.preprocess_path + 'x_g_train.p')
+        utils.save_data_to_pkl(self.y_train, self.preprocess_path + 'y_train.p')
+        utils.save_data_to_pkl(self.w_train, self.preprocess_path + 'w_train.p')
+        utils.save_data_to_pkl(self.e_train, self.preprocess_path + 'e_train.p')
+        utils.save_data_to_pkl(self.x_test, self.preprocess_path + 'x_test.p')
+        utils.save_data_to_pkl(self.x_g_test, self.preprocess_path + 'x_g_test.p')
+        utils.save_data_to_pkl(self.id_test, self.preprocess_path + 'id_test.p')
 
     # Save Data Split by Era Distribution
     def save_data_by_era_distribution_pd(self):
@@ -490,19 +507,19 @@ class DataPreProcess:
 
         # Positive Data
         print('Saving Positive Data...')
-        self.x_train_p.to_pickle(self.preprocess_path + 'x_train_p.p')
-        self.x_g_train_p.to_pickle(self.preprocess_path + 'x_g_train_p.p')
-        self.y_train_p.to_pickle(self.preprocess_path + 'y_train_p.p')
-        self.w_train_p.to_pickle(self.preprocess_path + 'w_train_p.p')
-        self.e_train_p.to_pickle(self.preprocess_path + 'e_train_p.p')
+        utils.save_data_to_pkl(self.x_train_p, self.preprocess_path + 'x_train_p.p')
+        utils.save_data_to_pkl(self.x_g_train_p, self.preprocess_path + 'x_g_train_p.p')
+        utils.save_data_to_pkl(self.y_train_p, self.preprocess_path + 'y_train_p.p')
+        utils.save_data_to_pkl(self.w_train_p, self.preprocess_path + 'w_train_p.p')
+        utils.save_data_to_pkl(self.e_train_p, self.preprocess_path + 'e_train_p.p')
 
         # Negative Data
         print('Saving Negative Data...')
-        self.x_train_n.to_pickle(self.preprocess_path + 'x_train_n.p')
-        self.x_g_train_n.to_pickle(self.preprocess_path + 'x_g_train_n.p')
-        self.y_train_n.to_pickle(self.preprocess_path + 'y_train_n.p')
-        self.w_train_n.to_pickle(self.preprocess_path + 'w_train_n.p')
-        self.e_train_n.to_pickle(self.preprocess_path + 'e_train_n.p')
+        utils.save_data_to_pkl(self.x_train_n, self.preprocess_path + 'x_train_n.p')
+        utils.save_data_to_pkl(self.x_g_train_n, self.preprocess_path + 'x_g_train_n.p')
+        utils.save_data_to_pkl(self.y_train_n, self.preprocess_path + 'y_train_n.p')
+        utils.save_data_to_pkl(self.w_train_n, self.preprocess_path + 'w_train_n.p')
+        utils.save_data_to_pkl(self.e_train_n, self.preprocess_path + 'e_train_n.p')
 
     # Preprocess
     def preprocess(self):
@@ -519,6 +536,12 @@ class DataPreProcess:
         # Scale features
         # self.standard_scale()
         # self.min_max_scale()
+
+        # Convert pandas DataFrames to numpy arrays
+        self.convert_pd_to_np()
+
+        # Add Polynomial Features
+        self.add_polynomial_features()
 
         # Convert column 'group' to dummies
         self.convert_group_to_dummies()
