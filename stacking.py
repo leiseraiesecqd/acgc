@@ -812,8 +812,8 @@ class StackTree:
         utils.check_dir(path_list)
 
         if csv_idx is not None:
-            stack_output_path += 'auto_{}_'.format(csv_idx)
-            csv_idx_ = 'auto_{}'.format(csv_idx)
+            stack_output_path += 'auto_stack_{}_'.format(csv_idx)
+            csv_idx_ = 'auto_stack_{}'.format(csv_idx)
         else:
             csv_idx_ = 'stack'
 

@@ -444,7 +444,7 @@ class SingleModel:
             LightGBM for stack layer
         """
         blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree\
-            = utils.load_stacked_data(stack_output_path + 'auto_{}_l2_'.format(auto_idx))
+            = utils.load_stacked_data(stack_output_path + 'aut_stack_{}_l2_'.format(auto_idx))
 
         if self.save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
@@ -1733,10 +1733,10 @@ class Training:
         """
 
         # Create Global Seed for Training and Cross Validation
-        global_train_seed = random.randint(0, 500)
-        global_cv_seed = random.randint(0, 500)
-        # global_train_seed = 65
-        # global_cv_seed = 6
+        train_seed = random.randint(0, 500)
+        cv_seed = random.randint(0, 500)
+        # train_seed = 65
+        # cv_seed = 6
 
         # Training Options
         options = {'show_importance': False,
@@ -1770,12 +1770,12 @@ class Training:
         """
             Auto Train
         """
-        self.auto_train('xgb', n_epoch=200, options=options)
-        # self.auto_train('stack_t', n_epoch=1, stack_final_epochs=10, options=options)
+        # self.auto_train('xgb', n_epoch=200, options=options)
+        self.auto_train('stack_t', n_epoch=1, stack_final_epochs=10, options=options)
 
         print('======================================================')
-        print('Global Train Seed: {}'.format(global_train_seed))
-        print('Global Cross Validation Seed: {}'.format(global_cv_seed))
+        print('Global Train Seed: {}'.format(train_seed))
+        print('Global Cross Validation Seed: {}'.format(cv_seed))
 
 
 if __name__ == "__main__":
