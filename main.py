@@ -1814,15 +1814,15 @@ class Training:
         """
             Train Single Model
         """
-        # self.train_single_model('lgb', train_seed, cv_seed, options=options)
+        self.train_single_model('lgb', train_seed, cv_seed, options=options)
         # self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False, options=options)
 
         """
             Auto Grid Search Number of Boost Round
         """
-        grid_boost_round_tuple = tuple(range(5, 201, 5))
-        self.auto_grid_boost_round('lgb', grid_boost_round_tuple=grid_boost_round_tuple,
-                                   n_epoch=5, grid_search_n_cv=20, options=options)
+        # grid_boost_round_tuple = tuple(range(5, 201, 5))
+        # self.auto_grid_boost_round('lgb', grid_boost_round_tuple=grid_boost_round_tuple,
+        #                            n_epoch=5, grid_search_n_cv=20, options=options)
 
         """
             Auto Grid Search Parameters

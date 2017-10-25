@@ -578,7 +578,7 @@ class DataPreProcess:
         self.convert_pd_to_np()
 
         # Add Polynomial Features
-        # self.add_polynomial_features()
+        self.add_polynomial_features()
 
         # Convert column 'group' to dummies
         self.convert_group_to_dummies()
