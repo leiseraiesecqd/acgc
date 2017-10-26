@@ -1575,7 +1575,7 @@ class ModelStacking:
                         'num_boost_round_lgb_l1': 80,
                         'num_boost_round_xgb_l1': 30,
                         'num_boost_round_final': 80,
-                        # 'useful_feature_list_l1': None,
+                        'useful_feature_list_l1': None,
                         'reuse_feature_list_final': range(87),
                         'save_epoch_results': False}
 
