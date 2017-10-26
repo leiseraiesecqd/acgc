@@ -1867,11 +1867,11 @@ class Training:
         """
         # train_seed_list = [493, 218, 496, 106, 395]
         # cv_seed_list = [35, 73, 288, 325, 458]
-        # grid_boost_round_tuple = tuple(range(106, 121, 2))
-        # self.auto_grid_boost_round('xgb', grid_boost_round_tuple=grid_boost_round_tuple,
-        #                            # train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
-        #                            reduced_feature_list=reduced_feature_list,
-        #                            n_epoch=5, grid_search_n_cv=20, options=options)
+        grid_boost_round_tuple = tuple(range(96, 119, 2))
+        self.auto_grid_boost_round('lgb', grid_boost_round_tuple=grid_boost_round_tuple,
+                                   # train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
+                                   reduced_feature_list=reduced_feature_list,
+                                   n_epoch=5, grid_search_n_cv=20, options=options)
 
         """
             Auto Grid Search Parameters
@@ -1893,8 +1893,8 @@ class Training:
             Auto Train
         """
         # self.auto_train('xgb', n_epoch=200, options=options)
-        self.auto_train('stack_t', n_epoch=10, stack_final_epochs=10,
-                        reduced_feature_list=reduced_feature_list, options=options)
+        # self.auto_train('stack_t', n_epoch=10, stack_final_epochs=10,
+        #                 reduced_feature_list=reduced_feature_list, options=options)
 
         print('======================================================')
         print('Global Train Seed: {}'.format(train_seed))
