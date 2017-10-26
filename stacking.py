@@ -376,9 +376,9 @@ class StackLayer:
     """
     def __init__(self, params, x_train, y_train, w_train, e_train, x_g_train, x_test, x_g_test, id_test,
                  models_initializer=None, input_layer=None, cv_generator=None, n_valid=4, n_era=20,
-                 train_seed=None, cv_seed=None, i_layer=1, n_epoch=1, x_train_reuse=None, x_test_reuse=None,
-                 dnn_param=None, pred_path=None, auto_train_pred_path=None, loss_log_path=None,
-                 stack_output_path=None, csv_log_path=None, save_epoch_results=False,
+                 train_seed=None, cv_seed=None, i_layer=1, n_epoch=1, reuse_feature_list=None,
+                 useful_feature_list=None, dnn_param=None, pred_path=None, auto_train_pred_path=None,
+                 loss_log_path=None, stack_output_path=None, csv_log_path=None, save_epoch_results=False,
                  is_final_layer=False, n_cv_final=None, csv_idx=None, options=None):
 
         self.params = params
@@ -399,8 +399,8 @@ class StackLayer:
         self.cv_seed = cv_seed
         self.i_layer = i_layer
         self.n_epoch = n_epoch
-        self.x_train_reuse = x_train_reuse
-        self.x_test_reuse = x_test_reuse
+        self.reuse_feature_list = reuse_feature_list
+        self.useful_feature_list = useful_feature_list
         self.dnn_param = dnn_param
         self.pred_path = pred_path
         self.auto_train_pred_path = auto_train_pred_path
@@ -452,35 +452,42 @@ class StackLayer:
 
         return blender_valid_cv, blender_test_cv, blender_losses_cv
 
-    def stacker(self, x_train_inputs, x_g_train_inputs, x_test, x_g_test, i_epoch=1):
+    def stacker(self, x_train_inputs, x_g_train_inputs, x_test_inputs, x_g_test_inputs, i_epoch=1):
 
         if self.n_era % self.n_valid != 0:
             raise ValueError('n_era must be an integer multiple of n_valid!')
 
-        # Stack Reused Features
-        if self.x_train_reuse is not None:
+        if self.useful_feature_list is not None:
+            useful_feature_list_g = self.useful_feature_list.append(-1)
+            x_train_inputs = x_train_inputs[:, self.useful_feature_list]
+            x_g_train_inputs = x_g_train_inputs[:, useful_feature_list_g]
+            x_test_inputs = x_test_inputs[:, self.useful_feature_list]
+            x_g_test_inputs = x_g_test_inputs[:, useful_feature_list_g]
 
-            if self.x_test_reuse is None:
-                raise ValueError('x_test_reuse is None!')
+        # Stack Reused Features
+        if self.reuse_feature_list is not None:
+
+            x_train_reuse = self.x_train[:, self.reuse_feature_list]
+            x_test_reuse = self.x_test[:, self.reuse_feature_list]
 
             print('------------------------------------------------------')
             print('Stacking Reused Features of Train Set...')
             # n_sample * (n_feature + n_reuse)
-            x_train_inputs = np.concatenate((x_train_inputs, self.x_train_reuse), axis=1)
+            x_train_inputs = np.concatenate((x_train_inputs, x_train_reuse), axis=1)
             # n_sample * (n_feature + n_reuse + 1)
             x_g_train_inputs = np.column_stack((x_train_inputs, self.g_train))
 
             print('------------------------------------------------------')
             print('Stacking Reused Features of Test Set...')
             # n_sample * (n_feature + n_reuse)
-            x_test = np.concatenate((x_test, self.x_test_reuse), axis=1)
+            x_test_inputs = np.concatenate((x_test_inputs, x_test_reuse), axis=1)
             # n_sample * (n_feature + n_reuse + 1)
-            x_g_test = np.column_stack((x_test, self.g_test))
+            x_g_test_inputs = np.column_stack((x_test_inputs, self.g_test))
 
         # Print Shape
         print('------------------------------------------------------')
         print('x_train_inputs shape:{}'.format(x_train_inputs.shape))
-        print('x_test shape:{}'.format(x_test.shape))
+        print('x_test shape:{}'.format(x_test_inputs.shape))
         print('------------------------------------------------------')
 
         models_blender = self.models_initializer()
@@ -514,7 +521,7 @@ class StackLayer:
             blender_valid_cv, blender_test_cv, \
                 blender_losses_cv = self.train_models(models_blender, self.params, x_train, y_train,
                                                       w_train, x_g_train, x_valid, y_valid, w_valid,
-                                                      x_g_valid, valid_index, x_test, x_g_test)
+                                                      x_g_valid, valid_index, x_test_inputs, x_g_test_inputs)
 
             # Add blenders of one cross validation set to blenders of all CV
             blender_test_cv = blender_test_cv.reshape(n_model, 1, -1)  # n_model * 1 * n_test_sample
@@ -570,22 +577,21 @@ class StackLayer:
     def final_stacker(self, blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree):
 
         # Stack Reused Features
-        if self.x_train_reuse is not None:
+        if self.reuse_feature_list is not None:
 
-            if self.x_test_reuse is None:
-                raise ValueError('x_test_reuse is None!')
+            x_train_reuse = self.x_train[:, self.reuse_feature_list]
+            x_test_reuse = self.x_test[:, self.reuse_feature_list]
 
-            print('------------------------------------------------------')
             print('Stacking Reused Features of Train Set...')
             # n_sample * (n_feature + n_reuse)
-            blender_x_tree = np.concatenate((blender_x_tree, self.x_train_reuse), axis=1)
+            blender_x_tree = np.concatenate((blender_x_tree, x_train_reuse), axis=1)
             # n_sample * (n_feature + n_reuse + 1)
             blender_x_g_tree = np.column_stack((blender_x_tree, self.g_train))
 
             print('------------------------------------------------------')
             print('Stacking Reused Features of Test Set...')
             # n_sample * (n_feature + n_reuse)
-            blender_test_tree = np.concatenate((blender_test_tree, self.x_test_reuse), axis=1)
+            blender_test_tree = np.concatenate((blender_test_tree, x_test_reuse), axis=1)
             # n_sample * (n_feature + n_reuse + 1)
             blender_test_g_tree = np.column_stack((blender_test_tree, self.g_test))
 
@@ -682,7 +688,6 @@ class StackLayer:
 
         # For First Layer
         else:
-
             blender_x_tree = self.x_train
             blender_x_g_tree = self.x_g_train
             blender_test_tree = self.x_test
@@ -690,11 +695,9 @@ class StackLayer:
 
         # For Final Layer
         if self.is_final_layer is True:
-
             self.final_stacker(blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree)
 
         else:
-
             # Training Stacker
             blender_x_outputs, blender_test_outputs, blender_x_g_outputs, blender_test_g_outputs \
                 = self.stacker(blender_x_tree, blender_x_g_tree, blender_test_tree, blender_test_g_tree,
@@ -735,6 +738,8 @@ class StackTree:
         self.num_boost_round_xgb_l1 = hyper_params['num_boost_round_xgb_l1']
         self.num_boost_round_lgb_l2 = None
         self.num_boost_round_final = hyper_params['num_boost_round_final']
+        self.useful_feature_list_l1 = hyper_params['useful_feature_list_l1']
+        self.reuse_feature_list_final = hyper_params['reuse_feature_list_final']
         self.options = options
         self.show_importance = options['show_importance']
         self.show_accuracy = options['show_accuracy']
@@ -826,10 +831,6 @@ class StackTree:
         # models_initializer_l2 = self.layer2_initializer
         models_initializer_final = self.final_layer_initializer
 
-        # Reused features
-        x_train_reuse_l2 = self.x_train[:, :87]
-        x_test_reuse_l2 = self.x_test[:, :87]
-
         print('======================================================')
         print('Start training...')
 
@@ -839,7 +840,8 @@ class StackTree:
         stk_l1 = StackLayer(self.layers_params[0], self.x_train, self.y_train, self.w_train, self.e_train,
                             self.x_g_train, self.x_test, self.x_g_test, self.id_test,
                             models_initializer=models_initializer_l1, cv_generator=cv_stack, n_valid=self.n_valid[0],
-                            n_era=self.n_era[0], train_seed=self.train_seed, cv_seed=self.cv_seed, i_layer=1,
+                            useful_feature_list=self.useful_feature_list_l1, n_era=self.n_era[0],
+                            train_seed=self.train_seed, cv_seed=self.cv_seed, i_layer=1,
                             n_epoch=self.n_epoch[0], pred_path=pred_path, stack_output_path=stack_output_path,
                             save_epoch_results=self.save_epoch_results, options=self.options)
 
@@ -857,7 +859,7 @@ class StackTree:
                                self.e_train, self.x_g_train, self.x_test, self.x_g_test, self.id_test,
                                input_layer=stk_l1, models_initializer=models_initializer_final, n_valid=self.n_valid[1],
                                train_seed=self.train_seed, cv_seed=self.cv_seed, i_layer=2, n_epoch=self.n_epoch[1],
-                               x_train_reuse=x_train_reuse_l2, x_test_reuse=x_test_reuse_l2, pred_path=pred_path,
+                               reuse_feature_list=self.reuse_feature_list_final, pred_path=pred_path,
                                auto_train_pred_path=auto_train_pred_path, loss_log_path=loss_log_path, 
                                stack_output_path=stack_output_path, csv_log_path=csv_log_path,
                                save_epoch_results=self.save_epoch_results, is_final_layer=True, 
