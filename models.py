@@ -187,7 +187,7 @@ class ModelBase(object):
             if save_cv_pred is True:
                 cv_pred_path = pred_path + 'cv_results/' + model_name + '_cv_{}_'.format(count)
             else:
-                cv_pred_path=None
+                cv_pred_path = None
             prob_test = self.predict(clf, self.x_test, pred_path=cv_pred_path)
 
             # Save Train Probabilities to CSV File

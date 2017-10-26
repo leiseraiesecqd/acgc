@@ -1231,9 +1231,7 @@ class ModelStacking:
         self.x_g_train, self.x_g_test\
             = utils.load_preprocessed_data_g(preprocessed_data_path)
         self.save_auto_train_results = save_auto_train_results
-        self.show_importance = options['show_importance']
-        self.show_accuracy = options['show_accuracy']
-        self.save_csv_log = options['save_csv_log']
+        self.options = options
 
     @staticmethod
     def get_layer1_params(train_seed):
@@ -1548,8 +1546,6 @@ class ModelStacking:
                         'num_boost_round_lgb_l1': 80,
                         'num_boost_round_xgb_l1': 30,
                         'num_boost_round_final': 80,
-                        'show_importance': self.show_importance,
-                        'show_accuracy': self.show_accuracy,
                         'save_epoch_results': False}
 
         layer1_params = ModelStacking.get_layer1_params(train_seed)
@@ -1562,11 +1558,10 @@ class ModelStacking:
 
         STK = stacking.StackTree(self.x_train, self.y_train, self.w_train, self.e_train,
                                  self.x_test, self.id_test, self.x_g_train, self.x_g_test,
-                                 layers_params=layers_params, hyper_params=hyper_params)
+                                 layers_params=layers_params, hyper_params=hyper_params, options=self.options)
 
-        STK.stack(pred_path=stack_pred_path, auto_train_pred_path=auto_train_path,
-                  loss_log_path=loss_log_path, stack_output_path=stack_output_path,
-                  csv_log_path=csv_log_path+'stack_final_', save_csv_log=self.save_csv_log, csv_idx=idx)
+        STK.stack(pred_path=stack_pred_path, auto_train_pred_path=auto_train_path, loss_log_path=loss_log_path,
+                  stack_output_path=stack_output_path, csv_log_path=csv_log_path+'stack_final_', csv_idx=idx)
         
 
 class Training:
@@ -1768,7 +1763,7 @@ class Training:
                     c_seed = random.randint(0, 500)
                     train_function_s(t_seed, c_seed, idx='auto_{}_epoch_{}'.format(i+1, ii+1), auto_idx=i+1)
             else:
-                train_function(train_seed, cv_seed, idx=i + 1)
+                train_function(train_seed, cv_seed, idx=i+1)
     
             print('======================================================')
             print('Auto Training Epoch Done!')

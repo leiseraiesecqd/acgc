@@ -375,11 +375,11 @@ class StackLayer:
         Iterative Layer for Stack Tree
     """
     def __init__(self, params, x_train, y_train, w_train, e_train, x_g_train, x_test, x_g_test, id_test,
-                 models_initializer=None, input_layer=None, cv_generator=None, n_valid=4, n_era=20, train_seed=None,
-                 cv_seed=None, i_layer=1, n_epoch=1, x_train_reuse=None, x_test_reuse=None, dnn_param=None,
-                 pred_path=None, auto_train_pred_path=None, loss_log_path=None, stack_output_path=None,
-                 csv_log_path=None, show_importance=False, show_accuracy=False, save_epoch_results=False,
-                 is_final_layer=False, n_cv_final=None, save_csv_log=None, csv_idx=None):
+                 models_initializer=None, input_layer=None, cv_generator=None, n_valid=4, n_era=20,
+                 train_seed=None, cv_seed=None, i_layer=1, n_epoch=1, x_train_reuse=None, x_test_reuse=None,
+                 dnn_param=None, pred_path=None, auto_train_pred_path=None, loss_log_path=None,
+                 stack_output_path=None, csv_log_path=None, save_epoch_results=False,
+                 is_final_layer=False, n_cv_final=None, csv_idx=None, options=None):
 
         self.params = params
         self.x_train = x_train
@@ -407,12 +407,11 @@ class StackLayer:
         self.loss_log_path = loss_log_path
         self.stack_output_path = stack_output_path
         self.csv_log_path = csv_log_path
-        self.show_importance = show_importance
-        self.show_accuracy = show_accuracy
         self.save_epoch_results = save_epoch_results
         self.is_final_layer = is_final_layer
         self.n_cv_final = n_cv_final
-        self.save_csv_log = save_csv_log
+        self.options = options
+        self.show_importance = options['show_importance']
         self.csv_idx = csv_idx
         self.g_train = x_g_train[:, -1]
         self.g_test = x_g_test[:, -1]
@@ -598,8 +597,8 @@ class StackLayer:
 
         model.train(self.pred_path, self.loss_log_path, csv_log_path=self.csv_log_path, n_valid=self.n_valid,
                     n_cv=self.n_cv_final, n_era=self.n_era, train_seed=self.train_seed, cv_seed=self.cv_seed,
-                    parameters=self.params, show_importance=self.show_importance, show_accuracy=self.show_accuracy,
-                    save_csv_log=self.save_csv_log, csv_idx=self.csv_idx, auto_train_pred_path=self.auto_train_pred_path)
+                    parameters=self.params, csv_idx=self.csv_idx, auto_train_pred_path=self.auto_train_pred_path,
+                    **self.options)
 
     # Min Max scale
     @staticmethod
@@ -712,7 +711,8 @@ class StackTree:
     pred_path = ''
     stack_output_path = ''
 
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te, layers_params=None, hyper_params=None):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_g_tr, x_g_te,
+                 layers_params=None, hyper_params=None, options=None):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -735,8 +735,9 @@ class StackTree:
         self.num_boost_round_xgb_l1 = hyper_params['num_boost_round_xgb_l1']
         self.num_boost_round_lgb_l2 = None
         self.num_boost_round_final = hyper_params['num_boost_round_final']
-        self.show_importance = hyper_params['show_importance']
-        self.show_accuracy = hyper_params['show_accuracy']
+        self.options = options
+        self.show_importance = options['show_importance']
+        self.show_accuracy = options['show_accuracy']
         self.save_epoch_results = hyper_params['save_epoch_results']
 
     def layer1_initializer(self):
@@ -800,8 +801,8 @@ class StackTree:
 
         utils.save_pred_to_csv(pred_path, self.id_test, test_prob)
 
-    def stack(self, pred_path=None, auto_train_pred_path=None, loss_log_path=None, stack_output_path=None,
-              csv_log_path=None, save_csv_log=False, csv_idx=None):
+    def stack(self, pred_path=None, auto_train_pred_path=None, loss_log_path=None,
+              stack_output_path=None, csv_log_path=None, csv_idx=None):
 
         start_time = time.time()
 
@@ -838,10 +839,9 @@ class StackTree:
         stk_l1 = StackLayer(self.layers_params[0], self.x_train, self.y_train, self.w_train, self.e_train,
                             self.x_g_train, self.x_test, self.x_g_test, self.id_test,
                             models_initializer=models_initializer_l1, cv_generator=cv_stack, n_valid=self.n_valid[0],
-                            n_era=self.n_era[0], train_seed=self.train_seed, cv_seed=self.cv_seed,
-                            i_layer=1, n_epoch=self.n_epoch[0], pred_path=pred_path,
-                            stack_output_path=stack_output_path, show_importance=self.show_importance,
-                            show_accuracy=self.show_accuracy, save_epoch_results=self.save_epoch_results)
+                            n_era=self.n_era[0], train_seed=self.train_seed, cv_seed=self.cv_seed, i_layer=1,
+                            n_epoch=self.n_epoch[0], pred_path=pred_path, stack_output_path=stack_output_path,
+                            save_epoch_results=self.save_epoch_results, options=self.options)
 
         # Layer 2
         # stk_l2 = StackLayer(self.layers_params[1], self.x_train, self.y_train, self.w_train, self.e_train,
@@ -859,10 +859,9 @@ class StackTree:
                                train_seed=self.train_seed, cv_seed=self.cv_seed, i_layer=2, n_epoch=self.n_epoch[1],
                                x_train_reuse=x_train_reuse_l2, x_test_reuse=x_test_reuse_l2, pred_path=pred_path,
                                auto_train_pred_path=auto_train_pred_path, loss_log_path=loss_log_path, 
-                               stack_output_path=stack_output_path, csv_log_path=csv_log_path, 
-                               show_importance=self.show_importance, show_accuracy=self.show_accuracy, 
+                               stack_output_path=stack_output_path, csv_log_path=csv_log_path,
                                save_epoch_results=self.save_epoch_results, is_final_layer=True, 
-                               n_cv_final=self.final_layer_cv, save_csv_log=save_csv_log, csv_idx=csv_idx_)
+                               n_cv_final=self.final_layer_cv, csv_idx=csv_idx_, options=self.options)
 
         # Training
         stk_final.train()
