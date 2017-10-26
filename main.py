@@ -50,12 +50,22 @@ class SingleModel:
     """
         Train single model
     """
-    def __init__(self, save_auto_train_results=True, grid_search_n_cv=None, options=None):
+    def __init__(self, useful_feature_list=None, save_auto_train_results=True, grid_search_n_cv=None, options=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
             = utils.load_preprocessed_data(preprocessed_data_path)
         self.x_g_train, self.x_g_test\
             = utils.load_preprocessed_data_g(preprocessed_data_path)
+
+        # Choose Useful features
+        if useful_feature_list is not None:
+
+            useful_feature_list_g = useful_feature_list + [-1]
+            useful_feature_list.extend(list(range(-1, -29, -1)))
+            self.x_train = self.x_train[:, useful_feature_list]
+            self.x_g_train = self.x_g_train[:, useful_feature_list_g]
+            self.x_test = self.x_test[:, useful_feature_list]
+            self.x_g_test = self.x_g_test[:, useful_feature_list_g]
 
         self.single_model_pred_path = single_model_pred_path
         self.loss_log_path = loss_log_path
@@ -1803,6 +1813,7 @@ class Training:
         # cv_seed = 6
 
         # Training Options
+        useful_feature_list = None
         options = {'show_importance': False,
                    'show_accuracy': True,
                    'save_final_pred': True,
@@ -1820,9 +1831,11 @@ class Training:
         """
             Auto Grid Search Number of Boost Round
         """
-        grid_boost_round_tuple = tuple(range(205, 401, 5))
-        train_seed_list = [493, 218, 496, 106, 395]
-        cv_seed_list = [35, 73, 288, 325, 458]
+        grid_boost_round_tuple = tuple(range(30, 151, 5))
+        # train_seed_list = [493, 218, 496, 106, 395]
+        # cv_seed_list = [35, 73, 288, 325, 458]
+        train_seed_list = [493]
+        cv_seed_list = [35]
         self.auto_grid_boost_round('lgb', grid_boost_round_tuple=grid_boost_round_tuple,
                                    train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
                                    n_epoch=5, grid_search_n_cv=20, options=options)

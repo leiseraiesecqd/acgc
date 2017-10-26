@@ -126,8 +126,8 @@ class DeepStack:
         return blender_valid_cv, blender_test_cv, blender_losses_cv
 
     def stacker(self, models_initializer, params, x_train_inputs, y_train_inputs, w_train_inputs,
-                e_train_inputs, x_g_train_inputs, x_test, x_g_test, cv_generator, n_valid=4, n_era=20,
-                cv_seed=None, n_epoch=1, x_train_reuse=None, x_test_reuse=None):
+                e_train_inputs, x_g_train_inputs, x_test_inputs, x_g_test_inputs, cv_generator,
+                n_valid=4, n_era=20, cv_seed=None, n_epoch=1, x_train_reuse=None, x_test_reuse=None):
 
         if n_era % n_valid != 0:
             raise ValueError('n_era must be an integer multiple of n_valid!')
@@ -144,9 +144,9 @@ class DeepStack:
         if x_test_reuse is not None:
             print('------------------------------------------------------')
             print('Stacking Reused Features...')
-            x_test = np.concatenate((x_test, x_test_reuse), axis=1)  # n_sample * (n_feature + n_reuse)
-            x_g_testroup = x_g_test[:, -1]
-            x_g_test = np.column_stack((x_test, x_g_testroup))       # n_sample * (n_feature + n_reuse + 1)
+            x_test = np.concatenate((x_test_inputs, x_test_reuse), axis=1)  # n_sample * (n_feature + n_reuse)
+            x_g_test_inputs= x_g_test_inputs[:, -1]
+            x_g_test_inputs = np.column_stack((x_test, x_g_test_inputs))       # n_sample * (n_feature + n_reuse + 1)
 
         n_cv = int(n_era // n_valid)
         blender_x_outputs = np.array([])
@@ -187,7 +187,7 @@ class DeepStack:
                 blender_valid_cv, blender_test_cv, \
                     blender_losses_cv = self.train_models(models_blender, params, x_train, y_train, w_train,
                                                           x_g_train, x_valid, y_valid, w_valid, x_g_valid,
-                                                          valid_index, x_test, x_g_test)
+                                                          valid_index, x_test_inputs, x_g_test_inputs)
 
                 # Add blenders of one cross validation set to blenders of all CV
                 blender_test_cv = blender_test_cv.reshape(n_model, 1, -1)  # n_model * 1 * n_test_sample
@@ -457,7 +457,9 @@ class StackLayer:
         if self.n_era % self.n_valid != 0:
             raise ValueError('n_era must be an integer multiple of n_valid!')
 
+        # Choose Useful features
         if self.useful_feature_list is not None:
+
             useful_feature_list_g = self.useful_feature_list.append(-1)
             x_train_inputs = x_train_inputs[:, self.useful_feature_list]
             x_g_train_inputs = x_g_train_inputs[:, useful_feature_list_g]
@@ -860,9 +862,9 @@ class StackTree:
                                input_layer=stk_l1, models_initializer=models_initializer_final, n_valid=self.n_valid[1],
                                train_seed=self.train_seed, cv_seed=self.cv_seed, i_layer=2, n_epoch=self.n_epoch[1],
                                reuse_feature_list=self.reuse_feature_list_final, pred_path=pred_path,
-                               auto_train_pred_path=auto_train_pred_path, loss_log_path=loss_log_path, 
+                               auto_train_pred_path=auto_train_pred_path, loss_log_path=loss_log_path,
                                stack_output_path=stack_output_path, csv_log_path=csv_log_path,
-                               save_epoch_results=self.save_epoch_results, is_final_layer=True, 
+                               save_epoch_results=self.save_epoch_results, is_final_layer=True,
                                n_cv_final=self.final_layer_cv, csv_idx=csv_idx_, options=self.options)
 
         # Training
