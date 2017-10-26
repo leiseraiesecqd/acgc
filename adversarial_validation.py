@@ -22,7 +22,6 @@ class AdversarialValidation(object):
         self.train_path = train_path
         self.test_path = test_path
         self.preprocessed_path = gan_preprocess_path
-
         self.learning_rate = parameters['learning_rate']
         self.epochs = parameters['epochs']
         self.n_discriminator_units = parameters['n_discriminator_units']

@@ -17,9 +17,7 @@ class CrossValidation:
     def random_split_with_weight(x, y, w, e, n_valid, n_cv, n_era, seed=None, era_list=None):
 
         test_size = n_valid / n_era
-
         valid_era = []
-
         ss_train = StratifiedShuffleSplit(n_splits=n_cv, test_size=test_size, random_state=seed)
 
         for train_index, valid_index in ss_train.split(x, y):
@@ -48,7 +46,6 @@ class CrossValidation:
             raise ValueError('n_cv must be an integer multiple of n_splits!')
 
         n_repeats = int(n_cv / n_splits)
-
         era_k_fold = RepeatedKFold(n_splits=n_splits, n_repeats=n_repeats, random_state=seed)
 
         for train_index, valid_index in era_k_fold.split(x, y):
@@ -134,7 +131,6 @@ class CrossValidation:
 
             np.random.shuffle(train_index)
             np.random.shuffle(valid_index)
-
             trained_cv.append(set(valid_era))
 
             yield train_index, valid_index
@@ -161,7 +157,6 @@ class CrossValidation:
             valid_index = []
 
             for ii, ele in enumerate(e):
-
                 if ele in valid_era:
                     valid_index.append(ii)
                 else:
@@ -237,7 +232,6 @@ class CrossValidation:
 
                     # Generate train-validation split index
                     for ii, ele in enumerate(e):
-
                         if ele in valid_era:
                             valid_index.append(ii)
                         else:
@@ -272,7 +266,6 @@ class CrossValidation:
                         valid_index = []
 
                         for ii, ele in enumerate(e):
-
                             if ele in valid_era:
                                 valid_index.append(ii)
                             else:
@@ -299,7 +292,6 @@ class CrossValidation:
                         valid_index = []
 
                         for ii, ele in enumerate(e):
-
                             if ele in valid_era:
                                 valid_index.append(ii)
                             else:
@@ -363,7 +355,6 @@ class CrossValidation:
 
                     # Generate train-validation split index
                     for ii, ele in enumerate(e):
-
                         if ele in valid_era:
                             valid_index.append(ii)
                         else:
@@ -410,7 +401,6 @@ class CrossValidation:
                         valid_index = []
 
                         for ii, ele in enumerate(e):
-
                             if ele in valid_era:
                                 valid_index.append(ii)
                             else:
@@ -449,7 +439,6 @@ class CrossValidation:
                         valid_index = []
 
                         for ii, ele in enumerate(e):
-
                             if ele in valid_era:
                                 valid_index.append(ii)
                             else:
@@ -520,7 +509,6 @@ class CrossValidation:
 
                     # Generate train-validation split index
                     for ii, ele in enumerate(e):
-
                         if ele in valid_era:
                             valid_index.append(ii)
                         else:
@@ -568,7 +556,6 @@ class CrossValidation:
                         valid_index = []
 
                         for ii, ele in enumerate(e):
-
                             if ele in valid_era:
                                 valid_index.append(ii)
                             else:
@@ -609,7 +596,6 @@ class CrossValidation:
                         valid_index = []
 
                         for ii, ele in enumerate(e):
-
                             if ele in valid_era:
                                 valid_index.append(ii)
                             else:
@@ -656,7 +642,6 @@ class CrossValidation:
             valid_index = []
 
             for ii, ele in enumerate(e):
-
                 if ele in valid_era:
                     valid_index.append(ii)
                 else:

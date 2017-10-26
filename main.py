@@ -50,7 +50,7 @@ class SingleModel:
     """
         Train single model
     """
-    def __init__(self, useful_feature_list=None, save_auto_train_results=True, grid_search_n_cv=None, options=None):
+    def __init__(self, reduced_feature_list=None, save_auto_train_results=True, grid_search_n_cv=None, options=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
             = utils.load_preprocessed_data(preprocessed_data_path)
@@ -58,13 +58,13 @@ class SingleModel:
             = utils.load_preprocessed_data_g(preprocessed_data_path)
 
         # Choose Useful features
-        if useful_feature_list is not None:
+        if reduced_feature_list is not None:
 
-            useful_feature_list_g = useful_feature_list + [-1]
-            useful_feature_list.extend(list(range(-1, -29, -1)))
-            self.x_train = self.x_train[:, useful_feature_list]
+            useful_feature_list_g = reduced_feature_list + [-1]
+            reduced_feature_list.extend(list(range(-1, -29, -1)))
+            self.x_train = self.x_train[:, reduced_feature_list]
             self.x_g_train = self.x_g_train[:, useful_feature_list_g]
-            self.x_test = self.x_test[:, useful_feature_list]
+            self.x_test = self.x_test[:, reduced_feature_list]
             self.x_g_test = self.x_g_test[:, useful_feature_list_g]
 
         self.single_model_pred_path = single_model_pred_path
@@ -534,12 +534,21 @@ class SingleModel:
 
 class ChampionModel:
 
-    def __init__(self, save_auto_train_results=True, grid_search_n_cv=None, options=None):
+    def __init__(self, reduced_feature_list=None, save_auto_train_results=True, grid_search_n_cv=None, options=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
             = utils.load_preprocessed_data(preprocessed_data_path)
         self.x_g_train, self.x_g_test\
             = utils.load_preprocessed_data_g(preprocessed_data_path)
+
+        # Choose Useful features
+        if reduced_feature_list is not None:
+            useful_feature_list_g = reduced_feature_list + [-1]
+            reduced_feature_list.extend(list(range(-1, -29, -1)))
+            self.x_train = self.x_train[:, reduced_feature_list]
+            self.x_g_train = self.x_g_train[:, useful_feature_list_g]
+            self.x_test = self.x_test[:, reduced_feature_list]
+            self.x_g_test = self.x_g_test[:, useful_feature_list_g]
 
         self.single_model_pred_path = single_model_pred_path
         self.loss_log_path = loss_log_path
@@ -1234,12 +1243,22 @@ class ModelStacking:
     """
         Stacking
     """
-    def __init__(self, save_auto_train_results=True, options=None):
+    def __init__(self, reduced_feature_list=None, save_auto_train_results=True, options=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
             = utils.load_preprocessed_data(preprocessed_data_path)
         self.x_g_train, self.x_g_test\
             = utils.load_preprocessed_data_g(preprocessed_data_path)
+
+        # Choose Useful features
+        if reduced_feature_list is not None:
+            useful_feature_list_g = reduced_feature_list + [-1]
+            reduced_feature_list.extend(list(range(-1, -29, -1)))
+            self.x_train = self.x_train[:, reduced_feature_list]
+            self.x_g_train = self.x_g_train[:, useful_feature_list_g]
+            self.x_test = self.x_test[:, reduced_feature_list]
+            self.x_g_test = self.x_g_test[:, useful_feature_list_g]
+
         self.save_auto_train_results = save_auto_train_results
         self.options = options
 
@@ -1582,17 +1601,22 @@ class Training:
         pass
 
     @staticmethod
-    def get_train_function(train_mode, model_name, grid_search_n_cv=None, load_pickle=False, options=None):
+    def get_train_function(train_mode, model_name, grid_search_n_cv=None,
+                           reduced_feature_list=None, load_pickle=False, options=None):
 
         if train_mode == 'train_single_model':
-            model_arg = {'save_auto_train_results': False, 'options': options}
+            model_arg = {'reduced_feature_list': reduced_feature_list,
+                         'save_auto_train_results': False, 'options': options}
         elif train_mode == 'auto_grid_search':
             options['save_final_pred'] = False
-            model_arg = {'save_auto_train_results': False, 'grid_search_n_cv': grid_search_n_cv, 'options': options}
+            model_arg = {'reduced_feature_list': reduced_feature_list, 'save_auto_train_results': False,
+                         'grid_search_n_cv': grid_search_n_cv, 'options': options}
         elif train_mode == 'auto_grid_boost_round':
-            model_arg = {'save_auto_train_results': True, 'grid_search_n_cv': grid_search_n_cv, 'options': options}
+            model_arg = {'reduced_feature_list': reduced_feature_list, 'save_auto_train_results': True,
+                         'grid_search_n_cv': grid_search_n_cv, 'options': options}
         elif train_mode == 'auto_train':
-            model_arg = {'save_auto_train_results': True, 'options': options}
+            model_arg = {'reduced_feature_list': reduced_feature_list,
+                         'save_auto_train_results': True, 'options': options}
         else:
             raise ValueError('Wrong Training Mode!')
 
@@ -1634,24 +1658,26 @@ class Training:
         else:
             raise ValueError('Wrong Model Name!')
 
-    def train_single_model(self, model_name, train_seed, cv_seed, load_pickle=False, options=None):
+    def train_single_model(self, model_name, train_seed, cv_seed,
+                           reduced_feature_list=None, load_pickle=False, options=None):
         """
             Training Single Model
         """
         # Get Train Function
-        train_function = self.get_train_function('train_single_model', model_name,
-                                                 load_pickle=load_pickle, options=options)
+        train_function = self.get_train_function('train_single_model', model_name, load_pickle=load_pickle,
+                                                 reduced_feature_list=reduced_feature_list, options=options)
 
         # Training Model
         train_function(train_seed, cv_seed)
 
-    def auto_grid_search(self, model_name=None, parameter_grid_list=None, n_epoch=1, grid_search_n_cv=5, options=None):
+    def auto_grid_search(self, model_name=None, parameter_grid_list=None,
+                         reduced_feature_list=None, n_epoch=1, grid_search_n_cv=5, options=None):
         """
             Automatically Grid Searching
         """
         # Get Train Function
-        train_function = self.get_train_function('auto_grid_search', model_name,
-                                                 grid_search_n_cv=grid_search_n_cv, options=options)
+        train_function = self.get_train_function('auto_grid_search', model_name, grid_search_n_cv=grid_search_n_cv,
+                                                 reduced_feature_list=reduced_feature_list, options=options)
     
         for parameter_grid in parameter_grid_list:
     
@@ -1697,8 +1723,8 @@ class Training:
             print('Grid Searching Time: {}s'.format(time.time() - gs_start_time))
             print('======================================================')
 
-    def auto_grid_boost_round(self, model_name=None, grid_boost_round_tuple=None, train_seed_list=None,
-                              cv_seed_list=None, n_epoch=1, grid_search_n_cv=20, options=None):
+    def auto_grid_boost_round(self, model_name=None, grid_boost_round_tuple=None, reduced_feature_list=None,
+                              train_seed_list=None, cv_seed_list=None, n_epoch=1, grid_search_n_cv=20, options=None):
         """
             Automatically Grid Searching
         """
@@ -1716,8 +1742,8 @@ class Training:
             cv_seed_list = _random_int_list(0, 500, n_epoch)
 
         # Get Train Function
-        train_function = self.get_train_function('auto_grid_boost_round', model_name,
-                                                 grid_search_n_cv=grid_search_n_cv, options=options)
+        train_function = self.get_train_function('auto_grid_boost_round', model_name, grid_search_n_cv=grid_search_n_cv,
+                                                 reduced_feature_list=reduced_feature_list, options=options)
 
         print('======================================================')
         print('Auto Grid Searching num_boost_round...')
@@ -1751,13 +1777,15 @@ class Training:
             print('Parameter Time: {}s'.format(time.time() - param_start_time))
             print('======================================================')
 
-    def auto_train(self, model_name=None, n_epoch=1, stack_final_epochs=None, options=None):
+    def auto_train(self, model_name=None, reduced_feature_list=None,
+                   n_epoch=1, stack_final_epochs=None, options=None):
         """
             Automatically training a model for many times
         """
 
         # Get Train Function
-        train_function = self.get_train_function('auto_train', model_name, options=options)
+        train_function = self.get_train_function('auto_train', model_name,
+                                                 reduced_feature_list=reduced_feature_list, options=options)
     
         for i in range(n_epoch):
     
@@ -1770,7 +1798,8 @@ class Training:
     
             if model_name == 'stack_t':
                 train_function(train_seed, cv_seed, idx=i+1)
-                train_function_s = self.get_train_function('auto_train', 'stack_lgb', options=options)
+                train_function_s = self.get_train_function('auto_train', 'stack_lgb',
+                                                           reduced_feature_list=reduced_feature_list, options=options)
                 for ii in range(stack_final_epochs):
                     t_seed = random.randint(0, 500)
                     c_seed = random.randint(0, 500)
@@ -1813,7 +1842,7 @@ class Training:
         # cv_seed = 6
 
         # Training Options
-        useful_feature_list = None
+        reduced_feature_list = None
         options = {'show_importance': False,
                    'show_accuracy': True,
                    'save_final_pred': True,
@@ -1825,8 +1854,10 @@ class Training:
         """
             Train Single Model
         """
-        # self.train_single_model('lgb', train_seed, cv_seed, options=options)
-        # self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False, options=options)
+        # self.train_single_model('lgb', train_seed, cv_seed,
+        #                         reduced_feature_list=reduced_feature_list,  options=options)
+        # self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False,
+        #                         reduced_feature_list=reduced_feature_list, options=options)
 
         """
             Auto Grid Search Number of Boost Round
@@ -1836,6 +1867,7 @@ class Training:
         cv_seed_list = [35, 73, 288, 325, 458]
         self.auto_grid_boost_round('lgb', grid_boost_round_tuple=grid_boost_round_tuple,
                                    train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
+                                   reduced_feature_list=reduced_feature_list,
                                    n_epoch=5, grid_search_n_cv=20, options=options)
 
         """
@@ -1850,13 +1882,16 @@ class Training:
         #            ['num_leaves', (75, 77, 79, 81, 83, 85)],
         #            # ['min_data_in_bin', (1, 3, 5, 7, 9)]
         #            ]
-        # self.auto_grid_search('lgb', parameter_grid_list=pg_list, n_epoch=200, grid_search_n_cv=5, options=options)
+        # self.auto_grid_search('lgb', parameter_grid_list=pg_list, n_epoch=200,
+        #                       reduced_feature_list=reduced_feature_list,
+        #                       grid_search_n_cv=5, options=options)
 
         """
             Auto Train
         """
         # self.auto_train('xgb', n_epoch=200, options=options)
-        # self.auto_train('stack_t', n_epoch=1, stack_final_epochs=10, options=options)
+        # self.auto_train('stack_t', n_epoch=1, stack_final_epochs=10,
+                        # reduced_feature_list=reduced_feature_list, options=options)
 
         print('======================================================')
         print('Global Train Seed: {}'.format(train_seed))
