@@ -464,7 +464,7 @@ class SingleModel:
             LightGBM for stack layer
         """
         blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree\
-            = utils.load_stacked_data(stack_output_path + 'aut_stack_{}_l2_'.format(auto_idx))
+            = utils.load_stacked_data(stack_output_path + 'auto_stack_{}_l2_'.format(auto_idx))
 
         if self.save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
