@@ -1831,11 +1831,9 @@ class Training:
         """
             Auto Grid Search Number of Boost Round
         """
-        grid_boost_round_tuple = tuple(range(30, 151, 5))
-        # train_seed_list = [493, 218, 496, 106, 395]
-        # cv_seed_list = [35, 73, 288, 325, 458]
-        train_seed_list = [493]
-        cv_seed_list = [35]
+        grid_boost_round_tuple = tuple(range(205, 401, 5))
+        train_seed_list = [493, 218, 496, 106, 395]
+        cv_seed_list = [35, 73, 288, 325, 458]
         self.auto_grid_boost_round('lgb', grid_boost_round_tuple=grid_boost_round_tuple,
                                    train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
                                    n_epoch=5, grid_search_n_cv=20, options=options)
