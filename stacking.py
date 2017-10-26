@@ -379,7 +379,7 @@ class StackLayer:
                  train_seed=None, cv_seed=None, i_layer=1, n_epoch=1, reuse_feature_list=None,
                  useful_feature_list=None, dnn_param=None, pred_path=None, auto_train_pred_path=None,
                  loss_log_path=None, stack_output_path=None, csv_log_path=None, save_epoch_results=False,
-                 is_final_layer=False, n_cv_final=None, csv_idx=None, options=None):
+                 is_final_layer=False, n_cv_final=None, csv_idx=None, scale_blender=True, options=None):
 
         self.params = params
         self.x_train = x_train
@@ -410,6 +410,7 @@ class StackLayer:
         self.save_epoch_results = save_epoch_results
         self.is_final_layer = is_final_layer
         self.n_cv_final = n_cv_final
+        self.scale_blender = scale_blender
         self.options = options
         self.show_importance = options['show_importance']
         self.csv_idx = csv_idx
@@ -668,7 +669,8 @@ class StackLayer:
                                       blender_test_tree)
 
             # Scale Blenders
-            blender_x_tree, blender_test_tree = self.min_max_scale(blender_x_tree, blender_test_tree)
+            if self.scale_blender is True:
+                blender_x_tree, blender_test_tree = self.min_max_scale(blender_x_tree, blender_test_tree)
 
             # Stack Group Features
             print('------------------------------------------------------')
@@ -746,6 +748,7 @@ class StackTree:
         self.show_importance = options['show_importance']
         self.show_accuracy = options['show_accuracy']
         self.save_epoch_results = hyper_params['save_epoch_results']
+        self.scale_blender_final = hyper_params['scale_blender_final']
 
     def layer1_initializer(self):
 
@@ -865,7 +868,8 @@ class StackTree:
                                auto_train_pred_path=auto_train_pred_path, loss_log_path=loss_log_path,
                                stack_output_path=stack_output_path, csv_log_path=csv_log_path,
                                save_epoch_results=self.save_epoch_results, is_final_layer=True,
-                               n_cv_final=self.final_layer_cv, csv_idx=csv_idx_, options=self.options)
+                               n_cv_final=self.final_layer_cv, csv_idx=csv_idx_,
+                               scale_blender=self.scale_blender_final, options=self.options)
 
         # Training
         stk_final.train()

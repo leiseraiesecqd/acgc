@@ -1577,6 +1577,7 @@ class ModelStacking:
                         'num_boost_round_final': 80,
                         'useful_feature_list_l1': None,
                         'reuse_feature_list_final': range(87),
+                        'scale_blender_final': True,
                         'save_epoch_results': False}
 
         layer1_params = ModelStacking.get_layer1_params(train_seed)
