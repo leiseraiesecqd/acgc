@@ -1843,7 +1843,6 @@ class Training:
         # cv_seed = 6
 
         # Training Options
-        reduced_feature_list = None
         options = {'show_importance': False,
                    'show_accuracy': True,
                    'save_final_pred': True,
@@ -1851,6 +1850,9 @@ class Training:
                    'save_cv_pred': False,
                    'save_cv_prob_train': False,
                    'save_csv_log': True}
+
+        # Reduced Features
+        reduced_feature_list = None
 
         """
             Train Single Model
@@ -1863,13 +1865,13 @@ class Training:
         """
             Auto Grid Search Number of Boost Round
         """
-        grid_boost_round_tuple = tuple(range(106, 121, 2))
         # train_seed_list = [493, 218, 496, 106, 395]
         # cv_seed_list = [35, 73, 288, 325, 458]
-        self.auto_grid_boost_round('xgb', grid_boost_round_tuple=grid_boost_round_tuple,
-                                   # train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
-                                   reduced_feature_list=reduced_feature_list,
-                                   n_epoch=5, grid_search_n_cv=20, options=options)
+        # grid_boost_round_tuple = tuple(range(106, 121, 2))
+        # self.auto_grid_boost_round('xgb', grid_boost_round_tuple=grid_boost_round_tuple,
+        #                            # train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
+        #                            reduced_feature_list=reduced_feature_list,
+        #                            n_epoch=5, grid_search_n_cv=20, options=options)
 
         """
             Auto Grid Search Parameters
@@ -1891,8 +1893,8 @@ class Training:
             Auto Train
         """
         # self.auto_train('xgb', n_epoch=200, options=options)
-        # self.auto_train('stack_t', n_epoch=1, stack_final_epochs=10,
-        #                 reduced_feature_list=reduced_feature_list, options=options)
+        self.auto_train('stack_t', n_epoch=10, stack_final_epochs=10,
+                        reduced_feature_list=reduced_feature_list, options=options)
 
         print('======================================================')
         print('Global Train Seed: {}'.format(train_seed))
