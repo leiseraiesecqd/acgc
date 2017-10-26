@@ -1685,8 +1685,8 @@ class Training:
             print('Grid Searching Time: {}s'.format(time.time() - gs_start_time))
             print('======================================================')
 
-    def auto_grid_boost_round(self, model_name=None, grid_boost_round_tuple=None,
-                              n_epoch=1, grid_search_n_cv=20, options=None):
+    def auto_grid_boost_round(self, model_name=None, grid_boost_round_tuple=None, train_seed_list=None,
+                              cv_seed_list=None, n_epoch=1, grid_search_n_cv=20, options=None):
         """
             Automatically Grid Searching
         """
@@ -1699,8 +1699,9 @@ class Training:
                 random_list.append(random.randint(start, stop))
             return random_list
 
-        train_seed_list = _random_int_list(0, 500, n_epoch)
-        cv_seed_list = _random_int_list(0, 500, n_epoch)
+        if train_seed_list is None:
+            train_seed_list = _random_int_list(0, 500, n_epoch)
+            cv_seed_list = _random_int_list(0, 500, n_epoch)
 
         # Get Train Function
         train_function = self.get_train_function('auto_grid_boost_round', model_name,
@@ -1817,8 +1818,11 @@ class Training:
         """
             Auto Grid Search Number of Boost Round
         """
-        grid_boost_round_tuple = tuple(range(5, 201, 10))
-        self.auto_grid_boost_round('xgb', grid_boost_round_tuple=grid_boost_round_tuple,
+        grid_boost_round_tuple = tuple(range(205, 401, 5))
+        train_seed_list = [493, 218, 496, 106, 395]
+        cv_seed_list = [35, 73, 288, 325, 458]
+        self.auto_grid_boost_round('lgb', grid_boost_round_tuple=grid_boost_round_tuple,
+                                   train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
                                    n_epoch=5, grid_search_n_cv=20, options=options)
 
         """
