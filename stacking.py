@@ -453,10 +453,10 @@ class StackLayer:
 
         return blender_valid_cv, blender_test_cv, blender_losses_cv
 
-    def models_trainer_prejudge(self, models_blender, params, x_train, y_train, w_train, x_g_train,
+    def models_prejudge_trainer(self, models_blender, params, x_train, y_train, w_train, x_g_train,
                                 x_valid, y_valid, w_valid, x_g_valid, idx_valid, x_test, x_g_test):
 
-        # First raw - idx_valid
+        # First row - idx_valid
         all_model_valid_prob = [idx_valid]
         all_model_test_prob = []
         all_model_losses = []
@@ -830,17 +830,18 @@ class StackTree:
     def final_layer_initializer(self, blender_x_tree, blender_test_tree, blender_x_g_tree,
                                 blender_test_g_tree, params=None):
 
-        LGB_END = models.LightGBM(blender_x_g_tree, self.y_train, self.w_train,  self.e_train,
-                                  blender_test_g_tree, self.id_test, num_boost_round=self.num_boost_round_final)
+        if self.model_final == 'lgb':
+            LGB_END = models.LightGBM(blender_x_g_tree, self.y_train, self.w_train,  self.e_train,
+                                      blender_test_g_tree, self.id_test, num_boost_round=self.num_boost_round_final)
+            return LGB_END
 
-        DNN_END = models.DeepNeuralNetworks(blender_x_tree, self.y_train,  self.w_train,  self.e_train,
-                                            blender_test_tree,  self.id_test, params)
+        elif self.model_final == 'dnn':
+            DNN_END = models.DeepNeuralNetworks(blender_x_tree, self.y_train,  self.w_train,  self.e_train,
+                                                blender_test_tree,  self.id_test, params)
+            return DNN_END
 
-        final_models = {'lgb': LGB_END, 'dnn': DNN_END}
-
-        model_final = final_models[self.model_final]
-
-        return model_final
+        else:
+            raise ValueError('Wrong final_layer_name!')
 
     def save_predict(self, pred_path, test_outputs):
 

@@ -1566,6 +1566,9 @@ class ModelStacking:
         else:
             auto_train_path = None
 
+        useful_feature_list_l1 = None
+        reuse_feature_list_final = range(87)
+
         hyper_params = {'n_valid': (4, 4),
                         'n_era': (20, 20),
                         'n_epoch': (1, 8),
@@ -1575,11 +1578,11 @@ class ModelStacking:
                         'models_l1': ('lgb', 'xgb', 'dnn'),
                         'models_l2': (),
                         'model_final': 'lgb',
-                        'num_boost_round_lgb_l1': 108,
-                        'num_boost_round_xgb_l1': 115,
-                        'num_boost_round_final': 80,
-                        'useful_feature_list_l1': None,
-                        'reuse_feature_list_final': range(87),
+                        'num_boost_round_lgb_l1': 80,
+                        'num_boost_round_xgb_l1': 30,
+                        'num_boost_round_final': 72,
+                        'useful_feature_list_l1': useful_feature_list_l1,
+                        'reuse_feature_list_final': reuse_feature_list_final,
                         'scale_blender_final': True,
                         'save_epoch_results': False}
 
@@ -1901,9 +1904,9 @@ class Training:
         """
             Auto Train
         """
-        self.auto_train('xgb', n_epoch=200, options=options)
-        # self.auto_train('stack_t', n_epoch=5, stack_final_epochs=10,
-        #                 reduced_feature_list=reduced_feature_list, options=options)
+        # self.auto_train('xgb', n_epoch=200, options=options)
+        self.auto_train('stack_t', n_epoch=5, stack_final_epochs=10,
+                        reduced_feature_list=reduced_feature_list, options=options)
 
         print('======================================================')
         print('Global Train Seed: {}'.format(train_seed))
