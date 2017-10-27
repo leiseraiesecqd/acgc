@@ -873,7 +873,7 @@ class LightGBM(ModelBase):
                     w_valid, x_g_valid, x_test, x_g_test, parameters, show_importance=False):
 
         self.print_start_info()
-        print('Number of Features: ', x_train.shape[1])
+        print('Number of Features: ', x_g_train.shape[1])
         print('------------------------------------------------------')
 
         # Training Model
@@ -886,8 +886,8 @@ class LightGBM(ModelBase):
 
         # Print LogLoss
         print('------------------------------------------------------')
-        loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss_lgb(bst, x_train, y_train, w_train,
-                                                                                  x_valid, y_valid, w_valid)
+        loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss_lgb(bst, x_g_train, y_train, w_train,
+                                                                                  x_g_valid, y_valid, w_valid)
 
         losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
 
@@ -1113,6 +1113,34 @@ class CatBoost(ModelBase):
                     use_best_model=None, eval_set=(x_valid, y_valid), verbose=True, plot=False)
 
         return clf
+
+    def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
+                    w_valid, x_g_valid, x_test, x_g_test, parameters, show_importance=False):
+
+        self.print_start_info()
+        print('Number of Features: ', x_g_train.shape[1])
+        print('------------------------------------------------------')
+
+        # Training Model
+        bst = self.stack_fit(x_train, y_train, w_train, x_g_train,
+                             x_valid, y_valid, w_valid, x_g_valid, parameters)
+
+        # Feature Importance
+        if show_importance is True:
+            self.get_importance(bst)
+
+        # Print LogLoss
+        print('------------------------------------------------------')
+        loss_train, loss_valid, loss_train_w, loss_valid_w = utils.print_loss_lgb(bst, x_g_train, y_train, w_train,
+                                                                                  x_g_valid, y_valid, w_valid)
+
+        losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
+
+        # Prediction
+        prob_valid = self.predict(bst, x_g_valid)
+        prob_test = self.predict(bst, x_g_test)
+
+        return prob_valid, prob_test, losses
 
 
 class DeepNeuralNetworks(ModelBase):
