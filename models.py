@@ -185,6 +185,7 @@ class ModelBase(object):
             print('======================================================')
             print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
             print('Validation Set Era: ', valid_era)
+            print('Number of Features: ', x_train.shape[1])
             print('------------------------------------------------------')
 
             # Fitting and Training Model
@@ -869,7 +870,7 @@ class LightGBM(ModelBase):
     def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
                     w_valid, x_g_valid, x_test, x_g_test, parameters, show_importance=False):
 
-        _ = self.print_start_info()
+        self.print_start_info()
 
         # Training Model
         bst = self.stack_fit(x_train, y_train, w_train, x_g_train,
@@ -1356,6 +1357,7 @@ class DeepNeuralNetworks(ModelBase):
 
                 print('======================================================')
                 print('Training on the Cross Validation Set: {}'.format(cv_counter))
+                print('Number of Features: ', x_train.shape[1])
                 print('Validation Set Era: ', valid_era)
                 print('------------------------------------------------------')
 

@@ -468,9 +468,6 @@ class StackLayer:
             x_test_inputs = x_test_inputs[:, self.useful_feature_list]
             x_g_test_inputs = x_g_test_inputs[:, useful_feature_list_g]
 
-            print(self.useful_feature_list, useful_feature_list_g, x_train_inputs.shape, x_g_train_inputs.shape,
-                  x_test_inputs.shape, x_g_test_inputs.shape)
-
         # Stack Reused Features
         if self.reuse_feature_list is not None:
 
