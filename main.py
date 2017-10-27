@@ -322,7 +322,7 @@ class SingleModel:
 
         parameters = {'application': 'binary',
                       'boosting': 'gbdt',                   # gdbt,rf,dart,goss
-                      'learning_rate': 0.003,               # default=0.1
+                      'learning_rate': 0.002,               # default=0.1
                       'num_leaves': 83,                     # default=31       <2^(max_depth)
                       'max_depth': 9,                       # default=-1
                       'min_data_in_leaf': 2500,             # default=20       reduce over-fit
@@ -1927,8 +1927,8 @@ class Training:
         #                         reduced_feature_list=reduced_feature_list, options=options)
         # self.train_single_model('stack_lgb', train_seed, cv_seed, auto_idx=1,
         #                         reduced_feature_list=reduced_feature_list,  options=options)
-        self.train_single_model('stack_pt', train_seed, cv_seed,
-                                reduced_feature_list=reduced_feature_list, options=options)
+        # self.train_single_model('stack_pt', train_seed, cv_seed,
+        #                         reduced_feature_list=reduced_feature_list, options=options)
 
         """
             Auto Grid Search Number of Boost Round
