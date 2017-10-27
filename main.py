@@ -273,7 +273,7 @@ class SingleModel:
         if grid_boost_round is not None:
             num_boost_round = grid_boost_round
         else:
-            num_boost_round = 80
+            num_boost_round = 115
 
         model = models.XGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
                                self.x_test, self.id_test, num_boost_round=num_boost_round)
@@ -1892,9 +1892,9 @@ class Training:
         """
             Auto Train
         """
-        self.auto_train('lgb', n_epoch=200, options=options)
-        # self.auto_train('stack_t', n_epoch=10, stack_final_epochs=10,
-        #                 reduced_feature_list=reduced_feature_list, options=options)
+        # self.auto_train('lgb', n_epoch=200, options=options)
+        self.auto_train('stack_t', n_epoch=10, stack_final_epochs=10,
+                        reduced_feature_list=reduced_feature_list, options=options)
 
         print('======================================================')
         print('Global Train Seed: {}'.format(train_seed))
