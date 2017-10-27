@@ -1927,8 +1927,8 @@ class Training:
         #                         reduced_feature_list=reduced_feature_list, options=options)
         # self.train_single_model('stack_lgb', train_seed, cv_seed, auto_idx=1,
         #                         reduced_feature_list=reduced_feature_list,  options=options)
-        # self.train_single_model('stack_pt', train_seed, cv_seed,
-        #                         reduced_feature_list=reduced_feature_list, options=options)
+        self.train_single_model('stack_pt', train_seed, cv_seed,
+                                reduced_feature_list=reduced_feature_list, options=options)
 
         """
             Auto Grid Search Number of Boost Round
@@ -1961,8 +1961,8 @@ class Training:
             Auto Train
         """
         # self.auto_train('xgb', n_epoch=200, options=options)
-        self.auto_train('stack_t', n_epoch=2, stack_final_epochs=10,
-                        reduced_feature_list=reduced_feature_list, options=options)
+        # self.auto_train('stack_t', n_epoch=2, stack_final_epochs=10,
+        #                 reduced_feature_list=reduced_feature_list, options=options)
 
         print('======================================================')
         print('Global Train Seed: {}'.format(train_seed))
