@@ -260,8 +260,8 @@ class SingleModel:
                       'max_depth': 9,                   # default=6
                       'min_child_weight': 18,           # default=1，建立每个模型所需最小样本权重和
                       'subsample': 0.9,                 # 建立树模型时抽取子样本占整个样本的比例
-                      'colsample_bytree': 0.8,          # 建立树时对特征随机采样的比例
-                      'colsample_bylevel': 0.7,
+                      'colsample_bytree': 0.7,          # 建立树时对特征随机采样的比例
+                      'colsample_bylevel': 0.6,
                       'lambda': 0,
                       'alpha': 0,
                       'early_stopping_rounds': 30,
@@ -273,7 +273,7 @@ class SingleModel:
         if grid_boost_round is not None:
             num_boost_round = grid_boost_round
         else:
-            num_boost_round = 106
+            num_boost_round = 30
 
         model = models.XGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
                                self.x_test, self.id_test, num_boost_round=num_boost_round)
@@ -1901,9 +1901,9 @@ class Training:
         """
             Auto Train
         """
-        # self.auto_train('xgb', n_epoch=200, options=options)
-        self.auto_train('stack_t', n_epoch=5, stack_final_epochs=10,
-                        reduced_feature_list=reduced_feature_list, options=options)
+        self.auto_train('xgb', n_epoch=200, options=options)
+        # self.auto_train('stack_t', n_epoch=5, stack_final_epochs=10,
+        #                 reduced_feature_list=reduced_feature_list, options=options)
 
         print('======================================================')
         print('Global Train Seed: {}'.format(train_seed))

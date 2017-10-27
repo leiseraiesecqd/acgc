@@ -423,8 +423,38 @@ class StackLayer:
 
         utils.save_pred_to_csv(pred_path, self.id_test, test_prob)
 
-    def train_models(self, models_blender, params, x_train, y_train, w_train, x_g_train,
-                     x_valid, y_valid, w_valid, x_g_valid, idx_valid, x_test, x_g_test):
+    def models_trainer(self, models_blender, params, x_train, y_train, w_train, x_g_train,
+                       x_valid, y_valid, w_valid, x_g_valid, idx_valid, x_test, x_g_test):
+
+        # First raw - idx_valid
+        all_model_valid_prob = [idx_valid]
+        all_model_test_prob = []
+        all_model_losses = []
+
+        n_model = len(models_blender)
+
+        for iter_model, model in enumerate(models_blender):
+            print('------------------------------------------------------')
+            print('Training on model:{}/{}'.format(iter_model + 1, n_model))
+
+            # Training on each model in models_l1 using one cross validation set
+            prob_valid, prob_test, losses = \
+                model.stack_train(x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid,
+                                  x_test, x_g_test, params[iter_model], show_importance=self.show_importance)
+
+            all_model_valid_prob.append(prob_valid)
+            all_model_test_prob.append(prob_test)
+            all_model_losses.append(losses)
+
+        # Blenders of one cross validation set
+        blender_valid_cv = np.array(all_model_valid_prob, dtype=np.float64)  # (n_model+1) * n_valid_sample
+        blender_test_cv = np.array(all_model_test_prob, dtype=np.float64)  # n_model * n_test_sample
+        blender_losses_cv = np.array(all_model_losses, dtype=np.float64)  # n_model * n_loss
+
+        return blender_valid_cv, blender_test_cv, blender_losses_cv
+
+    def models_trainer_prejudge(self, models_blender, params, x_train, y_train, w_train, x_g_train,
+                                x_valid, y_valid, w_valid, x_g_valid, idx_valid, x_test, x_g_test):
 
         # First raw - idx_valid
         all_model_valid_prob = [idx_valid]
@@ -522,9 +552,9 @@ class StackLayer:
 
             # Training on models and get blenders of one cross validation set
             blender_valid_cv, blender_test_cv, \
-                blender_losses_cv = self.train_models(models_blender, self.params, x_train, y_train,
-                                                      w_train, x_g_train, x_valid, y_valid, w_valid,
-                                                      x_g_valid, valid_index, x_test_inputs, x_g_test_inputs)
+                blender_losses_cv = self.models_trainer(models_blender, self.params, x_train, y_train,
+                                                        w_train, x_g_train, x_valid, y_valid, w_valid,
+                                                        x_g_valid, valid_index, x_test_inputs, x_g_test_inputs)
 
             # Add blenders of one cross validation set to blenders of all CV
             blender_test_cv = blender_test_cv.reshape(n_model, 1, -1)  # n_model * 1 * n_test_sample
