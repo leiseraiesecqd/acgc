@@ -145,7 +145,7 @@ class DeepStack:
             print('------------------------------------------------------')
             print('Stacking Reused Features...')
             x_test = np.concatenate((x_test_inputs, x_test_reuse), axis=1)  # n_sample * (n_feature + n_reuse)
-            x_g_test_inputs= x_g_test_inputs[:, -1]
+            x_g_test_inputs = x_g_test_inputs[:, -1]
             x_g_test_inputs = np.column_stack((x_test, x_g_test_inputs))       # n_sample * (n_feature + n_reuse + 1)
 
         n_cv = int(n_era // n_valid)
@@ -738,6 +738,9 @@ class StackTree:
         self.final_layer_cv = hyper_params['final_n_cv']
         self.cv_seed = hyper_params['cv_seed']
         self.train_seed = hyper_params['train_seed']
+        self.models_l1 = hyper_params['models_l1']
+        self.models_l2 = hyper_params['models_l2']
+        self.model_final = hyper_params['model_final']
         self.num_boost_round_lgb_l1 = hyper_params['num_boost_round_lgb_l1']
         self.num_boost_round_xgb_l1 = hyper_params['num_boost_round_xgb_l1']
         self.num_boost_round_lgb_l2 = None
@@ -756,26 +759,24 @@ class StackTree:
                                  self.x_g_test, self.id_test, num_boost_round=self.num_boost_round_lgb_l1)
         XGB_L1 = models.XGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
                                 self.x_test, self.id_test, num_boost_round=self.num_boost_round_xgb_l1)
-        # AB_L1 = models.AdaBoost(self.x_train, self.y_train, self.w_train,
-        #                         self.e_train, self.x_test, self.id_test)
-        # RF_L1 = models.RandomForest(self.x_train, self.y_train, self.w_train,
-        #                             self.e_train, self.x_test, self.id_test)
-        # ET_L1 = models.ExtraTrees(self.x_train, self.y_train, self.w_train,
-        #                           self.e_train, self.x_test, self.id_test)
-        # GB_L1 = models.GradientBoosting(self.x_train, self.y_train, self.w_train,
-        #                                 self.e_train, self.x_test, self.id_test)
+        AB_L1 = models.AdaBoost(self.x_train, self.y_train, self.w_train,
+                                self.e_train, self.x_test, self.id_test)
+        RF_L1 = models.RandomForest(self.x_train, self.y_train, self.w_train,
+                                    self.e_train, self.x_test, self.id_test)
+        ET_L1 = models.ExtraTrees(self.x_train, self.y_train, self.w_train,
+                                  self.e_train, self.x_test, self.id_test)
+        GB_L1 = models.GradientBoosting(self.x_train, self.y_train, self.w_train,
+                                        self.e_train, self.x_test, self.id_test)
         DNN_L1 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
                                            self.e_train, self.x_test, self.id_test, self.dnn_l1_params)
 
-        models_l1 = [
-                     LGB_L1,
-                     XGB_L1,
-                     # AB_L1,
-                     # RF_L1,
-                     # ET_L1,
-                     # GB_L1,
-                     DNN_L1
-                     ]
+        layer1_models = {'lgb': LGB_L1, 'xgb': XGB_L1, 'ab': AB_L1,
+                         'rf': RF_L1, 'et': ET_L1, 'gb': GB_L1, 'dnn': DNN_L1}
+        models_l1 = []
+
+        for model in layer1_models.keys():
+            if model in self.models_l1:
+                models_l1.append(layer1_models[model])
 
         return models_l1
 
@@ -787,10 +788,12 @@ class StackTree:
         DNN_L2 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
                                            self.e_train, self.x_test, self.id_test, self.dnn_l2_params)
 
-        models_l2 = [
-                     LGB_L2,
-                     DNN_L2
-                     ]
+        layer2_models = {'lgb': LGB_L2, 'dnn': DNN_L2}
+        models_l2 = []
+
+        for model in layer2_models.keys():
+            if model in self.models_l2:
+                models_l2.append(layer2_models[model])
 
         return models_l2
 
@@ -800,10 +803,14 @@ class StackTree:
         LGB_END = models.LightGBM(blender_x_g_tree, self.y_train, self.w_train,  self.e_train,
                                   blender_test_g_tree, self.id_test, num_boost_round=self.num_boost_round_final)
 
-        # DNN_END = models.DeepNeuralNetworks(blender_x_tree, self.y_train,  self.w_train,  self.e_train,
-        #                                     blender_test_tree,  self.id_test, params)
+        DNN_END = models.DeepNeuralNetworks(blender_x_tree, self.y_train,  self.w_train,  self.e_train,
+                                            blender_test_tree,  self.id_test, params)
 
-        return LGB_END
+        final_models = {'lgb': LGB_END, 'dnn': DNN_END}
+
+        model_final = final_models[self.model_final]
+
+        return model_final
 
     def save_predict(self, pred_path, test_outputs):
 
