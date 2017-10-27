@@ -521,19 +521,21 @@ class CrossValidation:
                     x_train = x[train_index]
                     y_train = y[train_index]
                     w_train = w[train_index]
+                    e_train = e[train_index]
                     x_g_train = x_g[train_index]
 
                     # Validation data
                     x_valid = x[valid_index]
                     y_valid = y[valid_index]
                     w_valid = w[valid_index]
+                    e_valid = e[valid_index]
                     x_g_valid = x_g[valid_index]
 
                     self.trained_cv.append(set(valid_era))
 
                     if return_train_index is True:
-                        yield x_train, y_train, w_train, x_g_train, x_valid, \
-                              y_valid, w_valid, x_g_valid, train_index, valid_index, valid_era
+                        yield x_train, y_train, w_train, e_train, x_g_train, x_valid, \
+                              y_valid, w_valid, e_valid, x_g_valid, train_index, valid_index, valid_era
                     else:
                         yield x_train, y_train, w_train, x_g_train, x_valid, \
                               y_valid, w_valid, x_g_valid, valid_index, valid_era
@@ -572,19 +574,21 @@ class CrossValidation:
                         x_train = x[train_index]
                         y_train = y[train_index]
                         w_train = w[train_index]
+                        e_train = e[train_index]
                         x_g_train = x_g[train_index]
 
                         # Validation data
                         x_valid = x[valid_index]
                         y_valid = y[valid_index]
                         w_valid = w[valid_index]
+                        e_valid = e[valid_index]
                         x_g_valid = x_g[valid_index]
 
                         self.trained_cv.append(set(valid_era))
 
                         if return_train_index is True:
-                            yield x_train, y_train, w_train, x_g_train, x_valid, \
-                                  y_valid, w_valid, x_g_valid, train_index, valid_index, valid_era
+                            yield x_train, y_train, w_train, e_train, x_g_train, x_valid, \
+                                  y_valid, w_valid, e_valid, x_g_valid, train_index, valid_index, valid_era
                         else:
                             yield x_train, y_train, w_train, x_g_train, x_valid, \
                                   y_valid, w_valid, x_g_valid, valid_index, valid_era
@@ -616,19 +620,21 @@ class CrossValidation:
                         x_train = x[train_index]
                         y_train = y[train_index]
                         w_train = w[train_index]
+                        e_train = e[train_index]
                         x_g_train = x_g[train_index]
 
                         # Validation data
                         x_valid = x[valid_index]
                         y_valid = y[valid_index]
                         w_valid = w[valid_index]
+                        e_valid = e[valid_index]
                         x_g_valid = x_g[valid_index]
 
                         self.trained_cv.append(set(valid_era))
 
                         if return_train_index is True:
-                            yield x_train, y_train, w_train, x_g_train, x_valid, \
-                                  y_valid, w_valid, x_g_valid, train_index, valid_index, valid_era
+                            yield x_train, y_train, w_train, e_train, x_g_train, x_valid, \
+                                  y_valid, w_valid, e_valid, x_g_valid, train_index, valid_index, valid_era
                         else:
                             yield x_train, y_train, w_train, x_g_train, x_valid, \
                                   y_valid, w_valid, x_g_valid, valid_index, valid_era

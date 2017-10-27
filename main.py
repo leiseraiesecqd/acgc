@@ -1557,6 +1557,56 @@ class ModelStacking:
 
         STK.stack()
 
+    def prejudge_stack_tree_train(self, train_seed, cv_seed, idx=None):
+        """
+            Training model using StackTree model
+        """
+        if self.save_auto_train_results is True:
+            auto_train_path = auto_train_pred_path
+        else:
+            auto_train_path = None
+
+        # useful_feature_list_l1 = [2, 7, 8, 10, 15, 23, 26, 32, 51, 53, 64, 69, 70, 73, 77, 86]
+        useful_feature_list_l1 = None
+        reuse_feature_list_final = range(87)
+
+        era_list_n = preprocess.negative_era_list
+        era_sign_train = np.array([0 if era in era_list_n else 1 for era in self.e_train])
+        era_sign_test = utils.load_pkl_to_data(prejudged_data_path + 'binary_era_sign_test.p')
+
+        hyper_params = {'n_valid': (4, 4),
+                        'n_era': (20, 20),
+                        'n_epoch': (1, 8),
+                        'final_n_cv': 20,
+                        'train_seed': train_seed,
+                        'cv_seed': cv_seed,
+                        'models_l1': ('lgb', 'xgb', 'dnn'),
+                        'models_l2': (),
+                        'model_final': 'lgb',
+                        'num_boost_round_lgb_l1': 108,
+                        'num_boost_round_xgb_l1': 110,
+                        'num_boost_round_final': 88,
+                        'useful_feature_list_l1': useful_feature_list_l1,
+                        'reuse_feature_list_final': reuse_feature_list_final,
+                        'scale_blender_final': True,
+                        'save_epoch_results': False}
+
+        layer1_params = ModelStacking.get_layer1_params(train_seed)
+        # layer2_params = ModelStacking.get_layer2_params(train_seed)
+        final_layer_params = ModelStacking.get_final_layer_params(train_seed)
+
+        layers_params = [layer1_params,
+                         # layer2_params,
+                         final_layer_params]
+
+        STK = stacking.PrejudgeStackTree(self.x_train, self.y_train, self.w_train, self.e_train,
+                                         self.x_test, self.id_test, self.x_g_train, self.x_g_test,
+                                         layers_params=layers_params, hyper_params=hyper_params, options=self.options)
+
+        STK.stack(pred_path=stack_pred_path, auto_train_pred_path=auto_train_path, loss_log_path=loss_log_path,
+                  stack_output_path=stack_output_path, csv_log_path=csv_log_path+'stack_final_',
+                  era_list_n=era_list_n, era_sign_train=era_sign_train, era_sign_test=era_sign_test, csv_idx=idx)
+
     def stack_tree_train(self, train_seed, cv_seed, idx=None):
         """
             Training model using StackTree model
@@ -1654,6 +1704,10 @@ class Training:
         elif model_name == 'stack_t':
             STK = ModelStacking(**model_arg)
             return STK.stack_tree_train
+
+        elif model_name == 'stack_pt':
+            STK = ModelStacking(**model_arg)
+            return STK.prejudge_stack_tree_train
 
         elif model_name == 'prejudge_b':
             PJ = PrejudgeTraining(load_pickle=load_pickle, options=options)
@@ -1871,9 +1925,10 @@ class Training:
         #                         reduced_feature_list=reduced_feature_list, options=options)
         # self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False,
         #                         reduced_feature_list=reduced_feature_list, options=options)
-
         # self.train_single_model('stack_lgb', train_seed, cv_seed, auto_idx=1,
         #                         reduced_feature_list=reduced_feature_list,  options=options)
+        self.train_single_model('stack_pt', train_seed, cv_seed,
+                                reduced_feature_list=reduced_feature_list, options=options)
 
         """
             Auto Grid Search Number of Boost Round
@@ -1906,8 +1961,8 @@ class Training:
             Auto Train
         """
         # self.auto_train('xgb', n_epoch=200, options=options)
-        self.auto_train('stack_t', n_epoch=2, stack_final_epochs=10,
-                        reduced_feature_list=reduced_feature_list, options=options)
+        # self.auto_train('stack_t', n_epoch=2, stack_final_epochs=10,
+        #                 reduced_feature_list=reduced_feature_list, options=options)
 
         print('======================================================')
         print('Global Train Seed: {}'.format(train_seed))

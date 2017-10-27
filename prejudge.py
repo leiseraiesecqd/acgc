@@ -380,8 +380,7 @@ class PrejudgeMultiClass:
         era_prob_test = \
             model.prejudge_train_multiclass(self.pred_path + 'pred_era/', n_splits=self.n_splits_e, n_cv=self.n_cv_e,
                                             n_era=self.n_era, cv_seed=self.cv_seed, use_weight=self.use_weight,
-                                            parameters=self.parameters_e, show_importance=self.show_importance,
-                                            show_accuracy=self.show_accuracy)
+                                            parameters=self.parameters_e, show_importance=self.show_importance)
 
         # Generate Index of Most Probably Era
         era_sign_test = np.argsort(era_prob_test, axis=1)[:, :-4:-1]
