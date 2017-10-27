@@ -284,6 +284,8 @@ class ModelBase(object):
 
         # Print Start Information and Get Model Name
         self.print_start_info()
+        print('Number of Features: ', x_train.shape[1])
+        print('------------------------------------------------------')
 
         # Fitting and Training Model
         clf = self.stack_fit(x_train, y_train, w_train, x_g_train,
@@ -871,6 +873,8 @@ class LightGBM(ModelBase):
                     w_valid, x_g_valid, x_test, x_g_test, parameters, show_importance=False):
 
         self.print_start_info()
+        print('Number of Features: ', x_train.shape[1])
+        print('------------------------------------------------------')
 
         # Training Model
         bst = self.stack_fit(x_train, y_train, w_train, x_g_train,
@@ -1520,8 +1524,9 @@ class DeepNeuralNetworks(ModelBase):
     def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
                     w_valid, x_g_valid, x_test, x_g_test, parameters=None, show_importance=False):
 
-        print('------------------------------------------------------')
-        print('Training Deep Neural Network...')
+        # Print Start Information
+        self.print_start_info()
+        print('Number of Features: ', x_train.shape[1])
         print('------------------------------------------------------')
 
         # Build Network
