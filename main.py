@@ -1288,7 +1288,7 @@ class ModelStacking:
                       'metric': 'binary_logloss',
                       'num_threads': -1,
                       'verbosity': 1,
-                      'early_stopping_rounds': 50,          # default=0
+                      'early_stopping_rounds': 10000,          # default=0
                       'seed': train_seed}
 
         # Parameters of XGBoost
@@ -1301,7 +1301,7 @@ class ModelStacking:
                       'colsample_bylevel': 0.7,
                       'lambda': 0,
                       'alpha': 0,
-                      'early_stopping_rounds': 30,
+                      'early_stopping_rounds': 10000,
                       'n_jobs': -1,
                       'objective': 'binary:logistic',
                       'eval_metric': 'logloss',
@@ -1503,7 +1503,7 @@ class ModelStacking:
                       'metric': 'binary_logloss',
                       'num_threads': -1,
                       'verbosity': 1,
-                      'early_stopping_rounds': 50,          # default=0
+                      'early_stopping_rounds': 10000,          # default=0
                       'seed': train_seed}
 
         # Parameters of Deep Neural Network
