@@ -1160,7 +1160,7 @@ class PrejudgeStackLayer:
         print('x_test shape:{}'.format(x_test_inputs.shape))
         print('------------------------------------------------------')
 
-        models_blender = self.models_initializer()
+        models_blender = self.models_initializer(x_train_inputs, x_g_train_inputs, x_test_inputs, x_g_test_inputs)
         n_model = len(models_blender)
 
         blender_valid = np.array([])
