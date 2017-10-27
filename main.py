@@ -1566,8 +1566,8 @@ class ModelStacking:
         else:
             auto_train_path = None
 
-        # useful_feature_list_l1 = [2, 7, 8, 10, 15, 23, 26, 32, 51, 53, 64, 69, 70, 73, 77, 86]
-        useful_feature_list_l1 = None
+        useful_feature_list_l1 = [2, 7, 8, 10, 15, 23, 26, 32, 51, 53, 64, 69, 70, 73, 77, 86]
+        # useful_feature_list_l1 = None
         reuse_feature_list_final = range(87)
 
         hyper_params = {'n_valid': (4, 4),
