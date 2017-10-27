@@ -1659,7 +1659,7 @@ class Training:
         else:
             raise ValueError('Wrong Model Name!')
 
-    def train_single_model(self, model_name, train_seed, cv_seed,
+    def train_single_model(self, model_name, train_seed, cv_seed, auto_idx=None,
                            reduced_feature_list=None, load_pickle=False, options=None):
         """
             Training Single Model
@@ -1669,7 +1669,10 @@ class Training:
                                                  reduced_feature_list=reduced_feature_list, options=options)
 
         # Training Model
-        train_function(train_seed, cv_seed)
+        if model_name == 'stack_lgb':
+            train_function(train_seed, cv_seed, auto_idx=auto_idx)
+        else:
+            train_function(train_seed, cv_seed)
 
     def auto_grid_search(self, model_name=None, parameter_grid_list=None,
                          reduced_feature_list=None, n_epoch=1, grid_search_n_cv=5, options=None):
@@ -1858,9 +1861,12 @@ class Training:
             Train Single Model
         """
         # self.train_single_model('lgb', train_seed, cv_seed,
-        #                         reduced_feature_list=reduced_feature_list,  options=options)
+        #                         reduced_feature_list=reduced_feature_list, options=options)
         # self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False,
         #                         reduced_feature_list=reduced_feature_list, options=options)
+
+        self.train_single_model('stack_lgb', train_seed, cv_seed, auto_idx=1,
+                                reduced_feature_list=reduced_feature_list,  options=options)
 
         """
             Auto Grid Search Number of Boost Round
@@ -1893,8 +1899,8 @@ class Training:
             Auto Train
         """
         # self.auto_train('lgb', n_epoch=200, options=options)
-        self.auto_train('stack_t', n_epoch=10, stack_final_epochs=10,
-                        reduced_feature_list=reduced_feature_list, options=options)
+        # self.auto_train('stack_t', n_epoch=10, stack_final_epochs=10,
+        #                 reduced_feature_list=reduced_feature_list, options=options)
 
         print('======================================================')
         print('Global Train Seed: {}'.format(train_seed))
