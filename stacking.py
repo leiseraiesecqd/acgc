@@ -494,7 +494,7 @@ class StackLayer:
         print('x_test shape:{}'.format(x_test_inputs.shape))
         print('------------------------------------------------------')
 
-        models_blender = self.models_initializer()
+        models_blender = self.models_initializer(x_train_inputs, x_g_train_inputs, x_test_inputs, x_g_test_inputs)
         n_model = len(models_blender)
 
         blender_valid = np.array([])
@@ -1124,22 +1124,22 @@ class StackTree:
         self.save_epoch_results = hyper_params['save_epoch_results']
         self.scale_blender_final = hyper_params['scale_blender_final']
 
-    def layer1_initializer(self):
+    def layer1_initializer(self, x_train, x_g_train, x_test, x_g_test):
 
-        LGB_L1 = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
-                                 self.x_g_test, self.id_test, num_boost_round=self.num_boost_round_lgb_l1)
-        XGB_L1 = models.XGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
-                                self.x_test, self.id_test, num_boost_round=self.num_boost_round_xgb_l1)
-        AB_L1 = models.AdaBoost(self.x_train, self.y_train, self.w_train,
-                                self.e_train, self.x_test, self.id_test)
-        RF_L1 = models.RandomForest(self.x_train, self.y_train, self.w_train,
-                                    self.e_train, self.x_test, self.id_test)
-        ET_L1 = models.ExtraTrees(self.x_train, self.y_train, self.w_train,
-                                  self.e_train, self.x_test, self.id_test)
-        GB_L1 = models.GradientBoosting(self.x_train, self.y_train, self.w_train,
-                                        self.e_train, self.x_test, self.id_test)
-        DNN_L1 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
-                                           self.e_train, self.x_test, self.id_test, self.dnn_l1_params)
+        LGB_L1 = models.LightGBM(x_g_train, self.y_train, self.w_train, self.e_train,
+                                 x_g_test, self.id_test, num_boost_round=self.num_boost_round_lgb_l1)
+        XGB_L1 = models.XGBoost(x_train, self.y_train, self.w_train, self.e_train,
+                                x_test, self.id_test, num_boost_round=self.num_boost_round_xgb_l1)
+        AB_L1 = models.AdaBoost(x_train, self.y_train, self.w_train,
+                                self.e_train, x_test, self.id_test)
+        RF_L1 = models.RandomForest(x_train, self.y_train, self.w_train,
+                                    self.e_train, x_test, self.id_test)
+        ET_L1 = models.ExtraTrees(x_train, self.y_train, self.w_train,
+                                  self.e_train, x_test, self.id_test)
+        GB_L1 = models.GradientBoosting(x_train, self.y_train, self.w_train,
+                                        self.e_train, x_test, self.id_test)
+        DNN_L1 = models.DeepNeuralNetworks(x_train, self.y_train, self.w_train,
+                                           self.e_train, x_test, self.id_test, self.dnn_l1_params)
 
         layer1_models = {'lgb': LGB_L1, 'xgb': XGB_L1, 'ab': AB_L1,
                          'rf': RF_L1, 'et': ET_L1, 'gb': GB_L1, 'dnn': DNN_L1}
@@ -1151,13 +1151,13 @@ class StackTree:
 
         return models_l1
 
-    def layer2_initializer(self):
+    def layer2_initializer(self, x_train, x_g_train, x_test, x_g_test):
 
-        LGB_L2 = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
-                                 self.x_g_test, self.id_test, num_boost_round=self.num_boost_round_lgb_l2)
+        LGB_L2 = models.LightGBM(x_g_train, self.y_train, self.w_train, self.e_train,
+                                 x_g_test, self.id_test, num_boost_round=self.num_boost_round_lgb_l2)
 
-        DNN_L2 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
-                                           self.e_train, self.x_test, self.id_test, self.dnn_l2_params)
+        DNN_L2 = models.DeepNeuralNetworks(x_train, self.y_train, self.w_train, self.e_train,
+                                           x_test, self.id_test, self.dnn_l2_params)
 
         layer2_models = {'lgb': LGB_L2, 'dnn': DNN_L2}
         models_l2 = []
