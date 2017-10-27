@@ -1923,12 +1923,12 @@ class Training:
         """
         # self.train_single_model('lgb', train_seed, cv_seed,
         #                         reduced_feature_list=reduced_feature_list, options=options)
-        # self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False,
-        #                         reduced_feature_list=reduced_feature_list, options=options)
+        self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False,
+                                reduced_feature_list=reduced_feature_list, options=options)
         # self.train_single_model('stack_lgb', train_seed, cv_seed, auto_idx=1,
         #                         reduced_feature_list=reduced_feature_list,  options=options)
-        self.train_single_model('stack_pt', train_seed, cv_seed,
-                                reduced_feature_list=reduced_feature_list, options=options)
+        # self.train_single_model('stack_pt', train_seed, cv_seed,
+        #                         reduced_feature_list=reduced_feature_list, options=options)
 
         """
             Auto Grid Search Number of Boost Round
