@@ -463,7 +463,7 @@ class CrossValidation:
 
                         yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
-    def era_k_fold_for_stack(self, x, y, w, e, x_g, n_valid, n_cv, n_era, seed=None):
+    def era_k_fold_for_stack(self, x, y, w, e, x_g, n_valid, n_cv, n_era, seed=None, return_train_index=False):
 
         if seed is not None:
             np.random.seed(seed)
@@ -531,8 +531,12 @@ class CrossValidation:
 
                     self.trained_cv.append(set(valid_era))
 
-                    yield x_train, y_train, w_train, x_g_train, x_valid, \
-                          y_valid, w_valid, x_g_valid, valid_index, valid_era
+                    if return_train_index is True:
+                        yield x_train, y_train, w_train, x_g_train, x_valid, \
+                              y_valid, w_valid, x_g_valid, train_index, valid_index, valid_era
+                    else:
+                        yield x_train, y_train, w_train, x_g_train, x_valid, \
+                              y_valid, w_valid, x_g_valid, valid_index, valid_era
 
             # n_cv is not an integer multiple of n_valid
             else:
@@ -578,8 +582,12 @@ class CrossValidation:
 
                         self.trained_cv.append(set(valid_era))
 
-                        yield x_train, y_train, w_train, x_g_train, x_valid, \
-                              y_valid, w_valid, x_g_valid, valid_index, valid_era
+                        if return_train_index is True:
+                            yield x_train, y_train, w_train, x_g_train, x_valid, \
+                                  y_valid, w_valid, x_g_valid, train_index, valid_index, valid_era
+                        else:
+                            yield x_train, y_train, w_train, x_g_train, x_valid, \
+                                  y_valid, w_valid, x_g_valid, valid_index, valid_era
 
                     else:
 
@@ -618,8 +626,12 @@ class CrossValidation:
 
                         self.trained_cv.append(set(valid_era))
 
-                        yield x_train, y_train, w_train, x_g_train, x_valid, \
-                              y_valid, w_valid, x_g_valid, valid_index, valid_era
+                        if return_train_index is True:
+                            yield x_train, y_train, w_train, x_g_train, x_valid, \
+                                  y_valid, w_valid, x_g_valid, train_index, valid_index, valid_era
+                        else:
+                            yield x_train, y_train, w_train, x_g_train, x_valid, \
+                                  y_valid, w_valid, x_g_valid, valid_index, valid_era
 
     @staticmethod
     def era_k_fold_with_weight_balance(x, y, w, e, n_valid, n_cv, n_era, seed=None, era_list=None):

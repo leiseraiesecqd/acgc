@@ -494,7 +494,7 @@ class SingleModel:
         parameters = {'application': 'binary',
                       'boosting': 'gbdt',                   # gdbt,rf,dart,goss
                       'learning_rate': 0.003,               # default=0.1
-                      'num_leaves': 83,                     # default=31       <2^(max_depth)
+                      'num_leaves': 85,                     # default=31       <2^(max_depth)
                       'max_depth': 9,                       # default=-1
                       'min_data_in_leaf': 2500,             # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,      # default=1e-3     reduce over-fit
@@ -523,7 +523,7 @@ class SingleModel:
             n_cv = self.grid_search_n_cv
 
         LGB = models.LightGBM(blender_x_g_tree, self.y_train, self.w_train, self.e_train,
-                              blender_test_g_tree, self.id_test, num_boost_round=72)
+                              blender_test_g_tree, self.id_test, num_boost_round=88)
 
         # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
@@ -1486,7 +1486,7 @@ class ModelStacking:
         lgb_params = {'application': 'binary',
                       'boosting': 'gbdt',                   # gdbt,rf,dart,goss
                       'learning_rate': 0.003,               # default=0.1
-                      'num_leaves': 83,                     # default=31       <2^(max_depth)
+                      'num_leaves': 85,                     # default=31       <2^(max_depth)
                       'max_depth': 9,                       # default=-1
                       'min_data_in_leaf': 2500,             # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,      # default=1e-3     reduce over-fit
@@ -1566,8 +1566,8 @@ class ModelStacking:
         else:
             auto_train_path = None
 
-        useful_feature_list_l1 = [2, 7, 8, 10, 15, 23, 26, 32, 51, 53, 64, 69, 70, 73, 77, 86]
-        # useful_feature_list_l1 = None
+        # useful_feature_list_l1 = [2, 7, 8, 10, 15, 23, 26, 32, 51, 53, 64, 69, 70, 73, 77, 86]
+        useful_feature_list_l1 = None
         reuse_feature_list_final = range(87)
 
         hyper_params = {'n_valid': (4, 4),
@@ -1579,9 +1579,9 @@ class ModelStacking:
                         'models_l1': ('lgb', 'xgb', 'dnn'),
                         'models_l2': (),
                         'model_final': 'lgb',
-                        'num_boost_round_lgb_l1': 80,
-                        'num_boost_round_xgb_l1': 30,
-                        'num_boost_round_final': 72,
+                        'num_boost_round_lgb_l1': 108,
+                        'num_boost_round_xgb_l1': 110,
+                        'num_boost_round_final': 88,
                         'useful_feature_list_l1': useful_feature_list_l1,
                         'reuse_feature_list_final': reuse_feature_list_final,
                         'scale_blender_final': True,
@@ -1906,7 +1906,7 @@ class Training:
             Auto Train
         """
         # self.auto_train('xgb', n_epoch=200, options=options)
-        self.auto_train('stack_t', n_epoch=5, stack_final_epochs=10,
+        self.auto_train('stack_t', n_epoch=2, stack_final_epochs=10,
                         reduced_feature_list=reduced_feature_list, options=options)
 
         print('======================================================')

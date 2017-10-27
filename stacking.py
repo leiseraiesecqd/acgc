@@ -758,44 +758,152 @@ class PrejudgeStackLayer:
         self.g_train = x_g_train[:, -1]
         self.g_test = x_g_test[:, -1]
 
+        self.era_list_n = []
+        self.era_sign_train = []
+        self.era_sign_test = []
+
     def save_predict(self, pred_path, test_outputs):
 
         test_prob = np.mean(test_outputs, axis=1)
 
         utils.save_pred_to_csv(pred_path, self.id_test, test_prob)
 
+    @staticmethod
+    def split_train_set_by_era_sign(x_train, x_g_train, y_train, w_train, era_sign_train=None):
+        """
+            Split whole data set to positive and negative set using era sign
+        """
+        era_idx_train_p = []
+        era_idx_train_n = []
+
+        for idx, era_sign in enumerate(era_sign_train):
+            if era_sign == 1:
+                era_idx_train_p.append(idx)
+            else:
+                era_idx_train_n.append(idx)
+
+        np.random.shuffle(era_idx_train_p)
+        np.random.shuffle(era_idx_train_n)
+
+        # Split Set of Train Set
+        x_train_p = x_train[era_idx_train_p]
+        x_g_train_p = x_g_train[era_idx_train_p]
+        y_train_p = y_train[era_idx_train_p]
+        w_train_p = w_train[era_idx_train_p]
+        x_train_n = x_train[era_idx_train_p]
+        x_g_train_n = x_g_train[era_idx_train_p]
+        y_train_n = y_train[era_idx_train_p]
+        w_train_n = w_train[era_idx_train_p]
+
+        return x_train_p, x_g_train_p, y_train_p, w_train_p, x_train_n, x_g_train_n, y_train_n, w_train_n
+
+    @staticmethod
+    def split_valid_set_by_era_sign(x_valid, x_g_valid, y_valid, w_valid, era_sign_valid=None):
+        """
+            Split whole data set to positive and negative set using era sign
+        """
+        era_idx_valid_p = []
+        era_idx_valid_n = []
+
+        for idx, era_sign in enumerate(era_sign_valid):
+            if era_sign == 1:
+                era_idx_valid_p.append(idx)
+            else:
+                era_idx_valid_n.append(idx)
+
+        np.random.shuffle(era_idx_valid_p)
+        np.random.shuffle(era_idx_valid_n)
+
+        # Split Set of Valid Set
+        x_valid_p = x_valid[era_idx_valid_p]
+        x_g_valid_p = x_g_valid[era_idx_valid_p]
+        y_valid_p = y_valid[era_idx_valid_p]
+        w_valid_p = w_valid[era_idx_valid_p]
+        x_valid_n = x_valid[era_idx_valid_p]
+        x_g_valid_n = x_g_valid[era_idx_valid_p]
+        y_valid_n = y_valid[era_idx_valid_p]
+        w_valid_n = w_valid[era_idx_valid_p]
+
+        return x_valid_p, x_g_valid_p, y_valid_p, w_valid_p, x_valid_n, x_g_valid_n, y_valid_n, w_valid_n
+
+    def split_test_set_by_era_sign(self, era_sign_test=None):
+        """
+            Split whole data set to positive and negative set using era sign
+        """
+        era_idx_test_p = []
+        era_idx_test_n = []
+
+        for idx, era_sign in enumerate(era_sign_test):
+            if era_sign == 1:
+                era_idx_test_p.append(idx)
+            else:
+                era_idx_test_n.append(idx)
+
+        np.random.shuffle(era_idx_test_p)
+        np.random.shuffle(era_idx_test_n)
+
+        # Split Set of Test Set
+        x_test_p = self.x_test[era_idx_test_p]
+        x_g_test_p = self.x_test[era_idx_test_p]
+        id_test_p = self.id_test[era_idx_test_p]
+        x_test_n = self.x_test[era_idx_test_n]
+        x_g_test_n = self.x_test[era_idx_test_n]
+        id_test_n = self.id_test[era_idx_test_n]
+
+        return x_test_p, x_g_test_p, id_test_p, era_idx_test_p, x_test_n, x_g_test_n, id_test_n, era_idx_test_n
+
+    # def train_models_by_era_sign(self, x_test_p, x_g_test_p, id_test_p, era_idx_test_p,
+    #                              x_test_n, x_g_test_n, id_test_n, era_idx_test_n):
+    #     """
+    #         Training positive and negative model using data set respectively
+    #     """
+    #     print('======================================================')
+    #     print('Training Models by Era Sign...')
+    #
+    #     print('------------------------------------------------------')
+    #     print('Initializing Model...')
+    #     model_p = self.positive_model_initializer(x_test_p, x_g_test_p, id_test_p)
+    #     model_n = self.negative_model_initializer(x_test_n, x_g_test_n, id_test_n)
+    #
+    #     print('======================================================')
+    #     print('Training Models of Positive Era Sign...')
+    #     prob_test_p = model_p.train(self.pred_path + 'positive/', self.loss_log_path + 'positive/',
+    #                                 csv_log_path=self.csv_log_path, n_valid=self.n_valid_p, n_cv=self.n_cv_p,
+    #                                 n_era=self.n_era_p, train_seed=self.train_seed, cv_seed=self.cv_seed,
+    #                                 parameters=self.parameters_p, return_prob_test=True, era_list=self.era_list_p,
+    #                                 show_importance=self.show_importance, show_accuracy=self.show_accuracy,
+    #                                 save_csv_log=True, csv_idx='prejudge_p')
+    #
+    #     print('======================================================')
+    #     print('Training Models of Negative Era Sign...')
+    #     prob_test_n = model_n.train(self.pred_path + 'negative/', self.loss_log_path + 'negative/',
+    #                                 csv_log_path=self.csv_log_path, n_valid=self.n_valid_n, n_cv=self.n_cv_n,
+    #                                 n_era=self.n_era_n, train_seed=self.train_seed, cv_seed=self.cv_seed,
+    #                                 parameters=self.parameters_n, return_prob_test=True, era_list=self.era_list_n,
+    #                                 show_importance=self.show_importance, show_accuracy=self.show_accuracy,
+    #                                 save_csv_log=True, csv_idx='prejudge_n')
+    #
+    #     prob_test = np.zeros_like(self.id_test, dtype=np.float64)
+    #
+    #     for idx_p, prob_p in zip(era_idx_test_p, prob_test_p):
+    #         prob_test[idx_p] = prob_p
+    #
+    #     for idx_n, prob_n in zip(era_idx_test_n, prob_test_n):
+    #         prob_test[idx_n] = prob_n
+    #
+    #     return prob_test
+
     def models_trainer(self, models_blender, params, x_train, y_train, w_train, x_g_train,
-                       x_valid, y_valid, w_valid, x_g_valid, idx_valid, x_test, x_g_test):
+                       x_valid, y_valid, w_valid, x_g_valid, idx_valid, x_test, x_g_test,
+                       era_sign_train=None, era_sign_valid=None, era_sign_test=None):
 
-        # First raw - idx_valid
-        all_model_valid_prob = [idx_valid]
-        all_model_test_prob = []
-        all_model_losses = []
-
-        n_model = len(models_blender)
-
-        for iter_model, model in enumerate(models_blender):
-            print('------------------------------------------------------')
-            print('Training on model:{}/{}'.format(iter_model + 1, n_model))
-
-            # Training on each model in models_l1 using one cross validation set
-            prob_valid, prob_test, losses = \
-                model.stack_train(x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid,
-                                  x_test, x_g_test, params[iter_model], show_importance=self.show_importance)
-
-            all_model_valid_prob.append(prob_valid)
-            all_model_test_prob.append(prob_test)
-            all_model_losses.append(losses)
-
-        # Blenders of one cross validation set
-        blender_valid_cv = np.array(all_model_valid_prob, dtype=np.float64)  # (n_model+1) * n_valid_sample
-        blender_test_cv = np.array(all_model_test_prob, dtype=np.float64)  # n_model * n_test_sample
-        blender_losses_cv = np.array(all_model_losses, dtype=np.float64)  # n_model * n_loss
-
-        return blender_valid_cv, blender_test_cv, blender_losses_cv
-
-    def models_prejudge_trainer(self, models_blender, params, x_train, y_train, w_train, x_g_train,
-                                x_valid, y_valid, w_valid, x_g_valid, idx_valid, x_test, x_g_test):
+        # Get Split Data
+        x_train_p, x_g_train_p, y_train_p, w_train_p, x_train_n, x_g_train_n, y_train_n, w_train_n = \
+            self.split_train_set_by_era_sign(x_train, x_g_train, y_train, w_train, era_sign_train=era_sign_train)
+        x_valid_p, x_g_valid_p, y_valid_p, w_valid_p, x_valid_n, x_g_valid_n, y_valid_n, w_valid_n = \
+            self.split_valid_set_by_era_sign(x_valid, x_g_valid, y_valid, w_valid, era_sign_valid=era_sign_valid)
+        x_test_p, x_g_test_p, id_test_p, era_idx_test_p, x_test_n, x_g_test_n, id_test_n, era_idx_test_n = \
+            self.split_test_set_by_era_sign(era_sign_test=era_sign_test)
 
         # First row - idx_valid
         all_model_valid_prob = [idx_valid]
@@ -810,8 +918,8 @@ class PrejudgeStackLayer:
 
             # Training on each model in models_l1 using one cross validation set
             prob_valid, prob_test, losses = \
-                model.stack_train(x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid,
-                                  x_test, x_g_test, params[iter_model], show_importance=self.show_importance)
+                model.prejudge_stack_train(x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid,
+                                           x_test, x_g_test, params[iter_model], show_importance=self.show_importance)
 
             all_model_valid_prob.append(prob_valid)
             all_model_test_prob.append(prob_test)
@@ -874,7 +982,7 @@ class PrejudgeStackLayer:
         n_cv = int(self.n_era // self.n_valid)
         counter_cv = 0
 
-        for x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid, \
+        for x_train, y_train, w_train, x_g_train, x_valid, y_valid, w_valid, x_g_valid, train_index, \
             valid_index, valid_era in self.cv_generator.era_k_fold_for_stack(x=x_train_inputs,
                                                                              y=self.y_train,
                                                                              w=self.w_train,
@@ -883,9 +991,13 @@ class PrejudgeStackLayer:
                                                                              n_valid=self.n_valid,
                                                                              n_cv=n_cv,
                                                                              n_era=self.n_era,
-                                                                             seed=self.cv_seed):
+                                                                             seed=self.cv_seed,
+                                                                             return_train_index=True):
 
             counter_cv += 1
+
+            era_sign_valid = self.era_sign_train[train_index]
+            era_sign_train = self.era_sign_train[train_index]
 
             print('======================================================')
             print('Layer: {} | Epoch: {} | CV: {}/{}'.format(self.i_layer, i_epoch, counter_cv, n_cv))
@@ -895,7 +1007,9 @@ class PrejudgeStackLayer:
             blender_valid_cv, blender_test_cv, \
                 blender_losses_cv = self.models_trainer(models_blender, self.params, x_train, y_train,
                                                         w_train, x_g_train, x_valid, y_valid, w_valid,
-                                                        x_g_valid, valid_index, x_test_inputs, x_g_test_inputs)
+                                                        x_g_valid, valid_index, x_test_inputs, x_g_test_inputs,
+                                                        era_sign_train=era_sign_train, era_sign_valid=era_sign_valid,
+                                                        era_sign_test=self.era_sign_test)
 
             # Add blenders of one cross validation set to blenders of all CV
             blender_test_cv = blender_test_cv.reshape(n_model, 1, -1)  # n_model * 1 * n_test_sample

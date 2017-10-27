@@ -152,14 +152,11 @@ class PrejudgeBinary:
         """
             Split whole data set to positive and negative set using era sign
         """
-        if self.cv_seed is not None:
-            np.random.seed(self.cv_seed)
 
         era_idx_test_p = []
         era_idx_test_n = []
 
         for idx, era_sign in enumerate(era_sign_test):
-
             if era_sign == 1:
                 era_idx_test_p.append(idx)
             else:

@@ -384,6 +384,88 @@ class ModelBase(object):
 
         return prob_test_mean
 
+    # def prejudge_stack_train(self, x_train_p, x_g_train_p, y_train_p, w_train_p, x_train_n, x_g_train_n, y_train_n,
+    #                          w_train_n, x_valid_p, x_g_valid_p, y_valid_p, w_valid_p, x_valid_n, x_g_valid_n, y_valid_n,
+    #                          w_valid_n, x_test_p, x_g_test_p, id_test_p, era_idx_test_p, x_test_n,
+    #                          x_g_test_n, id_test_n, era_idx_test_n, train_mode=None,
+    #                          pred_path=None, loss_log_path=None, csv_log_path=None, n_valid=4, n_cv=20, n_era=20,
+    #                          train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
+    #                          show_accuracy=False, save_final_pred=True, save_cv_pred=True, save_final_prob_train=False,
+    #                          save_cv_prob_train=False, save_csv_log=True, csv_idx=None, cv_generator=None,
+    #                          return_prob_test=False, auto_train_pred_path=None):
+    #
+    #     # Check if directories exit or not
+    #     utils.check_dir_model(pred_path, loss_log_path)
+    #
+    #     # Print Start Information and Get Model Name
+    #     self.print_start_info()
+    #
+    #     print('======================================================')
+    #     print('Number of Features: ', x_train_p.shape[1])
+    #     print('------------------------------------------------------')
+    #
+    #     if train_mode == 'positive':
+    #
+    #         # Fitting and Training Model
+    #         clf = self.fit(x_train_p, y_train_p, w_train_p, x_valid_p, y_valid_p, w_valid_p, parameters)
+    #
+    #         # Feature Importance
+    #         if show_importance is True:
+    #             self.get_importance(clf)
+    #
+    #         # Get Probabilities of Validation Set
+    #         prob_valid = self.predict(clf, x_valid_p)
+    #
+    #         # Print LogLoss
+    #         print('------------------------------------------------------')
+    #         print('Validation Set Era: ', valid_era)
+    #         loss_train, loss_valid, loss_train_w, loss_valid_w = \
+    #             self.print_loss(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+    #
+    #         # Print and Get Accuracies of CV
+    #         acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
+    #             utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid, show_accuracy)
+    #
+    #         # Save Losses to File
+    #         utils.save_loss_log(loss_log_path + self.model_name + '_', count, parameters, n_valid, n_cv, valid_era,
+    #                             loss_train, loss_valid, loss_train_w, loss_valid_w, train_seed, cv_seed,
+    #                             acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era)
+    #
+    #         # Save Final Result
+    #         if auto_train_pred_path is None:
+    #             if save_final_pred is True:
+    #                 utils.save_pred_to_csv(pred_path + 'final_results/' + self.model_name + '_',
+    #                                        self.id_test, prob_test)
+    #             if save_final_prob_train is True:
+    #                 utils.save_prob_train_to_csv(pred_path + 'final_prob_train/' + self.model_name + '_',
+    #                                              prob_train, self.y_train)
+    #         elif save_final_pred is True:
+    #             utils.save_pred_to_csv(auto_train_pred_path + self.model_name + '_' + str(csv_idx)
+    #                                    + '_t' + str(train_seed) + '_c' + str(cv_seed) + '_',
+    #                                    self.id_test, prob_test)
+    #
+    #         # Print Total Losses
+    #         utils.print_total_loss(loss_train, loss_valid, loss_train_w, loss_valid_w)
+    #
+    #         # Print and Get Accuracies of CV of All Train Set
+    #         acc_train, acc_train_era = \
+    #             utils.print_and_get_train_accuracy(prob_train, self.y_train, self.e_train, show_accuracy)
+    #
+    #         # Save Final Losses to File
+    #         utils.save_final_loss_log(loss_log_path + self.model_name + '_', parameters, n_valid, n_cv,
+    #                                   loss_train, loss_valid, loss_train_w, loss_valid_w,
+    #                                   train_seed, cv_seed, acc_train, acc_train_era)
+    #
+    #         # Save Loss Log to csv File
+    #         if save_csv_log is True:
+    #             utils.save_final_loss_log_to_csv(csv_idx, csv_log_path + self.model_name + '_',
+    #                                              loss_train_w, loss_valid_w, acc_train,
+    #                                              train_seed, cv_seed, n_valid, n_cv, parameters)
+    #
+    #         # Return Final Result
+    #         if return_prob_test is True:
+    #             return prob_test
+
 
 class LRegression(ModelBase):
     """
