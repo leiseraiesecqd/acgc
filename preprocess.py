@@ -302,7 +302,7 @@ class DataPreProcess:
         self.drop_feature_outliers_by_quantile('feature74', 0.9999, None)
         self.drop_feature_outliers_by_quantile('feature75', None, None)
         self.drop_feature_outliers_by_quantile('feature76', 0.9999, 0.0001)
-        # self.drop_feature_outliers_by_quantile('feature77', None, None)
+        self.drop_feature_outliers_by_quantile('feature77', None, None)
         self.drop_feature_outliers_by_quantile('feature78', 0.9999, 0.0001)
         self.drop_feature_outliers_by_quantile('feature79', 0.9999, 0.0001)
         self.drop_feature_outliers_by_quantile('feature80', 0.9999, 0.0001)
