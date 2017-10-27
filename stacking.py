@@ -461,13 +461,14 @@ class StackLayer:
         # Choose Useful features
         if self.useful_feature_list is not None:
 
-            useful_feature_list_g = self.useful_feature_list.append(-1)
+            useful_feature_list_g = self.useful_feature_list.copy()
+            useful_feature_list_g.append(-1)
             x_train_inputs = x_train_inputs[:, self.useful_feature_list]
             x_g_train_inputs = x_g_train_inputs[:, useful_feature_list_g]
             x_test_inputs = x_test_inputs[:, self.useful_feature_list]
             x_g_test_inputs = x_g_test_inputs[:, useful_feature_list_g]
 
-            print(useful_feature_list_g, x_train_inputs.shape, x_g_train_inputs.shape,
+            print(self.useful_feature_list, useful_feature_list_g, x_train_inputs.shape, x_g_train_inputs.shape,
                   x_test_inputs.shape, x_g_test_inputs.shape)
 
         # Stack Reused Features
