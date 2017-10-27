@@ -90,11 +90,11 @@ class SingleModel:
         if self.grid_search_n_cv is not None:
             n_cv = self.grid_search_n_cv
         else:
-            n_cv = 20
+            n_cv = 10
 
         # Parameters for Train
         model.train(pred_path=self.single_model_pred_path, loss_log_path=self.loss_log_path,
-                    csv_log_path=self.csv_log_path, n_valid=4, n_cv=n_cv, n_era=20, train_seed=self.train_seed,
+                    csv_log_path=self.csv_log_path, n_valid=2, n_cv=n_cv, n_era=20, train_seed=self.train_seed,
                     cv_seed=self.cv_seed, era_list=None, parameters=parameters, csv_idx=idx,
                     cv_generator=cv_generator, auto_train_pred_path=auto_train_path, **self.options)
 
@@ -322,7 +322,7 @@ class SingleModel:
 
         parameters = {'application': 'binary',
                       'boosting': 'gbdt',                   # gdbt,rf,dart,goss
-                      'learning_rate': 0.003,               # default=0.1
+                      'learning_rate': 0.002,               # default=0.1
                       'num_leaves': 83,                     # default=31       <2^(max_depth)
                       'max_depth': 9,                       # default=-1
                       'min_data_in_leaf': 2500,             # default=20       reduce over-fit
@@ -346,7 +346,7 @@ class SingleModel:
         if grid_boost_round is not None:
             num_boost_round = grid_boost_round
         else:
-            num_boost_round = 108
+            num_boost_round = 65
 
         model = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
                                 self.x_g_test, self.id_test, num_boost_round=num_boost_round)
@@ -1960,7 +1960,7 @@ class Training:
         """
             Auto Train
         """
-        # self.auto_train('xgb', n_epoch=200, options=options)
+        self.auto_train('lgb', n_epoch=10000, options=options)
         # self.auto_train('stack_t', n_epoch=2, stack_final_epochs=10,
         #                 reduced_feature_list=reduced_feature_list, options=options)
 

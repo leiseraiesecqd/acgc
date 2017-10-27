@@ -1,7 +1,6 @@
 import models
 import utils
 import time
-import preprocess
 import numpy as np
 from cross_validation import CrossValidation
 
@@ -942,7 +941,6 @@ class PrejudgeStackLayer:
         self.csv_idx = csv_idx
         self.g_train = x_g_train[:, -1]
         self.g_test = x_g_test[:, -1]
-
 
     def save_predict(self, pred_path, test_outputs):
 
