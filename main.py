@@ -2016,7 +2016,8 @@ class Training:
         """
             Auto Train
         """
-        self.auto_train('lgb', n_epoch=10000, train_args=train_args, train_options=train_options)
+        self.auto_train('lgb', n_epoch=10000, reduced_feature_list=reduced_feature_list,
+                        train_args=train_args, train_options=train_options)
         # self.auto_train('stack_t', n_epoch=2, stack_final_epochs=10,
         #                 reduced_feature_list=reduced_feature_list, train_args=train_args, train_options=train_options)
 
