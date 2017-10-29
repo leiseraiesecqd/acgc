@@ -495,11 +495,6 @@ class SingleModel:
         blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree\
             = utils.load_stacked_data(stack_output_path + 'auto_stack_{}_l2_'.format(auto_idx))
 
-        if self.save_auto_train_results is True:
-            auto_train_path = auto_train_pred_path
-        else:
-            auto_train_path = None
-
         g_train = self.x_g_train[:, -1]
         g_test = self.x_g_test[:, -1]
 
@@ -2029,9 +2024,9 @@ class Training:
             Auto Grid Search Parameters
         """
         pg_list = [
-                   ['max_depth', (8, 9, 10)],
-                   ['min_child_weight', (6, 12, 18)],
-                   # ['subsample', (0.8, 0.82, 0.84, 0.86, 0.9, 0.92)],
+                   # ['max_depth', (8, 9, 10)],
+                   # ['min_child_weight', (6, 12, 18)],
+                   ['subsample', (0.8, 0.82, 0.84, 0.86, 0.9, 0.92)],
                    # ['colsample_bytree', (0.7, 0.75, 0.8, 0.85)],
                    # ['colsample_bylevel', (0.6, 0.65, 0.7, 0.75)],
                    # ['gamma', (0.001, 0.01, 0.1, 0.2)],
