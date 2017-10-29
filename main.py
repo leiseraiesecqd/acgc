@@ -90,21 +90,22 @@ class SingleModel:
 
     def train_model(self, model=None, grid_search_tuple=None):
 
-        if self.save_auto_train_results is True:
-            auto_train_path = auto_train_pred_path
-        else:
-            auto_train_path = None
-
         # Grid Search
         if grid_search_tuple is not None:
-            self.train_args['parameters'][grid_search_tuple[0]] = grid_search_tuple[1]
+            param_name = grid_search_tuple[0]
+            param_value = grid_search_tuple[1]
+            self.train_args['parameters'][param_name] = param_value
+        else:
+            param_name = None
+            param_value = None
 
         if self.grid_search_n_cv is not None:
             self.train_args['n_cv'] = self.grid_search_n_cv
 
         # Parameters for Train
         model.train(pred_path=self.pred_path, loss_log_path=self.loss_log_path,
-                    csv_log_path=self.csv_log_path, **self.train_args, **self.train_options, mode=self.mode)
+                    csv_log_path=self.csv_log_path, mode=self.mode, param_name=param_name,
+                    param_value=param_value, **self.train_args, **self.train_options)
 
     def lr_train(self, train_seed, cv_seed, grid_search_tuple=None):
         """
@@ -598,21 +599,22 @@ class ChampionModel:
 
     def train_model(self, model=None, grid_search_tuple=None):
 
-        if self.save_auto_train_results is True:
-            auto_train_path = auto_train_pred_path
-        else:
-            auto_train_path = None
-
         # Grid Search
         if grid_search_tuple is not None:
-            self.train_args['parameters'][grid_search_tuple[0]] = grid_search_tuple[1]
+            param_name = grid_search_tuple[0]
+            param_value = grid_search_tuple[1]
+            self.train_args['parameters'][param_name] = param_value
+        else:
+            param_name = None
+            param_value = None
 
         if self.grid_search_n_cv is not None:
             self.train_args['n_cv'] = self.grid_search_n_cv
 
         # Parameters for Train
         model.train(pred_path=self.single_model_pred_path, loss_log_path=self.loss_log_path,
-                    csv_log_path=self.csv_log_path, **self.train_args, **self.train_options, mode=self.mode)
+                    csv_log_path=self.csv_log_path, mode=self.mode, param_name=param_name,
+                    param_value=param_value, **self.train_args, **self.train_options)
 
     def Christar1991(self, train_seed, cv_seed, grid_search_tuple=None):
         """
@@ -2024,8 +2026,8 @@ class Training:
         pg_list = [
                    # ['max_depth', (8, 9, 10)],
                    # ['min_child_weight', (6, 12, 18)],
-                   # ['subsample', (0.8, 0.82, 0.84, 0.86, 0.9, 0.92)],
-                   ['colsample_bytree', (0.7, 0.75, 0.8, 0.85)],
+                   ['subsample', (0.8, 0.82, 0.84, 0.86, 0.9, 0.92)],
+                   # ['colsample_bytree', (0.7, 0.75, 0.8, 0.85)],
                    # ['colsample_bylevel', (0.6, 0.65, 0.7, 0.75)],
                    # ['gamma', (0.001, 0.01, 0.1, 0.2)],
                    # ['reg_alpha', (0.001, 0.01, 0.1, 1, 10)]
