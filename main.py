@@ -104,8 +104,7 @@ class SingleModel:
 
         # Parameters for Train
         model.train(pred_path=self.pred_path, loss_log_path=self.loss_log_path,
-                    csv_log_path=self.csv_log_path, auto_train_pred_path=auto_train_path,
-                    **self.train_args, **self.train_options, mode=self.mode)
+                    csv_log_path=self.csv_log_path, **self.train_args, **self.train_options, mode=self.mode)
 
     def lr_train(self, train_seed, cv_seed, grid_search_tuple=None):
         """
@@ -613,8 +612,7 @@ class ChampionModel:
 
         # Parameters for Train
         model.train(pred_path=self.single_model_pred_path, loss_log_path=self.loss_log_path,
-                    csv_log_path=self.csv_log_path, auto_train_pred_path=auto_train_path,
-                    **self.train_args, **self.train_options, mode=self.mode)
+                    csv_log_path=self.csv_log_path, **self.train_args, **self.train_options, mode=self.mode)
 
     def Christar1991(self, train_seed, cv_seed, grid_search_tuple=None):
         """
