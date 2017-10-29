@@ -1799,7 +1799,7 @@ class Training:
                     train_seed = random.randint(0, 300)
                     cv_seed = random.randint(0, 300)
                     epoch_start_time = time.time()
-                    train_args['idx'] = parameter_grid[0] + '_' + str(param) + '_' + str(i+1)
+                    train_args['csv_idx'] = parameter_grid[0] + '_' + str(param) + '_' + str(i+1)
     
                     print('======================================================')
                     print('Parameter: {}-{} | Epoch: {}/{} | train_seed: {} | cv_seed: {}'
@@ -1861,7 +1861,7 @@ class Training:
             for i, (train_seed, cv_seed) in enumerate(zip(train_seed_list, cv_seed_list)):
 
                 epoch_start_time = time.time()
-                train_args['idx'] = 'boost_round_' + str(num_boost_round) + '_' + str(i + 1)
+                train_args['csv_idx'] = 'boost_round_' + str(num_boost_round) + '_' + str(i + 1)
 
                 print('======================================================')
                 print('num_boost_round: {} | Epoch: {}/{} | train_seed: {} | cv_seed: {}'
@@ -1897,7 +1897,7 @@ class Training:
     
             train_seed = random.randint(0, 500)
             cv_seed = random.randint(0, 500)
-            train_args['idx'] = i + 1
+            train_args['csv_idx'] = i + 1
             epoch_start_time = time.time()
     
             print('======================================================')
