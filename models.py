@@ -45,6 +45,7 @@ class ModelBase(object):
         self.indices = np.array([])
         self.std = np.array([])
         self.model_name = ''
+        self.num_boost_round = 0
 
     @staticmethod
     def get_clf(parameters):
@@ -147,10 +148,13 @@ class ModelBase(object):
 
         return loss_train, loss_valid, loss_train_w, loss_valid_w
 
-    def save_csv_log(self, mode, csv_log_path, param_name, param_value, csv_idx, loss_train_w_mean,
-                     loss_valid_w_mean, acc_train, train_seed, cv_seed, n_valid, n_cv, parameters):
+    def save_csv_log(self, mode, csv_log_path, param_name, param_value, csv_idx, loss_train_w_mean, loss_valid_w_mean,
+                     acc_train, train_seed, cv_seed, n_valid, n_cv, parameters, file_name_params=None):
+
+
 
         if mode == 'auto_grid_search':
+
             csv_log_path += self.model_name + '/'
             utils.check_dir([csv_log_path])
             csv_log_path += self.model_name + '_' + param_name + '/'
@@ -159,36 +163,52 @@ class ModelBase(object):
             utils.save_final_loss_log_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
                                              acc_train, train_seed, cv_seed, n_valid, n_cv, parameters)
             csv_log_path += str(param_value) + '_'
+
             utils.save_final_loss_log_to_csv(csv_idx, csv_log_path, loss_train_w_mean,
                                              loss_valid_w_mean, acc_train, train_seed,
                                              cv_seed, n_valid, n_cv, parameters)
         elif mode == 'auto_train':
+
             csv_log_path += self.model_name + '/'
             utils.check_dir([csv_log_path])
             csv_log_path += self.model_name + '_'
-            for p_name, p_value in parameters.items():
-                csv_log_path += str(p_value) + '_'
+            if file_name_params is not None:
+                for p_name in file_name_params:
+                    csv_log_path += str(parameters[p_name]) + '_'
+            else:
+                for p_name, p_value in parameters.items():
+                    csv_log_path += str(p_value) + '_'
+
             utils.save_final_loss_log_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
                                              acc_train, train_seed, cv_seed, n_valid, n_cv, parameters)
         else:
+
             utils.save_final_loss_log_to_csv(csv_idx, csv_log_path + self.model_name + '_log',
                                              loss_train_w_mean, loss_valid_w_mean, acc_train,
                                              train_seed, cv_seed, n_valid, n_cv, parameters)
 
-    def save_final_pred(self, mode, save_final_pred, prob_test_mean,
-                        pred_path, parameters, csv_idx, train_seed, cv_seed):
+    def save_final_pred(self, mode, save_final_pred, prob_test_mean, pred_path,
+                        parameters, csv_idx, train_seed, cv_seed, file_name_params=None):
 
         if mode == 'auto_train':
+
             pred_path += self.model_name + '/'
             utils.check_dir([pred_path])
-            parms = '_'
-            for p_name, p_value in parameters.items():
-                parms += str(p_value) + '_'
-            pred_path += self.model_name + parms + 'log/'
+            params = '_'
+            if file_name_params is not None:
+                for p_name in file_name_params:
+                    params += str(parameters[p_name]) + '_'
+            else:
+                for p_name, p_value in parameters.items():
+                    params += str(p_value) + '_'
+            pred_path += self.model_name + params + 'results/'
             utils.check_dir([pred_path])
             pred_path += self.model_name + '_' + str(csv_idx) + '_t' + str(train_seed) + '_c' + str(cv_seed) + '_'
+
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test_mean)
+
         elif save_final_pred is True:
+
             utils.save_pred_to_csv(pred_path + 'final_results/' + self.model_name + '_',
                                    self.id_test, prob_test_mean)
 
@@ -196,7 +216,7 @@ class ModelBase(object):
               train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
               show_accuracy=False, save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True,
               save_final_prob_train=False, save_csv_log=True, csv_idx=None, cv_generator=None,
-              return_prob_test=False, mode=None, param_name=None, param_value=None):
+              return_prob_test=False, mode=None, param_name=None, param_value=None, file_name_params=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -288,10 +308,14 @@ class ModelBase(object):
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
+        # Save 'num_boost_round'
+        if self.model_name in ['xgb', 'lgb']:
+            parameters['num_boost_round'] = self.num_boost_round
+
         # Save Final Result
         if save_final_pred is True:
-            self.save_final_pred(mode, save_final_pred, prob_test_mean,
-                                 pred_path, parameters, csv_idx, train_seed, cv_seed)
+            self.save_final_pred(mode, save_final_pred, prob_test_mean, pred_path,
+                                 parameters, csv_idx, train_seed, cv_seed, file_name_params=file_name_params)
 
         # Save Final prob_train
         if save_final_prob_train is True:
@@ -312,8 +336,9 @@ class ModelBase(object):
 
         # Save Loss Log to csv File
         if save_csv_log is True:
-            self.save_csv_log(mode, csv_log_path, param_name, param_value, csv_idx, loss_train_w_mean,
-                              loss_valid_w_mean, acc_train, train_seed, cv_seed, n_valid, n_cv, parameters)
+            self.save_csv_log(mode, csv_log_path, param_name, param_value, csv_idx,
+                              loss_train_w_mean, loss_valid_w_mean, acc_train, train_seed,
+                              cv_seed, n_valid, n_cv, parameters, file_name_params=file_name_params)
 
         # Return Final Result
         if return_prob_test is True:
@@ -1323,7 +1348,7 @@ class DeepNeuralNetworks(ModelBase):
               train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
               show_accuracy=False, save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True,
               save_final_prob_train=False, save_csv_log=True, csv_idx=None, cv_generator=None,
-              return_prob_test=False, mode=None, param_name=None, param_value=None):
+              return_prob_test=False, mode=None, param_name=None, param_value=None, file_name_params=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -1509,8 +1534,8 @@ class DeepNeuralNetworks(ModelBase):
 
             # Save Final Result
             if save_final_pred is True:
-                self.save_final_pred(mode, save_final_pred, prob_test_mean,
-                                     pred_path, parameters, csv_idx, train_seed, cv_seed)
+                self.save_final_pred(mode, save_final_pred, prob_test_mean, pred_path,
+                                     parameters, csv_idx, train_seed, cv_seed, file_name_params=file_name_params)
 
             # Save Final prob_train
             if save_final_prob_train is True:
@@ -1531,8 +1556,9 @@ class DeepNeuralNetworks(ModelBase):
 
             # Save Loss Log to csv File
             if save_csv_log is True:
-                self.save_csv_log(mode, csv_log_path, param_name, param_value, csv_idx, loss_train_w_mean,
-                                  loss_valid_w_mean, acc_train, train_seed, cv_seed, n_valid, n_cv, parameters)
+                self.save_csv_log(mode, csv_log_path, param_name, param_value, csv_idx,
+                                  loss_train_w_mean, loss_valid_w_mean, acc_train, train_seed,
+                                  cv_seed, n_valid, n_cv, parameters, file_name_params=file_name_params)
 
             # Return Final Result
             if return_prob_test is True:

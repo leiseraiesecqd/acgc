@@ -55,7 +55,7 @@ class SingleModel:
     def __init__(self, reduced_feature_list=None, save_auto_train_results=True,
                  grid_search_n_cv=None, train_args=None, train_options=None, mode=None):
 
-        self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
+        self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test \
             = utils.load_preprocessed_data(preprocessed_data_path)
         self.x_g_train, self.x_g_test\
             = utils.load_preprocessed_data_g(preprocessed_data_path)
@@ -88,7 +88,7 @@ class SingleModel:
             self.csv_log_path = csv_log_path + 'single_'
             self.pred_path = single_model_pred_path
 
-    def train_model(self, model=None, grid_search_tuple=None):
+    def train_model(self, model=None, grid_search_tuple=None, file_name_params=None):
 
         # Grid Search
         if grid_search_tuple is not None:
@@ -103,9 +103,9 @@ class SingleModel:
             self.train_args['n_cv'] = self.grid_search_n_cv
 
         # Parameters for Train
-        model.train(pred_path=self.pred_path, loss_log_path=self.loss_log_path,
-                    csv_log_path=self.csv_log_path, mode=self.mode, param_name=param_name,
-                    param_value=param_value, **self.train_args, **self.train_options)
+        model.train(pred_path=self.pred_path, loss_log_path=self.loss_log_path, csv_log_path=self.csv_log_path,
+                    mode=self.mode, param_name=param_name, param_value=param_value,
+                    file_name_params=file_name_params, **self.train_args, **self.train_options)
 
     def lr_train(self, train_seed, cv_seed, grid_search_tuple=None):
         """
@@ -285,6 +285,9 @@ class SingleModel:
                       'eval_metric': 'logloss',
                       'seed': train_seed}
 
+        file_name_params = ['num_boost_round', 'eta', 'max_depth', 'subsample',
+                            'colsample_bytree', 'colsample_bylevel', 'gamma']
+
         self.train_args['parameters'] = parameters
         self.train_args['cv_generator'] = None
         self.train_args['train_seed'] = train_seed
@@ -298,7 +301,7 @@ class SingleModel:
         model = models.XGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
                                self.x_test, self.id_test, num_boost_round=num_boost_round)
 
-        self.train_model(model=model, grid_search_tuple=grid_search_tuple)
+        self.train_model(model=model, grid_search_tuple=grid_search_tuple, file_name_params=file_name_params)
 
     def xgb_train_sklearn(self, train_seed, cv_seed, grid_search_tuple=None):
         """
@@ -366,6 +369,9 @@ class SingleModel:
         # cv_generator = CrossValidation.random_split_with_weight
         # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
+        file_name_params = ['num_boost_round', 'learning_rate', 'num_leaves', 'max_depth',
+                            'feature_fraction', 'bagging_fraction', 'bagging_freq', 'min_data_in_bin']
+
         self.train_args['parameters'] = parameters
         self.train_args['cv_generator'] = None
         self.train_args['train_seed'] = train_seed
@@ -379,7 +385,7 @@ class SingleModel:
         model = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
                                 self.x_g_test, self.id_test, num_boost_round=num_boost_round)
 
-        self.train_model(model=model, grid_search_tuple=grid_search_tuple)
+        self.train_model(model=model, grid_search_tuple=grid_search_tuple, file_name_params=file_name_params)
 
     def lgb_train_sklearn(self, train_seed, cv_seed, grid_search_tuple=None):
         """
@@ -2024,11 +2030,11 @@ class Training:
             Auto Grid Search Parameters
         """
         pg_list = [
-                   # ['max_depth', (8, 9, 10)],
-                   # ['min_child_weight', (6, 12, 18)],
+                   ['max_depth', (8, 9, 10)],
+                   ['min_child_weight', (6, 12, 18)],
                    # ['subsample', (0.8, 0.82, 0.84, 0.86, 0.9, 0.92)],
                    # ['colsample_bytree', (0.7, 0.75, 0.8, 0.85)],
-                   ['colsample_bylevel', (0.6, 0.65, 0.7, 0.75)],
+                   # ['colsample_bylevel', (0.6, 0.65, 0.7, 0.75)],
                    # ['gamma', (0.001, 0.01, 0.1, 0.2)],
                    # ['reg_alpha', (0.001, 0.01, 0.1, 1, 10)]
                    # ['reg_lambda', (0.001, 0.01, 0.1, 1, 10)]
