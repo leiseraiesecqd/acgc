@@ -2033,7 +2033,7 @@ class Training:
                    # ['reg_alpha', (0.001, 0.01, 0.1, 1, 10)]
                    # ['reg_lambda', (0.001, 0.01, 0.1, 1, 10)]
                    ]
-        self.auto_grid_search('lgb', parameter_grid_list=pg_list, n_epoch=200,
+        self.auto_grid_search('xgb', parameter_grid_list=pg_list, n_epoch=200,
                               reduced_feature_list=reduced_feature_list,
                               grid_search_n_cv=5, train_args=train_args, train_options=train_options)
 
