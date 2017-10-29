@@ -155,6 +155,9 @@ class ModelBase(object):
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
 
+        if csv_idx is None:
+            csv_idx = self.model_name
+
         # Print Start Information and Get Model Name
         self.print_start_info()
 
@@ -391,6 +394,9 @@ class ModelBase(object):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
+
+        if csv_idx is None:
+            csv_idx = self.model_name
 
         # Print Start Information and Get Model Name
         self.print_start_info()
@@ -1279,6 +1285,9 @@ class DeepNeuralNetworks(ModelBase):
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
 
+        if csv_idx is None:
+            csv_idx = self.model_name
+
         # Build Network
         tf.reset_default_graph()
         train_graph = tf.Graph()
@@ -1607,6 +1616,9 @@ class DeepNeuralNetworks(ModelBase):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
+
+        if csv_idx is None:
+            csv_idx = self.model_name
 
         # Print Start Information and Get Model Name
         self.print_start_info()

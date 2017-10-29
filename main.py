@@ -50,7 +50,8 @@ class SingleModel:
     """
         Train single model
     """
-    def __init__(self, reduced_feature_list=None, save_auto_train_results=True, grid_search_n_cv=None, options=None):
+    def __init__(self, reduced_feature_list=None, save_auto_train_results=True,
+                 grid_search_n_cv=None, train_args=None, train_options=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
             = utils.load_preprocessed_data(preprocessed_data_path)
@@ -70,13 +71,12 @@ class SingleModel:
         self.single_model_pred_path = single_model_pred_path
         self.loss_log_path = loss_log_path
         self.csv_log_path = csv_log_path + 'single_'
-        self.train_seed = 0
-        self.cv_seed = 0
         self.save_auto_train_results = save_auto_train_results
         self.grid_search_n_cv = grid_search_n_cv
-        self.options = options
+        self.train_args = train_args
+        self.train_options = train_options
 
-    def train_model(self, model=None, parameters=None, idx=None, cv_generator=None, grid_search_tuple=None):
+    def train_model(self, model=None, grid_search_tuple=None):
 
         if self.save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
@@ -85,27 +85,20 @@ class SingleModel:
 
         # Grid Search
         if grid_search_tuple is not None:
-            parameters[grid_search_tuple[0]] = grid_search_tuple[1]
+            self.train_args['parameters'][grid_search_tuple[0]] = grid_search_tuple[1]
 
         if self.grid_search_n_cv is not None:
-            n_cv = self.grid_search_n_cv
-        else:
-            n_cv = 10
+            self.train_args['n_cv'] = self.grid_search_n_cv
 
         # Parameters for Train
-        model.train(pred_path=self.single_model_pred_path, loss_log_path=self.loss_log_path,
-                    csv_log_path=self.csv_log_path, n_valid=2, n_cv=n_cv, n_era=20, train_seed=self.train_seed,
-                    cv_seed=self.cv_seed, era_list=None, parameters=parameters, csv_idx=idx,
-                    cv_generator=cv_generator, auto_train_pred_path=auto_train_path, **self.options)
+        model.train(pred_path=self.single_model_pred_path, loss_log_path=self.loss_log_path, 
+                    csv_log_path=self.csv_log_path, auto_train_pred_path=auto_train_path,
+                    **self.train_args, **self.train_options)
 
-    def lr_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+    def lr_train(self, train_seed, cv_seed, grid_search_tuple=None):
         """
             Logistic Regression
         """
-
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
-
         parameters = {'C': 1.0,
                       'class_weight': None,
                       'dual': False,
@@ -122,17 +115,19 @@ class SingleModel:
                       'verbose': 1,
                       'warm_start': False}
 
+        self.train_args['parameters'] = parameters
+        self.train_args['cv_generator'] = None
+        self.train_args['train_seed'] = train_seed
+        self.train_args['cv_seed'] = cv_seed
+
         model = models.LRegression(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        self.train_model(model=model, grid_search_tuple=grid_search_tuple)
 
-    def rf_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+    def rf_train(self, train_seed, cv_seed, grid_search_tuple=None):
         """
             Random Forest
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
-
         parameters = {'bootstrap': True,
                       'class_weight': None,
                       'criterion': 'gini',
@@ -150,17 +145,19 @@ class SingleModel:
                       'verbose': 2,
                       'warm_start': False}
 
+        self.train_args['parameters'] = parameters
+        self.train_args['cv_generator'] = None
+        self.train_args['train_seed'] = train_seed
+        self.train_args['cv_seed'] = cv_seed
+
         model = models.RandomForest(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        self.train_model(model=model, grid_search_tuple=grid_search_tuple)
 
-    def et_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+    def et_train(self, train_seed, cv_seed, grid_search_tuple=None):
         """
             Extra Trees
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
-
         parameters = {'bootstrap': True,
                       'class_weight': None,
                       'criterion': 'gini',
@@ -178,17 +175,19 @@ class SingleModel:
                       'verbose': 2,
                       'warm_start': False}
 
+        self.train_args['parameters'] = parameters
+        self.train_args['cv_generator'] = None
+        self.train_args['train_seed'] = train_seed
+        self.train_args['cv_seed'] = cv_seed
+
         model = models.ExtraTrees(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        self.train_model(model=model, grid_search_tuple=grid_search_tuple)
 
-    def ab_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+    def ab_train(self, train_seed, cv_seed, grid_search_tuple=None):
         """
             AdaBoost
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
-
         et_parameters = {'bootstrap': True,
                          'class_weight': None,
                          'criterion': 'gini',
@@ -214,17 +213,19 @@ class SingleModel:
                       'n_estimators': 9,
                       'random_state': train_seed}
 
+        self.train_args['parameters'] = parameters
+        self.train_args['cv_generator'] = None
+        self.train_args['train_seed'] = train_seed
+        self.train_args['cv_seed'] = cv_seed
+
         model = models.AdaBoost(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        self.train_model(model=model, grid_search_tuple=grid_search_tuple)
 
-    def gb_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+    def gb_train(self, train_seed, cv_seed, grid_search_tuple=None):
         """
             GradientBoosting
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
-
         parameters = {'criterion': 'friedman_mse',
                       'init': None,
                       'learning_rate': 0.05,
@@ -244,17 +245,19 @@ class SingleModel:
                       'verbose': 2,
                       'warm_start': False}
 
+        self.train_args['parameters'] = parameters
+        self.train_args['cv_generator'] = None
+        self.train_args['train_seed'] = train_seed
+        self.train_args['cv_seed'] = cv_seed
+
         model = models.GradientBoosting(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        self.train_model(model=model, grid_search_tuple=grid_search_tuple)
 
-    def xgb_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None, grid_boost_round=None):
+    def xgb_train(self, train_seed, cv_seed, grid_search_tuple=None, grid_boost_round=None):
         """
             XGBoost
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
-
         parameters = {'eta': 0.003,
                       'gamma': 0,                       # 如果loss function小于设定值，停止产生子节点
                       'max_depth': 9,                   # default=6
@@ -270,6 +273,11 @@ class SingleModel:
                       'eval_metric': 'logloss',
                       'seed': train_seed}
 
+        self.train_args['parameters'] = parameters
+        self.train_args['cv_generator'] = None
+        self.train_args['train_seed'] = train_seed
+        self.train_args['cv_seed'] = cv_seed
+
         if grid_boost_round is not None:
             num_boost_round = grid_boost_round
         else:
@@ -278,15 +286,12 @@ class SingleModel:
         model = models.XGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
                                self.x_test, self.id_test, num_boost_round=num_boost_round)
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        self.train_model(model=model, grid_search_tuple=grid_search_tuple)
 
-    def xgb_train_sklearn(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+    def xgb_train_sklearn(self, train_seed, cv_seed, grid_search_tuple=None):
         """
             XGBoost using scikit-learn module
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
-
         parameters = {'max_depth': 3,
                       'learning_rate': 0.1,
                       'n_estimators': 100,
@@ -309,17 +314,19 @@ class SingleModel:
                       'seed': train_seed,
                       'missing': None}
 
+        self.train_args['parameters'] = parameters
+        self.train_args['cv_generator'] = None
+        self.train_args['train_seed'] = train_seed
+        self.train_args['cv_seed'] = cv_seed
+
         model = models.SKLearnXGBoost(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        self.train_model(model=model, grid_search_tuple=grid_search_tuple)
 
-    def lgb_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None, grid_boost_round=None):
+    def lgb_train(self, train_seed, cv_seed, grid_search_tuple=None, grid_boost_round=None):
         """
             LightGBM
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
-
         parameters = {'application': 'binary',
                       'boosting': 'gbdt',                   # gdbt,rf,dart,goss
                       'learning_rate': 0.005,               # default=0.1
@@ -342,6 +349,15 @@ class SingleModel:
                       'verbosity': 1,
                       'early_stopping_rounds': 50,          # default=0
                       'seed': train_seed}
+        
+        # cv_generator = CrossValidation.era_k_fold_with_weight_all_random
+        # cv_generator = CrossValidation.random_split_with_weight
+        # cv_generator = CrossValidation.era_k_fold_with_weight_balance
+
+        self.train_args['parameters'] = parameters
+        self.train_args['cv_generator'] = None
+        self.train_args['train_seed'] = train_seed
+        self.train_args['cv_seed'] = cv_seed
 
         if grid_boost_round is not None:
             num_boost_round = grid_boost_round
@@ -351,20 +367,12 @@ class SingleModel:
         model = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
                                 self.x_g_test, self.id_test, num_boost_round=num_boost_round)
 
-        # cv_generator = CrossValidation.era_k_fold_with_weight_all_random
-        # cv_generator = CrossValidation.random_split_with_weight
-        # cv_generator = CrossValidation.era_k_fold_with_weight_balance
+        self.train_model(model=model, grid_search_tuple=grid_search_tuple)
 
-        self.train_model(model=model, parameters=parameters, idx=idx,
-                         cv_generator=None, grid_search_tuple=grid_search_tuple)
-
-    def lgb_train_sklearn(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+    def lgb_train_sklearn(self, train_seed, cv_seed, grid_search_tuple=None):
         """
             LightGBM using scikit-learn module
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
-
         parameters = {'learning_rate': 0.003,
                       'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
                       # 'boosting_type': 'dart',        # Dropouts meet Multiple Additive Regression Trees.
@@ -387,18 +395,20 @@ class SingleModel:
                       'silent': False,
                       'seed': train_seed}
 
+        self.train_args['parameters'] = parameters
+        self.train_args['cv_generator'] = None
+        self.train_args['train_seed'] = train_seed
+        self.train_args['cv_seed'] = cv_seed
+
         model = models.SKLearnLightGBM(self.x_g_train, self.y_train, self.w_train,
                                        self.e_train, self.x_g_test, self.id_test)
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        self.train_model(model=model, grid_search_tuple=grid_search_tuple)
 
-    def cb_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+    def cb_train(self, train_seed, cv_seed, grid_search_tuple=None):
         """
             CatBoost
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
-
         parameters = {'iterations': 50,
                       'learning_rate': 0.003,
                       'depth': 8,                            # Depth of the tree.
@@ -431,17 +441,19 @@ class SingleModel:
                       'eval_metric': 'Logloss',
                       'class_weights': None}
 
+        self.train_args['parameters'] = parameters
+        self.train_args['cv_generator'] = None
+        self.train_args['train_seed'] = train_seed
+        self.train_args['cv_seed'] = cv_seed
+
         model = models.CatBoost(self.x_g_train, self.y_train, self.w_train, self.e_train, self.x_g_test, self.id_test)
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        self.train_model(model=model, grid_search_tuple=grid_search_tuple)
 
-    def dnn_tf_train(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+    def dnn_tf_train(self, train_seed, cv_seed, grid_search_tuple=None):
         """
             Deep Neural Networks
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
-
         # HyperParameters
         parameters = {'version': '1.0',
                       'epochs': 100,
@@ -454,12 +466,17 @@ class SingleModel:
                       'save_path': dnn_checkpoint_path,
                       'log_path': dnn_log_path}
 
+        self.train_args['parameters'] = parameters
+        self.train_args['cv_generator'] = None
+        self.train_args['train_seed'] = train_seed
+        self.train_args['cv_seed'] = cv_seed
+
         model = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
                                           self.e_train, self.x_test, self.id_test, parameters)
 
-        self.train_model(model=model, parameters=parameters, idx=idx, grid_search_tuple=grid_search_tuple)
+        self.train_model(model=model, grid_search_tuple=grid_search_tuple)
 
-    def stack_lgb_train(self, train_seed, cv_seed, idx=None, auto_idx=None, grid_search_tuple=None):
+    def stack_lgb_train(self, train_seed, cv_seed, auto_idx=None, grid_search_tuple=None):
         """
             LightGBM for stack layer
         """
@@ -517,10 +534,13 @@ class SingleModel:
         # Grid Search
         if grid_search_tuple is not None:
             parameters[grid_search_tuple[0]] = grid_search_tuple[1]
-        if self.grid_search_n_cv is None:
-            n_cv = 20
-        else:
-            n_cv = self.grid_search_n_cv
+        if self.grid_search_n_cv is not None:
+            self.train_args['n_cv'] = self.grid_search_n_cv
+
+        self.train_args['parameters'] = parameters
+        self.train_args['cv_generator'] = None
+        self.train_args['train_seed'] = train_seed
+        self.train_args['cv_seed'] = cv_seed
 
         LGB = models.LightGBM(blender_x_g_tree, self.y_train, self.w_train, self.e_train,
                               blender_test_g_tree, self.id_test, num_boost_round=88)
@@ -528,13 +548,13 @@ class SingleModel:
         # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
         LGB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'stack_final_',
-                  n_valid=4, n_cv=n_cv, n_era=20, train_seed=train_seed, cv_seed=cv_seed, parameters=parameters,
-                  csv_idx=idx, auto_train_pred_path=auto_train_path, **self.options)
+                  auto_train_pred_path=auto_train_path)
 
 
 class ChampionModel:
 
-    def __init__(self, reduced_feature_list=None, save_auto_train_results=True, grid_search_n_cv=None, options=None):
+    def __init__(self, reduced_feature_list=None, save_auto_train_results=True,
+                 grid_search_n_cv=None, train_args=None, train_options=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
             = utils.load_preprocessed_data(preprocessed_data_path)
@@ -553,13 +573,12 @@ class ChampionModel:
         self.single_model_pred_path = single_model_pred_path
         self.loss_log_path = loss_log_path
         self.csv_log_path = csv_log_path + 'christ1991_'
-        self.train_seed = 0
-        self.cv_seed = 0
         self.save_auto_train_results = save_auto_train_results
         self.grid_search_n_cv = grid_search_n_cv
-        self.options = options
+        self.train_args = train_args
+        self.train_options = train_options
 
-    def train_model(self, model=None, parameters=None, idx=None, cv_generator=None, grid_search_tuple=None):
+    def train_model(self, model=None, grid_search_tuple=None):
 
         if self.save_auto_train_results is True:
             auto_train_path = auto_train_pred_path
@@ -568,26 +587,20 @@ class ChampionModel:
 
         # Grid Search
         if grid_search_tuple is not None:
-            parameters[grid_search_tuple[0]] = grid_search_tuple[1]
+            self.train_args['parameters'][grid_search_tuple[0]] = grid_search_tuple[1]
 
         if self.grid_search_n_cv is not None:
-            n_cv = self.grid_search_n_cv
-        else:
-            n_cv = 20
+            self.train_args['n_cv'] = self.grid_search_n_cv
 
         # Parameters for Train
         model.train(pred_path=self.single_model_pred_path, loss_log_path=self.loss_log_path,
-                    csv_log_path=self.csv_log_path, n_valid=4, n_cv=n_cv, n_era=20, train_seed=self.train_seed,
-                    cv_seed=self.cv_seed, era_list=None, parameters=parameters, csv_idx=idx,
-                    cv_generator=cv_generator, auto_train_pred_path=auto_train_path, **self.options)
+                    csv_log_path=self.csv_log_path, auto_train_pred_path=auto_train_path,
+                    **self.train_args, **self.train_options)
 
-    def Christ1991(self, train_seed, cv_seed, idx=None, grid_search_tuple=None):
+    def Christar1991(self, train_seed, cv_seed, grid_search_tuple=None):
         """
             Model of week3 champion
         """
-        self.train_seed = train_seed
-        self.cv_seed = cv_seed
-
         parameters = {'application': 'binary',
                       'learning_rate': 0.002,
                       'num_leaves': 128,              # <2^(max_depth)
@@ -603,13 +616,17 @@ class ChampionModel:
                       'metric': 'binary_logloss',
                       'verbosity': 1}
 
+        cv_generator = CrossValidation.era_k_fold_with_weight_all_random
+
+        self.train_args['parameters'] = parameters
+        self.train_args['cv_generator'] = cv_generator
+        self.train_args['train_seed'] = train_seed
+        self.train_args['cv_seed'] = cv_seed
+
         model = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
                                 self.x_g_test, self.id_test, num_boost_round=65)
 
-        cv_generator = CrossValidation.era_k_fold_with_weight_all_random
-
-        self.train_model(model=model, parameters=parameters, idx=idx,
-                         cv_generator=cv_generator, grid_search_tuple=grid_search_tuple)
+        self.train_model(model=model, grid_search_tuple=grid_search_tuple)
 
 
 class SKGridSearch:
@@ -1036,7 +1053,7 @@ class PrejudgeTraining:
     """
         Prejudge - Training by Split Era sign
     """
-    def __init__(self, load_pickle=False, options=None):
+    def __init__(self, reduced_feature_list=None, load_pickle=False, train_options=None):
         
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
             = utils.load_preprocessed_data(preprocessed_data_path)
@@ -1047,8 +1064,16 @@ class PrejudgeTraining:
         self.x_train_n, self.y_train_n, self.w_train_n, self.e_train_n, self.x_g_train_n \
             = utils.load_preprocessed_negative_data(preprocessed_data_path)
         self.load_pickle = load_pickle
-        self.show_importance = options['show_importance']
-        self.show_accuracy = options['show_accuracy']
+        self.show_importance = train_options['show_importance']
+        self.show_accuracy = train_options['show_accuracy']
+        # Choose Useful features
+        if reduced_feature_list is not None:
+            useful_feature_list_g = reduced_feature_list + [-1]
+            reduced_feature_list.extend(list(range(-1, -29, -1)))
+            self.x_train = self.x_train[:, reduced_feature_list]
+            self.x_g_train = self.x_g_train[:, useful_feature_list_g]
+            self.x_test = self.x_test[:, reduced_feature_list]
+            self.x_g_test = self.x_g_test[:, useful_feature_list_g]
 
     @staticmethod
     def get_binary_models_parameters(train_seed):
@@ -1243,7 +1268,7 @@ class ModelStacking:
     """
         Stacking
     """
-    def __init__(self, reduced_feature_list=None, save_auto_train_results=True, options=None):
+    def __init__(self, reduced_feature_list=None, save_auto_train_results=True, train_args=None, train_options=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
             = utils.load_preprocessed_data(preprocessed_data_path)
@@ -1260,7 +1285,8 @@ class ModelStacking:
             self.x_g_test = self.x_g_test[:, useful_feature_list_g]
 
         self.save_auto_train_results = save_auto_train_results
-        self.options = options
+        self.train_args = train_args
+        self.train_options = train_options
 
     @staticmethod
     def get_layer1_params(train_seed):
@@ -1557,7 +1583,7 @@ class ModelStacking:
 
         STK.stack()
 
-    def prejudge_stack_tree_train(self, train_seed, cv_seed, idx=None):
+    def prejudge_stack_tree_train(self, train_seed, cv_seed):
         """
             Training model using StackTree model
         """
@@ -1599,15 +1625,18 @@ class ModelStacking:
                          # layer2_params,
                          final_layer_params]
 
+        idx = self.train_args['idx']
+
         STK = stacking.PrejudgeStackTree(self.x_train, self.y_train, self.w_train, self.e_train,
                                          self.x_test, self.id_test, self.x_g_train, self.x_g_test,
-                                         layers_params=layers_params, hyper_params=hyper_params, options=self.options)
+                                         layers_params=layers_params, hyper_params=hyper_params,
+                                         options=self.train_options)
 
         STK.stack(pred_path=stack_pred_path, auto_train_pred_path=auto_train_path, loss_log_path=loss_log_path,
                   stack_output_path=stack_output_path, csv_log_path=csv_log_path+'stack_final_',
                   era_list_n=era_list_n, era_sign_train=era_sign_train, era_sign_test=era_sign_test, csv_idx=idx)
 
-    def stack_tree_train(self, train_seed, cv_seed, idx=None):
+    def stack_tree_train(self, train_seed, cv_seed):
         """
             Training model using StackTree model
         """
@@ -1645,9 +1674,11 @@ class ModelStacking:
                          # layer2_params,
                          final_layer_params]
 
+        idx = self.train_args['idx']
+
         STK = stacking.StackTree(self.x_train, self.y_train, self.w_train, self.e_train,
                                  self.x_test, self.id_test, self.x_g_train, self.x_g_test,
-                                 layers_params=layers_params, hyper_params=hyper_params, options=self.options)
+                                 layers_params=layers_params, hyper_params=hyper_params, options=self.train_options)
 
         STK.stack(pred_path=stack_pred_path, auto_train_pred_path=auto_train_path, loss_log_path=loss_log_path,
                   stack_output_path=stack_output_path, csv_log_path=csv_log_path+'stack_final_', csv_idx=idx)
@@ -1659,22 +1690,22 @@ class Training:
         pass
 
     @staticmethod
-    def get_train_function(train_mode, model_name, grid_search_n_cv=None,
-                           reduced_feature_list=None, load_pickle=False, options=None):
+    def get_train_function(train_mode, model_name, grid_search_n_cv=None, reduced_feature_list=None,
+                           load_pickle=False, train_args=None, train_options=None):
 
         if train_mode == 'train_single_model':
-            model_arg = {'reduced_feature_list': reduced_feature_list,
-                         'save_auto_train_results': False, 'options': options}
-        elif train_mode == 'auto_grid_search':
-            options['save_final_pred'] = False
             model_arg = {'reduced_feature_list': reduced_feature_list, 'save_auto_train_results': False,
-                         'grid_search_n_cv': grid_search_n_cv, 'options': options}
+                         'train_args': train_args, 'train_options': train_options}
+        elif train_mode == 'auto_grid_search':
+            train_options['save_final_pred'] = False
+            model_arg = {'reduced_feature_list': reduced_feature_list, 'save_auto_train_results': False,
+                         'grid_search_n_cv': grid_search_n_cv, 'train_args': train_args,  'train_options': train_options}
         elif train_mode == 'auto_grid_boost_round':
             model_arg = {'reduced_feature_list': reduced_feature_list, 'save_auto_train_results': True,
-                         'grid_search_n_cv': grid_search_n_cv, 'options': options}
+                         'grid_search_n_cv': grid_search_n_cv, 'train_args': train_args, 'train_options': train_options}
         elif train_mode == 'auto_train':
-            model_arg = {'reduced_feature_list': reduced_feature_list,
-                         'save_auto_train_results': True, 'options': options}
+            model_arg = {'reduced_feature_list': reduced_feature_list, 'save_auto_train_results': True,
+                         'train_args': train_args, 'train_options': train_options}
         else:
             raise ValueError('Wrong Training Mode!')
 
@@ -1699,7 +1730,7 @@ class Training:
 
         elif model_name == 'christ':
             CM = ChampionModel(**model_arg)
-            return CM.Christ1991
+            return CM.Christar1991
 
         elif model_name == 'stack_t':
             STK = ModelStacking(**model_arg)
@@ -1710,24 +1741,28 @@ class Training:
             return STK.prejudge_stack_tree_train
 
         elif model_name == 'prejudge_b':
-            PJ = PrejudgeTraining(load_pickle=load_pickle, options=options)
+            PJ = PrejudgeTraining(reduced_feature_list=reduced_feature_list,
+                                  load_pickle=load_pickle, train_options=train_options)
             return PJ.binary_train
 
         elif model_name == 'prejudge_m':
-            PJ = PrejudgeTraining(load_pickle=load_pickle, options=options)
+            PJ = PrejudgeTraining(reduced_feature_list=reduced_feature_list,
+                                  load_pickle=load_pickle, train_options=train_options)
             return PJ.multiclass_train
 
         else:
             raise ValueError('Wrong Model Name!')
 
-    def train_single_model(self, model_name, train_seed, cv_seed, auto_idx=None,
-                           reduced_feature_list=None, load_pickle=False, options=None):
+    def train_single_model(self, model_name, train_seed, cv_seed, auto_idx=None, reduced_feature_list=None,
+                           load_pickle=False, train_args=None, train_options=None):
         """
             Training Single Model
         """
         # Get Train Function
-        train_function = self.get_train_function('train_single_model', model_name, load_pickle=load_pickle,
-                                                 reduced_feature_list=reduced_feature_list, options=options)
+        train_function = \
+            self.get_train_function('train_single_model', model_name, load_pickle=load_pickle,
+                                    reduced_feature_list=reduced_feature_list, train_args=train_args,
+                                    train_options=train_options)
 
         # Training Model
         if model_name == 'stack_lgb':
@@ -1735,14 +1770,16 @@ class Training:
         else:
             train_function(train_seed, cv_seed)
 
-    def auto_grid_search(self, model_name=None, parameter_grid_list=None,
-                         reduced_feature_list=None, n_epoch=1, grid_search_n_cv=5, options=None):
+    def auto_grid_search(self, model_name=None, parameter_grid_list=None, reduced_feature_list=None,
+                         n_epoch=1, grid_search_n_cv=5, train_args=None, train_options=None):
         """
             Automatically Grid Searching
         """
         # Get Train Function
-        train_function = self.get_train_function('auto_grid_search', model_name, grid_search_n_cv=grid_search_n_cv,
-                                                 reduced_feature_list=reduced_feature_list, options=options)
+        train_function = \
+            self.get_train_function('auto_grid_search', model_name, grid_search_n_cv=grid_search_n_cv,
+                                    reduced_feature_list=reduced_feature_list, train_args=train_args,
+                                    train_options=train_options)
     
         for parameter_grid in parameter_grid_list:
     
@@ -1762,14 +1799,14 @@ class Training:
                     train_seed = random.randint(0, 300)
                     cv_seed = random.randint(0, 300)
                     epoch_start_time = time.time()
-                    idx = parameter_grid[0] + '_' + str(param) + '_' + str(i+1)
+                    train_args['idx'] = parameter_grid[0] + '_' + str(param) + '_' + str(i+1)
     
                     print('======================================================')
                     print('Parameter: {}-{} | Epoch: {}/{} | train_seed: {} | cv_seed: {}'
                           .format(parameter_grid[0], param, i+1, n_epoch, train_seed, cv_seed))
 
                     # Training Model
-                    train_function(train_seed, cv_seed, idx=idx, grid_search_tuple=grid_search_tuple)
+                    train_function(train_seed, cv_seed, grid_search_tuple=grid_search_tuple)
     
                     print('======================================================')
                     print('Auto Training Epoch Done!')
@@ -1789,7 +1826,8 @@ class Training:
             print('======================================================')
 
     def auto_grid_boost_round(self, model_name=None, grid_boost_round_tuple=None, reduced_feature_list=None,
-                              train_seed_list=None, cv_seed_list=None, n_epoch=1, grid_search_n_cv=20, options=None):
+                              train_seed_list=None, cv_seed_list=None, n_epoch=1, grid_search_n_cv=20,
+                              train_args=None, train_options=None):
         """
             Automatically Grid Searching
         """
@@ -1807,8 +1845,10 @@ class Training:
             cv_seed_list = _random_int_list(0, 500, n_epoch)
 
         # Get Train Function
-        train_function = self.get_train_function('auto_grid_boost_round', model_name, grid_search_n_cv=grid_search_n_cv,
-                                                 reduced_feature_list=reduced_feature_list, options=options)
+        train_function = \
+            self.get_train_function('auto_grid_boost_round', model_name, grid_search_n_cv=grid_search_n_cv,
+                                    reduced_feature_list=reduced_feature_list, train_args=train_args,
+                                    train_options=train_options)
 
         print('======================================================')
         print('Auto Grid Searching num_boost_round...')
@@ -1821,14 +1861,14 @@ class Training:
             for i, (train_seed, cv_seed) in enumerate(zip(train_seed_list, cv_seed_list)):
 
                 epoch_start_time = time.time()
-                idx = 'boost_round_' + str(num_boost_round) + '_' + str(i + 1)
+                train_args['idx'] = 'boost_round_' + str(num_boost_round) + '_' + str(i + 1)
 
                 print('======================================================')
                 print('num_boost_round: {} | Epoch: {}/{} | train_seed: {} | cv_seed: {}'
                       .format(num_boost_round, i + 1, n_epoch, train_seed, cv_seed))
 
                 # Training Model
-                train_function(train_seed, cv_seed, idx=idx, grid_boost_round=num_boost_round)
+                train_function(train_seed, cv_seed, grid_boost_round=num_boost_round)
 
                 print('======================================================')
                 print('Auto Training Epoch Done!')
@@ -1842,35 +1882,40 @@ class Training:
             print('Parameter Time: {}s'.format(time.time() - param_start_time))
             print('======================================================')
 
-    def auto_train(self, model_name=None, reduced_feature_list=None,
-                   n_epoch=1, stack_final_epochs=None, options=None):
+    def auto_train(self, model_name=None, reduced_feature_list=None, n_epoch=1,
+                   stack_final_epochs=None, train_args=None, train_options=None):
         """
             Automatically training a model for many times
         """
 
         # Get Train Function
-        train_function = self.get_train_function('auto_train', model_name,
-                                                 reduced_feature_list=reduced_feature_list, options=options)
+        train_function = \
+            self.get_train_function('auto_train', model_name, reduced_feature_list=reduced_feature_list,
+                                    train_args=train_args, train_options=train_options)
     
         for i in range(n_epoch):
     
             train_seed = random.randint(0, 500)
             cv_seed = random.randint(0, 500)
+            train_args['idx'] = i + 1
             epoch_start_time = time.time()
     
             print('======================================================')
             print('Auto Training Epoch {}/{}...'.format(i+1, n_epoch))
     
             if model_name == 'stack_t':
-                train_function(train_seed, cv_seed, idx=i+1)
-                train_function_s = self.get_train_function('auto_train', 'stack_lgb',
-                                                           reduced_feature_list=reduced_feature_list, options=options)
+                train_function(train_seed, cv_seed)
+                train_function_s = \
+                    self.get_train_function('auto_train', 'stack_lgb', reduced_feature_list=reduced_feature_list,
+                                            train_args=train_args, train_options=train_options)
+
                 for ii in range(stack_final_epochs):
                     t_seed = random.randint(0, 500)
                     c_seed = random.randint(0, 500)
-                    train_function_s(t_seed, c_seed, idx='auto_{}_epoch_{}'.format(i+1, ii+1), auto_idx=i+1)
+                    train_args['idx'] = 'auto_{}_epoch_{}'.format(i+1, ii+1)
+                    train_function_s(t_seed, c_seed, auto_idx=i+1)
             else:
-                train_function(train_seed, cv_seed, idx=i+1)
+                train_function(train_seed, cv_seed)
     
             print('======================================================')
             print('Auto Training Epoch Done!')
@@ -1906,14 +1951,23 @@ class Training:
         # train_seed = 65
         # cv_seed = 6
 
+        # Training Arguments
+        train_args = {'n_valid': 2,
+                      'n_cv': 20,
+                      'n_era': 20,
+                      'train_seed': train_seed,
+                      'cv_seed': cv_seed,
+                      'cv_generator': None,
+                      'era_list': None}
+
         # Training Options
-        options = {'show_importance': False,
-                   'show_accuracy': True,
-                   'save_final_pred': True,
-                   'save_final_prob_train': False,
-                   'save_cv_pred': False,
-                   'save_cv_prob_train': False,
-                   'save_csv_log': True}
+        train_options = {'show_importance': False,
+                         'show_accuracy': True,
+                         'save_final_pred': True,
+                         'save_final_prob_train': False,
+                         'save_cv_pred': False,
+                         'save_cv_prob_train': False,
+                         'save_csv_log': True}
 
         # Reduced Features
         reduced_feature_list = None
@@ -1921,14 +1975,16 @@ class Training:
         """
             Train Single Model
         """
-        # self.train_single_model('lgb', train_seed, cv_seed,
-        #                         reduced_feature_list=reduced_feature_list, options=options)
+        self.train_single_model('lgb', train_seed, cv_seed, reduced_feature_list=reduced_feature_list,
+                                train_args=train_args, train_options=train_options)
         # self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False,
-        #                         reduced_feature_list=reduced_feature_list, options=options)
+        #                         reduced_feature_list=reduced_feature_list,
+        #                         train_args=train_args, train_options=train_options)
         # self.train_single_model('stack_lgb', train_seed, cv_seed, auto_idx=1,
-        #                         reduced_feature_list=reduced_feature_list,  options=options)
-        # self.train_single_model('stack_pt', train_seed, cv_seed,
-        #                         reduced_feature_list=reduced_feature_list, options=options)
+        #                         reduced_feature_list=reduced_feature_list,
+        #                         train_args=train_args, train_options=train_options)
+        # self.train_single_model('stack_pt', train_seed, cv_seed, reduced_feature_list=reduced_feature_list,
+        #                         train_args=train_args, train_options=train_options)
 
         """
             Auto Grid Search Number of Boost Round
@@ -1938,8 +1994,8 @@ class Training:
         # grid_boost_round_tuple = tuple(range(96, 119, 2))
         # self.auto_grid_boost_round('lgb', grid_boost_round_tuple=grid_boost_round_tuple,
         #                            # train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
-        #                            reduced_feature_list=reduced_feature_list,
-        #                            n_epoch=5, grid_search_n_cv=20, options=options)
+        #                            reduced_feature_list=reduced_feature_list, n_epoch=5, grid_search_n_cv=20,
+        #                            train_args=train_args, train_options=train_options)
 
         """
             Auto Grid Search Parameters
@@ -1955,14 +2011,14 @@ class Training:
         #            ]
         # self.auto_grid_search('lgb', parameter_grid_list=pg_list, n_epoch=200,
         #                       reduced_feature_list=reduced_feature_list,
-        #                       grid_search_n_cv=5, options=options)
+        #                       grid_search_n_cv=5, train_args=train_args, train_options=train_options)
 
         """
             Auto Train
         """
-        self.auto_train('lgb', n_epoch=10000, options=options)
+        # self.auto_train('lgb', n_epoch=10000, train_args=train_args, train_options=train_options)
         # self.auto_train('stack_t', n_epoch=2, stack_final_epochs=10,
-        #                 reduced_feature_list=reduced_feature_list, options=options)
+        #                 reduced_feature_list=reduced_feature_list, train_args=train_args, train_options=train_options)
 
         print('======================================================')
         print('Global Train Seed: {}'.format(train_seed))
