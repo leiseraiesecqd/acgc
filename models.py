@@ -118,7 +118,7 @@ class ModelBase(object):
     def predict(self, clf, x_test, pred_path=None):
 
         print('------------------------------------------------------')
-        print('Predicting...')
+        print('Predicting Test Probability...')
 
         prob_test = np.array(clf.predict_proba(x_test))[:, 1]
 
@@ -130,7 +130,7 @@ class ModelBase(object):
     def get_prob_train(self, clf, x_train, pred_path=None):
 
         print('------------------------------------------------------')
-        print('Predicting...')
+        print('Predicting Train Probability...')
 
         prob_train = np.array(clf.predict_proba(x_train))[:, 1]
 
@@ -726,7 +726,7 @@ class XGBoost(ModelBase):
     def predict(self, model, x_test, pred_path=None):
 
         print('------------------------------------------------------')
-        print('Predicting...')
+        print('Predicting Test Probability...')
 
         prob_test = model.predict(xgb.DMatrix(x_test))
 
@@ -738,7 +738,7 @@ class XGBoost(ModelBase):
     def get_prob_train(self, model, x_train, pred_path=None):
 
         print('------------------------------------------------------')
-        print('Predicting...')
+        print('Predicting Train Probability...')
 
         prob_train = model.predict(xgb.DMatrix(x_train))
 
@@ -886,7 +886,7 @@ class LightGBM(ModelBase):
     def predict(self, bst, x_test, pred_path=None):
 
         print('------------------------------------------------------')
-        print('Predicting...')
+        print('Predicting Test Probability...')
 
         prob_test = bst.predict(x_test)
 
@@ -898,7 +898,7 @@ class LightGBM(ModelBase):
     def get_prob_train(self, bst, x_train, pred_path=None):
 
         print('------------------------------------------------------')
-        print('Predicting...')
+        print('Predicting Train Probability...')
 
         prob_train = bst.predict(x_train)
 
@@ -1426,7 +1426,7 @@ class DeepNeuralNetworks(ModelBase):
 
                 # Prediction
                 print('------------------------------------------------------')
-                print('Predicting...')
+                print('Predicting Probabilities...')
                 prob_train = self.get_prob(sess, logits, x_train, self.batch_size, inputs, keep_prob, is_train)
                 prob_valid = self.get_prob(sess, logits, x_valid, self.batch_size, inputs, keep_prob, is_train)
                 prob_test = self.get_prob(sess, logits, self.x_test, self.batch_size, inputs, keep_prob, is_train)
@@ -1585,7 +1585,7 @@ class DeepNeuralNetworks(ModelBase):
 
             # Prediction
             print('------------------------------------------------------')
-            print('Predicting...')
+            print('Predicting Probabilities...')
 
             logits_pred_train = sess.run(logits, {inputs: x_train, keep_prob: 1.0, is_train: False})
             logits_pred_valid = sess.run(logits, {inputs: x_valid, keep_prob: 1.0, is_train: False})
@@ -1705,7 +1705,7 @@ class DeepNeuralNetworks(ModelBase):
 
             # Prediction
             print('------------------------------------------------------')
-            print('Predicting...')
+            print('Predicting Train Probabilities...')
 
             logits_pred_train = sess.run(logits, {inputs: x_train, keep_prob: 1.0, is_train: False})
             logits_pred_valid = sess.run(logits, {inputs: x_valid, keep_prob: 1.0, is_train: False})
