@@ -16,6 +16,7 @@ stack_pred_path = pred_path + 'stacking/'
 auto_train_pred_path = pred_path + 'auto_train/'
 log_path = './logs/'
 csv_log_path = './logs/csv_logs/'
+csv_log_params_path = './parameters/'
 loss_log_path = log_path + 'loss_logs/'
 prejudge_loss_log_path = loss_log_path + 'prejudge/'
 dnn_log_path = log_path + 'dnn_logs/'
@@ -35,6 +36,7 @@ path_list = [pred_path,
              auto_train_pred_path,
              log_path,
              csv_log_path,
+             csv_log_params_path,
              grid_search_log_path,
              prejudge_loss_log_path,
              loss_log_path,
@@ -51,7 +53,7 @@ class SingleModel:
         Train single model
     """
     def __init__(self, reduced_feature_list=None, save_auto_train_results=True,
-                 grid_search_n_cv=None, train_args=None, train_options=None):
+                 grid_search_n_cv=None, train_args=None, train_options=None, mode=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
             = utils.load_preprocessed_data(preprocessed_data_path)
@@ -68,13 +70,23 @@ class SingleModel:
             self.x_test = self.x_test[:, reduced_feature_list]
             self.x_g_test = self.x_g_test[:, useful_feature_list_g]
 
-        self.single_model_pred_path = single_model_pred_path
         self.loss_log_path = loss_log_path
-        self.csv_log_path = csv_log_path + 'single_'
         self.save_auto_train_results = save_auto_train_results
         self.grid_search_n_cv = grid_search_n_cv
         self.train_args = train_args
         self.train_options = train_options
+        self.mode = mode
+
+        # Different Mode
+        if mode == 'auto_grid_search':
+            self.csv_log_path = csv_log_params_path
+            self.pred_path = single_model_pred_path
+        elif mode == 'auto_train':
+            self.csv_log_path = auto_train_pred_path
+            self.pred_path = auto_train_pred_path
+        else:
+            self.csv_log_path = csv_log_path + 'single_'
+            self.pred_path = single_model_pred_path
 
     def train_model(self, model=None, grid_search_tuple=None):
 
@@ -91,9 +103,9 @@ class SingleModel:
             self.train_args['n_cv'] = self.grid_search_n_cv
 
         # Parameters for Train
-        model.train(pred_path=self.single_model_pred_path, loss_log_path=self.loss_log_path, 
+        model.train(pred_path=self.pred_path, loss_log_path=self.loss_log_path,
                     csv_log_path=self.csv_log_path, auto_train_pred_path=auto_train_path,
-                    **self.train_args, **self.train_options)
+                    **self.train_args, **self.train_options, mode=self.mode)
 
     def lr_train(self, train_seed, cv_seed, grid_search_tuple=None):
         """
@@ -547,14 +559,14 @@ class SingleModel:
 
         # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
-        LGB.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'stack_final_',
-                  auto_train_pred_path=auto_train_path)
+        LGB.train(self.pred_path, self.loss_log_path, csv_log_path=self.csv_log_path + 'stack_final_',
+                  mode=self.mode, **self.train_args, **self.train_options)
 
 
 class ChampionModel:
 
     def __init__(self, reduced_feature_list=None, save_auto_train_results=True,
-                 grid_search_n_cv=None, train_args=None, train_options=None):
+                 grid_search_n_cv=None, train_args=None, train_options=None, mode=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
             = utils.load_preprocessed_data(preprocessed_data_path)
@@ -572,11 +584,23 @@ class ChampionModel:
 
         self.single_model_pred_path = single_model_pred_path
         self.loss_log_path = loss_log_path
-        self.csv_log_path = csv_log_path + 'christ1991_'
+        self.csv_log_path = csv_log_path + 'christar1991_'
         self.save_auto_train_results = save_auto_train_results
         self.grid_search_n_cv = grid_search_n_cv
         self.train_args = train_args
         self.train_options = train_options
+        self.mode = mode
+
+        # Different Mode
+        if mode == 'auto_grid_search':
+            self.csv_log_path = csv_log_params_path
+            self.pred_path = single_model_pred_path
+        elif mode == 'auto_train':
+            self.csv_log_path = auto_train_pred_path
+            self.pred_path = auto_train_pred_path
+        else:
+            self.csv_log_path = csv_log_path + 'single_'
+            self.pred_path = single_model_pred_path
 
     def train_model(self, model=None, grid_search_tuple=None):
 
@@ -595,7 +619,7 @@ class ChampionModel:
         # Parameters for Train
         model.train(pred_path=self.single_model_pred_path, loss_log_path=self.loss_log_path,
                     csv_log_path=self.csv_log_path, auto_train_pred_path=auto_train_path,
-                    **self.train_args, **self.train_options)
+                    **self.train_args, **self.train_options, mode=self.mode)
 
     def Christar1991(self, train_seed, cv_seed, grid_search_tuple=None):
         """
@@ -1268,7 +1292,8 @@ class ModelStacking:
     """
         Stacking
     """
-    def __init__(self, reduced_feature_list=None, save_auto_train_results=True, train_args=None, train_options=None):
+    def __init__(self, reduced_feature_list=None, save_auto_train_results=True,
+                 train_args=None, train_options=None, mode=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
             = utils.load_preprocessed_data(preprocessed_data_path)
@@ -1287,6 +1312,7 @@ class ModelStacking:
         self.save_auto_train_results = save_auto_train_results
         self.train_args = train_args
         self.train_options = train_options
+        self.mode = mode
 
     @staticmethod
     def get_layer1_params(train_seed):
@@ -1695,17 +1721,19 @@ class Training:
 
         if train_mode == 'train_single_model':
             model_arg = {'reduced_feature_list': reduced_feature_list, 'save_auto_train_results': False,
-                         'train_args': train_args, 'train_options': train_options}
+                         'train_args': train_args, 'train_options': train_options, 'mode': train_mode}
         elif train_mode == 'auto_grid_search':
             train_options['save_final_pred'] = False
             model_arg = {'reduced_feature_list': reduced_feature_list, 'save_auto_train_results': False,
-                         'grid_search_n_cv': grid_search_n_cv, 'train_args': train_args,  'train_options': train_options}
+                         'grid_search_n_cv': grid_search_n_cv, 'train_args': train_args,
+                         'train_options': train_options, 'mode': train_mode}
         elif train_mode == 'auto_grid_boost_round':
             model_arg = {'reduced_feature_list': reduced_feature_list, 'save_auto_train_results': True,
-                         'grid_search_n_cv': grid_search_n_cv, 'train_args': train_args, 'train_options': train_options}
+                         'grid_search_n_cv': grid_search_n_cv, 'train_args': train_args,
+                         'train_options': train_options, 'mode': train_mode}
         elif train_mode == 'auto_train':
             model_arg = {'reduced_feature_list': reduced_feature_list, 'save_auto_train_results': True,
-                         'train_args': train_args, 'train_options': train_options}
+                         'train_args': train_args, 'train_options': train_options, 'mode': train_mode}
         else:
             raise ValueError('Wrong Training Mode!')
 
@@ -1952,7 +1980,7 @@ class Training:
         # cv_seed = 6
 
         # Training Arguments
-        train_args = {'n_valid': 2,
+        train_args = {'n_valid': 4,
                       'n_cv': 20,
                       'n_era': 20,
                       'train_seed': train_seed,
@@ -2000,24 +2028,25 @@ class Training:
         """
             Auto Grid Search Parameters
         """
-        # pg_list = [
-        #            # ['min_child_weight', (15, 18, 21, 24)],
-        #            # ['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)],
-        #            # ['bagging_fraction', (0.6, 0.7, 0.8, 0.9)],
-        #            # ['bagging_freq', (1, 2, 3, 4, 5)],
-        #            # ['max_depth', (7, 8, 9, 10)],
-        #            ['num_leaves', (75, 77, 79, 81, 83, 85)],
-        #            # ['min_data_in_bin', (1, 3, 5, 7, 9)]
-        #            ]
-        # self.auto_grid_search('lgb', parameter_grid_list=pg_list, n_epoch=200,
-        #                       reduced_feature_list=reduced_feature_list,
-        #                       grid_search_n_cv=5, train_args=train_args, train_options=train_options)
+        pg_list = [
+                   ['max_depth', (8, 9, 10)],
+                   ['min_child_weight', (6, 12, 18)],
+                   # ['subsample', (0.8, 0.82, 0.84, 0.86, 0.9, 0.92)],
+                   # ['colsample_bytree', (0.7, 0.75, 0.8, 0.85)],
+                   # ['colsample_bylevel', (0.6, 0.65, 0.7, 0.75)],
+                   # ['gamma', (0.001, 0.01, 0.1, 0.2)],
+                   # ['reg_alpha', (0.001, 0.01, 0.1, 1, 10)]
+                   # ['reg_lambda', (0.001, 0.01, 0.1, 1, 10)]
+                   ]
+        self.auto_grid_search('lgb', parameter_grid_list=pg_list, n_epoch=200,
+                              reduced_feature_list=reduced_feature_list,
+                              grid_search_n_cv=5, train_args=train_args, train_options=train_options)
 
         """
             Auto Train
         """
-        self.auto_train('lgb', n_epoch=10000, reduced_feature_list=reduced_feature_list,
-                        train_args=train_args, train_options=train_options)
+        # self.auto_train('lgb', n_epoch=10000, reduced_feature_list=reduced_feature_list,
+        #                 train_args=train_args, train_options=train_options)
         # self.auto_train('stack_t', n_epoch=2, stack_final_epochs=10,
         #                 reduced_feature_list=reduced_feature_list, train_args=train_args, train_options=train_options)
 

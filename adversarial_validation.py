@@ -7,8 +7,8 @@ import tensorflow as tf
 
 gan_prob_path = './data/gan_outputs/'
 gan_preprocessed_data_path = './data/gan_preprocessed_data/'
-train_csv_path = './inputs/stock_train_data_20171020.csv'
-test_csv_path = './inputs/stock_test_data_20171020.csv'
+train_csv_path = './inputs/stock_train_data_20171028.csv'
+test_csv_path = './inputs/stock_test_data_20171028.csv'
 
 
 class AdversarialValidation(object):
@@ -84,8 +84,8 @@ class AdversarialValidation(object):
 
         # Drop Unnecessary Columns
         # self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era'], axis=1)
-        x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era', 'feature82'], axis=1)
-        x_test = test_f.drop(['id', 'group', 'feature82'], axis=1)
+        x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era', 'feature14'], axis=1)
+        x_test = test_f.drop(['id', 'group', 'feature14'], axis=1)
         g_train = train_f['group']
         g_test = test_f['group']
 

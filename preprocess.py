@@ -5,13 +5,13 @@ import pandas as pd
 from adversarial_validation import generate_validation_set
 from sklearn.preprocessing import PolynomialFeatures
 
-train_csv_path = './inputs/stock_train_data_20171020.csv'
-test_csv_path = './inputs/stock_test_data_20171020.csv'
+train_csv_path = './inputs/stock_train_data_20171028.csv'
+test_csv_path = './inputs/stock_test_data_20171028.csv'
 preprocessed_path = './data/preprocessed_data/'
 gan_prob_path = './data/gan_outputs/'
 negative_era_list = [2, 3, 4, 5, 8, 10, 12, 16]
 positive_era_list = [1, 6, 7, 9, 11, 13, 14, 15, 17, 18, 19, 20]
-drop_feature_list = [82]
+drop_feature_list = [14]
 
 
 class DataPreProcess:
@@ -566,7 +566,7 @@ class DataPreProcess:
         self.load_data()
 
         # Drop outliers
-        self.drop_outliers_by_value()
+        # self.drop_outliers_by_value()
         # self.drop_outliers_by_quantile()
 
         # Scale features

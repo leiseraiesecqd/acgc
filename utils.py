@@ -157,7 +157,7 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean,
 def save_final_loss_log_to_csv(idx, log_path, loss_train_w_mean, loss_valid_w_mean, acc_train,
                                train_seed, cv_seed, n_valid, n_cv, parameters):
 
-    if not os.path.isfile(log_path + 'loss_log.csv'):
+    if not os.path.isfile(log_path + 'log.csv'):
 
         print('------------------------------------------------------')
         print('Creating csv File of Final Loss Log...')
