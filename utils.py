@@ -168,7 +168,7 @@ def save_final_loss_log_to_csv(idx, log_path, loss_train_w_mean, loss_valid_w_me
             writer = csv.writer(f)
             writer.writerow(header)
 
-    with open(log_path + 'loss_log.csv', 'a') as f:
+    with open(log_path + 'log.csv', 'a') as f:
 
         print('------------------------------------------------------')
         print('Saving Final Losses to csv File...')
