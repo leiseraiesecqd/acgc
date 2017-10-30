@@ -2033,8 +2033,8 @@ class Training:
                    # ['max_depth', (8, 9, 10)],
                    # ['min_child_weight', (6, 12, 18)],
                    # ['subsample', (0.8, 0.82, 0.84, 0.86, 0.9, 0.92)],
-                   ['colsample_bytree', (0.7, 0.75, 0.8, 0.85)],
-                   # ['colsample_bylevel', (0.6, 0.65, 0.7, 0.75)],
+                   # ['colsample_bytree', (0.7, 0.75, 0.8, 0.85)],
+                   ['colsample_bylevel', (0.6, 0.65, 0.7, 0.75)],
                    # ['gamma', (0.001, 0.01, 0.1, 0.2)],
                    # ['reg_alpha', (0.001, 0.01, 0.1, 1, 10)]
                    # ['reg_lambda', (0.001, 0.01, 0.1, 1, 10)]
