@@ -162,7 +162,7 @@ def save_final_loss_log_to_csv(idx, log_path, loss_train_w_mean, loss_valid_w_me
         print('------------------------------------------------------')
         print('Creating csv File of Final Loss Log...')
 
-        with open(log_path + 'loss_log.csv', 'w') as f:
+        with open(log_path + 'log.csv', 'w') as f:
             header = ['id', 'time', 'loss_train', 'loss_valid', 'train_accuracy',
                       'train_seed', 'cv_seed', 'n_valid', 'n_cv', 'parameters']
             writer = csv.writer(f)
