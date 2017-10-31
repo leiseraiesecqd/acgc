@@ -296,7 +296,7 @@ class SingleModel:
         self.train_args['cv_seed'] = cv_seed
 
         if num_boost_round is None:
-            num_boost_round = 30
+            num_boost_round = 106
 
         model = models.XGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
                                self.x_test, self.id_test, num_boost_round=num_boost_round)
@@ -378,7 +378,7 @@ class SingleModel:
         self.train_args['cv_seed'] = cv_seed
 
         if num_boost_round is None:
-            num_boost_round = 65
+            num_boost_round = 100
 
         model = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
                                 self.x_g_test, self.id_test, num_boost_round=num_boost_round)
