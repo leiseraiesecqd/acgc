@@ -2005,7 +2005,7 @@ class Training:
                    ['learning_rate', [0.002, 0.003, 0.005]],
                    # ['min_child_weight', (6, 12, 18)]
                    ]
-        self.auto_train_boost_round('xgb', train_seed, cv_seed, num_boost_round=10, parameter_grid_list=pg_list,
+        self.auto_train_boost_round('xgb', train_seed, cv_seed, num_boost_round=300, parameter_grid_list=pg_list,
                                     reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
                                     train_args=train_args, train_options=train_options)
 
