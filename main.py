@@ -1958,10 +1958,10 @@ class Training:
         """
 
         # Create Global Seed for Training and Cross Validation
-        # train_seed = random.randint(0, 500)
-        # cv_seed = random.randint(0, 500)
-        train_seed = 14
-        cv_seed = 243
+        train_seed = random.randint(0, 500)
+        cv_seed = random.randint(0, 500)
+        # train_seed = 14
+        # cv_seed = 243
 
         # Training Arguments
         train_args = {'n_valid': 4,

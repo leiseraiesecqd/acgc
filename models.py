@@ -105,10 +105,9 @@ class ModelBase(object):
         utils.check_dir([boost_round_log_path])
         boost_round_log_path += self.model_name + '_' + param_name + '_' + str(param_value) + '/'
         utils.check_dir([boost_round_log_path])
-        boost_round_log_path += 'cv_logs/'
+        boost_round_log_path += 'cv_cache/'
         utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + '_t' + str(train_seed) + '_c' \
-                                + str(cv_seed) + '_cv_{}_log.txt'.format(cv_count)
+        boost_round_log_path += self.model_name + '_cv_{}_log.txt'.format(cv_count)
 
         print('Saving Outputs to ', boost_round_log_path)
         print('------------------------------------------------------')
