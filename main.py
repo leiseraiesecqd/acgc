@@ -52,8 +52,8 @@ class SingleModel:
     """
         Train single model
     """
-    def __init__(self, reduced_feature_list=None, save_auto_train_results=True,
-                 grid_search_n_cv=None, train_args=None, train_options=None, mode=None):
+    def __init__(self, reduced_feature_list=None, grid_search_n_cv=None,
+                 train_args=None, train_options=None, mode=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test \
             = utils.load_preprocessed_data(preprocessed_data_path)
@@ -71,7 +71,6 @@ class SingleModel:
             self.x_g_test = self.x_g_test[:, useful_feature_list_g]
 
         self.loss_log_path = loss_log_path
-        self.save_auto_train_results = save_auto_train_results
         self.grid_search_n_cv = grid_search_n_cv
         self.train_args = train_args
         self.train_options = train_options
@@ -270,7 +269,7 @@ class SingleModel:
         """
             XGBoost
         """
-        parameters = {'eta': 0.003,
+        parameters = {'learning_rate': 0.003,
                       'gamma': 0,                       # 如果loss function小于设定值，停止产生子节点
                       'max_depth': 9,                   # default=6
                       'min_child_weight': 18,           # default=1，建立每个模型所需最小样本权重和
@@ -279,13 +278,13 @@ class SingleModel:
                       'colsample_bylevel': 0.6,
                       'lambda': 0,
                       'alpha': 0,
-                      'early_stopping_rounds': 30,
+                      'early_stopping_rounds': 10000,
                       'n_jobs': -1,
                       'objective': 'binary:logistic',
                       'eval_metric': 'logloss',
                       'seed': train_seed}
 
-        file_name_params = ['num_boost_round', 'eta', 'max_depth', 'subsample',
+        file_name_params = ['num_boost_round', 'learning_rate', 'max_depth', 'subsample',
                             'colsample_bytree', 'colsample_bylevel', 'gamma']
 
         self.train_args['parameters'] = parameters
@@ -362,7 +361,7 @@ class SingleModel:
                       'metric': 'binary_logloss',
                       'num_threads': -1,
                       'verbosity': 1,
-                      'early_stopping_rounds': 50,          # default=0
+                      'early_stopping_rounds': 10000,          # default=0
                       'seed': train_seed}
         
         # cv_generator = CrossValidation.era_k_fold_with_weight_all_random
@@ -1721,20 +1720,18 @@ class Training:
                            load_pickle=False, train_args=None, train_options=None):
 
         if train_mode == 'train_single_model':
-            model_arg = {'reduced_feature_list': reduced_feature_list, 'save_auto_train_results': False,
-                         'train_args': train_args, 'train_options': train_options, 'mode': train_mode}
+            model_arg = {'reduced_feature_list': reduced_feature_list, 'train_args': train_args,
+                         'train_options': train_options, 'mode': train_mode}
         elif train_mode == 'auto_grid_search':
             train_options['save_final_pred'] = False
-            model_arg = {'reduced_feature_list': reduced_feature_list, 'save_auto_train_results': False,
-                         'grid_search_n_cv': grid_search_n_cv, 'train_args': train_args,
-                         'train_options': train_options, 'mode': train_mode}
-        elif train_mode == 'auto_grid_boost_round':
-            model_arg = {'reduced_feature_list': reduced_feature_list, 'save_auto_train_results': True,
-                         'grid_search_n_cv': grid_search_n_cv, 'train_args': train_args,
-                         'train_options': train_options, 'mode': train_mode}
-        elif train_mode == 'auto_train':
-            model_arg = {'reduced_feature_list': reduced_feature_list, 'save_auto_train_results': True,
+            model_arg = {'reduced_feature_list': reduced_feature_list, 'grid_search_n_cv': grid_search_n_cv,
                          'train_args': train_args, 'train_options': train_options, 'mode': train_mode}
+        elif train_mode == 'auto_grid_boost_round':
+            model_arg = {'reduced_feature_list': reduced_feature_list, 'grid_search_n_cv': grid_search_n_cv,
+                         'train_args': train_args, 'train_options': train_options, 'mode': train_mode}
+        elif train_mode == 'auto_train':
+            model_arg = {'reduced_feature_list': reduced_feature_list, 'train_args': train_args,
+                         'train_options': train_options, 'mode': train_mode}
         else:
             raise ValueError('Wrong Training Mode!')
 
@@ -1975,14 +1972,14 @@ class Training:
         """
 
         # Create Global Seed for Training and Cross Validation
-        train_seed = random.randint(0, 500)
-        cv_seed = random.randint(0, 500)
-        # train_seed = 65
-        # cv_seed = 6
+        # train_seed = random.randint(0, 500)
+        # cv_seed = random.randint(0, 500)
+        train_seed = 14
+        cv_seed = 243
 
         # Training Arguments
         train_args = {'n_valid': 4,
-                      'n_cv': 20,
+                      'n_cv': 5,
                       'n_era': 20,
                       'train_seed': train_seed,
                       'cv_seed': cv_seed,
@@ -2004,7 +2001,7 @@ class Training:
         """
             Train Single Model
         """
-        # self.train_single_model('lgb', train_seed, cv_seed, reduced_feature_list=reduced_feature_list,
+        # self.train_single_model('xgb', train_seed, cv_seed, reduced_feature_list=reduced_feature_list,
         #                         train_args=train_args, train_options=train_options)
         # self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False,
         #                         reduced_feature_list=reduced_feature_list,
@@ -2029,19 +2026,19 @@ class Training:
         """
             Auto Grid Search Parameters
         """
-        pg_list = [
-                   # ['max_depth', (8, 9, 10)],
-                   # ['min_child_weight', (6, 12, 18)],
-                   # ['subsample', (0.8, 0.82, 0.84, 0.86, 0.9, 0.92)],
-                   # ['colsample_bytree', (0.7, 0.75, 0.8, 0.85)],
-                   ['colsample_bylevel', (0.6, 0.65, 0.7, 0.75)],
-                   # ['gamma', (0.001, 0.01, 0.1, 0.2)],
-                   # ['reg_alpha', (0.001, 0.01, 0.1, 1, 10)]
-                   # ['reg_lambda', (0.001, 0.01, 0.1, 1, 10)]
-                   ]
-        self.auto_grid_search('xgb', parameter_grid_list=pg_list, n_epoch=200,
-                              reduced_feature_list=reduced_feature_list,
-                              grid_search_n_cv=5, train_args=train_args, train_options=train_options)
+        # pg_list = [
+        #            ['max_depth', [9]],
+        #            # ['min_child_weight', (6, 12, 18)],
+        #            # ['subsample', (0.8, 0.82, 0.84, 0.86, 0.9, 0.92)],
+        #            # ['colsample_bytree', (0.7, 0.75, 0.8, 0.85)],
+        #            # ['colsample_bylevel', (0.6, 0.65, 0.7, 0.75)],
+        #            # ['gamma', (0.001, 0.01, 0.1, 0.2)],
+        #            # ['reg_alpha', (0.001, 0.01, 0.1, 1, 10)]
+        #            # ['reg_lambda', (0.001, 0.01, 0.1, 1, 10)]
+        #            ]
+        # self.auto_grid_search('lgb', parameter_grid_list=pg_list, n_epoch=200,
+        #                       reduced_feature_list=reduced_feature_list,
+        #                       grid_search_n_cv=5, train_args=train_args, train_options=train_options)
 
         """
             Auto Train

@@ -1,8 +1,11 @@
 import time
 import utils
 import os
+import sys
+import re
 from os.path import isdir
 import numpy as np
+import pandas as pd
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
@@ -78,6 +81,10 @@ class ModelBase(object):
 
         return clf
 
+    @staticmethod
+    def get_pattern():
+        return None
+
     def prejudge_fit(self, x_train, y_train, w_train, x_valid, y_valid, w_valid, parameters=None, use_weight=True):
 
         # Get Classifier
@@ -90,6 +97,55 @@ class ModelBase(object):
             clf.fit(x_train, y_train)
 
         return clf
+
+    def fit_with_round_log(self, boost_round_log_path, cv_count, x_train, y_train, w_train,
+                           x_valid, y_valid, w_valid, parameters, train_seed, cv_seed):
+
+        boost_round_log_path += self.model_name + '/'
+        utils.check_dir([boost_round_log_path])
+        boost_round_log_path += self.model_name + 'learning_rate_' + parameters['learning_rate'] + '/'
+        utils.check_dir([boost_round_log_path])
+        boost_round_log_path += 'cv_logs/'
+        utils.check_dir([boost_round_log_path])
+        boost_round_log_path += self.model_name + '_t' + train_seed + '_c' + cv_seed + '_cv_{}_log.txt'.format(cv_count)
+
+        open(boost_round_log_path, 'w+').close()
+
+        with open(boost_round_log_path, 'a') as f:
+            __console__ = sys.stdout
+            sys.stdout = f
+            clf = self.fit(x_train, y_train, w_train, x_valid, y_valid, w_valid, parameters)
+            sys.stdout = __console__
+
+        with open(boost_round_log_path) as f:
+            lines = f.readlines()
+            idx_round_cv = []
+            train_loss_round_cv = []
+            valid_loss_round_cv = []
+            for line in lines:
+                pattern = self.get_pattern()
+                idx_round_cv.append(int(pattern.match(line).group(1)))
+                train_loss_round_cv.append(float(pattern.match(line).group(2)))
+                valid_loss_round_cv.append(float(pattern.match(line).group(3)))
+
+        return clf, idx_round_cv, train_loss_round_cv, valid_loss_round_cv
+
+    def save_boost_round_log(self, boost_round_log_path, idx_round, train_loss_round_mean,
+                             valid_loss_round_mean, train_seed, cv_seed, parameters):
+
+        print('------------------------------------------------------')
+        print('Saving Logs of Boost Round To CSV File...')
+
+        boost_round_log_path += self.model_name + '/'
+        utils.check_dir([boost_round_log_path])
+        boost_round_log_path += self.model_name + 'learning_rate_' + parameters['learning_rate'] + '/'
+        utils.check_dir([boost_round_log_path])
+        boost_round_log_path += self.model_name + '_t' + train_seed + '_c' + cv_seed + '_log.csv'
+
+        df = pd.DataFrame({'idx': idx_round,
+                           'train_loss': train_loss_round_mean,
+                           'valid_loss': valid_loss_round_mean})
+        df.to_csv(boost_round_log_path, sep=',', index=False)
 
     def show(self):
 
@@ -213,8 +269,8 @@ class ModelBase(object):
             utils.save_pred_to_csv(pred_path + 'final_results/' + self.model_name + '_',
                                    self.id_test, prob_test_mean)
 
-    def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, n_valid=4, n_cv=20, n_era=20,
-              train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
+    def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, boost_round_log_path=None, n_valid=4,
+              n_cv=20, n_era=20, train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
               show_accuracy=False, save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True,
               save_final_prob_train=False, save_csv_log=True, csv_idx=None, cv_generator=None,
               return_prob_test=False, mode=None, param_name=None, param_value=None, file_name_params=None):
@@ -228,13 +284,16 @@ class ModelBase(object):
         # Print Start Information and Get Model Name
         self.print_start_info()
 
-        count = 0
+        cv_count = 0
         prob_test_total = []
         prob_train_total = []
         loss_train_total = []
         loss_valid_total = []
         loss_train_w_total = []
         loss_valid_w_total = []
+        idx_round = []
+        train_loss_round_total = []
+        valid_loss_round_total = []
 
         # Get Cross Validation Generator
         if cv_generator is None:
@@ -245,16 +304,24 @@ class ModelBase(object):
                 in cv_generator(x=self.x_train, y=self.y_train, w=self.w_train, e=self.e_train,
                                 n_valid=n_valid, n_cv=n_cv, n_era=n_era, seed=cv_seed, era_list=era_list):
 
-            count += 1
+            cv_count += 1
 
             print('======================================================')
-            print('Training on the Cross Validation Set: {}/{}'.format(count, n_cv))
+            print('Training on the Cross Validation Set: {}/{}'.format(cv_count, n_cv))
             print('Validation Set Era: ', valid_era)
             print('Number of Features: ', x_train.shape[1])
             print('------------------------------------------------------')
 
             # Fitting and Training Model
-            clf = self.fit(x_train, y_train, w_train, x_valid, y_valid, w_valid, parameters)
+            if mode == 'auto_grid_boost_round':
+                clf, idx_round_cv, train_loss_round_cv, valid_loss_round_cv = \
+                    self.fit_with_round_log(boost_round_log_path, cv_count, x_train, y_train, w_train,
+                                            x_valid, y_valid, w_valid, parameters, train_seed, cv_seed)
+                idx_round = idx_round_cv
+                train_loss_round_total.append(train_loss_round_cv)
+                valid_loss_round_total.append(valid_loss_round_cv)
+            else:
+                clf = self.fit(x_train, y_train, w_train, x_valid, y_valid, w_valid, parameters)
 
             # Feature Importance
             if show_importance is True:
@@ -262,14 +329,14 @@ class ModelBase(object):
 
             # Prediction
             if save_cv_pred is True:
-                cv_pred_path = pred_path + 'cv_results/' + self.model_name + '_cv_{}_'.format(count)
+                cv_pred_path = pred_path + 'cv_results/' + self.model_name + '_cv_{}_'.format(cv_count)
             else:
                 cv_pred_path = None
             prob_test = self.predict(clf, self.x_test, pred_path=cv_pred_path)
 
             # Save Train Probabilities to CSV File
             if save_cv_prob_train is True:
-                cv_prob_train_path = pred_path + 'cv_prob_train/' + self.model_name + '_cv_{}_'.format(count)
+                cv_prob_train_path = pred_path + 'cv_prob_train/' + self.model_name + '_cv_{}_'.format(cv_count)
             else:
                 cv_prob_train_path = None
             prob_train = self.get_prob_train(clf, self.x_train, pred_path=cv_prob_train_path)
@@ -288,7 +355,7 @@ class ModelBase(object):
                 utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid, show_accuracy)
 
             # Save Losses to File
-            utils.save_loss_log(loss_log_path + self.model_name + '_', count, parameters, n_valid, n_cv, valid_era,
+            utils.save_loss_log(loss_log_path + self.model_name + '_', cv_count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, train_seed, cv_seed,
                                 acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era)
 
@@ -308,6 +375,13 @@ class ModelBase(object):
         loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
         loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
+
+        # Save Logs of num_boost_round
+        if mode == 'auto_grid_boost_round':
+            train_loss_round_mean = np.mean(np.array(train_loss_round_total), axis=0)
+            valid_loss_round_mean = np.mean(np.array(valid_loss_round_total), axis=0)
+            self.save_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean,
+                                      valid_loss_round_mean, train_seed, cv_seed, parameters)
 
         # Save 'num_boost_round'
         if self.model_name in ['xgb', 'lgb']:
@@ -775,6 +849,10 @@ class XGBoost(ModelBase):
 
         return bst
 
+    @staticmethod
+    def get_pattern():
+        return re.compile(r'\[(\d*)\]\tTrain-logloss:(.*)\tValid-logloss:(.*)')
+
     def get_importance(self, model):
 
         print('------------------------------------------------------')
@@ -894,8 +972,8 @@ class LightGBM(ModelBase):
 
         # Create Dataset
         idx_category = [x_train.shape[1] - 1]
-        print('Index of categorical feature: {}'.format(idx_category))
-        print('------------------------------------------------------')
+        # print('Index of categorical feature: {}'.format(idx_category))
+        # print('------------------------------------------------------')
 
         d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=idx_category)
         d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
@@ -924,6 +1002,10 @@ class LightGBM(ModelBase):
                         valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
 
         return bst
+
+    @staticmethod
+    def get_pattern():
+        return re.compile(r"\[(\d*)\]\tTrain\'s binary_logloss: (.*)\tValid\'s binary_logloss:(.*)")
 
     @staticmethod
     def logloss_obj(y, pred):
@@ -1345,8 +1427,8 @@ class DeepNeuralNetworks(ModelBase):
         return prob
 
     # Training
-    def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, n_valid=4, n_cv=20, n_era=20,
-              train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
+    def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, boost_round_log_path=None, n_valid=4,
+              n_cv=20, n_era=20, train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
               show_accuracy=False, save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True,
               save_final_prob_train=False, save_csv_log=True, csv_idx=None, cv_generator=None,
               return_prob_test=False, mode=None, param_name=None, param_value=None, file_name_params=None):
