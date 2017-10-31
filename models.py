@@ -99,15 +99,19 @@ class ModelBase(object):
         return clf
 
     def fit_with_round_log(self, boost_round_log_path, cv_count, x_train, y_train, w_train,
-                           x_valid, y_valid, w_valid, parameters, train_seed, cv_seed):
+                           x_valid, y_valid, w_valid, parameters, param_name, param_value, train_seed, cv_seed):
 
         boost_round_log_path += self.model_name + '/'
         utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + 'learning_rate_' + parameters['learning_rate'] + '/'
+        boost_round_log_path += self.model_name + '_' + param_name + '_' + str(param_value) + '/'
         utils.check_dir([boost_round_log_path])
         boost_round_log_path += 'cv_logs/'
         utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + '_t' + train_seed + '_c' + cv_seed + '_cv_{}_log.txt'.format(cv_count)
+        boost_round_log_path += self.model_name + '_t' + str(train_seed) + '_c' \
+                                + str(cv_seed) + '_cv_{}_log.txt'.format(cv_count)
+
+        print('Saving Outputs to ', boost_round_log_path)
+        print('------------------------------------------------------')
 
         open(boost_round_log_path, 'w+').close()
 
@@ -122,25 +126,26 @@ class ModelBase(object):
             idx_round_cv = []
             train_loss_round_cv = []
             valid_loss_round_cv = []
+            pattern = self.get_pattern()
             for line in lines:
-                pattern = self.get_pattern()
-                idx_round_cv.append(int(pattern.match(line).group(1)))
-                train_loss_round_cv.append(float(pattern.match(line).group(2)))
-                valid_loss_round_cv.append(float(pattern.match(line).group(3)))
+                if pattern.match(line) is not None:
+                    idx_round_cv.append(int(pattern.match(line).group(1)))
+                    train_loss_round_cv.append(float(pattern.match(line).group(2)))
+                    valid_loss_round_cv.append(float(pattern.match(line).group(3)))
 
         return clf, idx_round_cv, train_loss_round_cv, valid_loss_round_cv
 
-    def save_boost_round_log(self, boost_round_log_path, idx_round, train_loss_round_mean,
-                             valid_loss_round_mean, train_seed, cv_seed, parameters):
+    def save_boost_round_log(self, boost_round_log_path, idx_round, train_loss_round_mean, valid_loss_round_mean,
+                             train_seed, cv_seed, param_name, param_value):
 
         print('------------------------------------------------------')
         print('Saving Logs of Boost Round To CSV File...')
 
         boost_round_log_path += self.model_name + '/'
         utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + 'learning_rate_' + parameters['learning_rate'] + '/'
+        boost_round_log_path += self.model_name + '_' + param_name + '_' + str(param_value) + '/'
         utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + '_t' + train_seed + '_c' + cv_seed + '_log.csv'
+        boost_round_log_path += self.model_name + '_t' + str(train_seed) + '_c' + str(cv_seed) + '_log.csv'
 
         df = pd.DataFrame({'idx': idx_round,
                            'train_loss': train_loss_round_mean,
@@ -313,10 +318,10 @@ class ModelBase(object):
             print('------------------------------------------------------')
 
             # Fitting and Training Model
-            if mode == 'auto_grid_boost_round':
+            if mode == 'auto_train_boost_round':
                 clf, idx_round_cv, train_loss_round_cv, valid_loss_round_cv = \
-                    self.fit_with_round_log(boost_round_log_path, cv_count, x_train, y_train, w_train,
-                                            x_valid, y_valid, w_valid, parameters, train_seed, cv_seed)
+                    self.fit_with_round_log(boost_round_log_path, cv_count, x_train, y_train, w_train, x_valid,
+                                            y_valid, w_valid, parameters, param_name, param_value, train_seed, cv_seed)
                 idx_round = idx_round_cv
                 train_loss_round_total.append(train_loss_round_cv)
                 valid_loss_round_total.append(valid_loss_round_cv)
@@ -377,11 +382,11 @@ class ModelBase(object):
         loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
         # Save Logs of num_boost_round
-        if mode == 'auto_grid_boost_round':
+        if mode == 'auto_train_boost_round':
             train_loss_round_mean = np.mean(np.array(train_loss_round_total), axis=0)
             valid_loss_round_mean = np.mean(np.array(valid_loss_round_total), axis=0)
             self.save_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean,
-                                      valid_loss_round_mean, train_seed, cv_seed, parameters)
+                                      valid_loss_round_mean, train_seed, cv_seed, param_name, param_value)
 
         # Save 'num_boost_round'
         if self.model_name in ['xgb', 'lgb']:

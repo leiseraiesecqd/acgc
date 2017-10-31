@@ -17,6 +17,7 @@ auto_train_pred_path = pred_path + 'auto_train/'
 log_path = './logs/'
 csv_log_path = './logs/csv_logs/'
 csv_log_params_path = './parameters/'
+boost_round_log_path = './num_boost_rounds/'
 loss_log_path = log_path + 'loss_logs/'
 prejudge_loss_log_path = loss_log_path + 'prejudge/'
 dnn_log_path = log_path + 'dnn_logs/'
@@ -38,6 +39,7 @@ path_list = [pred_path,
              csv_log_path,
              csv_log_params_path,
              grid_search_log_path,
+             boost_round_log_path,
              prejudge_loss_log_path,
              loss_log_path,
              dnn_log_path,
@@ -71,6 +73,7 @@ class SingleModel:
             self.x_g_test = self.x_g_test[:, useful_feature_list_g]
 
         self.loss_log_path = loss_log_path
+        self.boost_round_log_path = boost_round_log_path
         self.grid_search_n_cv = grid_search_n_cv
         self.train_args = train_args
         self.train_options = train_options
@@ -103,8 +106,8 @@ class SingleModel:
 
         # Parameters for Train
         model.train(pred_path=self.pred_path, loss_log_path=self.loss_log_path, csv_log_path=self.csv_log_path,
-                    mode=self.mode, param_name=param_name, param_value=param_value,
-                    file_name_params=file_name_params, **self.train_args, **self.train_options)
+                    boost_round_log_path=self.boost_round_log_path, mode=self.mode, param_name=param_name,
+                    param_value=param_value, file_name_params=file_name_params, **self.train_args, **self.train_options)
 
     def lr_train(self, train_seed, cv_seed, grid_search_tuple=None):
         """
@@ -265,7 +268,7 @@ class SingleModel:
 
         self.train_model(model=model, grid_search_tuple=grid_search_tuple)
 
-    def xgb_train(self, train_seed, cv_seed, grid_search_tuple=None, grid_boost_round=None):
+    def xgb_train(self, train_seed, cv_seed, grid_search_tuple=None, num_boost_round=None):
         """
             XGBoost
         """
@@ -292,9 +295,7 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
-        if grid_boost_round is not None:
-            num_boost_round = grid_boost_round
-        else:
+        if num_boost_round is None:
             num_boost_round = 30
 
         model = models.XGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
@@ -337,7 +338,7 @@ class SingleModel:
 
         self.train_model(model=model, grid_search_tuple=grid_search_tuple)
 
-    def lgb_train(self, train_seed, cv_seed, grid_search_tuple=None, grid_boost_round=None):
+    def lgb_train(self, train_seed, cv_seed, grid_search_tuple=None, num_boost_round=None):
         """
             LightGBM
         """
@@ -376,9 +377,7 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
-        if grid_boost_round is not None:
-            num_boost_round = grid_boost_round
-        else:
+        if num_boost_round is None:
             num_boost_round = 65
 
         model = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
@@ -1726,7 +1725,7 @@ class Training:
             train_options['save_final_pred'] = False
             model_arg = {'reduced_feature_list': reduced_feature_list, 'grid_search_n_cv': grid_search_n_cv,
                          'train_args': train_args, 'train_options': train_options, 'mode': train_mode}
-        elif train_mode == 'auto_grid_boost_round':
+        elif train_mode == 'auto_train_boost_round':
             model_arg = {'reduced_feature_list': reduced_feature_list, 'grid_search_n_cv': grid_search_n_cv,
                          'train_args': train_args, 'train_options': train_options, 'mode': train_mode}
         elif train_mode == 'auto_train':
@@ -1851,61 +1850,48 @@ class Training:
             print('Grid Searching Time: {}s'.format(time.time() - gs_start_time))
             print('======================================================')
 
-    def auto_grid_boost_round(self, model_name=None, grid_boost_round_tuple=None, reduced_feature_list=None,
-                              train_seed_list=None, cv_seed_list=None, n_epoch=1, grid_search_n_cv=20,
-                              train_args=None, train_options=None):
+    def auto_train_boost_round(self, model_name=None, train_seed=None, cv_seed=None, num_boost_round=None,
+                               parameter_grid_list=None, reduced_feature_list=None, grid_search_n_cv=20,
+                               train_args=None, train_options=None):
         """
             Automatically Grid Searching
         """
-
-        def _random_int_list(start, stop, length):
-            start, stop = (int(start), int(stop)) if start <= stop else (int(stop), int(start))
-            length = int(abs(length)) if length else 0
-            random_list = []
-            for _ in range(length):
-                random_list.append(random.randint(start, stop))
-            return random_list
-
-        if train_seed_list is None:
-            train_seed_list = _random_int_list(0, 500, n_epoch)
-            cv_seed_list = _random_int_list(0, 500, n_epoch)
-
         # Get Train Function
         train_function = \
-            self.get_train_function('auto_grid_boost_round', model_name, grid_search_n_cv=grid_search_n_cv,
+            self.get_train_function('auto_train_boost_round', model_name, grid_search_n_cv=grid_search_n_cv,
                                     reduced_feature_list=reduced_feature_list, train_args=train_args,
                                     train_options=train_options)
 
-        print('======================================================')
-        print('Auto Grid Searching num_boost_round...')
-        print('======================================================')
+        for parameter_grid in parameter_grid_list:
 
-        for num_boost_round in grid_boost_round_tuple:
+            gs_start_time = time.time()
 
-            param_start_time = time.time()
+            print('======================================================')
+            print('Auto Train num_boost_round... Parameter: {}'.format(parameter_grid[0]))
+            print('======================================================')
 
-            for i, (train_seed, cv_seed) in enumerate(zip(train_seed_list, cv_seed_list)):
+            for param in parameter_grid[1]:
 
-                epoch_start_time = time.time()
-                train_args['csv_idx'] = 'boost_round_' + str(num_boost_round) + '_' + str(i + 1)
+                param_start_time = time.time()
+                grid_search_tuple = (parameter_grid[0], param)
+                train_args['csv_idx'] = parameter_grid[0] + '_' + str(param)
 
                 print('======================================================')
-                print('num_boost_round: {} | Epoch: {}/{} | train_seed: {} | cv_seed: {}'
-                      .format(num_boost_round, i + 1, n_epoch, train_seed, cv_seed))
+                print('Parameter: {}-{} | train_seed: {} | cv_seed: {}'
+                      .format(parameter_grid[0], param, train_seed, cv_seed))
 
                 # Training Model
-                train_function(train_seed, cv_seed, grid_boost_round=num_boost_round)
+                train_function(train_seed, cv_seed, grid_search_tuple=grid_search_tuple,
+                               num_boost_round=num_boost_round)
 
                 print('======================================================')
-                print('Auto Training Epoch Done!')
-                print('Train Seed: {}'.format(train_seed))
-                print('Cross Validation Seed: {}'.format(cv_seed))
-                print('Epoch Time: {}s'.format(time.time() - epoch_start_time))
+                print('One Parameter Done!')
+                print('Parameter Time: {}s'.format(time.time() - param_start_time))
                 print('======================================================')
 
             print('======================================================')
-            print('One Parameter Done!')
-            print('Parameter Time: {}s'.format(time.time() - param_start_time))
+            print('All Parameter Done!')
+            print('Grid Searching Time: {}s'.format(time.time() - gs_start_time))
             print('======================================================')
 
     def auto_train(self, model_name=None, reduced_feature_list=None, n_epoch=1,
@@ -2015,13 +2001,13 @@ class Training:
         """
             Auto Grid Search Number of Boost Round
         """
-        # train_seed_list = [493, 218, 496, 106, 395]
-        # cv_seed_list = [35, 73, 288, 325, 458]
-        # grid_boost_round_tuple = tuple(range(96, 119, 2))
-        # self.auto_grid_boost_round('lgb', grid_boost_round_tuple=grid_boost_round_tuple,
-        #                            # train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
-        #                            reduced_feature_list=reduced_feature_list, n_epoch=5, grid_search_n_cv=20,
-        #                            train_args=train_args, train_options=train_options)
+        pg_list = [
+                   ['learning_rate', [0.002, 0.003, 0.005]],
+                   # ['min_child_weight', (6, 12, 18)]
+                   ]
+        self.auto_train_boost_round('xgb', train_seed, cv_seed, num_boost_round=10, parameter_grid_list=pg_list,
+                                    reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
+                                    train_args=train_args, train_options=train_options)
 
         """
             Auto Grid Search Parameters
