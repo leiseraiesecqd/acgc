@@ -1821,8 +1821,8 @@ class Training:
     
                 for i in range(n_epoch):
     
-                    train_seed = random.randint(0, 300)
-                    cv_seed = random.randint(0, 300)
+                    train_seed = random.randint(0, 500)
+                    cv_seed = random.randint(0, 500)
                     epoch_start_time = time.time()
                     train_args['csv_idx'] = parameter_grid[0] + '_' + str(param) + '_' + str(i+1)
     
@@ -1850,12 +1850,24 @@ class Training:
             print('Grid Searching Time: {}s'.format(time.time() - gs_start_time))
             print('======================================================')
 
-    def auto_train_boost_round(self, model_name=None, train_seed=None, cv_seed=None, num_boost_round=None,
-                               parameter_grid_list=None, reduced_feature_list=None, grid_search_n_cv=20,
-                               train_args=None, train_options=None):
+    def auto_train_boost_round(self, model_name=None, train_seed_list=None, cv_seed_list=None, n_epoch=1,
+                               num_boost_round=None, parameter_grid_list=None, reduced_feature_list=None,
+                               grid_search_n_cv=20, train_args=None, train_options=None):
         """
             Automatically Grid Searching
         """
+        def _random_int_list(start, stop, length):
+            start, stop = (int(start), int(stop)) if start <= stop else (int(stop), int(start))
+            length = int(abs(length)) if length else 0
+            random_list = []
+            for _ in range(length):
+                random_list.append(random.randint(start, stop))
+            return random_list
+
+        if train_seed_list is None:
+            train_seed_list = _random_int_list(0, 500, n_epoch)
+            cv_seed_list = _random_int_list(0, 500, n_epoch)
+
         # Get Train Function
         train_function = \
             self.get_train_function('auto_train_boost_round', model_name, grid_search_n_cv=grid_search_n_cv,
@@ -1874,15 +1886,25 @@ class Training:
 
                 param_start_time = time.time()
                 grid_search_tuple = (parameter_grid[0], param)
-                train_args['csv_idx'] = parameter_grid[0] + '_' + str(param)
 
-                print('======================================================')
-                print('Parameter: {}-{} | train_seed: {} | cv_seed: {}'
-                      .format(parameter_grid[0], param, train_seed, cv_seed))
+                for i, (train_seed, cv_seed) in enumerate(zip(train_seed_list, cv_seed_list)):
+                    epoch_start_time = time.time()
+                    train_args['csv_idx'] = parameter_grid[0] + '_' + str(param) + '_' + str(i+1)
 
-                # Training Model
-                train_function(train_seed, cv_seed, grid_search_tuple=grid_search_tuple,
-                               num_boost_round=num_boost_round)
+                    print('======================================================')
+                    print('Parameter: {}-{} | Epoch: {}/{} | train_seed: {} | cv_seed: {}'
+                          .format(parameter_grid[0], param, i + 1, n_epoch, train_seed, cv_seed))
+
+                    # Training Model
+                    train_function(train_seed, cv_seed, grid_search_tuple=grid_search_tuple,
+                                   num_boost_round=num_boost_round)
+
+                    print('======================================================')
+                    print('Auto Training Epoch Done!')
+                    print('Train Seed: {}'.format(train_seed))
+                    print('Cross Validation Seed: {}'.format(cv_seed))
+                    print('Epoch Time: {}s'.format(time.time() - epoch_start_time))
+                    print('======================================================')
 
                 print('======================================================')
                 print('One Parameter Done!')
@@ -2002,10 +2024,12 @@ class Training:
             Auto Grid Search Number of Boost Round
         """
         pg_list = [
-                   ['learning_rate', [0.002, 0.003, 0.005]],
-                   # ['min_child_weight', (6, 12, 18)]
+                   ['learning_rate', [0.002, 0.003, 0.005]]
                    ]
-        self.auto_train_boost_round('xgb', train_seed, cv_seed, num_boost_round=300, parameter_grid_list=pg_list,
+        train_seed_list = None
+        cv_seed_list = None
+        self.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=5,
+                                    num_boost_round=300, parameter_grid_list=pg_list,
                                     reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
                                     train_args=train_args, train_options=train_options)
 
