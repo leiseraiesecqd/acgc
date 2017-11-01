@@ -1271,6 +1271,12 @@ class DeepNeuralNetworks(ModelBase):
 
         self.model_name = 'dnn'
 
+    @staticmethod
+    def get_pattern():
+
+        # [0] | CV: 10 | Epoch: 4/4 | Batch: 7300 | Time: 352.85s | Train_Loss: 0.71237314 | Valid_Loss: 0.72578128
+        return re.compile(r'\[(\d*)\].*Train_Loss: (.*) \| Valid_Loss: (.*)')
+
     # Input Tensors
     def input_tensor(self):
 
@@ -1525,6 +1531,7 @@ class DeepNeuralNetworks(ModelBase):
                 sess.run(tf.global_variables_initializer())
 
                 batch_counter = 0
+                idx = 0
 
                 for epoch_i in range(self.epochs):
 
@@ -1547,6 +1554,8 @@ class DeepNeuralNetworks(ModelBase):
                             raise ValueError('NaN BUG!!! Try Another Seed!!!')
 
                         if batch_counter % self.display_step == 0 and batch_i > 0:
+
+                            idx += 1
 
                             summary_train, cost_train = sess.run([merged, cost_],
                                                                  {inputs: batch_x,
@@ -1580,12 +1589,13 @@ class DeepNeuralNetworks(ModelBase):
 
                             total_time = time.time() - start_time
 
-                            print('CV: {} |'.format(cv_counter),
+                            print('[{}] |'.format(idx),
+                                  'CV: {} |'.format(cv_counter),
                                   'Epoch: {}/{} |'.format(epoch_i + 1, self.epochs),
                                   'Batch: {} |'.format(batch_counter),
-                                  'Time: {:>3.2f}s |'.format(total_time),
-                                  'Train_Loss: {:>.8f} |'.format(cost_train),
-                                  'Valid_Loss: {:>.8f}'.format(cost_valid))
+                                  'Time: {:3.2f}s |'.format(total_time),
+                                  'Train_Loss: {:.8f} |'.format(cost_train),
+                                  'Valid_Loss: {:.8f}'.format(cost_valid))
 
                 # Save Model
                 # print('Saving model...')

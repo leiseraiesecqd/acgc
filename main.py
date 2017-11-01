@@ -466,13 +466,13 @@ class SingleModel:
 
         self.train_model(model=model, grid_search_tuple=grid_search_tuple)
 
-    def dnn_tf_train(self, train_seed, cv_seed, grid_search_tuple=None):
+    def dnn_tf_train(self, train_seed, cv_seed, epochs=None, grid_search_tuple=None):
         """
             Deep Neural Networks
         """
         # HyperParameters
         parameters = {'version': '1.0',
-                      'epochs': 4,
+                      'epochs': 5,
                       'unit_number': [48, 24, 12],
                       'learning_rate': 0.00005,
                       'keep_probability': 0.7,
@@ -481,6 +481,14 @@ class SingleModel:
                       'display_step': 100,
                       'save_path': dnn_checkpoint_path,
                       'log_path': dnn_log_path}
+
+        if grid_search_tuple is not None:
+            param_name = grid_search_tuple[0]
+            param_value = grid_search_tuple[1]
+            parameters[param_name] = param_value
+
+        if epochs is not None:
+            parameters['epochs'] = epochs
 
         file_name_params = ['epochs', 'unit_number', 'learning_rate', 'keep_probability', 'batch_size']
 
@@ -492,7 +500,7 @@ class SingleModel:
         model = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
                                           self.e_train, self.x_test, self.id_test, parameters)
 
-        self.train_model(model=model, grid_search_tuple=grid_search_tuple, file_name_params=file_name_params)
+        self.train_model(model=model, file_name_params=file_name_params)
 
     def stack_lgb_train(self, train_seed, cv_seed, auto_idx=None, num_boost_round=None, grid_search_tuple=None):
         """
@@ -1783,8 +1791,8 @@ class Training:
         else:
             raise ValueError('Wrong Model Name!')
 
-    def train_single_model(self, model_name, train_seed, cv_seed, num_boost_round=None, auto_idx=None, reduced_feature_list=None,
-                           load_pickle=False, train_args=None, train_options=None):
+    def train_single_model(self, model_name, train_seed, cv_seed, num_boost_round=None, epochs=None, auto_idx=None,
+                           reduced_feature_list=None, load_pickle=False, train_args=None, train_options=None):
         """
             Training Single Model
         """
@@ -1798,10 +1806,12 @@ class Training:
         if model_name == 'stack_lgb':
             train_function(train_seed, cv_seed, auto_idx=auto_idx, num_boost_round=num_boost_round)
         else:
-            if num_boost_round is None:
-                train_function(train_seed, cv_seed)
-            else:
+            if num_boost_round is not None:
                 train_function(train_seed, cv_seed, num_boost_round=num_boost_round)
+            elif epochs is not None:
+                train_function(train_seed, cv_seed, epochs=epochs)
+            else:
+                train_function(train_seed, cv_seed)
 
     def auto_grid_search(self, model_name=None, parameter_grid_list=None, reduced_feature_list=None,
                          n_epoch=1, grid_search_n_cv=5, train_args=None, train_options=None):
@@ -1859,7 +1869,7 @@ class Training:
             print('======================================================')
 
     def auto_train_boost_round(self, model_name=None, train_seed_list=None, cv_seed_list=None, n_epoch=1,
-                               num_boost_round=None, parameter_grid_list=None, reduced_feature_list=None,
+                               num_boost_round=None, epochs=None, parameter_grid_list=None, reduced_feature_list=None,
                                grid_search_n_cv=20, train_args=None, train_options=None):
         """
             Automatically Grid Searching
@@ -1904,8 +1914,13 @@ class Training:
                           .format(parameter_grid[0], param, i + 1, n_epoch, train_seed, cv_seed))
 
                     # Training Model
-                    train_function(train_seed, cv_seed, grid_search_tuple=grid_search_tuple,
-                                   num_boost_round=num_boost_round)
+                    if num_boost_round is not None:
+                        train_function(train_seed, cv_seed, grid_search_tuple=grid_search_tuple,
+                                       num_boost_round=num_boost_round)
+                    elif epochs is not None:
+                        train_function(train_seed, cv_seed, grid_search_tuple=grid_search_tuple, epochs=epochs)
+                    else:
+                        raise ValueError("Need argument 'num_boost_round' or 'epochs'!")
 
                     print('======================================================')
                     print('Auto Training Epoch Done!')
@@ -2020,8 +2035,8 @@ class Training:
         # self.train_single_model('xgb', train_seed, cv_seed, num_boost_round=80,
         #                         reduced_feature_list=reduced_feature_list,
         #                         train_args=train_args, train_options=train_options)
-        self.train_single_model('dnn', train_seed, cv_seed, reduced_feature_list=reduced_feature_list,
-                                train_args=train_args, train_options=train_options)
+        # self.train_single_model('dnn', train_seed, cv_seed, reduced_feature_list=reduced_feature_list,
+        #                         train_args=train_args, train_options=train_options)
         # self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False,
         #                         reduced_feature_list=reduced_feature_list,
         #                         train_args=train_args, train_options=train_options)
@@ -2034,15 +2049,19 @@ class Training:
         """
             Auto Train with Logs of Boost Round
         """
-        # pg_list = [
-        #            ['learning_rate', [0.002, 0.003, 0.005]]
-        #            ]
-        # train_seed_list = None
-        # cv_seed_list = None
+        pg_list = [
+                   ['learning_rate', [0.00005]]
+                   ]
+        train_seed_list = None
+        cv_seed_list = None
         # self.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=5,
         #                             num_boost_round=300, parameter_grid_list=pg_list,
         #                             reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
         #                             train_args=train_args, train_options=train_options)
+        self.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
+                                    epochs=5, parameter_grid_list=pg_list,
+                                    reduced_feature_list=reduced_feature_list, grid_search_n_cv=10,
+                                    train_args=train_args, train_options=train_options)
 
         """
             Auto Grid Search Parameters
