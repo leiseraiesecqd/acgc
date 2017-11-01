@@ -474,7 +474,7 @@ class SingleModel:
         parameters = {'version': '1.0',
                       'epochs': 5,
                       'unit_number': [48, 24, 12],
-                      'learning_rate': 0.0001,
+                      'learning_rate': 0.00005,
                       'keep_probability': 0.7,
                       'batch_size': 128,
                       'seed': train_seed,
