@@ -2009,8 +2009,8 @@ class Training:
         """
             Train Single Model
         """
-        self.train_single_model('dnn', train_seed, cv_seed, reduced_feature_list=reduced_feature_list,
-                                train_args=train_args, train_options=train_options)
+        # self.train_single_model('dnn', train_seed, cv_seed, reduced_feature_list=reduced_feature_list,
+        #                         train_args=train_args, train_options=train_options)
         # self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False,
         #                         reduced_feature_list=reduced_feature_list,
         #                         train_args=train_args, train_options=train_options)
@@ -2021,17 +2021,17 @@ class Training:
         #                         train_args=train_args, train_options=train_options)
 
         """
-            Auto Grid Search Number of Boost Round
+            Auto Train with Logs of Boost Round
         """
-        # pg_list = [
-        #            ['learning_rate', [0.002, 0.003, 0.005]]
-        #            ]
-        # train_seed_list = None
-        # cv_seed_list = None
-        # self.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=5,
-        #                             num_boost_round=300, parameter_grid_list=pg_list,
-        #                             reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
-        #                             train_args=train_args, train_options=train_options)
+        pg_list = [
+                   ['learning_rate', [0.002, 0.003, 0.005]]
+                   ]
+        train_seed_list = None
+        cv_seed_list = None
+        self.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=5,
+                                    num_boost_round=300, parameter_grid_list=pg_list,
+                                    reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
+                                    train_args=train_args, train_options=train_options)
 
         """
             Auto Grid Search Parameters

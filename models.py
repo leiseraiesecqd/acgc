@@ -5,7 +5,6 @@ import sys
 import re
 from os.path import isdir
 import numpy as np
-import pandas as pd
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
@@ -135,21 +134,22 @@ class ModelBase(object):
         return clf, idx_round_cv, train_loss_round_cv, valid_loss_round_cv
 
     def save_boost_round_log(self, boost_round_log_path, idx_round, train_loss_round_mean, valid_loss_round_mean,
-                             train_seed, cv_seed, param_name, param_value):
-
-        print('------------------------------------------------------')
-        print('Saving Logs of Boost Round To CSV File...')
+                             train_seed, cv_seed, csv_idx, parameters, param_name, param_value):
 
         boost_round_log_path += self.model_name + '/'
         utils.check_dir([boost_round_log_path])
         boost_round_log_path += self.model_name + '_' + param_name + '_' + str(param_value) + '/'
         utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + '_t' + str(train_seed) + '_c' + str(cv_seed) + '_log.csv'
 
-        df = pd.DataFrame({'idx': idx_round,
-                           'train_loss': train_loss_round_mean,
-                           'valid_loss': valid_loss_round_mean})
-        df.to_csv(boost_round_log_path, sep=',', index=False)
+        utils.save_boost_round_log_to_csv(boost_round_log_path, csv_idx, idx_round, valid_loss_round_mean,
+                                          train_loss_round_mean, train_seed, cv_seed, parameters)
+
+        boost_round_log_path += 'final_logs/'
+        utils.check_dir([boost_round_log_path])
+        boost_round_log_path += self.model_name + '_' + str(csv_idx) + '_t' \
+                                + str(train_seed) + '_c' + str(cv_seed) + '_log.csv'
+
+        utils.save_final_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean, valid_loss_round_mean)
 
     def show(self):
 
@@ -384,8 +384,8 @@ class ModelBase(object):
         if mode == 'auto_train_boost_round':
             train_loss_round_mean = np.mean(np.array(train_loss_round_total), axis=0)
             valid_loss_round_mean = np.mean(np.array(valid_loss_round_total), axis=0)
-            self.save_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean,
-                                      valid_loss_round_mean, train_seed, cv_seed, param_name, param_value)
+            self.save_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean, valid_loss_round_mean,
+                                      train_seed, cv_seed, csv_idx, parameters, param_name, param_value)
 
         # Save 'num_boost_round'
         if self.model_name in ['xgb', 'lgb']:

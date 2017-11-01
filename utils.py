@@ -180,6 +180,59 @@ def save_final_loss_log_to_csv(idx, log_path, loss_train_w_mean, loss_valid_w_me
         writer.writerow(log)
 
 
+# Save Boost Round Log to csv File
+def save_boost_round_log_to_csv(boost_round_log_path, csv_idx, idx_round, valid_loss_round_mean,
+                                train_loss_round_mean, train_seed, cv_seed, parameters):
+
+    valid_loss_dict = {}
+    train_loss_dict = {}
+    lowest_valid_loss_dict = {}
+    lowest_train_loss_dict = {}
+
+    for i, idx in enumerate(idx_round):
+        valid_loss_dict[idx] = valid_loss_round_mean[i]
+        train_loss_dict[idx] = train_loss_round_mean[i]
+
+    lowest_valid_loss_idx = np.argsort(valid_loss_round_mean)[:5]
+    lowest_idx = idx_round[lowest_valid_loss_idx]
+    lowest_idx = np.sort(lowest_idx)
+
+    for idx in lowest_idx:
+        lowest_valid_loss_dict[idx] = valid_loss_dict[idx]
+        lowest_train_loss_dict[idx] = train_loss_dict[idx]
+
+    if not os.path.isfile(boost_round_log_path + 'boost_round_log.csv'):
+
+        print('------------------------------------------------------')
+        print('Creating csv File of Boost Round Log...')
+
+        with open(boost_round_log_path + 'boost_round_log.csv', 'w') as f:
+            header = ['idx', 'time', 'loss_train', 'lowest_loss_valid', 'train_seed', 'cv_seed', 'parameters']
+            writer = csv.writer(f)
+            writer.writerow(header)
+
+    with open(boost_round_log_path + 'boost_round_log.csv', 'a') as f:
+
+        print('------------------------------------------------------')
+        print('Saving Boost Round Log to csv File...')
+
+        local_time = time.strftime('%Y/%m/%d-%H:%M:%S', time.localtime(time.time()))
+        log = [csv_idx, local_time, lowest_train_loss_dict, lowest_valid_loss_dict,
+               train_seed, cv_seed, str(parameters)]
+        writer = csv.writer(f)
+        writer.writerow(log)
+
+
+def save_final_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean, valid_loss_round_mean):
+
+    print('------------------------------------------------------')
+    print('Saving Final Boost Round Log...')
+
+    df = pd.DataFrame({'idx': idx_round,
+                       'train_loss': train_loss_round_mean,
+                       'valid_loss': valid_loss_round_mean})
+    df.to_csv(boost_round_log_path, sep=',', index=False)
+
 # Save stacking outputs of layers
 def save_stack_outputs(output_path, x_outputs, test_outputs, x_g_outputs, test_g_outputs):
 
