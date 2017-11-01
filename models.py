@@ -108,7 +108,7 @@ class ModelBase(object):
         utils.check_dir([boost_round_log_path])
         boost_round_log_path += self.model_name + '_cv_{}_log.txt'.format(cv_count)
 
-        print('Saving Outputs to ', boost_round_log_path)
+        print('Saving Outputs to:', boost_round_log_path)
         print('------------------------------------------------------')
 
         open(boost_round_log_path, 'w+').close()
@@ -1519,7 +1519,7 @@ class DeepNeuralNetworks(ModelBase):
         utils.check_dir([boost_round_log_path])
         boost_round_log_path += self.model_name + '_cv_{}_log.txt'.format(cv_counter)
 
-        print('Saving Outputs to ', boost_round_log_path)
+        print('Saving Outputs to:', boost_round_log_path)
         print('------------------------------------------------------')
 
         open(boost_round_log_path, 'w+').close()
