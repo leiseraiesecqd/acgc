@@ -38,7 +38,7 @@ class AdversarialValidation(object):
 
         np.random.seed(self.train_seed)
 
-        if load_preprocessed_data is True:
+        if load_preprocessed_data:
 
             # Load Preprocessed Data from pickle File
             self.x_train, self.x_test = self.load_data_from_pickle()
@@ -549,7 +549,7 @@ class AdversarialValidation(object):
 
             utils.save_data_to_pkl(similarity_prob_mean, similarity_prob_path + 'similarity_prob.p')
 
-            if return_similarity_prob is True:
+            if return_similarity_prob:
                 return similarity_prob_mean
 
 
@@ -578,7 +578,7 @@ def generate_validation_set(train_path=None, test_path=None, similarity_prob_pat
                                load_preprocessed_data=load_preprocessed_data,
                                test_path=test_path, gan_preprocess_path=gan_preprocess_path)
 
-    if return_similarity_prob is True:
+    if return_similarity_prob:
         similarity_prob = AV.train(similarity_prob_path=similarity_prob_path, global_epochs=global_epochs,
                                    return_similarity_prob=return_similarity_prob)
         return similarity_prob

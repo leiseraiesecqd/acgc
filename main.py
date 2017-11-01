@@ -1612,7 +1612,7 @@ class ModelStacking:
         """
             Training model using StackTree model
         """
-        if self.save_auto_train_results is True:
+        if self.save_auto_train_results:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None
@@ -1665,7 +1665,7 @@ class ModelStacking:
         """
             Training model using StackTree model
         """
-        if self.save_auto_train_results is True:
+        if self.save_auto_train_results:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None

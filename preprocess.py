@@ -402,7 +402,7 @@ class DataPreProcess:
         print('------------------------------------------------------')
         print('Splitting Adversarial Validation Set by GAN...')
 
-        if load_pickle is True:
+        if load_pickle:
             similarity_prob = utils.load_pkl_to_data(gan_prob_path + 'similarity_prob.p')
         else:
             similarity_prob = \
@@ -413,7 +413,7 @@ class DataPreProcess:
         valid_idx = []
         train_idx = []
 
-        if sample_by_era is True:
+        if sample_by_era:
 
             similarity_prob_e = []
             index_e = []

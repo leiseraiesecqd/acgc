@@ -665,12 +665,12 @@ class StackLayer:
                 print('======================================================')
 
                 # Save Predicted Test Prob
-                if self.save_epoch_results is True:
+                if self.save_epoch_results:
                     self.save_predict(self.pred_path + 'epochs_results/stack_l{}_e{}_'.format(self.i_layer, epoch+1),
                                       blender_test_tree)
 
             # Scale Blenders
-            if self.scale_blender is True:
+            if self.scale_blender:
                 blender_x_tree, blender_test_tree = self.min_max_scale(blender_x_tree, blender_test_tree)
 
             # Stack Group Features
@@ -699,7 +699,7 @@ class StackLayer:
             blender_test_g_tree = self.x_g_test
 
         # For Final Layer
-        if self.is_final_layer is True:
+        if self.is_final_layer:
             self.final_stacker(blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree)
 
         else:
@@ -1334,12 +1334,12 @@ class PrejudgeStackLayer:
                 print('======================================================')
 
                 # Save Predicted Test Prob
-                if self.save_epoch_results is True:
+                if self.save_epoch_results:
                     self.save_predict(self.pred_path + 'epochs_results/stack_l{}_e{}_'.format(self.i_layer, epoch + 1),
                                       blender_test_tree)
 
             # Scale Blenders
-            if self.scale_blender is True:
+            if self.scale_blender:
                 blender_x_tree, blender_test_tree = self.min_max_scale(blender_x_tree, blender_test_tree)
 
             # Stack Group Features
@@ -1368,7 +1368,7 @@ class PrejudgeStackLayer:
             blender_test_g_tree = self.x_g_test
 
         # For Final Layer
-        if self.is_final_layer is True:
+        if self.is_final_layer:
             self.final_stacker(blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree)
 
         else:

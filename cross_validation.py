@@ -533,7 +533,7 @@ class CrossValidation:
 
                     self.trained_cv.append(set(valid_era))
 
-                    if return_train_index is True:
+                    if return_train_index:
                         yield x_train, y_train, w_train, e_train, x_g_train, x_valid, \
                               y_valid, w_valid, e_valid, x_g_valid, train_index, valid_index, valid_era
                     else:
@@ -586,7 +586,7 @@ class CrossValidation:
 
                         self.trained_cv.append(set(valid_era))
 
-                        if return_train_index is True:
+                        if return_train_index:
                             yield x_train, y_train, w_train, e_train, x_g_train, x_valid, \
                                   y_valid, w_valid, e_valid, x_g_valid, train_index, valid_index, valid_era
                         else:
@@ -632,7 +632,7 @@ class CrossValidation:
 
                         self.trained_cv.append(set(valid_era))
 
-                        if return_train_index is True:
+                        if return_train_index:
                             yield x_train, y_train, w_train, e_train, x_g_train, x_valid, \
                                   y_valid, w_valid, e_valid, x_g_valid, train_index, valid_index, valid_era
                         else:

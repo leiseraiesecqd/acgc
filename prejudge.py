@@ -141,7 +141,7 @@ class PrejudgeBinary:
                                                     show_accuracy=self.show_accuracy)
 
         # Convert Probabilities of Test Era to 0 and 1
-        if self.force_convert_era is True:
+        if self.force_convert_era:
             era_sign_test = np.array([0 if era_prob < 0.5 else 1 for era_prob in era_prob_test])
         else:
             era_sign_test = era_prob_test
@@ -250,7 +250,7 @@ class PrejudgeBinary:
         print('======================================================')
         print('Start Training PrejudgeBinary...')
 
-        if load_pickle is True:
+        if load_pickle:
 
             # Load era_sign_test
             if load_pickle_path is None:
@@ -533,7 +533,7 @@ class PrejudgeMultiClass:
         print('======================================================')
         print('Start Training PrejudgeMultiClass...')
 
-        if load_pickle is True:
+        if load_pickle:
 
             # Load era_sign_test
             if load_pickle_path is None:
