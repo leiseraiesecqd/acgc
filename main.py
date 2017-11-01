@@ -482,7 +482,7 @@ class SingleModel:
                       'save_path': dnn_checkpoint_path,
                       'log_path': dnn_log_path}
 
-        file_name_params = ['epochs', 'unit_number', 'num_leaves', 'learning_rate', 'keep_probability', 'batch_size']
+        file_name_params = ['epochs', 'unit_number', 'learning_rate', 'keep_probability', 'batch_size']
 
         self.train_args['parameters'] = parameters
         self.train_args['cv_generator'] = None

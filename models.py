@@ -1506,7 +1506,7 @@ class DeepNeuralNetworks(ModelBase):
                 cv_counter += 1
 
                 print('======================================================')
-                print('Training on the Cross Validation Set: {}'.format(cv_counter))
+                print('Training on the Cross Validation Set: {}/{}'.format(cv_counter, n_cv))
                 print('Number of Features: ', x_train.shape[1])
                 print('Validation Set Era: ', valid_era)
                 print('------------------------------------------------------')
