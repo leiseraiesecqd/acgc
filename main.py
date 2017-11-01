@@ -472,8 +472,8 @@ class SingleModel:
         """
         # HyperParameters
         parameters = {'version': '1.0',
-                      'epochs': 10,
-                      'unit_number': [240, 120, 60, 30, 15, 8, 4, 2],
+                      'epochs': 5,
+                      'unit_number': [48, 24, 12],
                       'learning_rate': 0.0001,
                       'keep_probability': 0.7,
                       'batch_size': 128,
