@@ -472,7 +472,7 @@ class SingleModel:
         """
         # HyperParameters
         parameters = {'version': '1.0',
-                      'epochs': 1,
+                      'epochs': 5,
                       'unit_number': [48, 24, 12],
                       'learning_rate': 0.00005,
                       'keep_probability': 0.7,
@@ -2059,7 +2059,7 @@ class Training:
         #                             reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
         #                             train_args=train_args, train_options=train_options)
         self.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
-                                    epochs=5, parameter_grid_list=pg_list,
+                                    epochs=1, parameter_grid_list=pg_list,
                                     reduced_feature_list=reduced_feature_list, grid_search_n_cv=10,
                                     train_args=train_args, train_options=train_options)
 
