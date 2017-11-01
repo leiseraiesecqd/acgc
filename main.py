@@ -344,8 +344,8 @@ class SingleModel:
         """
         parameters = {'application': 'binary',
                       'boosting': 'gbdt',                   # gdbt,rf,dart,goss
-                      'learning_rate': 0.005,               # default=0.1
-                      'num_leaves': 83,                     # default=31       <2^(max_depth)
+                      'learning_rate': 0.003,               # default=0.1
+                      'num_leaves': 88,                     # default=31       <2^(max_depth)
                       'max_depth': 9,                       # default=-1
                       'min_data_in_leaf': 2500,             # default=20       reduce over-fit
                       'min_sum_hessian_in_leaf': 1e-3,      # default=1e-3     reduce over-fit
@@ -358,7 +358,7 @@ class SingleModel:
                       'lambda_l2': 0,                       # default=0
                       'min_gain_to_split': 0,               # default=0
                       'max_bin': 225,                       # default=255
-                      'min_data_in_bin': 9,                 # default=5
+                      'min_data_in_bin': 5,                 # default=5
                       'metric': 'binary_logloss',
                       'num_threads': -1,
                       'verbosity': 1,
