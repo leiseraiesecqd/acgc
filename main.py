@@ -273,12 +273,12 @@ class SingleModel:
             XGBoost
         """
         parameters = {'learning_rate': 0.003,
-                      'gamma': 0,                       # 如果loss function小于设定值，停止产生子节点
-                      'max_depth': 9,                   # default=6
-                      'min_child_weight': 18,           # default=1，建立每个模型所需最小样本权重和
-                      'subsample': 0.9,                 # 建立树模型时抽取子样本占整个样本的比例
-                      'colsample_bytree': 0.7,          # 建立树时对特征随机采样的比例
-                      'colsample_bylevel': 0.6,
+                      'gamma': 0.001,                   # 如果loss function小于设定值，停止产生子节点
+                      'max_depth': 10,                  # default=6
+                      'min_child_weight': 12,           # default=1，建立每个模型所需最小样本权重和
+                      'subsample': 0.92,                # 建立树模型时抽取子样本占整个样本的比例
+                      'colsample_bytree': 0.85,         # 建立树时对特征随机采样的比例
+                      'colsample_bylevel': 0.7,
                       'lambda': 0,
                       'alpha': 0,
                       'early_stopping_rounds': 10000,
