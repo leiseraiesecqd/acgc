@@ -186,8 +186,7 @@ def save_boost_round_log_to_csv(boost_round_log_path, csv_idx, idx_round, valid_
 
     valid_loss_dict = {}
     train_loss_dict = {}
-    lowest_valid_loss_dict = {}
-    lowest_train_loss_dict = {}
+    lowest_loss_dict = {}
 
     for i, idx in enumerate(idx_round):
         valid_loss_dict[idx] = valid_loss_round_mean[i]
@@ -200,7 +199,7 @@ def save_boost_round_log_to_csv(boost_round_log_path, csv_idx, idx_round, valid_
     lowest_idx = np.sort(lowest_idx)
 
     for idx in lowest_idx:
-        lowest_valid_loss_dict[idx] = (valid_loss_dict[idx], train_loss_dict[idx])
+        lowest_loss_dict[idx] = (valid_loss_dict[idx], train_loss_dict[idx])
 
     if not os.path.isfile(boost_round_log_path + 'boost_round_log.csv'):
 
@@ -218,13 +217,13 @@ def save_boost_round_log_to_csv(boost_round_log_path, csv_idx, idx_round, valid_
         print('------------------------------------------------------')
         print('Saving Boost Round Log to csv File...')
 
-        for i, (round_idx, (valid_loss, train_loss)) in enumerate(valid_loss_dict.items()):
+        for i, (round_idx, (valid_loss, train_loss)) in enumerate(lowest_loss_dict.items()):
             if i == 0:
                 local_time = time.strftime('%Y/%m/%d-%H:%M:%S', time.localtime(time.time()))
                 log = [csv_idx, local_time, lowest_valid_loss, lowest_train_loss, round_idx,
                        valid_loss, train_loss, train_seed, cv_seed, str(parameters)]
             else:
-                log = ['', '', '', '', round_idx, valid_loss, train_loss, '', '', '']
+                log = [csv_idx, '', '', '', round_idx, valid_loss, train_loss, train_seed, cv_seed, '']
             writer = csv.writer(f)
             writer.writerow(log)
 
