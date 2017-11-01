@@ -1287,7 +1287,7 @@ class DeepNeuralNetworks(ModelBase):
     # Full Connected Layer
     def fc_layer(self, x_tensor, layer_name, num_outputs, keep_prob, is_training):
 
-        if is_training:
+        if is_training is True:
             print('Using Batch Normalization')
 
         with tf.name_scope(layer_name):
