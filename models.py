@@ -244,24 +244,25 @@ class ModelBase(object):
                                              acc_train, train_seed, cv_seed, n_valid, n_cv, parameters)
         else:
 
-            utils.save_final_loss_log_to_csv(csv_idx, csv_log_path + self.model_name + '_log',
+            utils.save_final_loss_log_to_csv(csv_idx, csv_log_path + self.model_name + '_',
                                              loss_train_w_mean, loss_valid_w_mean, acc_train,
                                              train_seed, cv_seed, n_valid, n_cv, parameters)
 
     def save_final_pred(self, mode, save_final_pred, prob_test_mean, pred_path,
                         parameters, csv_idx, train_seed, cv_seed, file_name_params=None):
 
+        params = '_'
+        if file_name_params is not None:
+            for p_name in file_name_params:
+                params += str(parameters[p_name]) + '_'
+        else:
+            for p_name, p_value in parameters.items():
+                params += str(p_value) + '_'
+
         if mode == 'auto_train':
 
             pred_path += self.model_name + '/'
             utils.check_dir([pred_path])
-            params = '_'
-            if file_name_params is not None:
-                for p_name in file_name_params:
-                    params += str(parameters[p_name]) + '_'
-            else:
-                for p_name, p_value in parameters.items():
-                    params += str(p_value) + '_'
             pred_path += self.model_name + params + 'results/'
             utils.check_dir([pred_path])
             pred_path += self.model_name + '_' + str(csv_idx) + '_t' + str(train_seed) + '_c' + str(cv_seed) + '_'
@@ -270,8 +271,8 @@ class ModelBase(object):
 
         elif save_final_pred:
 
-            utils.save_pred_to_csv(pred_path + 'final_results/' + self.model_name + '_',
-                                   self.id_test, prob_test_mean)
+            pred_path += 'final_results/' + self.model_name + '_t' + str(train_seed) + '_c' + str(cv_seed) + params
+            utils.save_pred_to_csv(pred_path, self.id_test, prob_test_mean)
 
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, boost_round_log_path=None, n_valid=4,
               n_cv=20, n_era=20, train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
