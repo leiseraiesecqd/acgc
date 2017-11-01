@@ -1287,9 +1287,9 @@ class DeepNeuralNetworks(ModelBase):
         loss_weights_ = tf.placeholder(tf.float32, None, name='loss_weights')
         learning_rate_ = tf.placeholder(tf.float32, name='learning_rate')
         keep_prob_ = tf.placeholder(tf.float32, name='keep_prob')
-        is_train_ = tf.placeholder(tf.bool, name='is_train')
+        is_training_ = tf.placeholder(tf.bool, name='is_training')
 
-        return inputs_, labels_, loss_weights_, learning_rate_, keep_prob_, is_train_
+        return inputs_, labels_, loss_weights_, learning_rate_, keep_prob_, is_training_
 
     # Full Connected Layer
     def fc_layer(self, x_tensor, layer_name, num_outputs, keep_prob, is_training):
@@ -1298,21 +1298,6 @@ class DeepNeuralNetworks(ModelBase):
             print('Using Batch Normalization')
 
         with tf.name_scope(layer_name):
-
-            # x_shape = x_tensor.get_shape().as_list()
-            #
-            # weights = tf.Variable(tf.truncated_normal([x_shape[1], num_outputs], dtype=tf.float64,
-            #                                           stddev=2.0 / np.sqrt(x_shape[1])))
-            #
-            # biases = tf.Variable(tf.zeros([num_outputs], dtype=tf.float64))
-            #
-            # fc_layer = tf.add(tf.matmul(x_tensor, weights), biases)
-            #
-            # # Batch Normalization
-            # fc_layer = tf.layers.batch_normalization(fc_layer, training=training)
-            #
-            # # Activate function
-            # fc = tf.sigmoid(fc_layer)
 
             # x_shape = features.get_shape().as_list()
             # weights_initializer = tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
@@ -1342,16 +1327,6 @@ class DeepNeuralNetworks(ModelBase):
     def output_layer(self, x_tensor, layer_name, num_outputs):
 
         with tf.name_scope(layer_name):
-
-            #  x_shape = x_tensor.get_shape().as_list()
-            #
-            #  weights = tf.Variable(tf.truncated_normal([x_shape[1], num_outputs], stddev=2.0 / math.sqrt(x_shape[1])))
-            #
-            #  biases = tf.Variable(tf.zeros([num_outputs]))
-            #
-            #  with tf.name_scope('Wx_plus_b'):
-            #      output_layer = tf.add(tf.matmul(x_tensor, weights), biases)
-            #  tf.summary.histogram('output', output_layer)
 
             # weights_initializer = tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
             weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN',
@@ -1435,19 +1410,140 @@ class DeepNeuralNetworks(ModelBase):
             yield batch_x
 
     # Get Probabilities
-    def get_prob(self, sess, logits, x, batch_num, inputs, keep_prob, is_train):
+    def get_prob(self, sess, logits, x, batch_num, inputs, keep_prob, is_training):
 
         logits_pred = np.array([])
 
         for x_batch in self.get_batches_for_predict(x, batch_num):
 
-            logits_pred_batch = sess.run(logits, {inputs: x_batch, keep_prob: 1.0, is_train: False})
+            logits_pred_batch = sess.run(logits, {inputs: x_batch, keep_prob: 1.0, is_training: False})
             logits_pred_batch = logits_pred_batch.flatten()
             logits_pred = np.concatenate((logits_pred, logits_pred_batch))
 
         prob = 1.0 / (1.0 + np.exp(-logits_pred))
 
         return prob
+
+    # Trainer
+    def trainer(self, sess, cv_counter, x_train, y_train, w_train, x_valid, y_valid, w_valid,
+                optimizer, merged, cost_, inputs, labels, weights, lr, keep_prob, is_training, start_time):
+
+        train_log_path = self.log_path + self.version + '/cv_{}/train'.format(cv_counter)
+        valid_log_path = self.log_path + self.version + '/cv_{}/valid'.format(cv_counter)
+
+        if not isdir(train_log_path):
+            os.makedirs(train_log_path)
+        if not isdir(valid_log_path):
+            os.makedirs(valid_log_path)
+
+        train_writer = tf.summary.FileWriter(train_log_path, sess.graph)
+        valid_writer = tf.summary.FileWriter(valid_log_path)
+
+        sess.run(tf.global_variables_initializer())
+
+        batch_counter = 0
+        idx = 0
+
+        for epoch_i in range(self.epochs):
+
+            for batch_i, (batch_x, batch_y, batch_w) in enumerate(self.get_batches(x_train,
+                                                                                   y_train,
+                                                                                   w_train,
+                                                                                   self.batch_size)):
+
+                batch_counter += 1
+
+                _, cost = sess.run([optimizer, cost_],
+                                   {inputs: batch_x,
+                                    labels: batch_y,
+                                    weights: batch_w,
+                                    lr: self.learning_rate,
+                                    keep_prob: self.keep_probability,
+                                    is_training: True})
+
+                if str(cost) == 'nan':
+                    raise ValueError('NaN BUG!!! Try Another Seed!!!')
+
+                if batch_counter % self.display_step == 0 and batch_i > 0:
+
+                    idx += 1
+
+                    summary_train, cost_train = sess.run([merged, cost_],
+                                                         {inputs: batch_x,
+                                                          labels: batch_y,
+                                                          weights: batch_w,
+                                                          keep_prob: 1.0,
+                                                          is_training: False})
+                    train_writer.add_summary(summary_train, batch_counter)
+
+                    cost_valid_all = []
+
+                    for iii, (valid_batch_x,
+                              valid_batch_y,
+                              valid_batch_w) in enumerate(self.get_batches(x_valid,
+                                                                           y_valid,
+                                                                           w_valid,
+                                                                           self.batch_size)):
+                        summary_valid_i, cost_valid_i = sess.run([merged, cost_],
+                                                                 {inputs: valid_batch_x,
+                                                                  labels: valid_batch_y,
+                                                                  weights: valid_batch_w,
+                                                                  keep_prob: 1.0,
+                                                                  is_training: False})
+
+                        valid_writer.add_summary(summary_valid_i, batch_counter)
+
+                        cost_valid_all.append(cost_valid_i)
+
+                    cost_valid = sum(cost_valid_all) / len(cost_valid_all)
+
+                    total_time = time.time() - start_time
+
+                    print('[{}] |'.format(idx),
+                          'CV: {} |'.format(cv_counter),
+                          'Epoch: {}/{} |'.format(epoch_i + 1, self.epochs),
+                          'Batch: {} |'.format(batch_counter),
+                          'Time: {:3.2f}s |'.format(total_time),
+                          'Train_Loss: {:.8f} |'.format(cost_train),
+                          'Valid_Loss: {:.8f}'.format(cost_valid))
+
+    def train_with_round_log(self, boost_round_log_path, sess, cv_counter, x_train, y_train, w_train,
+                             x_valid, y_valid, w_valid, optimizer, merged, cost_, inputs, labels, weights,
+                             lr, keep_prob, is_training, start_time, param_name, param_value):
+
+        boost_round_log_path += self.model_name + '/'
+        utils.check_dir([boost_round_log_path])
+        boost_round_log_path += self.model_name + '_' + param_name + '_' + str(param_value) + '/'
+        utils.check_dir([boost_round_log_path])
+        boost_round_log_path += 'cv_cache/'
+        utils.check_dir([boost_round_log_path])
+        boost_round_log_path += self.model_name + '_cv_{}_log.txt'.format(cv_counter)
+
+        print('Saving Outputs to ', boost_round_log_path)
+        print('------------------------------------------------------')
+
+        open(boost_round_log_path, 'w+').close()
+
+        with open(boost_round_log_path, 'a') as f:
+            __console__ = sys.stdout
+            sys.stdout = f
+            self.trainer(sess, cv_counter, x_train, y_train, w_train, x_valid, y_valid, w_valid,
+                         optimizer, merged, cost_, inputs, labels, weights, lr, keep_prob, is_training, start_time)
+            sys.stdout = __console__
+
+        with open(boost_round_log_path) as f:
+            lines = f.readlines()
+            idx_round_cv = []
+            train_loss_round_cv = []
+            valid_loss_round_cv = []
+            pattern = self.get_pattern()
+            for line in lines:
+                if pattern.match(line) is not None:
+                    idx_round_cv.append(int(pattern.match(line).group(1)))
+                    train_loss_round_cv.append(float(pattern.match(line).group(2)))
+                    valid_loss_round_cv.append(float(pattern.match(line).group(3)))
+
+        return idx_round_cv, train_loss_round_cv, valid_loss_round_cv
 
     # Training
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, boost_round_log_path=None, n_valid=4,
@@ -1469,10 +1565,10 @@ class DeepNeuralNetworks(ModelBase):
         with train_graph.as_default():
 
             # Inputs
-            inputs, labels, weights, lr, keep_prob, is_train = self.input_tensor()
+            inputs, labels, weights, lr, keep_prob, is_training = self.input_tensor()
 
             # Logits
-            logits = self.model(inputs, self.unit_number, keep_prob, is_train)
+            logits = self.model(inputs, self.unit_number, keep_prob, is_training)
             logits = tf.identity(logits, name='logits')
 
             # Loss
@@ -1500,6 +1596,9 @@ class DeepNeuralNetworks(ModelBase):
             loss_valid_total = []
             loss_train_w_total = []
             loss_valid_w_total = []
+            idx_round = []
+            train_loss_round_total = []
+            valid_loss_round_total = []
 
             # Get Cross Validation Generator
             if cv_generator is None:
@@ -1517,85 +1616,19 @@ class DeepNeuralNetworks(ModelBase):
                 print('Validation Set Era: ', valid_era)
                 print('------------------------------------------------------')
 
-                train_log_path = self.log_path + self.version + '/cv_{}/train'.format(cv_counter)
-                valid_log_path = self.log_path + self.version + '/cv_{}/valid'.format(cv_counter)
-
-                if not isdir(train_log_path):
-                    os.makedirs(train_log_path)
-                if not isdir(valid_log_path):
-                    os.makedirs(valid_log_path)
-
-                train_writer = tf.summary.FileWriter(train_log_path, sess.graph)
-                valid_writer = tf.summary.FileWriter(valid_log_path)
-
-                sess.run(tf.global_variables_initializer())
-
-                batch_counter = 0
-                idx = 0
-
-                for epoch_i in range(self.epochs):
-
-                    for batch_i, (batch_x, batch_y, batch_w) in enumerate(self.get_batches(x_train,
-                                                                                           y_train,
-                                                                                           w_train,
-                                                                                           self.batch_size)):
-
-                        batch_counter += 1
-
-                        _, cost = sess.run([optimizer, cost_],
-                                           {inputs: batch_x,
-                                            labels: batch_y,
-                                            weights: batch_w,
-                                            lr: self.learning_rate,
-                                            keep_prob: self.keep_probability,
-                                            is_train: True})
-
-                        if str(cost) == 'nan':
-                            raise ValueError('NaN BUG!!! Try Another Seed!!!')
-
-                        if batch_counter % self.display_step == 0 and batch_i > 0:
-
-                            idx += 1
-
-                            summary_train, cost_train = sess.run([merged, cost_],
-                                                                 {inputs: batch_x,
-                                                                  labels: batch_y,
-                                                                  weights: batch_w,
-                                                                  keep_prob: 1.0,
-                                                                  is_train: False})
-                            train_writer.add_summary(summary_train, batch_counter)
-
-                            cost_valid_all = []
-
-                            for iii, (valid_batch_x,
-                                      valid_batch_y,
-                                      valid_batch_w) in enumerate(self.get_batches(x_valid,
-                                                                                   y_valid,
-                                                                                   w_valid,
-                                                                                   self.batch_size)):
-
-                                summary_valid_i, cost_valid_i = sess.run([merged, cost_],
-                                                                         {inputs: valid_batch_x,
-                                                                          labels: valid_batch_y,
-                                                                          weights: valid_batch_w,
-                                                                          keep_prob: 1.0,
-                                                                          is_train: False})
-
-                                valid_writer.add_summary(summary_valid_i, batch_counter)
-
-                                cost_valid_all.append(cost_valid_i)
-
-                            cost_valid = sum(cost_valid_all) / len(cost_valid_all)
-
-                            total_time = time.time() - start_time
-
-                            print('[{}] |'.format(idx),
-                                  'CV: {} |'.format(cv_counter),
-                                  'Epoch: {}/{} |'.format(epoch_i + 1, self.epochs),
-                                  'Batch: {} |'.format(batch_counter),
-                                  'Time: {:3.2f}s |'.format(total_time),
-                                  'Train_Loss: {:.8f} |'.format(cost_train),
-                                  'Valid_Loss: {:.8f}'.format(cost_valid))
+                # Training
+                if mode == 'auto_train_boost_round':
+                    idx_round_cv, train_loss_round_cv, valid_loss_round_cv = \
+                        self.train_with_round_log(boost_round_log_path, sess, cv_counter, x_train, y_train,
+                                                  w_train, x_valid, y_valid, w_valid, optimizer, merged, cost_,
+                                                  inputs, labels, weights, lr, keep_prob, is_training,
+                                                  start_time, param_name, param_value)
+                    idx_round = idx_round_cv
+                    train_loss_round_total.append(train_loss_round_cv)
+                    valid_loss_round_total.append(valid_loss_round_cv)
+                else:
+                    self.trainer(sess, cv_counter, x_train, y_train, w_train, x_valid, y_valid, w_valid, optimizer,
+                                 merged, cost_, inputs, labels, weights, lr, keep_prob, is_training, start_time)
 
                 # Save Model
                 # print('Saving model...')
@@ -1605,10 +1638,10 @@ class DeepNeuralNetworks(ModelBase):
                 # Prediction
                 print('------------------------------------------------------')
                 print('Predicting Probabilities...')
-                prob_train_cv = self.get_prob(sess, logits, x_train, self.batch_size, inputs, keep_prob, is_train)
-                prob_train = self.get_prob(sess, logits, self.x_train, self.batch_size, inputs, keep_prob, is_train)
-                prob_valid = self.get_prob(sess, logits, x_valid, self.batch_size, inputs, keep_prob, is_train)
-                prob_test = self.get_prob(sess, logits, self.x_test, self.batch_size, inputs, keep_prob, is_train)
+                prob_train_cv = self.get_prob(sess, logits, x_train, self.batch_size, inputs, keep_prob, is_training)
+                prob_train = self.get_prob(sess, logits, self.x_train, self.batch_size, inputs, keep_prob, is_training)
+                prob_valid = self.get_prob(sess, logits, x_valid, self.batch_size, inputs, keep_prob, is_training)
+                prob_test = self.get_prob(sess, logits, self.x_test, self.batch_size, inputs, keep_prob, is_training)
 
                 loss_train, loss_valid, loss_train_w, loss_valid_w = \
                     utils.print_loss_dnn(prob_train_cv, prob_valid, y_train, w_train, y_valid, w_valid)
@@ -1642,6 +1675,13 @@ class DeepNeuralNetworks(ModelBase):
             loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
             loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
             loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
+
+            # Save Logs of num_boost_round
+            if mode == 'auto_train_boost_round':
+                train_loss_round_mean = np.mean(np.array(train_loss_round_total), axis=0)
+                valid_loss_round_mean = np.mean(np.array(valid_loss_round_total), axis=0)
+                self.save_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean, valid_loss_round_mean,
+                                          train_seed, cv_seed, csv_idx, parameters, param_name, param_value)
 
             # Save Final Result
             if save_final_pred:
