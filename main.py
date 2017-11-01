@@ -1988,7 +1988,7 @@ class Training:
         # Training Arguments
         train_args = {'n_valid': 4,
                       'n_cv': 5,
-                      'n_era': 5,
+                      'n_era': 20,
                       'train_seed': train_seed,
                       'cv_seed': cv_seed,
                       'cv_generator': None,
