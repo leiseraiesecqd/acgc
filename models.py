@@ -1678,6 +1678,13 @@ class DeepNeuralNetworks(ModelBase):
 
             # Save Logs of num_boost_round
             if mode == 'auto_train_boost_round':
+                l = len(train_loss_round_total[0])
+                for train_loss_cv in train_loss_round_total:
+                    if l > len(train_loss_cv):
+                        l = len(train_loss_cv)
+                idx_round = idx_round[:l]
+                train_loss_round_total = train_loss_round_total[:l]
+                valid_loss_round_total = valid_loss_round_total[:l]
                 train_loss_round_mean = np.mean(np.array(train_loss_round_total), axis=0)
                 valid_loss_round_mean = np.mean(np.array(valid_loss_round_total), axis=0)
                 self.save_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean, valid_loss_round_mean,
