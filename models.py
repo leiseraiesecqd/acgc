@@ -1599,6 +1599,8 @@ class DeepNeuralNetworks(ModelBase):
                 prob_valid = self.get_prob(sess, logits, x_valid, self.batch_size, inputs, keep_prob, is_train)
                 prob_test = self.get_prob(sess, logits, self.x_test, self.batch_size, inputs, keep_prob, is_train)
 
+                print(prob_train.shape, prob_test.shape, prob_test.shape)
+
                 loss_train, loss_valid, \
                     loss_train_w, loss_valid_w = utils.print_loss_dnn(prob_train, prob_valid,
                                                                       y_train, w_train, y_valid, w_valid)
