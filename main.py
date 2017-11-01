@@ -1758,7 +1758,7 @@ class Training:
 
             return train_functions[model_name]
 
-        elif model_name == 'christ':
+        elif model_name == 'christar':
             CM = ChampionModel(**model_arg)
             return CM.Christar1991
 
@@ -1981,7 +1981,7 @@ class Training:
             'cb':           CatBoost
             'dnn':          Deep Neural Networks
             'stack_lgb':    LightGBM for stack layer
-            'christ':       Christ1991
+            'christar':     Christar1991
             'prejudge_b':   PrejudgeBinary
             'prejudge_m':   PrejudgeMultiClass
             'stack_t':      StackTree
