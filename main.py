@@ -2009,8 +2009,8 @@ class Training:
         """
             Train Single Model
         """
-        # self.train_single_model('xgb', train_seed, cv_seed, reduced_feature_list=reduced_feature_list,
-        #                         train_args=train_args, train_options=train_options)
+        self.train_single_model('dnn', train_seed, cv_seed, reduced_feature_list=reduced_feature_list,
+                                train_args=train_args, train_options=train_options)
         # self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False,
         #                         reduced_feature_list=reduced_feature_list,
         #                         train_args=train_args, train_options=train_options)
@@ -2036,19 +2036,19 @@ class Training:
         """
             Auto Grid Search Parameters
         """
-        pg_list = [
-                   # ['max_depth', [9]],
-                   # ['min_child_weight', (6, 12, 18)],
-                   # ['subsample', (0.8, 0.82, 0.84, 0.86, 0.9, 0.92)],
-                   # ['colsample_bytree', (0.7, 0.75, 0.8, 0.85)],
-                   ['colsample_bylevel', (0.6, 0.62, 0.67, 0.8)],
-                   # ['gamma', (0.001, 0.01, 0.1, 0.2)],
-                   # ['reg_alpha', (0.001, 0.01, 0.1, 1, 10)]
-                   # ['reg_lambda', (0.001, 0.01, 0.1, 1, 10)]
-                   ]
-        self.auto_grid_search('xgb', parameter_grid_list=pg_list, n_epoch=200,
-                              reduced_feature_list=reduced_feature_list,
-                              grid_search_n_cv=5, train_args=train_args, train_options=train_options)
+        # pg_list = [
+        #            # ['max_depth', [9]],
+        #            # ['min_child_weight', (6, 12, 18)],
+        #            # ['subsample', (0.8, 0.82, 0.84, 0.86, 0.9, 0.92)],
+        #            # ['colsample_bytree', (0.7, 0.75, 0.8, 0.85)],
+        #            ['colsample_bylevel', (0.6, 0.62, 0.67, 0.8)],
+        #            # ['gamma', (0.001, 0.01, 0.1, 0.2)],
+        #            # ['reg_alpha', (0.001, 0.01, 0.1, 1, 10)]
+        #            # ['reg_lambda', (0.001, 0.01, 0.1, 1, 10)]
+        #            ]
+        # self.auto_grid_search('xgb', parameter_grid_list=pg_list, n_epoch=200,
+        #                       reduced_feature_list=reduced_feature_list,
+        #                       grid_search_n_cv=5, train_args=train_args, train_options=train_options)
 
         """
             Auto Train

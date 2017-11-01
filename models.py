@@ -1257,7 +1257,7 @@ class DeepNeuralNetworks(ModelBase):
         self.learning_rate = parameters['learning_rate']
         self.keep_probability = parameters['keep_probability']
         self.batch_size = parameters['batch_size']
-        self.dnn_seed = parameters['seed']
+        self.train_seed = parameters['seed']
         self.display_step = parameters['display_step']
         self.save_path = parameters['save_path']
         self.log_path = parameters['log_path']
@@ -1275,19 +1275,19 @@ class DeepNeuralNetworks(ModelBase):
 
         feature_num = self.x_train.shape[1]
 
-        inputs_ = tf.placeholder(tf.float64, [None, feature_num], name='inputs')
-        labels_ = tf.placeholder(tf.float64, None, name='labels')
-        loss_weights_ = tf.placeholder(tf.float64, None, name='loss_weights')
-        learning_rate_ = tf.placeholder(tf.float64, name='learning_rate')
-        keep_prob_ = tf.placeholder(tf.float64, name='keep_prob')
+        inputs_ = tf.placeholder(tf.float32, [None, feature_num], name='inputs')
+        labels_ = tf.placeholder(tf.float32, None, name='labels')
+        loss_weights_ = tf.placeholder(tf.float32, None, name='loss_weights')
+        learning_rate_ = tf.placeholder(tf.float32, name='learning_rate')
+        keep_prob_ = tf.placeholder(tf.float32, name='keep_prob')
         is_train_ = tf.placeholder(tf.bool, name='is_train')
 
         return inputs_, labels_, loss_weights_, learning_rate_, keep_prob_, is_train_
 
     # Full Connected Layer
-    def fc_layer(self, x_tensor, layer_name, num_outputs, keep_prob, training):
+    def fc_layer(self, x_tensor, layer_name, num_outputs, keep_prob, is_training):
 
-        if training:
+        if is_training:
             print('Using Batch Normalization')
 
         with tf.name_scope(layer_name):
@@ -1307,16 +1307,23 @@ class DeepNeuralNetworks(ModelBase):
             # # Activate function
             # fc = tf.sigmoid(fc_layer)
 
-            fc = tf.contrib.layers.fully_connected(x_tensor,
-                                                   num_outputs,
+            # x_shape = features.get_shape().as_list()
+            # weights_initializer = tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
+            weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN',
+                                                                                 seed=self.train_seed)
+            # weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
+            weights_reg = tf.contrib.layers.l2_regularizer(1e-3)
+            normalizer_fn = tf.contrib.layers.batch_norm
+            normalizer_params = {'is_training': is_training}
+
+            fc = tf.contrib.layers.fully_connected(inputs=x_tensor,
+                                                   num_outputs=num_outputs,
                                                    activation_fn=tf.nn.sigmoid,
-                                                   # weights_initializer=tf.truncated_normal_initializer(
-                                                   # stddev=2.0 / math.sqrt(x_shape[1])),
-                                                   weights_initializer=tf.contrib.layers.xavier_initializer(dtype=tf.float64,
-                                                                                                            seed=self.dnn_seed),
-                                                   # normalizer_fn=tf.contrib.layers.batch_norm,
-                                                   biases_initializer=tf.zeros_initializer(dtype=tf.float64)
-                                                   )
+                                                   weights_initializer=weights_initializer,
+                                                   weights_regularizer=weights_reg,
+                                                   normalizer_fn=normalizer_fn,
+                                                   normalizer_params=normalizer_params,
+                                                   biases_initializer=tf.zeros_initializer(dtype=tf.float32))
 
             tf.summary.histogram('fc_layer', fc)
 
@@ -1328,6 +1335,7 @@ class DeepNeuralNetworks(ModelBase):
     def output_layer(self, x_tensor, layer_name, num_outputs):
 
         with tf.name_scope(layer_name):
+
             #  x_shape = x_tensor.get_shape().as_list()
             #
             #  weights = tf.Variable(tf.truncated_normal([x_shape[1], num_outputs], stddev=2.0 / math.sqrt(x_shape[1])))
@@ -1338,12 +1346,16 @@ class DeepNeuralNetworks(ModelBase):
             #      output_layer = tf.add(tf.matmul(x_tensor, weights), biases)
             #  tf.summary.histogram('output', output_layer)
 
-            out = tf.contrib.layers.fully_connected(x_tensor,
-                                                    num_outputs,
+            # weights_initializer = tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
+            weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN',
+                                                                                 seed=self.train_seed)
+            # weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
+
+            out = tf.contrib.layers.fully_connected(inputs=x_tensor,
+                                                    num_outputs=num_outputs,
                                                     activation_fn=None,
-                                                    weights_initializer=tf.contrib.layers.xavier_initializer(dtype=tf.float64,
-                                                                                                             seed=self.dnn_seed),
-                                                    biases_initializer=tf.zeros_initializer())
+                                                    weights_initializer=weights_initializer,
+                                                    biases_initializer=tf.zeros_initializer(dtype=tf.float32))
 
         return out
 
@@ -1377,7 +1389,7 @@ class DeepNeuralNetworks(ModelBase):
         with tf.name_scope('log_loss'):
 
             w = w / tf.reduce_sum(w)
-            ones = tf.ones_like(y, dtype=tf.float64)
+            ones = tf.ones_like(y, dtype=tf.float32)
             loss = - tf.reduce_sum(w * (y * tf.log(prob) + (ones-y) * tf.log(ones-prob)))
             # loss = tf.losses.log_loss(labels=y, predictions=prob, weights=w)
 
