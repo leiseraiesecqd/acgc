@@ -1595,13 +1595,14 @@ class DeepNeuralNetworks(ModelBase):
                 # Prediction
                 print('------------------------------------------------------')
                 print('Predicting Probabilities...')
+                prob_train_cv = self.get_prob(sess, logits, x_train, self.batch_size, inputs, keep_prob, is_train)
                 prob_train = self.get_prob(sess, logits, self.x_train, self.batch_size, inputs, keep_prob, is_train)
                 prob_valid = self.get_prob(sess, logits, x_valid, self.batch_size, inputs, keep_prob, is_train)
                 prob_test = self.get_prob(sess, logits, self.x_test, self.batch_size, inputs, keep_prob, is_train)
 
-                loss_train, loss_valid, \
-                    loss_train_w, loss_valid_w = utils.print_loss_dnn(prob_train, prob_valid,
-                                                                      y_train, w_train, y_valid, w_valid)
+                loss_train, loss_valid, loss_train_w, loss_valid_w = \
+                    utils.print_loss_dnn(prob_train_cv, prob_valid, y_train, w_train, y_valid, w_valid)
+
                 prob_test_total.append(prob_test)
                 prob_train_total.append(prob_train)
                 loss_train_total.append(loss_train)
