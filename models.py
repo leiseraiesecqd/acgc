@@ -91,7 +91,7 @@ class ModelBase(object):
         clf = self.get_clf(parameters)
 
         # Training Model
-        if use_weight is True:
+        if use_weight:
             clf.fit(x_train, y_train, sample_weight=w_train)
         else:
             clf.fit(x_train, y_train)
@@ -99,7 +99,7 @@ class ModelBase(object):
         return clf
 
     def fit_with_round_log(self, boost_round_log_path, cv_count, x_train, y_train, w_train,
-                           x_valid, y_valid, w_valid, parameters, param_name, param_value, train_seed, cv_seed):
+                           x_valid, y_valid, w_valid, parameters, param_name, param_value):
 
         boost_round_log_path += self.model_name + '/'
         utils.check_dir([boost_round_log_path])
@@ -268,7 +268,7 @@ class ModelBase(object):
 
             utils.save_pred_to_csv(pred_path, self.id_test, prob_test_mean)
 
-        elif save_final_pred is True:
+        elif save_final_pred:
 
             utils.save_pred_to_csv(pred_path + 'final_results/' + self.model_name + '_',
                                    self.id_test, prob_test_mean)
@@ -320,7 +320,7 @@ class ModelBase(object):
             if mode == 'auto_train_boost_round':
                 clf, idx_round_cv, train_loss_round_cv, valid_loss_round_cv = \
                     self.fit_with_round_log(boost_round_log_path, cv_count, x_train, y_train, w_train, x_valid,
-                                            y_valid, w_valid, parameters, param_name, param_value, train_seed, cv_seed)
+                                            y_valid, w_valid, parameters, param_name, param_value)
                 idx_round = idx_round_cv
                 train_loss_round_total.append(train_loss_round_cv)
                 valid_loss_round_total.append(valid_loss_round_cv)
@@ -328,18 +328,18 @@ class ModelBase(object):
                 clf = self.fit(x_train, y_train, w_train, x_valid, y_valid, w_valid, parameters)
 
             # Feature Importance
-            if show_importance is True:
+            if show_importance:
                 self.get_importance(clf)
 
             # Prediction
-            if save_cv_pred is True:
+            if save_cv_pred:
                 cv_pred_path = pred_path + 'cv_results/' + self.model_name + '_cv_{}_'.format(cv_count)
             else:
                 cv_pred_path = None
             prob_test = self.predict(clf, self.x_test, pred_path=cv_pred_path)
 
             # Save Train Probabilities to CSV File
-            if save_cv_prob_train is True:
+            if save_cv_prob_train:
                 cv_prob_train_path = pred_path + 'cv_prob_train/' + self.model_name + '_cv_{}_'.format(cv_count)
             else:
                 cv_prob_train_path = None
@@ -392,12 +392,12 @@ class ModelBase(object):
             parameters['num_boost_round'] = self.num_boost_round
 
         # Save Final Result
-        if save_final_pred is True:
+        if save_final_pred:
             self.save_final_pred(mode, save_final_pred, prob_test_mean, pred_path,
                                  parameters, csv_idx, train_seed, cv_seed, file_name_params=file_name_params)
 
         # Save Final prob_train
-        if save_final_prob_train is True:
+        if save_final_prob_train:
             utils.save_prob_train_to_csv(pred_path + 'final_prob_train/' + self.model_name + '_',
                                          prob_train_mean, self.y_train)
 
@@ -414,13 +414,13 @@ class ModelBase(object):
                                   train_seed, cv_seed, acc_train, acc_train_era)
 
         # Save Loss Log to csv File
-        if save_csv_log is True:
+        if save_csv_log:
             self.save_csv_log(mode, csv_log_path, param_name, param_value, csv_idx,
                               loss_train_w_mean, loss_valid_w_mean, acc_train, train_seed,
                               cv_seed, n_valid, n_cv, parameters, file_name_params=file_name_params)
 
         # Return Final Result
-        if return_prob_test is True:
+        if return_prob_test:
             return prob_test_mean
 
     def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
@@ -439,7 +439,7 @@ class ModelBase(object):
         clf = self.fit(x_train, y_train, w_train, x_valid, y_valid, w_valid, parameters)
 
         # Feature Importance
-        if show_importance is True:
+        if show_importance:
             self.get_importance(clf)
 
         # Print LogLoss
@@ -487,7 +487,7 @@ class ModelBase(object):
                                     parameters=parameters, use_weight=use_weight)
 
             # Feature Importance
-            if show_importance is True:
+            if show_importance:
                 self.get_importance(clf)
 
             # Prediction
@@ -560,7 +560,7 @@ class ModelBase(object):
         clf = self.fit(x_train, y_train, w_train, x_valid, y_valid, w_valid, parameters)
 
         # Feature Importance
-        if show_importance is True:
+        if show_importance:
             self.get_importance(clf)
 
         # Test Probabilities
@@ -581,7 +581,7 @@ class ModelBase(object):
             parameters['num_boost_round'] = self.num_boost_round
 
         # Save Final Result
-        if save_final_pred is True:
+        if save_final_pred:
             self.save_final_pred(mode, save_final_pred, prob_test, pred_path,
                                  parameters, csv_idx, train_seed, cv_seed, file_name_params=file_name_params)
 
@@ -600,7 +600,7 @@ class ModelBase(object):
                                   train_seed, cv_seed, acc_train, acc_train_era)
 
         # Save Loss Log to csv File
-        if save_csv_log is True:
+        if save_csv_log:
             self.save_csv_log(mode, csv_log_path, param_name, param_value, csv_idx,
                               loss_train_w, loss_valid_w, acc_train, train_seed,
                               cv_seed, n_valid, n_cv, parameters, file_name_params=file_name_params)
@@ -840,7 +840,7 @@ class XGBoost(ModelBase):
 
     def prejudge_fit(self, x_train, y_train, w_train, x_valid, y_valid, w_valid, parameters=None, use_weight=True):
 
-        if use_weight is True:
+        if use_weight:
             d_train = xgb.DMatrix(x_train, label=y_train, weight=w_train)
             d_valid = xgb.DMatrix(x_valid, label=y_valid, weight=w_valid)
         else:
@@ -994,7 +994,7 @@ class LightGBM(ModelBase):
         print('Index of categorical feature: {}'.format(idx_category))
         print('------------------------------------------------------')
 
-        if use_weight is True:
+        if use_weight:
             d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=idx_category)
             d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
         else:
@@ -1093,7 +1093,7 @@ class LightGBM(ModelBase):
             print('Index of categorical feature: {}'.format(idx_category))
             print('------------------------------------------------------')
 
-            if use_weight is True:
+            if use_weight:
                 d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=idx_category)
                 d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
             else:
@@ -1105,7 +1105,7 @@ class LightGBM(ModelBase):
                             valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
 
             # Feature Importance
-            if show_importance is True:
+            if show_importance:
                 self.get_importance(bst)
 
             # Prediction
@@ -1231,7 +1231,7 @@ class CatBoost(ModelBase):
         w_train = [0.001 if w == 0 else w for w in w_train]
 
         # Fitting and Training Model
-        if use_weight is True:
+        if use_weight:
             clf.fit(X=x_train, y=y_train, cat_features=idx_category, sample_weight=w_train,
                     baseline=None, use_best_model=None, eval_set=(x_valid, y_valid), verbose=True, plot=False)
         else:
@@ -1616,7 +1616,7 @@ class DeepNeuralNetworks(ModelBase):
                                     valid_era, loss_train, loss_valid, loss_train_w, loss_valid_w, train_seed, cv_seed,
                                     acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era)
 
-                if save_cv_pred is True:
+                if save_cv_pred:
                     utils.save_pred_to_csv(pred_path + 'cv_results/' + self.model_name + '_cv_{}_'.format(cv_counter),
                                            self.id_test, prob_test)
 
@@ -1632,12 +1632,12 @@ class DeepNeuralNetworks(ModelBase):
             loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
 
             # Save Final Result
-            if save_final_pred is True:
+            if save_final_pred:
                 self.save_final_pred(mode, save_final_pred, prob_test_mean, pred_path,
                                      parameters, csv_idx, train_seed, cv_seed, file_name_params=file_name_params)
 
             # Save Final prob_train
-            if save_final_prob_train is True:
+            if save_final_prob_train:
                 utils.save_prob_train_to_csv(pred_path + 'final_prob_train/' + self.model_name + '_',
                                              prob_train_mean, self.y_train)
 
@@ -1654,13 +1654,13 @@ class DeepNeuralNetworks(ModelBase):
                                       train_seed, cv_seed, acc_train, acc_train_era)
 
             # Save Loss Log to csv File
-            if save_csv_log is True:
+            if save_csv_log:
                 self.save_csv_log(mode, csv_log_path, param_name, param_value, csv_idx,
                                   loss_train_w_mean, loss_valid_w_mean, acc_train, train_seed,
                                   cv_seed, n_valid, n_cv, parameters, file_name_params=file_name_params)
 
             # Return Final Result
-            if return_prob_test is True:
+            if return_prob_test:
                 return prob_test_mean
 
     def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
@@ -1889,7 +1889,7 @@ class DeepNeuralNetworks(ModelBase):
                                                                   y_train, w_train, y_valid, w_valid)
 
             # Save Final Result
-            if save_final_pred is True:
+            if save_final_pred:
                 self.save_final_pred(mode, save_final_pred, prob_test, pred_path,
                                      parameters, csv_idx, train_seed, cv_seed, file_name_params=file_name_params)
 
@@ -1907,13 +1907,13 @@ class DeepNeuralNetworks(ModelBase):
                                       train_seed, cv_seed, acc_train, acc_train_era)
 
             # Save Loss Log to csv File
-            if save_csv_log is True:
+            if save_csv_log:
                 self.save_csv_log(mode, csv_log_path, param_name, param_value, csv_idx,
                                   loss_train_w, loss_valid_w, acc_train, train_seed,
                                   cv_seed, n_valid, n_cv, parameters, file_name_params=file_name_params)
 
             # Return Final Result
-            if return_prob_test is True:
+            if return_prob_test:
                 return prob_test
 
 
