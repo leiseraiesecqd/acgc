@@ -472,7 +472,7 @@ class SingleModel:
         """
         # HyperParameters
         parameters = {'version': '1.0',
-                      'epochs': 5,
+                      'epochs': 1,
                       'unit_number': [48, 24, 12],
                       'learning_rate': 0.00005,
                       'keep_probability': 0.7,
@@ -1989,7 +1989,7 @@ class Training:
         # train_seed = random.randint(0, 500)
         # cv_seed = random.randint(0, 500)
         train_seed = 65
-        cv_seed = 5
+        cv_seed = 218
 
         # Training Arguments
         train_args = {'n_valid': 2,
