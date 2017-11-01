@@ -474,7 +474,7 @@ class SingleModel:
         parameters = {'version': '1.0',
                       'epochs': 10,
                       'unit_number': [240, 120, 60, 30, 15, 8, 4, 2],
-                      'learning_rate': 0.00005,
+                      'learning_rate': 0.0005,
                       'keep_probability': 0.75,
                       'batch_size': 128,
                       'seed': train_seed,
@@ -1980,15 +1980,15 @@ class Training:
         """
 
         # Create Global Seed for Training and Cross Validation
-        train_seed = random.randint(0, 500)
-        cv_seed = random.randint(0, 500)
-        # train_seed = 14
-        # cv_seed = 243
+        # train_seed = random.randint(0, 500)
+        # cv_seed = random.randint(0, 500)
+        train_seed = 14
+        cv_seed = 243
 
         # Training Arguments
         train_args = {'n_valid': 4,
                       'n_cv': 5,
-                      'n_era': 20,
+                      'n_era': 5,
                       'train_seed': train_seed,
                       'cv_seed': cv_seed,
                       'cv_generator': None,
