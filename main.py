@@ -472,7 +472,7 @@ class SingleModel:
         """
         # HyperParameters
         parameters = {'version': '1.0',
-                      'epochs': 1,
+                      'epochs': 4,
                       'unit_number': [48, 24, 12],
                       'learning_rate': 0.00005,
                       'keep_probability': 0.7,
@@ -482,6 +482,8 @@ class SingleModel:
                       'save_path': dnn_checkpoint_path,
                       'log_path': dnn_log_path}
 
+        file_name_params = ['epochs', 'unit_number', 'num_leaves', 'learning_rate', 'keep_probability', 'batch_size']
+
         self.train_args['parameters'] = parameters
         self.train_args['cv_generator'] = None
         self.train_args['train_seed'] = train_seed
@@ -490,7 +492,7 @@ class SingleModel:
         model = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
                                           self.e_train, self.x_test, self.id_test, parameters)
 
-        self.train_model(model=model, grid_search_tuple=grid_search_tuple)
+        self.train_model(model=model, grid_search_tuple=grid_search_tuple, file_name_params=file_name_params)
 
     def stack_lgb_train(self, train_seed, cv_seed, auto_idx=None, num_boost_round=None, grid_search_tuple=None):
         """
