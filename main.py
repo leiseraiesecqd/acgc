@@ -500,7 +500,7 @@ class SingleModel:
         model = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
                                           self.e_train, self.x_test, self.id_test, parameters)
 
-        self.train_model(model=model, file_name_params=file_name_params)
+        self.train_model(model=model, grid_search_tuple=grid_search_tuple, file_name_params=file_name_params)
 
     def stack_lgb_train(self, train_seed, cv_seed, auto_idx=None, num_boost_round=None, grid_search_tuple=None):
         """
