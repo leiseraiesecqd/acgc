@@ -2049,36 +2049,36 @@ class Training:
         """
             Auto Train with Logs of Boost Round
         """
-        pg_list = [
-                   ['learning_rate', [0.00005]]
-                   ]
-        train_seed_list = None
-        cv_seed_list = None
-        # self.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=5,
-        #                             num_boost_round=300, parameter_grid_list=pg_list,
-        #                             reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
+        # pg_list = [
+        #            ['learning_rate', [0.00005]]
+        #            ]
+        # train_seed_list = None
+        # cv_seed_list = None
+        # # self.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=5,
+        # #                             num_boost_round=300, parameter_grid_list=pg_list,
+        # #                             reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
+        # #                             train_args=train_args, train_options=train_options)
+        # self.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
+        #                             epochs=1, parameter_grid_list=pg_list,
+        #                             reduced_feature_list=reduced_feature_list, grid_search_n_cv=10,
         #                             train_args=train_args, train_options=train_options)
-        self.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
-                                    epochs=1, parameter_grid_list=pg_list,
-                                    reduced_feature_list=reduced_feature_list, grid_search_n_cv=10,
-                                    train_args=train_args, train_options=train_options)
 
         """
             Auto Grid Search Parameters
         """
-        # pg_list = [
-        #            # ['max_depth', [9]],
-        #            # ['min_child_weight', (6, 12, 18)],
-        #            ['subsample', (0.8, 0.85, 0.9, 0.95)],
-        #            # ['colsample_bytree', (0.7, 0.75, 0.8, 0.85)],
-        #            # ['colsample_bylevel', (0.6, 0.62, 0.67, 0.8)],
-        #            # ['gamma', (0.001, 0.01, 0.1, 0.2)],
-        #            # ['reg_alpha', (0.001, 0.01, 0.1, 1, 10)]
-        #            # ['reg_lambda', (0.001, 0.01, 0.1, 1, 10)]
-        #            ]
-        # self.auto_grid_search('xgb', parameter_grid_list=pg_list, n_epoch=100,
-        #                       reduced_feature_list=reduced_feature_list,
-        #                       grid_search_n_cv=10, train_args=train_args, train_options=train_options)
+        pg_list = [
+                   # ['max_depth', [9]],
+                   # ['min_child_weight', (6, 12, 18)],
+                   ['subsample', (0.8, 0.85, 0.9, 0.95)],
+                   # ['colsample_bytree', (0.7, 0.75, 0.8, 0.85)],
+                   # ['colsample_bylevel', (0.6, 0.62, 0.67, 0.8)],
+                   # ['gamma', (0.001, 0.01, 0.1, 0.2)],
+                   # ['reg_alpha', (0.001, 0.01, 0.1, 1, 10)]
+                   # ['reg_lambda', (0.001, 0.01, 0.1, 1, 10)]
+                   ]
+        self.auto_grid_search('xgb', parameter_grid_list=pg_list, n_epoch=100,
+                              reduced_feature_list=reduced_feature_list,
+                              grid_search_n_cv=10, train_args=train_args, train_options=train_options)
 
         """
             Auto Train
