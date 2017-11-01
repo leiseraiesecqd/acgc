@@ -492,7 +492,7 @@ class SingleModel:
 
         self.train_model(model=model, grid_search_tuple=grid_search_tuple)
 
-    def stack_lgb_train(self, train_seed, cv_seed, auto_idx=None, grid_search_tuple=None):
+    def stack_lgb_train(self, train_seed, cv_seed, auto_idx=None, num_boost_round=None, grid_search_tuple=None):
         """
             LightGBM for stack layer
         """
@@ -553,8 +553,11 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
+        if num_boost_round is None:
+            num_boost_round = 100
+
         LGB = models.LightGBM(blender_x_g_tree, self.y_train, self.w_train, self.e_train,
-                              blender_test_g_tree, self.id_test, num_boost_round=88)
+                              blender_test_g_tree, self.id_test, num_boost_round=num_boost_round)
 
         # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
@@ -1778,7 +1781,7 @@ class Training:
         else:
             raise ValueError('Wrong Model Name!')
 
-    def train_single_model(self, model_name, train_seed, cv_seed, auto_idx=None, reduced_feature_list=None,
+    def train_single_model(self, model_name, train_seed, cv_seed, num_boost_round=None, auto_idx=None, reduced_feature_list=None,
                            load_pickle=False, train_args=None, train_options=None):
         """
             Training Single Model
@@ -1791,9 +1794,12 @@ class Training:
 
         # Training Model
         if model_name == 'stack_lgb':
-            train_function(train_seed, cv_seed, auto_idx=auto_idx)
+            train_function(train_seed, cv_seed, auto_idx=auto_idx, num_boost_round=num_boost_round)
         else:
-            train_function(train_seed, cv_seed)
+            if num_boost_round is None:
+                train_function(train_seed, cv_seed)
+            else:
+                train_function(train_seed, cv_seed, num_boost_round=num_boost_round)
 
     def auto_grid_search(self, model_name=None, parameter_grid_list=None, reduced_feature_list=None,
                          n_epoch=1, grid_search_n_cv=5, train_args=None, train_options=None):
@@ -2009,6 +2015,9 @@ class Training:
         """
             Train Single Model
         """
+        # self.train_single_model('xgb', train_seed, cv_seed, num_boost_round=80,
+        #                         reduced_feature_list=reduced_feature_list,
+        #                         train_args=train_args, train_options=train_options)
         # self.train_single_model('dnn', train_seed, cv_seed, reduced_feature_list=reduced_feature_list,
         #                         train_args=train_args, train_options=train_options)
         # self.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False,
