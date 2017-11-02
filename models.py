@@ -1685,7 +1685,7 @@ class DeepNeuralNetworks(ModelBase):
                 idx_round = idx_round[:l]
                 train_loss_round_total = train_loss_round_total[:l]
                 valid_loss_round_total = valid_loss_round_total[:l]
-                print(l, idx_round.shape, train_loss_round_total.shape, valid_loss_round_total.shape)
+                print(l, len(idx_round), np.array(train_loss_round_total).shape, np.array(valid_loss_round_total).shape)
                 train_loss_round_mean = np.mean(np.array(train_loss_round_total), axis=0)
                 valid_loss_round_mean = np.mean(np.array(valid_loss_round_total), axis=0)
                 self.save_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean, valid_loss_round_mean,
