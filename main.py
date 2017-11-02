@@ -2009,8 +2009,8 @@ class Training:
         # cv_seed = 218
 
         # Training Arguments
-        train_args = {'n_valid': 2,
-                      'n_cv': 10,
+        train_args = {'n_valid': 4,
+                      'n_cv': 5,
                       'n_era': 20,
                       'train_seed': train_seed,
                       'cv_seed': cv_seed,
@@ -2060,7 +2060,7 @@ class Training:
         #                             train_args=train_args, train_options=train_options)
         self.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
                                     epochs=5, parameter_grid_list=pg_list,
-                                    reduced_feature_list=reduced_feature_list, grid_search_n_cv=10,
+                                    reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
                                     train_args=train_args, train_options=train_options)
 
         """
