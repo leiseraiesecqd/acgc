@@ -2049,10 +2049,9 @@ class Training:
         """
             Auto Train with Logs of Boost Round
         """
-        # pg_list = [
-        #            ['learning_rate', [0.00005]]
-        #            ]
-        pg_list = None
+        pg_list = [
+                   ['learning_rate', [0.00005]]
+                   ]
         train_seed_list = None
         cv_seed_list = None
         # self.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=5,
