@@ -473,7 +473,7 @@ class SingleModel:
         # HyperParameters
         parameters = {'version': '1.0',
                       'epochs': 10,
-                      'unit_number': [48, 24, 12],
+                      'unit_number': [256, 128, 64, 32],
                       'learning_rate': 0.0001,
                       'keep_probability': 0.7,
                       'batch_size': 128,
@@ -2010,8 +2010,8 @@ class Training:
         # cv_seed = 218
 
         # Training Arguments
-        train_args = {'n_valid': 2,
-                      'n_cv': 10,
+        train_args = {'n_valid': 4,
+                      'n_cv': 5,
                       'n_era': 20,
                       'train_seed': train_seed,
                       'cv_seed': cv_seed,
@@ -2060,8 +2060,8 @@ class Training:
         #                             reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
         #                             train_args=train_args, train_options=train_options)
         self.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
-                                    epochs=5, parameter_grid_list=pg_list, save_final_pred=True,
-                                    reduced_feature_list=reduced_feature_list, grid_search_n_cv=10,
+                                    epochs=10, parameter_grid_list=pg_list, save_final_pred=True,
+                                    reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
                                     train_args=train_args, train_options=train_options)
 
         """
