@@ -1883,8 +1883,8 @@ class Training:
             return random_list
 
         if train_seed_list is None:
-            train_seed_list = _random_int_list(0, 500, n_epoch)
-            cv_seed_list = _random_int_list(0, 500, n_epoch)
+            train_seed_list = _random_int_list(500, 1000, n_epoch)
+            cv_seed_list = _random_int_list(500, 1000, n_epoch)
 
         # Get Train Function
         train_options['save_final_pred'] = save_final_pred
@@ -1968,8 +1968,8 @@ class Training:
                                             train_args=train_args, train_options=train_options)
 
                 for ii in range(stack_final_epochs):
-                    t_seed = random.randint(500, 1000)
-                    c_seed = random.randint(500, 1000)
+                    t_seed = random.randint(0, 500)
+                    c_seed = random.randint(0, 500)
                     train_args['idx'] = 'auto_{}_epoch_{}'.format(i+1, ii+1)
                     train_function_s(t_seed, c_seed, auto_idx=i+1)
             else:
