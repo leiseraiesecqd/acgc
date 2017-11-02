@@ -2052,7 +2052,7 @@ class Training:
         """
         pg_list = [
                    # ['learning_rate', [0.00005]]
-                   ['unit_number', [[128, 64], [256, 128]], [256, 128, 64], [200, 100, 50]]
+                   ['unit_number', [[256, 128, 64], [200, 100, 50]]]
                    ]
         train_seed_list = [train_seed]
         cv_seed_list = [cv_seed]
