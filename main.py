@@ -2004,9 +2004,9 @@ class Training:
         """
 
         # Create Global Seed for Training and Cross Validation
-        train_seed = random.randint(0, 500)
+        # train_seed = random.randint(0, 500)
         # cv_seed = random.randint(0, 500)
-        # train_seed = 65
+        train_seed = 407
         cv_seed = 112  # 425 48 461 157
 
         # Training Arguments
@@ -2052,7 +2052,7 @@ class Training:
         """
         pg_list = [
                    # ['learning_rate', [0.00005]]
-                   ['unit_number', [[32, 16, 8], [64, 32, 16], [128, 64, 32], [128, 64, 32, 16], [256, 128, 64, 32], [256, 128, 64, 32, 16], [2048, 512]]]
+                   ['unit_number', [[128, 64], [256, 128]], [256, 128, 64], [200, 100, 50]]
                    ]
         train_seed_list = [train_seed]
         cv_seed_list = [cv_seed]
