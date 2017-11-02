@@ -473,12 +473,12 @@ class SingleModel:
         # HyperParameters
         parameters = {'version': '1.0',
                       'epochs': 10,
-                      'unit_number': [512, 256, 128, 64, 32],
+                      'unit_number': [128, 64, 32],
                       'learning_rate': 0.0001,
                       'keep_probability': 0.7,
                       'batch_size': 128,
                       'seed': train_seed,
-                      'display_step': 10,
+                      'display_step': 100,
                       'save_path': dnn_checkpoint_path,
                       'log_path': dnn_log_path}
 
@@ -1884,6 +1884,7 @@ class Training:
 
         if train_seed_list is None:
             train_seed_list = _random_int_list(500, 1000, n_epoch)
+        if cv_seed_list is None:
             cv_seed_list = _random_int_list(500, 1000, n_epoch)
 
         # Get Train Function
@@ -2007,11 +2008,11 @@ class Training:
         # train_seed = random.randint(0, 500)
         # cv_seed = random.randint(0, 500)
         train_seed = 65
-        cv_seed = 43  # 425 48 461 157
+        cv_seed = 241  # 425 48 461 157
 
         # Training Arguments
         train_args = {'n_valid': 4,
-                      'n_cv': 5,
+                      'n_cv': 20,
                       'n_era': 20,
                       'train_seed': train_seed,
                       'cv_seed': cv_seed,
@@ -2051,17 +2052,18 @@ class Training:
             Auto Train with Logs of Boost Round
         """
         pg_list = [
-                   ['learning_rate', [0.003]]
-                   # ['unit_number', [[32, 16, 8], [64, 32, 16], [128, 64, 32],
-                   #                  [128, 64, 32, 16], [256, 128, 64, 32],
-                   #                  [256, 128, 64], [200, 100, 50],
-                   #                  [256, 128, 64, 32, 16], [2048, 512], [128, 64],
-                   #                  [256, 128], [256, 128, 64], [200, 100, 50],
-                   #                  [256, 128, 64],[200, 100, 50]
-                   #                  ]]
+                   # ['learning_rate', [0.003]]
+                   ['unit_number', [[32, 16, 8],
+                                    [48, 24, 12],
+                                    [64, 32], [64, 32, 16],
+                                    [128, 64], [128, 64, 32], [128, 64, 32, 16],
+                                    [256, 128], [256, 128, 64], [256, 128, 64, 32], [256, 128, 64, 32, 16],
+                                    [200, 100, 50],
+                                    [2048, 512]
+                                    ]]
                    ]
         train_seed_list = [65]
-        cv_seed_list = [105]
+        cv_seed_list = [241]
         # train_seed_list = None
         # cv_seed_list = None
         # self.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=500,
@@ -2070,7 +2072,7 @@ class Training:
         #                             train_args=train_args, train_options=train_options)
         self.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
                                     epochs=3, parameter_grid_list=pg_list, save_final_pred=True,
-                                    reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
+                                    reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
                                     train_args=train_args, train_options=train_options)
 
         """
