@@ -1920,7 +1920,7 @@ class Training:
                     elif epochs is not None:
                         train_function(train_seed, cv_seed, grid_search_tuple=grid_search_tuple, epochs=epochs)
                     else:
-                        raise ValueError("Need argument 'num_boost_round' or 'epochs'!")
+                        train_function(train_seed, cv_seed, grid_search_tuple=grid_search_tuple)
 
                     print('======================================================')
                     print('Auto Training Epoch Done!')
@@ -2059,7 +2059,7 @@ class Training:
         #                             reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
         #                             train_args=train_args, train_options=train_options)
         self.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
-                                    epochs=None, parameter_grid_list=pg_list,
+                                    epochs=5, parameter_grid_list=pg_list,
                                     reduced_feature_list=reduced_feature_list, grid_search_n_cv=10,
                                     train_args=train_args, train_options=train_options)
 
