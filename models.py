@@ -1301,9 +1301,9 @@ class DeepNeuralNetworks(ModelBase):
 
             # x_shape = features.get_shape().as_list()
             # weights_initializer = tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
-            weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN',
-                                                                                 seed=self.train_seed)
-            # weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
+            # weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN',
+            #                                                                      seed=self.train_seed)
+            weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
             weights_reg = tf.contrib.layers.l2_regularizer(1e-3)
             normalizer_fn = tf.contrib.layers.batch_norm
             normalizer_params = {'is_training': is_training}
@@ -1329,9 +1329,9 @@ class DeepNeuralNetworks(ModelBase):
         with tf.name_scope(layer_name):
 
             # weights_initializer = tf.truncated_normal_initializer(stddev=2.0 / math.sqrt(x_shape[1])),
-            weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN',
-                                                                                 seed=self.train_seed)
-            # weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
+            # weights_initializer = tf.contrib.layers.variance_scaling_initializer(factor=1.0, mode='FAN_IN',
+            #                                                                      seed=self.train_seed)
+            weights_initializer = tf.contrib.layers.xavier_initializer(dtype=tf.float32, seed=self.train_seed)
 
             out = tf.contrib.layers.fully_connected(inputs=x_tensor,
                                                     num_outputs=num_outputs,
