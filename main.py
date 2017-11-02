@@ -2011,7 +2011,7 @@ class Training:
 
         # Training Arguments
         train_args = {'n_valid': 4,
-                      'n_cv': 20,
+                      'n_cv': 5,
                       'n_era': 20,
                       'train_seed': train_seed,
                       'cv_seed': cv_seed,
@@ -2060,18 +2060,18 @@ class Training:
                    #                  [256, 128, 64],[200, 100, 50]
                    #                  ]]
                    ]
-        # train_seed_list = [train_seed]
-        # cv_seed_list = [cv_seed]
-        train_seed_list = None
-        cv_seed_list = None
-        self.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=500,
-                                    num_boost_round=150, parameter_grid_list=pg_list,
-                                    reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
-                                    train_args=train_args, train_options=train_options)
-        # self.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
-        #                             epochs=3, parameter_grid_list=pg_list, save_final_pred=True,
-        #                             reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
+        train_seed_list = [65]
+        cv_seed_list = [105]
+        # train_seed_list = None
+        # cv_seed_list = None
+        # self.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=500,
+        #                             num_boost_round=150, parameter_grid_list=pg_list,
+        #                             reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
         #                             train_args=train_args, train_options=train_options)
+        self.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
+                                    epochs=3, parameter_grid_list=pg_list, save_final_pred=True,
+                                    reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
+                                    train_args=train_args, train_options=train_options)
 
         """
             Auto Grid Search Parameters
