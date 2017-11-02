@@ -5,9 +5,10 @@ import os
 import time
 import csv
 import models
-import main
 import preprocess
 from os.path import isdir
+
+prejudged_data_path = './results/prejudge/'
 
 
 # Save Data
@@ -449,7 +450,7 @@ def print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_v
 def print_positive_rate_test(era_sign_test=None):
 
     if era_sign_test is None:
-        era_sign_test = load_pkl_to_data(main.prejudged_data_path + 'binary_era_sign_test.p')
+        era_sign_test = load_pkl_to_data(prejudged_data_path + 'binary_era_sign_test.p')
 
     positive_rate_test = np.sum(era_sign_test) / len(era_sign_test)
 
