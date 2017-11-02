@@ -478,7 +478,7 @@ class SingleModel:
                       'keep_probability': 0.7,
                       'batch_size': 128,
                       'seed': train_seed,
-                      'display_step': 100,
+                      'display_step': 10,
                       'save_path': dnn_checkpoint_path,
                       'log_path': dnn_log_path}
 
@@ -2006,8 +2006,8 @@ class Training:
         # Create Global Seed for Training and Cross Validation
         # train_seed = random.randint(0, 500)
         # cv_seed = random.randint(0, 500)
-        train_seed = 407
-        cv_seed = 112  # 425 48 461 157
+        train_seed = 65
+        cv_seed = 43  # 425 48 461 157
 
         # Training Arguments
         train_args = {'n_valid': 4,
@@ -2052,7 +2052,13 @@ class Training:
         """
         pg_list = [
                    # ['learning_rate', [0.00005]]
-                   ['unit_number', [[256, 128, 64], [200, 100, 50]]]
+                   ['unit_number', [[32, 16, 8], [64, 32, 16], [128, 64, 32],
+                                    [128, 64, 32, 16], [256, 128, 64, 32],
+                                    [256, 128, 64], [200, 100, 50],
+                                    [256, 128, 64, 32, 16], [2048, 512], [128, 64],
+                                    [256, 128], [256, 128, 64], [200, 100, 50],
+                                    [256, 128, 64],[200, 100, 50]
+                                    ]]
                    ]
         train_seed_list = [train_seed]
         cv_seed_list = [cv_seed]
@@ -2061,7 +2067,7 @@ class Training:
         #                             reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
         #                             train_args=train_args, train_options=train_options)
         self.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
-                                    epochs=5, parameter_grid_list=pg_list, save_final_pred=True,
+                                    epochs=3, parameter_grid_list=pg_list, save_final_pred=True,
                                     reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
                                     train_args=train_args, train_options=train_options)
 
