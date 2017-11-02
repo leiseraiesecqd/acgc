@@ -296,7 +296,7 @@ class SingleModel:
         self.train_args['cv_seed'] = cv_seed
 
         if num_boost_round is None:
-            num_boost_round = 30
+            num_boost_round = 150
 
         model = models.XGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
                                self.x_test, self.id_test, num_boost_round=num_boost_round)
@@ -1968,8 +1968,8 @@ class Training:
                                             train_args=train_args, train_options=train_options)
 
                 for ii in range(stack_final_epochs):
-                    t_seed = random.randint(0, 500)
-                    c_seed = random.randint(0, 500)
+                    t_seed = random.randint(500, 1000)
+                    c_seed = random.randint(500, 1000)
                     train_args['idx'] = 'auto_{}_epoch_{}'.format(i+1, ii+1)
                     train_function_s(t_seed, c_seed, auto_idx=i+1)
             else:
@@ -2011,7 +2011,7 @@ class Training:
 
         # Training Arguments
         train_args = {'n_valid': 4,
-                      'n_cv': 5,
+                      'n_cv': 20,
                       'n_era': 20,
                       'train_seed': train_seed,
                       'cv_seed': cv_seed,
@@ -2051,25 +2051,27 @@ class Training:
             Auto Train with Logs of Boost Round
         """
         pg_list = [
-                   # ['learning_rate', [0.00005]]
-                   ['unit_number', [[32, 16, 8], [64, 32, 16], [128, 64, 32],
-                                    [128, 64, 32, 16], [256, 128, 64, 32],
-                                    [256, 128, 64], [200, 100, 50],
-                                    [256, 128, 64, 32, 16], [2048, 512], [128, 64],
-                                    [256, 128], [256, 128, 64], [200, 100, 50],
-                                    [256, 128, 64],[200, 100, 50]
-                                    ]]
+                   ['learning_rate', [0.003]]
+                   # ['unit_number', [[32, 16, 8], [64, 32, 16], [128, 64, 32],
+                   #                  [128, 64, 32, 16], [256, 128, 64, 32],
+                   #                  [256, 128, 64], [200, 100, 50],
+                   #                  [256, 128, 64, 32, 16], [2048, 512], [128, 64],
+                   #                  [256, 128], [256, 128, 64], [200, 100, 50],
+                   #                  [256, 128, 64],[200, 100, 50]
+                   #                  ]]
                    ]
-        train_seed_list = [train_seed]
-        cv_seed_list = [cv_seed]
-        # self.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=5,
-        #                             num_boost_round=300, parameter_grid_list=pg_list,
+        # train_seed_list = [train_seed]
+        # cv_seed_list = [cv_seed]
+        train_seed_list = None
+        cv_seed_list = None
+        self.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=500,
+                                    num_boost_round=150, parameter_grid_list=pg_list,
+                                    reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
+                                    train_args=train_args, train_options=train_options)
+        # self.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
+        #                             epochs=3, parameter_grid_list=pg_list, save_final_pred=True,
         #                             reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
         #                             train_args=train_args, train_options=train_options)
-        self.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
-                                    epochs=3, parameter_grid_list=pg_list, save_final_pred=True,
-                                    reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
-                                    train_args=train_args, train_options=train_options)
 
         """
             Auto Grid Search Parameters
