@@ -2005,9 +2005,9 @@ class Training:
 
         # Create Global Seed for Training and Cross Validation
         train_seed = random.randint(0, 500)
-        cv_seed = random.randint(0, 500)
+        # cv_seed = random.randint(0, 500)
         # train_seed = 65
-        # cv_seed = 218
+        cv_seed = 112  # 425 48 461 157
 
         # Training Arguments
         train_args = {'n_valid': 4,
@@ -2051,16 +2051,17 @@ class Training:
             Auto Train with Logs of Boost Round
         """
         pg_list = [
-                   ['learning_rate', [0.00005]]
+                   # ['learning_rate', [0.00005]]
+                   ['unit_number', [[32, 16, 8], [64, 32, 16], [128, 64, 32], [128, 64, 32, 16], [256, 128, 64, 32], [256, 128, 64, 32, 16], [2048, 512]]]
                    ]
-        train_seed_list = None
-        cv_seed_list = None
+        train_seed_list = [train_seed]
+        cv_seed_list = [cv_seed]
         # self.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=5,
         #                             num_boost_round=300, parameter_grid_list=pg_list,
         #                             reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
         #                             train_args=train_args, train_options=train_options)
         self.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
-                                    epochs=2, parameter_grid_list=pg_list, save_final_pred=True,
+                                    epochs=5, parameter_grid_list=pg_list, save_final_pred=True,
                                     reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
                                     train_args=train_args, train_options=train_options)
 
