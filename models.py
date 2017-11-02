@@ -249,7 +249,8 @@ class ModelBase(object):
                                              train_seed, cv_seed, n_valid, n_cv, parameters)
 
     def save_final_pred(self, mode, save_final_pred, prob_test_mean, pred_path,
-                        parameters, csv_idx, train_seed, cv_seed, file_name_params=None):
+                        parameters, csv_idx, train_seed, cv_seed, boost_round_log_path=None,
+                        param_name=None, param_value=None, file_name_params=None):
 
         params = '_'
         if file_name_params is not None:
@@ -259,20 +260,31 @@ class ModelBase(object):
             for p_name, p_value in parameters.items():
                 params += str(p_value) + '_'
 
-        if mode == 'auto_train':
+        if save_final_pred:
 
-            pred_path += self.model_name + '/'
-            utils.check_dir([pred_path])
-            pred_path += self.model_name + params + 'results/'
-            utils.check_dir([pred_path])
-            pred_path += self.model_name + '_' + str(csv_idx) + '_t' + str(train_seed) + '_c' + str(cv_seed) + '_'
+            if mode == 'auto_train':
 
-            utils.save_pred_to_csv(pred_path, self.id_test, prob_test_mean)
+                pred_path += self.model_name + '/'
+                utils.check_dir([pred_path])
+                pred_path += self.model_name + params + 'results/'
+                utils.check_dir([pred_path])
+                pred_path += self.model_name + '_' + str(csv_idx) + '_t' + str(train_seed) + '_c' + str(cv_seed) + '_'
+                utils.save_pred_to_csv(pred_path, self.id_test, prob_test_mean)
 
-        elif save_final_pred:
+            elif mode == 'auto_train_boost_round':
 
-            pred_path += 'final_results/' + self.model_name + '_t' + str(train_seed) + '_c' + str(cv_seed) + params
-            utils.save_pred_to_csv(pred_path, self.id_test, prob_test_mean)
+                boost_round_log_path += self.model_name + '/'
+                utils.check_dir([boost_round_log_path])
+                boost_round_log_path += self.model_name + '_' + param_name + '_' + str(param_value) + '/'
+                utils.check_dir([boost_round_log_path])
+                pred_path = boost_round_log_path + 'final_results/'
+                utils.check_dir([pred_path])
+                pred_path += self.model_name + '_' + str(csv_idx) + '_t' + str(train_seed) + '_c' + str(cv_seed) + '_'
+                utils.save_pred_to_csv(pred_path, self.id_test, prob_test_mean)
+
+            else:
+                pred_path += 'final_results/' + self.model_name + '_t' + str(train_seed) + '_c' + str(cv_seed) + params
+                utils.save_pred_to_csv(pred_path, self.id_test, prob_test_mean)
 
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, boost_round_log_path=None, n_valid=4,
               n_cv=20, n_era=20, train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
@@ -395,7 +407,8 @@ class ModelBase(object):
         # Save Final Result
         if save_final_pred:
             self.save_final_pred(mode, save_final_pred, prob_test_mean, pred_path,
-                                 parameters, csv_idx, train_seed, cv_seed, file_name_params=file_name_params)
+                                 parameters, csv_idx, train_seed, cv_seed, boost_round_log_path,
+                                 param_name, param_value, file_name_params=None)
 
         # Save Final prob_train
         if save_final_prob_train:
@@ -1693,7 +1706,8 @@ class DeepNeuralNetworks(ModelBase):
             # Save Final Result
             if save_final_pred:
                 self.save_final_pred(mode, save_final_pred, prob_test_mean, pred_path,
-                                     parameters, csv_idx, train_seed, cv_seed, file_name_params=file_name_params)
+                                     parameters, csv_idx, train_seed, cv_seed, boost_round_log_path,
+                                     param_name, param_value, file_name_params=None)
 
             # Save Final prob_train
             if save_final_prob_train:

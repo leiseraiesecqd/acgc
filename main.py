@@ -1870,7 +1870,7 @@ class Training:
 
     def auto_train_boost_round(self, model_name=None, train_seed_list=None, cv_seed_list=None, n_epoch=1,
                                num_boost_round=None, epochs=None, parameter_grid_list=None, reduced_feature_list=None,
-                               grid_search_n_cv=20, train_args=None, train_options=None):
+                               grid_search_n_cv=20, save_final_pred=False, train_args=None, train_options=None):
         """
             Automatically Grid Searching
         """
@@ -1887,6 +1887,7 @@ class Training:
             cv_seed_list = _random_int_list(0, 500, n_epoch)
 
         # Get Train Function
+        train_options['save_final_pred'] = save_final_pred
         train_function = \
             self.get_train_function('auto_train_boost_round', model_name, grid_search_n_cv=grid_search_n_cv,
                                     reduced_feature_list=reduced_feature_list, train_args=train_args,
@@ -2059,7 +2060,7 @@ class Training:
         #                             reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
         #                             train_args=train_args, train_options=train_options)
         self.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
-                                    epochs=5, parameter_grid_list=pg_list,
+                                    epochs=5, parameter_grid_list=pg_list, save_final_pred=True,
                                     reduced_feature_list=reduced_feature_list, grid_search_n_cv=10,
                                     train_args=train_args, train_options=train_options)
 
