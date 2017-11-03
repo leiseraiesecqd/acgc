@@ -2091,6 +2091,22 @@ class Training:
                                   reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
                                   train_args=train_args, train_options=train_options)
 
+        train_args = {'n_valid': 4,
+                      'n_cv': 20,
+                      'n_era': 20,
+                      'train_seed': train_seed,
+                      'cv_seed': cv_seed,
+                      'cv_generator': None,
+                      'era_list': None,
+                      'rescale': True}
+        pg_list = [['learning_rate', [0.00002]]]
+        train_seed_list = [65, 666]
+        cv_seed_list = [241, 216]
+        TM.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
+                                  epochs=2, parameter_grid_list=pg_list, save_final_pred=True,
+                                  reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
+                                  train_args=train_args, train_options=train_options)
+
         """
             Auto Grid Search Parameters
         """
