@@ -1640,6 +1640,7 @@ class DeepNeuralNetworks(ModelBase):
                 print('Validation Set Era: ', valid_era)
                 print('Positive Rate of Train Set: ', positive_rate_train)
                 print('Positive Rate of Valid Set: ', positive_rate_valid)
+                print('Rescale Rate of Valid Set: ', rescale_rate)
                 print('------------------------------------------------------')
 
                 # Training
@@ -1670,6 +1671,8 @@ class DeepNeuralNetworks(ModelBase):
 
                 # Rescale
                 if rescale is True:
+                    print('------------------------------------------------------')
+                    print('Rescaling Results...')
                     prob_test *= rescale_rate
                     prob_train *= rescale_rate
                     prob_valid *= rescale_rate
