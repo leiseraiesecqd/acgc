@@ -2025,7 +2025,8 @@ class Training:
                       'train_seed': train_seed,
                       'cv_seed': cv_seed,
                       'cv_generator': None,
-                      'era_list': None}
+                      'era_list': None,
+                      'rescale': False}
 
         # Training Options
         train_options = {'show_importance': False,
@@ -2060,7 +2061,7 @@ class Training:
             Auto Train with Logs of Boost Round
         """
         pg_list = [
-                   ['learning_rate', [0.00001, 0.00003, 0.00005, 0.0001, 0.0003, 0.0005]]
+                   ['learning_rate', [0.00004]]
                    # ['keep_probability', [0.4, 0.5, 0.6, 0.7, 0.8, 0.9]]
                    # ['unit_number',
                    #  [
@@ -2086,7 +2087,7 @@ class Training:
         #                           reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
         #                           train_args=train_args, train_options=train_options)
         TM.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
-                                  epochs=4, parameter_grid_list=pg_list, save_final_pred=True,
+                                  epochs=5, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
                                   train_args=train_args, train_options=train_options)
 

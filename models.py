@@ -200,14 +200,6 @@ class ModelBase(object):
 
         return prob_train
 
-    @staticmethod
-    def print_loss(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid):
-
-        loss_train, loss_valid, loss_train_w, loss_valid_w = \
-            utils.print_loss_proba(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
-
-        return loss_train, loss_valid, loss_train_w, loss_valid_w
-
     def save_csv_log(self, mode, csv_log_path, param_name, param_value, csv_idx, loss_train_w_mean, loss_valid_w_mean,
                      acc_train, train_seed, cv_seed, n_valid, n_cv, parameters, file_name_params=None):
 
@@ -286,10 +278,23 @@ class ModelBase(object):
                 pred_path += 'final_results/' + self.model_name + '_t' + str(train_seed) + '_c' + str(cv_seed) + params
                 utils.save_pred_to_csv(pred_path, self.id_test, prob_test_mean)
 
+    @staticmethod
+    def get_rescale_rate(y_train):
+
+        positive = 0
+        for y in y_train:
+            if y == 1:
+                positive += 1
+
+        positive_rate = positive / len(y_train)
+        rescale_rate = len(y_train) / (2*positive)
+
+        return positive_rate, rescale_rate
+
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, boost_round_log_path=None, n_valid=4,
               n_cv=20, n_era=20, train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
               show_accuracy=False, save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True,
-              save_final_prob_train=False, save_csv_log=True, csv_idx=None, cv_generator=None,
+              save_final_prob_train=False, save_csv_log=True, csv_idx=None, cv_generator=None, rescale=False,
               return_prob_test=False, mode=None, param_name=None, param_value=None, file_name_params=None):
 
         # Check if directories exit or not
@@ -323,10 +328,16 @@ class ModelBase(object):
 
             cv_count += 1
 
+            # Get Positive Rate of Train Set and Rescale Rate
+            positive_rate_train, rescale_rate = self.get_rescale_rate(y_train)
+            positive_rate_valid, _ = self.get_rescale_rate(y_valid)
+
             print('======================================================')
             print('Training on the Cross Validation Set: {}/{}'.format(cv_count, n_cv))
             print('Validation Set Era: ', valid_era)
             print('Number of Features: ', x_train.shape[1])
+            print('Positive Rate of Train Set: ', positive_rate_train)
+            print('Positive Rate of Valid Set: ', positive_rate_valid)
             print('------------------------------------------------------')
 
             # Fitting and Training Model
@@ -361,11 +372,19 @@ class ModelBase(object):
             # Get Probabilities of Validation Set
             prob_valid = self.predict(clf, x_valid)
 
+            # Rescale
+            if rescale is True:
+                print('------------------------------------------------------')
+                print('Rescaling Results...')
+                prob_test *= rescale_rate
+                prob_train *= rescale_rate
+                prob_valid *= rescale_rate
+
             # Print LogLoss
             print('------------------------------------------------------')
             print('Validation Set Era: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
-                self.print_loss(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+                utils.print_loss(prob_train, y_train, w_train, prob_valid, y_valid, w_valid)
 
             # Print and Get Accuracies of CV
             acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
@@ -456,15 +475,16 @@ class ModelBase(object):
         if show_importance:
             self.get_importance(clf)
 
-        # Print LogLoss
-        loss_train, loss_valid, loss_train_w, loss_valid_w =\
-            self.print_loss(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
-
-        losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
-
         # Prediction
+        prob_train = self.predict(clf, x_train)
         prob_valid = self.predict(clf, x_valid)
         prob_test = self.predict(clf, x_test)
+
+        # Print LogLoss
+        loss_train, loss_valid, loss_train_w, loss_valid_w = \
+            utils.print_loss(prob_train, y_train, w_train, prob_valid, y_valid, w_valid)
+
+        losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
 
         return prob_valid, prob_test, losses
 
@@ -512,10 +532,13 @@ class ModelBase(object):
             prob_train = self.get_prob_train(clf, self.x_train, pred_path=pred_path
                                              + 'cv_prob_train/' + self.model_name + '_cv_{}_'.format(count))
 
+            # Prediction
+            prob_valid = self.predict(clf, x_valid)
+
             # Print LogLoss
             print('------------------------------------------------------')
-            loss_train, loss_valid, loss_train_w, loss_valid_w = self.print_loss(clf, x_train, y_train, w_train,
-                                                                                 x_valid, y_valid, w_valid)
+            loss_train, loss_valid, loss_train_w, loss_valid_w = \
+                utils.print_loss(prob_train, y_train, w_train, prob_valid, y_valid, w_valid)
 
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
@@ -588,7 +611,7 @@ class ModelBase(object):
 
         # Print LogLoss
         loss_train, loss_valid, loss_train_w, loss_valid_w = \
-            self.print_loss(clf, x_train, y_train, w_train, x_valid, y_valid, w_valid)
+            utils.print_loss(prob_train, y_train, w_train, prob_valid, y_valid, w_valid)
 
         # Save 'num_boost_round'
         if self.model_name in ['xgb', 'lgb']:
@@ -908,14 +931,6 @@ class XGBoost(ModelBase):
 
         return prob_train
 
-    @staticmethod
-    def print_loss(bst, x_train, y_train, w_train, x_valid, y_valid, w_valid):
-
-        loss_train, loss_valid, loss_train_w, loss_valid_w = \
-            utils.print_loss_xgb(bst, x_train, y_train, w_train, x_valid, y_valid, w_valid)
-
-        return loss_train, loss_valid, loss_train_w, loss_valid_w
-
 
 class SKLearnXGBoost(ModelBase):
     """
@@ -1071,14 +1086,6 @@ class LightGBM(ModelBase):
             utils.save_prob_train_to_csv(pred_path, prob_train, self.y_train)
 
         return prob_train
-
-    @staticmethod
-    def print_loss(bst, x_train, y_train, w_train, x_valid, y_valid, w_valid):
-
-        loss_train, loss_valid, loss_train_w, loss_valid_w = \
-            utils.print_loss_lgb(bst, x_train, y_train, w_train, x_valid, y_valid, w_valid)
-
-        return loss_train, loss_valid, loss_train_w, loss_valid_w
 
     def prejudge_train_multiclass(self, pred_path=None, n_splits=10, n_cv=10, n_era=20, cv_seed=None,
                                   use_weight=True, parameters=None, show_importance=False, cv_generator=None):
@@ -1562,7 +1569,7 @@ class DeepNeuralNetworks(ModelBase):
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, boost_round_log_path=None, n_valid=4,
               n_cv=20, n_era=20, train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
               show_accuracy=False, save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True,
-              save_final_prob_train=False, save_csv_log=True, csv_idx=None, cv_generator=None,
+              save_final_prob_train=False, save_csv_log=True, csv_idx=None, cv_generator=None, rescale=False,
               return_prob_test=False, mode=None, param_name=None, param_value=None, file_name_params=None):
 
         # Check if directories exit or not
@@ -1623,10 +1630,16 @@ class DeepNeuralNetworks(ModelBase):
 
                 cv_counter += 1
 
+                # Get Positive Rate of Train Set and Rescale Rate
+                positive_rate_train, rescale_rate = self.get_rescale_rate(y_train)
+                positive_rate_valid, _ = self.get_rescale_rate(y_valid)
+
                 print('======================================================')
                 print('Training on the Cross Validation Set: {}/{}'.format(cv_counter, n_cv))
                 print('Number of Features: ', x_train.shape[1])
                 print('Validation Set Era: ', valid_era)
+                print('Positive Rate of Train Set: ', positive_rate_train)
+                print('Positive Rate of Valid Set: ', positive_rate_valid)
                 print('------------------------------------------------------')
 
                 # Training
@@ -1651,13 +1664,19 @@ class DeepNeuralNetworks(ModelBase):
                 # Prediction
                 print('------------------------------------------------------')
                 print('Predicting Probabilities...')
-                prob_train_cv = self.get_prob(sess, logits, x_train, self.batch_size, inputs, keep_prob, is_training)
                 prob_train = self.get_prob(sess, logits, self.x_train, self.batch_size, inputs, keep_prob, is_training)
                 prob_valid = self.get_prob(sess, logits, x_valid, self.batch_size, inputs, keep_prob, is_training)
                 prob_test = self.get_prob(sess, logits, self.x_test, self.batch_size, inputs, keep_prob, is_training)
 
+                # Rescale
+                if rescale is True:
+                    prob_test *= rescale_rate
+                    prob_train *= rescale_rate
+                    prob_valid *= rescale_rate
+
+                # Print Losses of CV
                 loss_train, loss_valid, loss_train_w, loss_valid_w = \
-                    utils.print_loss_dnn(prob_train_cv, prob_valid, y_train, w_train, y_valid, w_valid)
+                    utils.print_loss(prob_train, y_train, w_train, prob_valid, y_valid, w_valid)
 
                 prob_test_total.append(prob_test)
                 prob_train_total.append(prob_train)
@@ -1836,9 +1855,8 @@ class DeepNeuralNetworks(ModelBase):
             prob_valid = 1.0 / (1.0 + np.exp(-logits_pred_valid))
             prob_test = 1.0 / (1.0 + np.exp(-logits_pred_test))
 
-            loss_train, loss_valid, \
-                loss_train_w, loss_valid_w = utils.print_loss_dnn(prob_train, prob_valid,
-                                                                  y_train, w_train, y_valid, w_valid)
+            loss_train, loss_valid, loss_train_w, loss_valid_w = \
+                utils.print_loss(prob_train, y_train, w_train, prob_valid, y_valid, w_valid)
 
             losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
 
@@ -1957,9 +1975,8 @@ class DeepNeuralNetworks(ModelBase):
             prob_valid = 1.0 / (1.0 + np.exp(-logits_pred_valid))
             prob_test = 1.0 / (1.0 + np.exp(-logits_pred_test))
 
-            loss_train, loss_valid, \
-                loss_train_w, loss_valid_w = utils.print_loss_dnn(prob_train, prob_valid,
-                                                                  y_train, w_train, y_valid, w_valid)
+            loss_train, loss_valid, loss_train_w, loss_valid_w = \
+                utils.print_loss(prob_train, y_train, w_train, prob_valid, y_valid, w_valid)
 
             # Save Final Result
             if save_final_pred:
