@@ -384,7 +384,7 @@ class ModelBase(object):
             print('------------------------------------------------------')
             print('Validation Set Era: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
-                utils.print_loss(prob_train, self.y_train, w_train, prob_valid, y_valid, w_valid)
+                utils.print_loss(prob_train, self.y_train, self.w_train, prob_valid, y_valid, w_valid)
 
             # Print and Get Accuracies of CV
             acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
@@ -482,7 +482,7 @@ class ModelBase(object):
 
         # Print LogLoss
         loss_train, loss_valid, loss_train_w, loss_valid_w = \
-            utils.print_loss(prob_train, self.y_train, w_train, prob_valid, y_valid, w_valid)
+            utils.print_loss(prob_train, self.y_train, self.w_train, prob_valid, y_valid, w_valid)
 
         losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
 
@@ -538,7 +538,7 @@ class ModelBase(object):
             # Print LogLoss
             print('------------------------------------------------------')
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
-                utils.print_loss(prob_train, self.y_train, w_train, prob_valid, y_valid, w_valid)
+                utils.print_loss(prob_train, self.y_train, self.w_train, prob_valid, y_valid, w_valid)
 
             prob_test_total.append(list(prob_test))
             prob_train_total.append(list(prob_train))
@@ -611,7 +611,7 @@ class ModelBase(object):
 
         # Print LogLoss
         loss_train, loss_valid, loss_train_w, loss_valid_w = \
-            utils.print_loss(prob_train, self.y_train, w_train, prob_valid, y_valid, w_valid)
+            utils.print_loss(prob_train, self.y_train, self.w_train, prob_valid, y_valid, w_valid)
 
         # Save 'num_boost_round'
         if self.model_name in ['xgb', 'lgb']:
@@ -1676,7 +1676,7 @@ class DeepNeuralNetworks(ModelBase):
                 
                 # Print Losses of CV
                 loss_train, loss_valid, loss_train_w, loss_valid_w = \
-                    utils.print_loss(prob_train, self.y_train, w_train, prob_valid, y_valid, w_valid)
+                    utils.print_loss(prob_train, self.y_train, self.w_train, prob_valid, y_valid, w_valid)
 
                 prob_test_total.append(prob_test)
                 prob_train_total.append(prob_train)
@@ -1856,7 +1856,7 @@ class DeepNeuralNetworks(ModelBase):
             prob_test = 1.0 / (1.0 + np.exp(-logits_pred_test))
 
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
-                utils.print_loss(prob_train, self.y_train, w_train, prob_valid, y_valid, w_valid)
+                utils.print_loss(prob_train, self.y_train, self.w_train, prob_valid, y_valid, w_valid)
 
             losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
 
@@ -1976,7 +1976,7 @@ class DeepNeuralNetworks(ModelBase):
             prob_test = 1.0 / (1.0 + np.exp(-logits_pred_test))
 
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
-                utils.print_loss(prob_train, self.y_train, w_train, prob_valid, y_valid, w_valid)
+                utils.print_loss(prob_train, self.y_train, self.w_train, prob_valid, y_valid, w_valid)
 
             # Save Final Result
             if save_final_pred:
