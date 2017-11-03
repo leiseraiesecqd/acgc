@@ -2026,7 +2026,7 @@ class Training:
                       'cv_seed': cv_seed,
                       'cv_generator': None,
                       'era_list': None,
-                      'rescale': True}
+                      'rescale': False}
 
         # Training Options
         train_options = {'show_importance': False,
@@ -2061,7 +2061,7 @@ class Training:
             Auto Train with Logs of Boost Round
         """
         pg_list = [
-                   ['learning_rate', [0.003]]
+                   ['learning_rate', [0.00001]]
                    # ['keep_probability', [0.4, 0.5, 0.6, 0.7, 0.8, 0.9]]
                    # ['unit_number',
                    #  [
@@ -2078,18 +2078,18 @@ class Training:
                    #   ]
                    #  ]
                    ]
-        train_seed_list = [52]
+        train_seed_list = [65]
         cv_seed_list = [241]
         # train_seed_list = None
         # cv_seed_list = None
-        TM.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=1,
-                                  num_boost_round=150, parameter_grid_list=pg_list,
-                                  reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
-                                  train_args=train_args, train_options=train_options)
-        # TM.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
-        #                           epochs=5, parameter_grid_list=pg_list, save_final_pred=True,
+        # TM.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=1,
+        #                           num_boost_round=150, parameter_grid_list=pg_list,
         #                           reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
         #                           train_args=train_args, train_options=train_options)
+        TM.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
+                                  epochs=2, parameter_grid_list=pg_list, save_final_pred=True,
+                                  reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
+                                  train_args=train_args, train_options=train_options)
 
         """
             Auto Grid Search Parameters
