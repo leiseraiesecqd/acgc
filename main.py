@@ -2052,7 +2052,7 @@ class Training:
             Auto Train with Logs of Boost Round
         """
         pg_list = [
-                   ['keep_prob', [0.4, 0.5, 0.6, 0.7, 0.8, 0.9]]
+                   ['keep_probability', [0.4, 0.5, 0.6, 0.7, 0.8, 0.9]]
                    # ['unit_number',
                    #  [
                    #   # [32, 16, 8],
