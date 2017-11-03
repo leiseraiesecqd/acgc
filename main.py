@@ -1884,8 +1884,12 @@ class TrainMode:
 
         if train_seed_list is None:
             train_seed_list = _random_int_list(500, 1000, n_epoch)
+        else:
+            n_epoch = len(train_seed_list)
         if cv_seed_list is None:
             cv_seed_list = _random_int_list(500, 1000, n_epoch)
+        else:
+            n_epoch = len(train_seed_list)
 
         # Get Train Function
         train_options['save_final_pred'] = save_final_pred
@@ -2061,7 +2065,7 @@ class Training:
             Auto Train with Logs of Boost Round
         """
         pg_list = [
-                   ['learning_rate', [0.00004]]
+                   ['learning_rate', [0.003]]
                    # ['keep_probability', [0.4, 0.5, 0.6, 0.7, 0.8, 0.9]]
                    # ['unit_number',
                    #  [
@@ -2078,34 +2082,34 @@ class Training:
                    #   ]
                    #  ]
                    ]
-        train_seed_list = [65]
+        train_seed_list = [52]
         cv_seed_list = [241]
         # train_seed_list = None
         # cv_seed_list = None
-        # TM.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=1,
-        #                           num_boost_round=150, parameter_grid_list=pg_list,
+        TM.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=1,
+                                  num_boost_round=116, parameter_grid_list=pg_list, save_final_pred=True,
+                                  reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
+                                  train_args=train_args, train_options=train_options)
+        # TM.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
+        #                           epochs=1, parameter_grid_list=pg_list, save_final_pred=True,
         #                           reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
         #                           train_args=train_args, train_options=train_options)
-        TM.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
-                                  epochs=1, parameter_grid_list=pg_list, save_final_pred=True,
-                                  reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
-                                  train_args=train_args, train_options=train_options)
 
-        train_args = {'n_valid': 4,
-                      'n_cv': 20,
-                      'n_era': 20,
-                      'train_seed': train_seed,
-                      'cv_seed': cv_seed,
-                      'cv_generator': None,
-                      'era_list': None,
-                      'rescale': True}
-        pg_list = [['learning_rate', [0.00002]]]
-        train_seed_list = [65, 666]
-        cv_seed_list = [241, 216]
-        TM.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
-                                  epochs=2, parameter_grid_list=pg_list, save_final_pred=True,
-                                  reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
-                                  train_args=train_args, train_options=train_options)
+        # train_args = {'n_valid': 4,
+        #               'n_cv': 20,
+        #               'n_era': 20,
+        #               'train_seed': train_seed,
+        #               'cv_seed': cv_seed,
+        #               'cv_generator': None,
+        #               'era_list': None,
+        #               'rescale': True}
+        # pg_list = [['learning_rate', [0.00002]]]
+        # train_seed_list = [65, 666]
+        # cv_seed_list = [241, 216]
+        # TM.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
+        #                           epochs=2, parameter_grid_list=pg_list, save_final_pred=True,
+        #                           reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
+        #                           train_args=train_args, train_options=train_options)
 
         """
             Auto Grid Search Parameters
