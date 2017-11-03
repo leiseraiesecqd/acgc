@@ -472,10 +472,10 @@ class SingleModel:
         """
         # HyperParameters
         parameters = {'version': '1.0',
-                      'epochs': 10,
+                      'epochs': 2,
                       'unit_number': [256, 128, 64],
                       'learning_rate': 0.0001,
-                      'keep_probability': 0.7,
+                      'keep_probability': 0.5,
                       'batch_size': 128,
                       'seed': train_seed,
                       'display_step': 100,
@@ -2060,7 +2060,8 @@ class Training:
             Auto Train with Logs of Boost Round
         """
         pg_list = [
-                   ['keep_probability', [0.4, 0.5, 0.6, 0.7, 0.8, 0.9]]
+                   ['learning_rate', [0.00001, 0.00003, 0.00005, 0.0001, 0.0003, 0.0005]]
+                   # ['keep_probability', [0.4, 0.5, 0.6, 0.7, 0.8, 0.9]]
                    # ['unit_number',
                    #  [
                    #   # [32, 16, 8],
