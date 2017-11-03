@@ -2053,14 +2053,19 @@ class Training:
         """
         pg_list = [
                    # ['learning_rate', [0.003]]
-                   ['unit_number', [[32, 16, 8],
-                                    [48, 24, 12],
-                                    [64, 32], [64, 32, 16],
-                                    [128, 64], [128, 64, 32], [128, 64, 32, 16],
-                                    [256, 128], [256, 128, 64], [256, 128, 64, 32], [256, 128, 64, 32, 16],
-                                    [200, 100, 50],
-                                    [2048, 512]
-                                    ]]
+                   ['unit_number',
+                    [
+                     # [32, 16, 8],
+                     # [48, 24, 12],
+                     # [64, 32], [64, 32, 16],
+                     # [128, 64], [128, 64, 32], [128, 64, 32, 16],
+                     # [256, 128], [256, 128, 64], [256, 128, 64, 32], [256, 128, 64, 32, 16],
+                     # [200, 100, 50],
+                     # [2048, 512]
+                     [288, 144, 72], [288, 144, 72, 36],
+                     [216, 108, 54], [216, 108, 54, 27]
+                     ]
+                    ]
                    ]
         train_seed_list = [65]
         cv_seed_list = [241]
@@ -2071,7 +2076,7 @@ class Training:
         #                             reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
         #                             train_args=train_args, train_options=train_options)
         self.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
-                                    epochs=3, parameter_grid_list=pg_list, save_final_pred=True,
+                                    epochs=2, parameter_grid_list=pg_list, save_final_pred=True,
                                     reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
                                     train_args=train_args, train_options=train_options)
 
