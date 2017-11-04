@@ -2141,18 +2141,19 @@ class Training:
         #            #    ]]]
         #            ]
 
-        # pg_list = [
-        #            [['learning_rate', [0.002, 0.003, 0.005]], ['subsample', [0.8, 0.85, 0.9]]],
-        #            [['max_depth', [8, 9, 10]]]
-        #            ]
-        # # train_seed_list = [666]
-        # # cv_seed_list = [216]
-        # train_seed_list = None
-        # cv_seed_list = None
-        # TM.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=200,
-        #                           num_boost_round=150, parameter_grid_list=pg_list, save_final_pred=True,
-        #                           reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
-        #                           train_args=train_args, train_options=train_options)
+        pg_list = [
+                   # [['learning_rate', [0.002, 0.003, 0.005]], ['subsample', [0.8, 0.85, 0.9]]],
+                   # [['max_depth', [8, 9, 10]]]
+                   [['learning_rate', [0.004]]]
+                   ]
+        # train_seed_list = [666]
+        # cv_seed_list = [216]
+        train_seed_list = None
+        cv_seed_list = None
+        TM.auto_train_boost_round('cb', train_seed_list, cv_seed_list, n_epoch=200,
+                                  num_boost_round=88, parameter_grid_list=pg_list, save_final_pred=True,
+                                  reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
+                                  train_args=train_args, train_options=train_options)
         # TM.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1,
         #                           epochs=2, parameter_grid_list=pg_list, save_final_pred=True,
         #                           reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,

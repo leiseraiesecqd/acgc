@@ -1224,7 +1224,6 @@ class CatBoost(ModelBase):
     @staticmethod
     def get_clf(parameters=None):
 
-        print('Initialize Model...')
         clf = CatBoostClassifier(**parameters)
 
         return clf
@@ -1248,8 +1247,8 @@ class CatBoost(ModelBase):
         clf = self.get_clf(parameters)
 
         idx_category = [x_train.shape[1] - 1]
-        print('Index of categorical feature: {}'.format(idx_category))
-        print('------------------------------------------------------')
+        # print('Index of categorical feature: {}'.format(idx_category))
+        # print('------------------------------------------------------')
 
         # Convert Zeros in Weights to Small Positive Numbers
         w_train = [0.001 if w == 0 else w for w in w_train]
