@@ -98,11 +98,15 @@ class ModelBase(object):
         return clf
 
     def fit_with_round_log(self, boost_round_log_path, cv_count, x_train, y_train, w_train,
-                           x_valid, y_valid, w_valid, parameters, param_name, param_value):
+                           x_valid, y_valid, w_valid, parameters, param_name_list, param_value_list):
+
+        param_info = ''
+        for i in range(len(param_name_list)):
+            param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
 
         boost_round_log_path += self.model_name + '/'
         utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + '_' + param_name + '_' + str(param_value) + '/'
+        boost_round_log_path += self.model_name + param_info + '/'
         utils.check_dir([boost_round_log_path])
         boost_round_log_path += 'cv_cache/'
         utils.check_dir([boost_round_log_path])
@@ -134,11 +138,15 @@ class ModelBase(object):
         return clf, idx_round_cv, train_loss_round_cv, valid_loss_round_cv
 
     def save_boost_round_log(self, boost_round_log_path, idx_round, train_loss_round_mean, valid_loss_round_mean,
-                             train_seed, cv_seed, csv_idx, parameters, param_name, param_value):
+                             train_seed, cv_seed, csv_idx, parameters, param_name_list, param_value_list):
+
+        param_info = ''
+        for i in range(len(param_name_list)):
+            param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
 
         boost_round_log_path += self.model_name + '/'
         utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + '_' + param_name + '_' + str(param_value) + '/'
+        boost_round_log_path += self.model_name + param_info + '/'
         utils.check_dir([boost_round_log_path])
 
         utils.save_boost_round_log_to_csv(boost_round_log_path, csv_idx, idx_round, valid_loss_round_mean,
@@ -200,21 +208,29 @@ class ModelBase(object):
 
         return prob_train
 
-    def save_csv_log(self, mode, csv_log_path, param_name, param_value, csv_idx, loss_train_w_mean, loss_valid_w_mean,
-                     acc_train, train_seed, cv_seed, n_valid, n_cv, parameters, file_name_params=None):
+    def save_csv_log(self, mode, csv_log_path, param_name_list, param_value_list,
+                     csv_idx, loss_train_w_mean, loss_valid_w_mean, acc_train,
+                     train_seed, cv_seed, n_valid, n_cv, parameters, file_name_params=None):
+
+        param_info = ''
+        param_name = ''
+        for i in range(len(param_name_list)):
+            param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
+            param_name += '_' + utils.get_simple_param_name(param_name_list[i])
 
         if mode == 'auto_grid_search':
 
             csv_log_path += self.model_name + '/'
             utils.check_dir([csv_log_path])
-            csv_log_path += self.model_name + '_' + param_name + '/'
+            csv_log_path += self.model_name + '_' + param_info + '/'
             utils.check_dir([csv_log_path])
-            csv_log_path += self.model_name + '_' + param_name + '_'
+            csv_log_path += self.model_name
 
-            utils.save_final_loss_log_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
-                                             acc_train, train_seed, cv_seed, n_valid, n_cv, parameters)
+            utils.save_final_loss_log_to_csv(csv_idx, csv_log_path + param_name + '_',
+                                             loss_train_w_mean, loss_valid_w_mean, acc_train,
+                                             train_seed, cv_seed, n_valid, n_cv, parameters)
 
-            csv_log_path += str(param_value) + '_'
+            csv_log_path += str(param_info) + '_'
 
             utils.save_final_loss_log_to_csv(csv_idx, csv_log_path, loss_train_w_mean,
                                              loss_valid_w_mean, acc_train, train_seed,
@@ -242,15 +258,19 @@ class ModelBase(object):
 
     def save_final_pred(self, mode, save_final_pred, prob_test_mean, pred_path,
                         parameters, csv_idx, train_seed, cv_seed, boost_round_log_path=None,
-                        param_name=None, param_value=None, file_name_params=None):
+                        param_name_list=None, param_value_list=None, file_name_params=None):
 
         params = '_'
         if file_name_params is not None:
             for p_name in file_name_params:
-                params += str(parameters[p_name]) + '_'
+                params += utils.get_simple_param_name(p_name) + '-' + str(parameters[p_name]) + '_'
         else:
             for p_name, p_value in parameters.items():
-                params += str(p_value) + '_'
+                params += utils.get_simple_param_name(p_name) + '-' + str(p_value) + '_'
+
+        param_info = ''
+        for i in range(len(param_name_list)):
+            param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
 
         if save_final_pred:
 
@@ -267,7 +287,7 @@ class ModelBase(object):
 
                 boost_round_log_path += self.model_name + '/'
                 utils.check_dir([boost_round_log_path])
-                boost_round_log_path += self.model_name + '_' + param_name + '_' + str(param_value) + '/'
+                boost_round_log_path += self.model_name + param_info + '/'
                 utils.check_dir([boost_round_log_path])
                 pred_path = boost_round_log_path + 'final_results/'
                 utils.check_dir([pred_path])
@@ -295,7 +315,7 @@ class ModelBase(object):
               n_cv=20, n_era=20, train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
               show_accuracy=False, save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True,
               save_final_prob_train=False, save_csv_log=True, csv_idx=None, cv_generator=None, rescale=False,
-              return_prob_test=False, mode=None, param_name=None, param_value=None, file_name_params=None):
+              return_prob_test=False, mode=None, param_name_list=None, param_value_list=None, file_name_params=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -344,7 +364,7 @@ class ModelBase(object):
             if mode == 'auto_train_boost_round':
                 clf, idx_round_cv, train_loss_round_cv, valid_loss_round_cv = \
                     self.fit_with_round_log(boost_round_log_path, cv_count, x_train, y_train, w_train, x_valid,
-                                            y_valid, w_valid, parameters, param_name, param_value)
+                                            y_valid, w_valid, parameters, param_name_list, param_value_list)
                 idx_round = idx_round_cv
                 train_loss_round_total.append(train_loss_round_cv)
                 valid_loss_round_total.append(valid_loss_round_cv)
@@ -417,7 +437,7 @@ class ModelBase(object):
             train_loss_round_mean = np.mean(np.array(train_loss_round_total), axis=0)
             valid_loss_round_mean = np.mean(np.array(valid_loss_round_total), axis=0)
             self.save_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean, valid_loss_round_mean,
-                                      train_seed, cv_seed, csv_idx, parameters, param_name, param_value)
+                                      train_seed, cv_seed, csv_idx, parameters, param_name_list, param_value_list)
 
         # Save 'num_boost_round'
         if self.model_name in ['xgb', 'lgb']:
@@ -427,7 +447,7 @@ class ModelBase(object):
         if save_final_pred:
             self.save_final_pred(mode, save_final_pred, prob_test_mean, pred_path,
                                  parameters, csv_idx, train_seed, cv_seed, boost_round_log_path,
-                                 param_name, param_value, file_name_params=None)
+                                 param_name_list, param_value_list, file_name_params=None)
 
         # Save Final prob_train
         if save_final_prob_train:
@@ -448,7 +468,7 @@ class ModelBase(object):
 
         # Save Loss Log to csv File
         if save_csv_log:
-            self.save_csv_log(mode, csv_log_path, param_name, param_value, csv_idx,
+            self.save_csv_log(mode, csv_log_path, param_name_list, param_value_list, csv_idx,
                               loss_train_w_mean, loss_valid_w_mean, acc_train, train_seed,
                               cv_seed, n_valid, n_cv, parameters, file_name_params=file_name_params)
 
@@ -574,7 +594,7 @@ class ModelBase(object):
                              train_seed=None, cv_seed=None, parameters=None, show_importance=False,
                              show_accuracy=False, save_final_pred=True, save_final_prob_train=False,
                              save_csv_log=True, csv_idx=None, mode=None, file_name_params=None,
-                             param_name=None, param_value=None):
+                             param_name_list=None, param_value_list=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -638,7 +658,7 @@ class ModelBase(object):
 
         # Save Loss Log to csv File
         if save_csv_log:
-            self.save_csv_log(mode, csv_log_path, param_name, param_value, csv_idx,
+            self.save_csv_log(mode, csv_log_path, param_name_list, param_value_list, csv_idx,
                               loss_train_w, loss_valid_w, acc_train, train_seed,
                               cv_seed, n_valid, n_cv, parameters, file_name_params=file_name_params)
 
@@ -1529,11 +1549,15 @@ class DeepNeuralNetworks(ModelBase):
 
     def train_with_round_log(self, boost_round_log_path, sess, cv_counter, x_train, y_train, w_train,
                              x_valid, y_valid, w_valid, optimizer, merged, cost_, inputs, labels, weights,
-                             lr, keep_prob, is_training, start_time, param_name, param_value):
+                             lr, keep_prob, is_training, start_time, param_name_list, param_value_list):
+
+        param_info = ''
+        for i in range(len(param_name_list)):
+            param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
 
         boost_round_log_path += self.model_name + '/'
         utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + '_' + param_name + '_' + str(param_value) + '/'
+        boost_round_log_path += self.model_name + param_info + '/'
         utils.check_dir([boost_round_log_path])
         boost_round_log_path += 'cv_cache/'
         utils.check_dir([boost_round_log_path])
@@ -1570,7 +1594,7 @@ class DeepNeuralNetworks(ModelBase):
               n_cv=20, n_era=20, train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
               show_accuracy=False, save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True,
               save_final_prob_train=False, save_csv_log=True, csv_idx=None, cv_generator=None, rescale=False,
-              return_prob_test=False, mode=None, param_name=None, param_value=None, file_name_params=None):
+              return_prob_test=False, mode=None, param_name_list=None, param_value_list=None, file_name_params=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -1649,7 +1673,7 @@ class DeepNeuralNetworks(ModelBase):
                         self.train_with_round_log(boost_round_log_path, sess, cv_counter, x_train, y_train,
                                                   w_train, x_valid, y_valid, w_valid, optimizer, merged, cost_,
                                                   inputs, labels, weights, lr, keep_prob, is_training,
-                                                  start_time, param_name, param_value)
+                                                  start_time, param_name_list, param_value_list)
                     idx_round = idx_round_cv
                     train_loss_round_total.append(train_loss_round_cv)
                     valid_loss_round_total.append(valid_loss_round_cv)
@@ -1723,13 +1747,13 @@ class DeepNeuralNetworks(ModelBase):
                 train_loss_round_mean = np.mean(np.array(train_loss_round_total), axis=0)
                 valid_loss_round_mean = np.mean(np.array(valid_loss_round_total), axis=0)
                 self.save_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean, valid_loss_round_mean,
-                                          train_seed, cv_seed, csv_idx, parameters, param_name, param_value)
+                                          train_seed, cv_seed, csv_idx, parameters, param_name_list, param_value_list)
 
             # Save Final Result
             if save_final_pred:
                 self.save_final_pred(mode, save_final_pred, prob_test_mean, pred_path,
                                      parameters, csv_idx, train_seed, cv_seed, boost_round_log_path,
-                                     param_name, param_value, file_name_params=None)
+                                     param_name_list, param_value_list, file_name_params=None)
 
             # Save Final prob_train
             if save_final_prob_train:
@@ -1750,7 +1774,7 @@ class DeepNeuralNetworks(ModelBase):
 
             # Save Loss Log to csv File
             if save_csv_log:
-                self.save_csv_log(mode, csv_log_path, param_name, param_value, csv_idx,
+                self.save_csv_log(mode, csv_log_path, param_name_list, param_value_list, csv_idx,
                                   loss_train_w_mean, loss_valid_w_mean, acc_train, train_seed,
                                   cv_seed, n_valid, n_cv, parameters, file_name_params=file_name_params)
 
@@ -1871,7 +1895,7 @@ class DeepNeuralNetworks(ModelBase):
                              train_seed=None, cv_seed=None, parameters=None, show_importance=False,
                              show_accuracy=False, save_final_pred=True, save_final_prob_train=False,
                              save_csv_log=True, csv_idx=None, return_prob_test=False,
-                             mode=None, file_name_params=None, param_name=None, param_value=None):
+                             mode=None, file_name_params=None, param_name_list=None, param_value_list=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -2001,7 +2025,7 @@ class DeepNeuralNetworks(ModelBase):
 
             # Save Loss Log to csv File
             if save_csv_log:
-                self.save_csv_log(mode, csv_log_path, param_name, param_value, csv_idx,
+                self.save_csv_log(mode, csv_log_path, param_name_list, param_value_list, csv_idx,
                                   loss_train_w, loss_valid_w, acc_train, train_seed,
                                   cv_seed, n_valid, n_cv, parameters, file_name_params=file_name_params)
 

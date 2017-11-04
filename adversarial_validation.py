@@ -583,8 +583,7 @@ def generate_validation_set(train_path=None, test_path=None, similarity_prob_pat
                                    return_similarity_prob=return_similarity_prob)
         return similarity_prob
     else:
-        AV.train(similarity_prob_path=similarity_prob_path, global_epochs=global_epochs,
-                 return_similarity_prob=return_similarity_prob)
+        AV.train(similarity_prob_path=similarity_prob_path, global_epochs=global_epochs)
 
 
 if __name__ == '__main__':

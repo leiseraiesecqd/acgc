@@ -4,7 +4,6 @@ import numpy as np
 import os
 import time
 import csv
-import models
 import preprocess
 from os.path import isdir
 
@@ -561,6 +560,17 @@ def check_bad_cv(trained_cv, valid_era):
     is_bad_cv = cv_is_trained or bad_num_negative_era
 
     return is_bad_cv
+
+
+# Get Simple Parameter's Name
+def get_simple_param_name(param_name):
+
+    param_name_convert_dict = {'learning_rate': 'lr',}
+
+    if param_name in param_name_convert_dict.keys():
+        return param_name_convert_dict[param_name]
+    else:
+        return param_name
 
 
 if __name__ == '__main__':
