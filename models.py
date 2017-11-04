@@ -222,7 +222,7 @@ class ModelBase(object):
 
             csv_log_path += self.model_name + '/'
             utils.check_dir([csv_log_path])
-            csv_log_path += self.model_name + '_' + param_info + '/'
+            csv_log_path += self.model_name + param_info + '/'
             utils.check_dir([csv_log_path])
             csv_log_path += self.model_name
 
