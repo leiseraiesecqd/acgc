@@ -101,10 +101,14 @@ class ModelBase(object):
                            x_valid, y_valid, w_valid, parameters, param_name_list, param_value_list):
 
         param_info = ''
+        param_name = ''
         for i in range(len(param_name_list)):
+            param_name += '_' + utils.get_simple_param_name(param_name_list[i])
             param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
 
         boost_round_log_path += self.model_name + '/'
+        utils.check_dir([boost_round_log_path])
+        boost_round_log_path += self.model_name + param_name + '/'
         utils.check_dir([boost_round_log_path])
         boost_round_log_path += self.model_name + param_info + '/'
         utils.check_dir([boost_round_log_path])
@@ -141,10 +145,14 @@ class ModelBase(object):
                              train_seed, cv_seed, csv_idx, parameters, param_name_list, param_value_list):
 
         param_info = ''
+        param_name = ''
         for i in range(len(param_name_list)):
+            param_name += '_' + utils.get_simple_param_name(param_name_list[i])
             param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
 
         boost_round_log_path += self.model_name + '/'
+        utils.check_dir([boost_round_log_path])
+        boost_round_log_path += self.model_name + param_name + '/'
         utils.check_dir([boost_round_log_path])
         boost_round_log_path += self.model_name + param_info + '/'
         utils.check_dir([boost_round_log_path])
@@ -154,8 +162,8 @@ class ModelBase(object):
 
         boost_round_log_path += 'final_logs/'
         utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + '_' + str(csv_idx) + '_t' \
-                                + str(train_seed) + '_c' + str(cv_seed) + '_log.csv'
+        boost_round_log_path += self.model_name + '_' + str(csv_idx) + '_t-' \
+                                + str(train_seed) + '_c-' + str(cv_seed) + '_log.csv'
 
         utils.save_final_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean, valid_loss_round_mean)
 
@@ -222,6 +230,8 @@ class ModelBase(object):
 
             csv_log_path += self.model_name + '/'
             utils.check_dir([csv_log_path])
+            csv_log_path += self.model_name + param_name + '/'
+            utils.check_dir([csv_log_path])
             csv_log_path += self.model_name + param_info + '/'
             utils.check_dir([csv_log_path])
             csv_log_path += self.model_name
@@ -269,8 +279,10 @@ class ModelBase(object):
                 params += utils.get_simple_param_name(p_name) + '-' + str(p_value) + '_'
 
         param_info = ''
+        param_name = ''
         for i in range(len(param_name_list)):
             param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
+            param_name += '_' + utils.get_simple_param_name(param_name_list[i])
 
         if save_final_pred:
 
@@ -280,22 +292,24 @@ class ModelBase(object):
                 utils.check_dir([pred_path])
                 pred_path += self.model_name + params + 'results/'
                 utils.check_dir([pred_path])
-                pred_path += self.model_name + '_' + str(csv_idx) + '_t' + str(train_seed) + '_c' + str(cv_seed) + '_'
+                pred_path += self.model_name + '_' + str(csv_idx) + '_t-' + str(train_seed) + '_c-' + str(cv_seed) + '_'
                 utils.save_pred_to_csv(pred_path, self.id_test, prob_test_mean)
 
             elif mode == 'auto_train_boost_round':
 
                 boost_round_log_path += self.model_name + '/'
                 utils.check_dir([boost_round_log_path])
+                boost_round_log_path += self.model_name + param_name + '/'
+                utils.check_dir([boost_round_log_path])
                 boost_round_log_path += self.model_name + param_info + '/'
                 utils.check_dir([boost_round_log_path])
                 pred_path = boost_round_log_path + 'final_results/'
                 utils.check_dir([pred_path])
-                pred_path += self.model_name + '_' + str(csv_idx) + '_t' + str(train_seed) + '_c' + str(cv_seed) + '_'
+                pred_path += self.model_name + '_' + str(csv_idx) + '_t-' + str(train_seed) + '_c-' + str(cv_seed) + '_'
                 utils.save_pred_to_csv(pred_path, self.id_test, prob_test_mean)
 
             else:
-                pred_path += 'final_results/' + self.model_name + '_t' + str(train_seed) + '_c' + str(cv_seed) + params
+                pred_path += 'final_results/' + self.model_name + '_t-' + str(train_seed) + '_c-' + str(cv_seed) + params
                 utils.save_pred_to_csv(pred_path, self.id_test, prob_test_mean)
 
     @staticmethod
@@ -1228,19 +1242,6 @@ class CatBoost(ModelBase):
 
         return x_g_train, x_g_valid, x_g_test
 
-    def get_importance(self, clf):
-
-        print('------------------------------------------------------')
-        print('Feature Importance')
-
-        self.importance = clf.feature_importances_
-        self.indices = np.argsort(self.importance)[::-1]
-
-        feature_num = len(self.importance)
-
-        for f in range(feature_num):
-            print("%d | feature %d | %d" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
-
     def fit(self, x_train, y_train, w_train, x_valid, y_valid, w_valid, parameters=None):
 
         # Get Classifier
@@ -1280,6 +1281,25 @@ class CatBoost(ModelBase):
                     use_best_model=None, eval_set=(x_valid, y_valid), verbose=True, plot=False)
 
         return clf
+
+    @staticmethod
+    def get_pattern():
+
+        # 0:	learn 0.6930110854	test 0.6932013607	bestTest 0.6932013607		total: 1.11s	remaining: 1m 36s
+        return re.compile(r'(\d*):\tlearn (.*)\ttest (.*)\tbestTest')
+
+    def get_importance(self, clf):
+
+        print('------------------------------------------------------')
+        print('Feature Importance')
+
+        self.importance = clf.feature_importances_
+        self.indices = np.argsort(self.importance)[::-1]
+
+        feature_num = len(self.importance)
+
+        for f in range(feature_num):
+            print("%d | feature %d | %d" % (f + 1, self.indices[f], self.importance[self.indices[f]]))
 
 
 class DeepNeuralNetworks(ModelBase):
@@ -1552,10 +1572,14 @@ class DeepNeuralNetworks(ModelBase):
                              lr, keep_prob, is_training, start_time, param_name_list, param_value_list):
 
         param_info = ''
+        param_name = ''
         for i in range(len(param_name_list)):
+            param_name += '_' + utils.get_simple_param_name(param_name_list[i])
             param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
 
         boost_round_log_path += self.model_name + '/'
+        utils.check_dir([boost_round_log_path])
+        boost_round_log_path += self.model_name + param_name + '/'
         utils.check_dir([boost_round_log_path])
         boost_round_log_path += self.model_name + param_info + '/'
         utils.check_dir([boost_round_log_path])
