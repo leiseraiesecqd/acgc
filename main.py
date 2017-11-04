@@ -2142,8 +2142,6 @@ class Training:
         #            ]
 
         pg_list = [
-                   # [['learning_rate', [0.002, 0.003, 0.005]], ['subsample', [0.8, 0.85, 0.9]]],
-                   # [['max_depth', [8, 9, 10]]]
                    [['learning_rate', [0.004]]]
                    ]
         # train_seed_list = [666]
