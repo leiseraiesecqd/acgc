@@ -2,6 +2,7 @@
 /.ropeproject/
 /.ipynb_checkpoints/
 /__pycache__/
+/models/__pycache__/
 /checkpoints/
 /log/
 /.idea/
