@@ -313,8 +313,3 @@ class TrainingMode:
             print('Cross Validation Seed: {}'.format(cv_seed))
             print('Epoch Time: {}s'.format(time.time() - epoch_start_time))
             print('======================================================')
-
-
-if __name__ == "__main__":
-
-    pass

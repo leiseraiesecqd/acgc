@@ -1,7 +1,7 @@
 import time
-from models import utils
 import numpy as np
 import pandas as pd
+from models import utils
 from generate_adversarial_validation import GenerateValidation
 from sklearn.preprocessing import PolynomialFeatures
 
