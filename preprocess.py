@@ -2,7 +2,7 @@ import time
 from models import utils
 import numpy as np
 import pandas as pd
-from adversarial_validation_train import GenerateValidation
+from generate_adversarial_validation import GenerateValidation
 from sklearn.preprocessing import PolynomialFeatures
 
 train_csv_path = './inputs/stock_train_data_20171028.csv'

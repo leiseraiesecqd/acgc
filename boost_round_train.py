@@ -1,4 +1,3 @@
-import random
 import time
 import parameters
 from models import utils
@@ -35,18 +34,10 @@ class Training:
         """
         TM = TrainingMode()
 
-        # Create Global Seed for Training and Cross Validation
-        train_seed = random.randint(0, 500)
-        cv_seed = random.randint(0, 500)
-        # train_seed = 666
-        # cv_seed = 216  # 425 48 461 157
-
         # Training Arguments
         train_args = {'n_valid': 4,
                       'n_cv': 20,
                       'n_era': 20,
-                      'train_seed': train_seed,
-                      'cv_seed': cv_seed,
                       'cv_generator': None,
                       'era_list': None,
                       'rescale': False}
@@ -76,8 +67,7 @@ class Training:
                            'early_stopping_rounds': 10000,
                            'n_jobs': -1,
                            'objective': 'binary:logistic',
-                           'eval_metric': 'logloss',
-                           'seed': train_seed}
+                           'eval_metric': 'logloss'}
         # base_parameters = None
 
         """
@@ -94,10 +84,6 @@ class Training:
                                   num_boost_round=115, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
                                   train_args=train_args, train_options=train_options)
-
-        print('======================================================')
-        print('Global Train Seed: {}'.format(train_seed))
-        print('Global Cross Validation Seed: {}'.format(cv_seed))
 
 
 if __name__ == "__main__":
