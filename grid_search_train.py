@@ -35,9 +35,9 @@ class Training:
         TM = TrainingMode()
 
         # Training Arguments
-        train_args = {'n_valid': 4,
-                      'n_cv': 20,
-                      'n_era': 20,
+        train_args = {'n_valid': 27,
+                      'n_cv': 5,
+                      'n_era': 134,
                       'cv_generator': None,
                       'era_list': None,
                       'rescale': False}
@@ -74,8 +74,10 @@ class Training:
             Auto Grid Search Parameters
         """
         pg_list = [
-                   # [['max_depth', [8, 9, 10]], ['min_child_weight', [6, 12, 18]]],
-                   [['learning_rate', [0.002, 0.003, 0.005]], ['subsample', [0.8, 0.85, 0.9]]]
+                   [['max_depth', [8, 9, 10]]],
+                   # [['min_child_weight', [6, 12, 18]]],
+                   # [['learning_rate', [0.002, 0.003, 0.005]]],
+                   # [['subsample', [0.8, 0.85, 0.9]]]
                    ]
         TM.auto_grid_search('xgb', parameter_grid_list=pg_list, n_epoch=200,
                             base_parameters=base_parameters, save_final_pred=False,

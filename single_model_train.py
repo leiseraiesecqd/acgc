@@ -42,9 +42,9 @@ class Training:
         # cv_seed = 216  # 425 48 461 157
 
         # Training Arguments
-        train_args = {'n_valid': 4,
+        train_args = {'n_valid': 27,
                       'n_cv': 20,
-                      'n_era': 20,
+                      'n_era': 134,
                       'train_seed': train_seed,
                       'cv_seed': cv_seed,
                       'cv_generator': None,

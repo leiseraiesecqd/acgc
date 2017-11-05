@@ -35,9 +35,9 @@ class Training:
         TM = TrainingMode()
 
         # Training Arguments
-        train_args = {'n_valid': 4,
+        train_args = {'n_valid': 27,
                       'n_cv': 20,
-                      'n_era': 20,
+                      'n_era': 134,
                       'cv_generator': None,
                       'era_list': None,
                       'rescale': False}

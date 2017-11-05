@@ -173,7 +173,7 @@ class LRegression:
                                 acc_train_cv_era, acc_valid_cv_era)
 
             # Feature Importance
-            if show_importance is True:
+            if show_importance:
                 self.get_importance(clf)
 
             prob_test_total.append(list(prob_test))
@@ -219,7 +219,7 @@ class LRegression:
         clf.fit(x_train, y_train, sample_weight=w_train)
 
         # Feature Importance
-        if show_importance is True:
+        if show_importance:
             self.get_importance(clf)
 
         # Print LogLoss
@@ -438,7 +438,7 @@ class DecisionTree:
                                 acc_train_cv_era, acc_valid_cv_era)
 
             # Feature Importance
-            if show_importance is True:
+            if show_importance:
                 self.get_importance(clf)
 
             prob_test_total.append(list(prob_test))
@@ -484,7 +484,7 @@ class DecisionTree:
         clf.fit(x_train, y_train, sample_weight=w_train)
 
         # Feature Importance
-        if show_importance is True:
+        if show_importance:
             self.get_importance(clf)
 
         # Print LogLoss
@@ -636,7 +636,7 @@ class RandomForest:
                                 acc_train_cv_era, acc_valid_cv_era)
 
             # Feature Importance
-            if show_importance is True:
+            if show_importance:
                 self.get_importance(clf)
 
             prob_test_total.append(list(prob_test))
@@ -682,7 +682,7 @@ class RandomForest:
         clf.fit(x_train, y_train, sample_weight=w_train)
 
         # Feature Importance
-        if show_importance is True:
+        if show_importance:
             self.get_importance(clf)
 
         # Print LogLoss
@@ -834,7 +834,7 @@ class ExtraTrees:
                                 acc_train_cv_era, acc_valid_cv_era)
 
             # Feature Importance
-            if show_importance is True:
+            if show_importance:
                 self.get_importance(clf)
 
             prob_test_total.append(list(prob_test))
@@ -880,7 +880,7 @@ class ExtraTrees:
         clf.fit(x_train, y_train, sample_weight=w_train)
 
         # Feature Importance
-        if show_importance is True:
+        if show_importance:
             self.get_importance(clf)
 
         # Print LogLoss
@@ -1032,7 +1032,7 @@ class AdaBoost:
                                 acc_train_cv_era, acc_valid_cv_era)
 
             # Feature Importance
-            if show_importance is True:
+            if show_importance:
                 self.get_importance(clf)
 
             prob_test_total.append(list(prob_test))
@@ -1078,7 +1078,7 @@ class AdaBoost:
         clf.fit(x_train, y_train, sample_weight=w_train)
 
         # Feature Importance
-        if show_importance is True:
+        if show_importance:
             self.get_importance(clf)
 
         # Print LogLoss
@@ -1205,7 +1205,7 @@ class GradientBoosting:
             clf.fit(x_train, y_train, sample_weight=w_train)
 
             # Feature Importance
-            if show_importance is True:
+            if show_importance:
                 self.get_importance(clf)
 
             # Prediction
@@ -1276,7 +1276,7 @@ class GradientBoosting:
         clf.fit(x_train, y_train, sample_weight=w_train)
 
         # Feature Importance
-        if show_importance is True:
+        if show_importance:
             self.get_importance(clf)
 
         # Print LogLoss
@@ -1422,7 +1422,7 @@ class XGBoost:
             bst = xgb.train(parameters, d_train, num_boost_round=self.num_boost_round, evals=eval_list)
 
             # Feature Importance
-            if show_importance is True:
+            if show_importance:
                 self.get_importance(bst)
 
             # Prediction
@@ -1496,7 +1496,7 @@ class XGBoost:
         bst = xgb.train(parameters, d_train, num_boost_round=self.num_boost_round, evals=eval_list)
 
         # Feature Importance
-        if show_importance is True:
+        if show_importance:
             self.get_importance(bst)
 
         # Print LogLoss
@@ -1628,7 +1628,7 @@ class SKLearnXGBoost:
                     early_stopping_rounds=100, eval_metric='logloss', verbose=True)
 
             # Feature Importance
-            if show_importance is True:
+            if show_importance:
                 self.get_importance(clf)
 
             # Prediction
@@ -1701,7 +1701,7 @@ class SKLearnXGBoost:
                 early_stopping_rounds=10, eval_metric='logloss', verbose=True)
 
         # Feature Importance
-        if show_importance is True:
+        if show_importance:
             self.get_importance(clf)
 
         # Print LogLoss
@@ -1837,7 +1837,7 @@ class LightGBM:
                                    valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
 
             # Feature Importance
-            if show_importance is True:
+            if show_importance:
                 self.get_importance(bst)
 
             # Prediction
@@ -1897,7 +1897,7 @@ class LightGBM:
         utils.save_prob_train_to_csv(pred_path + 'final_prob_train/lgb_', prob_train_mean, self.y_train)
 
         # Return Probabilities of Test Set
-        if return_prob_test is True:
+        if return_prob_test:
             return prob_test_mean
 
     def stack_train(self, x_train, y_train, w_train, x_g_train, x_valid, y_valid,
@@ -1919,7 +1919,7 @@ class LightGBM:
                                valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
 
         # Feature Importance
-        if show_importance is True:
+        if show_importance:
             self.get_importance(bst)
 
         # Print LogLoss
@@ -1965,7 +1965,7 @@ class LightGBM:
 
             # Use Category
             idx_category = [x_train.shape[1] - 1]
-            if use_weight is True:
+            if use_weight:
                 d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=idx_category)
                 d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
             else:
@@ -1977,7 +1977,7 @@ class LightGBM:
                                    valid_sets=[d_valid, d_train], valid_names=['eval', 'train'])
 
             # Feature Importance
-            if show_importance is True:
+            if show_importance:
                 self.get_importance(bst)
 
             # Prediction
@@ -2143,7 +2143,7 @@ class SKLearnLightGBM:
                     eval_metric='logloss', verbose=True)
 
             # Feature Importance
-            if show_importance is True:
+            if show_importance:
                 self.get_importance(clf)
 
             # Prediction
@@ -2224,7 +2224,7 @@ class SKLearnLightGBM:
                 eval_metric='logloss', verbose=True)
 
         # Feature Importance
-        if show_importance is True:
+        if show_importance:
             self.get_importance(clf)
 
         # Print LogLoss
@@ -2347,7 +2347,7 @@ class CatBoost:
                     verbose=True, plot=False)
 
             # Feature Importance
-            if show_importance is True:
+            if show_importance:
                 self.get_importance(clf)
 
             # Prediction

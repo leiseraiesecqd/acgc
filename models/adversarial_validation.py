@@ -215,9 +215,9 @@ class AdversarialValidation(object):
 
         # Drop outliers of train set
         print('Dropping Outliers of Train Set...')
-        for i in range(88):
-            if i != 82:
-                self.drop_train_feature_outliers_by_value('feature' + str(i), 1, 0)
+        for i in range(self.x_train.shape[1]):
+            # if i != 82:
+            self.drop_train_feature_outliers_by_value('feature' + str(i), 1, 0)
 
     def convert_group_to_dummies(self):
 

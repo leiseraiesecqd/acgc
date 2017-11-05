@@ -61,7 +61,7 @@ class TrainSingleModel:
         """
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
-        if save_auto_train_results is True:
+        if save_auto_train_results:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None
@@ -105,7 +105,7 @@ class TrainSingleModel:
         """
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
-        if save_auto_train_results is True:
+        if save_auto_train_results:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None
@@ -150,7 +150,7 @@ class TrainSingleModel:
         """
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
-        if save_auto_train_results is True:
+        if save_auto_train_results:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None
@@ -195,7 +195,7 @@ class TrainSingleModel:
         """
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
-        if save_auto_train_results is True:
+        if save_auto_train_results:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None
@@ -247,7 +247,7 @@ class TrainSingleModel:
         """
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
-        if save_auto_train_results is True:
+        if save_auto_train_results:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None
@@ -294,7 +294,7 @@ class TrainSingleModel:
         """
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
-        if save_auto_train_results is True:
+        if save_auto_train_results:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None
@@ -337,7 +337,7 @@ class TrainSingleModel:
         """
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
-        if save_auto_train_results is True:
+        if save_auto_train_results:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None
@@ -388,7 +388,7 @@ class TrainSingleModel:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_data_g(preprocessed_data_path)
 
-        if save_auto_train_results is True:
+        if save_auto_train_results:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None
@@ -444,7 +444,7 @@ class TrainSingleModel:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_data_g(preprocessed_data_path)
 
-        if save_auto_train_results is True:
+        if save_auto_train_results:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None
@@ -495,7 +495,7 @@ class TrainSingleModel:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_data_g(preprocessed_data_path)
 
-        if save_auto_train_results is True:
+        if save_auto_train_results:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None
@@ -555,7 +555,7 @@ class TrainSingleModel:
         """
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
 
-        if save_auto_train_results is True:
+        if save_auto_train_results:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None
@@ -624,7 +624,7 @@ class TrainSingleModel:
         blender_x_tree, blender_test_tree, blender_x_g_tree, blender_test_g_tree\
             = utils.load_stacked_data(stack_output_path + 'auto_{}_l2_'.format(auto_idx))
 
-        if save_auto_train_results is True:
+        if save_auto_train_results:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None
@@ -705,7 +705,7 @@ class ChampionModel:
         x_train, y_train, w_train, e_train, x_test, id_test = utils.load_preprocessed_data(preprocessed_data_path)
         x_g_train, x_g_test = utils.load_preprocessed_data_g(preprocessed_data_path)
 
-        if save_auto_train_results is True:
+        if save_auto_train_results:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None
@@ -1674,7 +1674,7 @@ class ModelStacking:
         """
             Training model using StackTree model
         """
-        if save_auto_train_results is True:
+        if save_auto_train_results:
             auto_train_path = auto_train_pred_path
         else:
             auto_train_path = None

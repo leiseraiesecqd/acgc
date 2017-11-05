@@ -5,8 +5,8 @@ from models.adversarial_validation import AdversarialValidation
 
 gan_prob_path = '../data/gan_outputs/'
 gan_preprocessed_data_path = '../data/gan_preprocessed_data/'
-train_csv_path = '../inputs/stock_train_data_20171028.csv'
-test_csv_path = '../inputs/stock_test_data_20171028.csv'
+train_csv_path = '../inputs/stock_train_data_20171103.csv'
+test_csv_path = '../inputs/stock_test_data_20171103.csv'
 
 
 class GenerateValidation:

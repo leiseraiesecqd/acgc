@@ -5,18 +5,32 @@ import pandas as pd
 from generate_adversarial_validation import GenerateValidation
 from sklearn.preprocessing import PolynomialFeatures
 
-train_csv_path = './inputs/stock_train_data_20171028.csv'
-test_csv_path = './inputs/stock_test_data_20171028.csv'
+train_csv_path = './inputs/stock_train_data_20171103.csv'
+test_csv_path = './inputs/stock_test_data_20171103.csv'
 preprocessed_path = './data/preprocessed_data/'
 gan_prob_path = './data/gan_outputs/'
 negative_era_list = [2, 3, 4, 5, 8, 10, 12, 16]
 positive_era_list = [1, 6, 7, 9, 11, 13, 14, 15, 17, 18, 19, 20]
-drop_feature_list = [14]
+drop_feature_list = []
 
 
 class DataPreProcess:
 
-    def __init__(self, train_path, test_path, preprocess_path):
+    def __init__(self, train_path, test_path, preprocess_path, use_multi_group=False):
+
+        self.use_multi_group = use_multi_group
+        if use_multi_group:
+            print('------------------------------------------------------')
+            print('[W] Using Multi Groups...')
+            self.g1_train = pd.DataFrame()
+            self.g2_train = pd.DataFrame()
+            self.g1_test = pd.DataFrame()
+            self.g2_test = pd.DataFrame()
+        else:
+            print('------------------------------------------------------')
+            print('[W] Using Single Group...')
+            self.g_train = pd.DataFrame()
+            self.g_test = pd.DataFrame()
 
         self.train_path = train_path
         self.test_path = test_path
@@ -25,11 +39,11 @@ class DataPreProcess:
         self.x_g_train = pd.DataFrame()
         self.y_train = pd.DataFrame()
         self.w_train = pd.DataFrame()
-        self.g_train = pd.DataFrame()
+        self.code_id_train = pd.DataFrame()
         self.e_train = pd.DataFrame()
         self.x_test = pd.DataFrame()
         self.x_g_test = pd.DataFrame()
-        self.g_test = pd.DataFrame()
+        self.code_id_test = pd.DataFrame()
         self.id_test = pd.DataFrame()
 
         # Positive Data Set
@@ -79,14 +93,23 @@ class DataPreProcess:
 
         # Drop Unnecessary Columns
         # self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era'], axis=1)
-        self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era', *self.drop_feature_list], axis=1)
+        self.x_train = train_f.drop(['id', 'weight', 'label', 'group1', 'group2', 'era', 'code_id', *self.drop_feature_list], axis=1)
         self.y_train = train_f['label']
         self.w_train = train_f['weight']
-        self.g_train = train_f['group']
+        self.code_id_train = train_f['code_id']
         self.e_train = train_f['era']
-        self.x_test = test_f.drop(['id', 'group', *self.drop_feature_list], axis=1)
+        self.x_test = test_f.drop(['id', 'group1', 'group2', 'code_id', *self.drop_feature_list], axis=1)
         self.id_test = test_f['id']
-        self.g_test = test_f['group']
+        self.code_id_test = test_f['code_id']
+
+        if self.use_multi_group:
+            self.g1_train = train_f['group1']
+            self.g2_train = train_f['group2']
+            self.g1_test = test_f['group1']
+            self.g2_test = test_f['group2']
+        else:
+            self.g_train = train_f['group1']
+            self.g_test = test_f['group1']
 
     # Drop Outlier of a Feature by Quantile
     def drop_feature_outliers_by_quantile(self, feature, upper_quantile_train=None, lower_quantile_train=None):
@@ -221,7 +244,7 @@ class DataPreProcess:
         print('------------------------------------------------------')
         print('Dropping Outliers by Quantile...')
 
-        # for i in range(88):
+        # for i in range(self.x_train.shape[1]):
         #     if i != 77:
         #         self.drop_outliers_by_quantile('feature' + str(i), 0.9995, 0.0005, 0.9995, 0.0005)
 
@@ -372,10 +395,18 @@ class DataPreProcess:
     def convert_group_to_dummies(self):
 
         print('------------------------------------------------------')
-        print('Converting Groups to Dummies...')
+        print('Converting Groups of Train Set to Dummies...')
 
-        group_train_dummies = np.array(pd.get_dummies(self.g_train, prefix='group'))
-        self.x_g_train = np.column_stack((self.x_train, np.array(self.g_train)))
+        if self.use_multi_group:
+            group1_train_dummies = np.array(pd.get_dummies(self.g1_train, prefix='group1'))
+            group2_train_dummies = np.array(pd.get_dummies(self.g2_train, prefix='group2'))
+            group_train_dummies = np.concatenate((group1_train_dummies, group2_train_dummies), axis=1)
+            self.x_g_train = np.column_stack((self.x_train, np.array(self.g1_train)))
+            self.x_g_train = np.column_stack((self.x_g_train, np.array(self.g2_train)))
+        else:
+            group_train_dummies = np.array(pd.get_dummies(self.g_train, prefix='group'))
+            self.x_g_train = np.column_stack((self.x_train, np.array(self.g_train)))
+
         if self.x_train.shape[1] > 500:
             print('So Many Features!')
             self.x_train = list(self.x_train)
@@ -385,8 +416,19 @@ class DataPreProcess:
         else:
             self.x_train = np.concatenate((self.x_train, group_train_dummies), axis=1)
 
-        group_test_dummies = np.array(pd.get_dummies(self.g_test, prefix='group'))
-        self.x_g_test = np.column_stack((self.x_test, np.array(self.g_test)))
+        print('------------------------------------------------------')
+        print('Converting Groups of Test Set to Dummies...')
+
+        if self.use_multi_group:
+            group1_test_dummies = np.array(pd.get_dummies(self.g1_test, prefix='group1'))
+            group2_test_dummies = np.array(pd.get_dummies(self.g2_test, prefix='group2'))
+            group_test_dummies = np.concatenate((group1_test_dummies, group2_test_dummies), axis=1)
+            self.x_g_test = np.column_stack((self.x_test, np.array(self.g1_test)))
+            self.x_g_test = np.column_stack((self.x_g_test, np.array(self.g2_test)))
+        else:
+            group_test_dummies = np.array(pd.get_dummies(self.g_test, prefix='group'))
+            self.x_g_test = np.column_stack((self.x_test, np.array(self.g_test)))
+
         if self.x_test.shape[1] > 500:
             print('So Many Features!')
             self.x_test = list(self.x_test)
@@ -605,5 +647,5 @@ class DataPreProcess:
 if __name__ == '__main__':
 
     utils.check_dir(['./data/', preprocessed_path])
-    DPP = DataPreProcess(train_csv_path, test_csv_path, preprocessed_path)
+    DPP = DataPreProcess(train_csv_path, test_csv_path, preprocessed_path, use_multi_group=False)
     DPP.preprocess()

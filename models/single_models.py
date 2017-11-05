@@ -49,6 +49,8 @@ class ModelBase(object):
         self.model_name = ''
         self.num_boost_round = 0
 
+        self.use_multi_group = False
+
     @staticmethod
     def get_clf(parameters):
 
@@ -409,7 +411,7 @@ class ModelBase(object):
             prob_valid = self.predict(clf, x_valid)
 
             # Rescale
-            if rescale is True:
+            if rescale:
                 print('------------------------------------------------------')
                 print('Rescaling Results...')
                 prob_test *= rescale_rate
@@ -1041,7 +1043,14 @@ class LightGBM(ModelBase):
     def fit(self, x_train, y_train, w_train, x_valid, y_valid, w_valid, parameters=None):
 
         # Create Dataset
-        idx_category = [x_train.shape[1] - 1]
+        if self.use_multi_group:
+            print('------------------------------------------------------')
+            print('[W] Using Multi Groups...')
+            idx_category = [x_train.shape[1] - 2, x_train.shape[1] - 1]
+        else:
+            print('------------------------------------------------------')
+            print('[W] Using Single Group...')
+            idx_category = [x_train.shape[1] - 1]
         # print('Index of categorical feature: {}'.format(idx_category))
         # print('------------------------------------------------------')
 
@@ -1056,7 +1065,14 @@ class LightGBM(ModelBase):
 
     def prejudge_fit(self, x_train, y_train, w_train, x_valid, y_valid, w_valid, parameters=None, use_weight=True):
 
-        idx_category = [x_train.shape[1] - 1]
+        if self.use_multi_group:
+            print('------------------------------------------------------')
+            print('[W] Using Multi Groups...')
+            idx_category = [x_train.shape[1] - 2, x_train.shape[1] - 1]
+        else:
+            print('------------------------------------------------------')
+            print('[W] Using Single Group...')
+            idx_category = [x_train.shape[1] - 1]
         print('Index of categorical feature: {}'.format(idx_category))
         print('------------------------------------------------------')
 
@@ -1147,7 +1163,7 @@ class LightGBM(ModelBase):
             print('======================================================')
             print('Training on the Cross Validation Set: {}/{}'.format(cv_counter, n_cv))
 
-            idx_category = [x_train.shape[1] - 1]
+            idx_category = [x_train.shape[1] - 2, x_train.shape[1] - 1]
             print('Index of categorical feature: {}'.format(idx_category))
             print('------------------------------------------------------')
 
@@ -1208,7 +1224,14 @@ class SKLearnLightGBM(ModelBase):
         # Get Classifier
         clf = self.get_clf(parameters)
 
-        idx_category = [x_train.shape[1] - 1]
+        if self.use_multi_group:
+            print('------------------------------------------------------')
+            print('[W] Using Multi Groups...')
+            idx_category = [x_train.shape[1] - 2, x_train.shape[1] - 1]
+        else:
+            print('------------------------------------------------------')
+            print('[W] Using Single Group...')
+            idx_category = [x_train.shape[1] - 1]
         print('Index of categorical feature: {}'.format(idx_category))
 
         # Fitting and Training Model
@@ -1249,7 +1272,14 @@ class CatBoost(ModelBase):
         # Get Classifier
         clf = self.get_clf(parameters)
 
-        idx_category = [x_train.shape[1] - 1]
+        if self.use_multi_group:
+            print('------------------------------------------------------')
+            print('[W] Using Multi Groups...')
+            idx_category = [x_train.shape[1] - 2, x_train.shape[1] - 1]
+        else:
+            print('------------------------------------------------------')
+            print('[W] Using Single Group...')
+            idx_category = [x_train.shape[1] - 1]
         # print('Index of categorical feature: {}'.format(idx_category))
         # print('------------------------------------------------------')
 
@@ -1267,7 +1297,14 @@ class CatBoost(ModelBase):
         # Get Classifier
         clf = self.get_clf(parameters)
 
-        idx_category = [x_train.shape[1] - 1]
+        if self.use_multi_group:
+            print('------------------------------------------------------')
+            print('[W] Using Multi Groups...')
+            idx_category = [x_train.shape[1] - 2, x_train.shape[1] - 1]
+        else:
+            print('------------------------------------------------------')
+            print('[W] Using Single Group...')
+            idx_category = [x_train.shape[1] - 1]
         print('Index of categorical feature: {}'.format(idx_category))
         print('------------------------------------------------------')
 
@@ -1356,7 +1393,7 @@ class DeepNeuralNetworks(ModelBase):
     # Full Connected Layer
     def fc_layer(self, x_tensor, layer_name, num_outputs, keep_prob, is_training):
 
-        if is_training is True:
+        if is_training:
             print('Using Batch Normalization')
 
         with tf.name_scope(layer_name):
@@ -1721,7 +1758,7 @@ class DeepNeuralNetworks(ModelBase):
                 prob_test = self.get_prob(sess, logits, self.x_test, self.batch_size, inputs, keep_prob, is_training)
 
                 # Rescale
-                if rescale is True:
+                if rescale:
                     print('------------------------------------------------------')
                     print('Rescaling Results...')
                     prob_test *= rescale_rate
