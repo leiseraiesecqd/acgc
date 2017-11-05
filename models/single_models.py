@@ -370,10 +370,12 @@ class ModelBase(object):
 
             print('======================================================')
             print('Training on the Cross Validation Set: {}/{}'.format(cv_count, n_cv))
+            print('------------------------------------------------------')
             print('Validation Set Era: ', valid_era)
             print('Number of Features: ', x_train.shape[1])
             print('Positive Rate of Train Set: ', positive_rate_train)
             print('Positive Rate of Valid Set: ', positive_rate_valid)
+            print('Rescale Rate of Valid Set: ', rescale_rate)
             print('------------------------------------------------------')
 
             # Fitting and Training Model
@@ -1723,6 +1725,7 @@ class DeepNeuralNetworks(ModelBase):
 
                 print('======================================================')
                 print('Training on the Cross Validation Set: {}/{}'.format(cv_counter, n_cv))
+                print('------------------------------------------------------')
                 print('Number of Features: ', x_train.shape[1])
                 print('Validation Set Era: ', valid_era)
                 print('Positive Rate of Train Set: ', positive_rate_train)
