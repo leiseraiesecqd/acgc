@@ -586,13 +586,13 @@ class DataPreProcess:
         # self.split_data_by_gan(sample_ratio=0.2, sample_by_era=True, generate_mode='valid')
 
         # Split Positive and Negative Era Set
-        self.split_data_by_era_distribution()
+        # self.split_data_by_era_distribution()
 
         # Save Data to pickle files
         self.save_data()
 
         # Save Data Split by Era Distribution
-        self.save_data_by_era_distribution_pd()
+        # self.save_data_by_era_distribution_pd()
 
         end_time = time.time()
 
