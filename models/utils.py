@@ -40,7 +40,7 @@ def save_prob_train_to_csv(file_path, prob, label):
 
 
 # Save Grid Search Logs
-def seve_grid_search_log(log_path, params, params_grid, best_score, best_parameters, total_time):
+def save_grid_search_log(log_path, params, params_grid, best_score, best_parameters, total_time):
 
     with open(log_path + 'grid_search_log.txt', 'a') as f:
 

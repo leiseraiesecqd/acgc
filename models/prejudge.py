@@ -1,8 +1,8 @@
-import models
-import utils
+from models import models
+from models import utils
 import time
 import numpy as np
-from cross_validation import CrossValidation
+from models.cross_validation import CrossValidation
 
 
 class PrejudgeBinary:

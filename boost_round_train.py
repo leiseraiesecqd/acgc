@@ -13,6 +13,8 @@ class Training:
     @staticmethod
     def train():
         """
+            ## Auto Train with Logs of Boost Round ##
+
             Model Name:
             'lr':           Logistic Regression
             'rf':           Random Forest
@@ -79,13 +81,6 @@ class Training:
         # base_parameters = None
 
         """
-            Train Single Model
-        """
-        # TM.train_single_model('xgb', train_seed, cv_seed, num_boost_round=88,
-        #                       reduced_feature_list=reduced_feature_list, base_parameters=base_parameters,
-        #                       train_args=train_args, train_options=train_options)
-
-        """
             Auto Train with Logs of Boost Round
         """
         pg_list = [
@@ -99,65 +94,6 @@ class Training:
                                   num_boost_round=115, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
                                   train_args=train_args, train_options=train_options)
-
-        """
-            Auto Grid Search Parameters
-        """
-        # pg_list = [
-        #            # [['max_depth', [8, 9, 10]], ['min_child_weight', [6, 12, 18]]],
-        #            [['learning_rate', [0.002, 0.003, 0.005]], ['subsample', [0.8, 0.85, 0.9]]]
-        #            ]
-        # TM.auto_grid_search('lgb', parameter_grid_list=pg_list, n_epoch=200,
-        #                     base_parameters=base_parameters, save_final_pred=False,
-        #                     reduced_feature_list=reduced_feature_list, num_boost_round=30,
-        #                     grid_search_n_cv=5, train_args=train_args, train_options=train_options)
-
-        """
-            Auto Train
-        """
-        # TM.auto_train('lgb', n_epoch=10000, base_parameters=base_parameters,
-        #               reduced_feature_list=reduced_feature_list, train_args=train_args, train_options=train_options)
-
-        """
-            Others
-        """
-        # TM.train_single_model('dnn', train_seed, cv_seed,  reduced_feature_list=reduced_feature_list,
-        #                       base_parameters=base_parameters, train_args=train_args, train_options=train_options)
-        # TM.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False,
-        #                       base_parameters=base_parameters, reduced_feature_list=reduced_feature_list,
-        #                       train_args=train_args, train_options=train_options)
-        # TM.train_single_model('stack_lgb', train_seed, cv_seed, auto_idx=1,
-        #                       base_parameters=base_parameters, reduced_feature_list=reduced_feature_list,
-        #                       train_args=train_args, train_options=train_options)
-        # TM.train_single_model('stack_pt', train_seed, cv_seed, reduced_feature_list=reduced_feature_list,
-        #                       base_parameters=base_parameters, train_args=train_args, train_options=train_options)
-
-        # pg_list = [
-        #            [['learning_rate', [0.00005]]],
-        #            [['keep_probability', [0.4, 0.5, 0.6, 0.7, 0.8, 0.9]]],
-        #            # [['unit_number',
-        #            #   [
-        #            #    [32, 16, 8],
-        #            #    [48, 24, 12],
-        #            #    [64, 32], [64, 32, 16],
-        #            #    [128, 64], [128, 64, 32], [128, 64, 32, 16],
-        #            #    [256, 128], [256, 128, 64], [256, 128, 64, 32], [256, 128, 64, 32, 16],
-        #            #    [200, 100, 50],
-        #            #    [2048, 512],
-        #            #    [288, 144, 72], [288, 144, 72, 36],
-        #            #    [216, 108, 54], [216, 108, 54, 27],
-        #            #    [128, 256, 128, 64], [64, 128, 64, 32], [128, 256, 128], [64, 128, 64]
-        #            #    ]]]
-        #            ]
-        # train_seed_list = [666]
-        # cv_seed_list = [216]
-        # TM.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1, base_parameters=base_parameters,
-        #                           epochs=2, parameter_grid_list=pg_list, save_final_pred=True,
-        #                           reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
-        #                           train_args=train_args, train_options=train_options)
-
-        # TM.auto_train('stack_t', n_epoch=2, stack_final_epochs=10, base_parameters=base_parameters,
-        #               reduced_feature_list=reduced_feature_list, train_args=train_args, train_options=train_options)
 
         print('======================================================')
         print('Global Train Seed: {}'.format(train_seed))

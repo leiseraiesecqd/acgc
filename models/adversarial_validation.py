@@ -1,5 +1,5 @@
 import time
-import utils
+from models import utils
 import random
 import numpy as np
 import pandas as pd

@@ -1,5 +1,5 @@
 import time
-import utils
+from models import utils
 import os
 import sys
 import re
@@ -8,7 +8,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
 
-from cross_validation import CrossValidation
+from models.cross_validation import CrossValidation
 from sklearn.model_selection import GridSearchCV
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
@@ -379,6 +379,7 @@ class ModelBase(object):
                 clf, idx_round_cv, train_loss_round_cv, valid_loss_round_cv = \
                     self.fit_with_round_log(boost_round_log_path, cv_count, x_train, y_train, w_train, x_valid,
                                             y_valid, w_valid, parameters, param_name_list, param_value_list)
+
                 idx_round = idx_round_cv
                 train_loss_round_total.append(train_loss_round_cv)
                 valid_loss_round_total.append(valid_loss_round_cv)
@@ -401,7 +402,8 @@ class ModelBase(object):
                 cv_prob_train_path = pred_path + 'cv_prob_train/' + self.model_name + '_cv_{}_'.format(cv_count)
             else:
                 cv_prob_train_path = None
-            prob_train = self.get_prob_train(clf, self.x_train, pred_path=cv_prob_train_path)
+            prob_train = self.get_prob_train(clf, x_train, pred_path=cv_prob_train_path)
+            prob_train_all = self.get_prob_train(clf, self.x_train, pred_path=cv_prob_train_path)
 
             # Get Probabilities of Validation Set
             prob_valid = self.predict(clf, x_valid)
@@ -418,19 +420,20 @@ class ModelBase(object):
             print('------------------------------------------------------')
             print('Validation Set Era: ', valid_era)
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
-                utils.print_loss(prob_train, self.y_train, self.w_train, prob_valid, y_valid, w_valid)
+                utils.print_loss(prob_train, y_train, w_train, prob_valid, y_valid, w_valid)
 
             # Print and Get Accuracies of CV
             acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
-                utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid, show_accuracy)
+                utils.print_and_get_accuracy(prob_train, y_train, e_train,
+                                             prob_valid, y_valid, e_valid, show_accuracy)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + self.model_name + '_', cv_count, parameters, n_valid, n_cv, valid_era,
                                 loss_train, loss_valid, loss_train_w, loss_valid_w, train_seed, cv_seed,
                                 acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era)
 
-            prob_test_total.append(list(prob_test))
-            prob_train_total.append(list(prob_train))
+            prob_test_total.append(prob_test)
+            prob_train_total.append(prob_train_all)
             loss_train_total.append(loss_train)
             loss_valid_total.append(loss_valid)
             loss_train_w_total.append(loss_train_w)
@@ -516,7 +519,7 @@ class ModelBase(object):
 
         # Print LogLoss
         loss_train, loss_valid, loss_train_w, loss_valid_w = \
-            utils.print_loss(prob_train, self.y_train, self.w_train, prob_valid, y_valid, w_valid)
+            utils.print_loss(prob_train, y_train, w_train, prob_valid, y_valid, w_valid)
 
         losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
 
@@ -563,8 +566,8 @@ class ModelBase(object):
                                      'cv_results/' + self.model_name + '_cv_{}_'.format(count))
 
             # Save Train Probabilities to CSV File
-            prob_train = self.get_prob_train(clf, self.x_train, pred_path=pred_path
-                                             + 'cv_prob_train/' + self.model_name + '_cv_{}_'.format(count))
+            prob_train = self.get_prob_train(clf, x_train)
+            prob_train_all = self.get_prob_train(clf, self.x_train)
 
             # Prediction
             prob_valid = self.predict(clf, x_valid)
@@ -574,8 +577,8 @@ class ModelBase(object):
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
                 utils.print_loss(prob_train, self.y_train, self.w_train, prob_valid, y_valid, w_valid)
 
-            prob_test_total.append(list(prob_test))
-            prob_train_total.append(list(prob_train))
+            prob_test_total.append(prob_test)
+            prob_train_total.append(prob_train_all)
             loss_train_total.append(loss_train)
             loss_valid_total.append(loss_valid)
             loss_train_w_total.append(loss_train_w)
@@ -645,7 +648,7 @@ class ModelBase(object):
 
         # Print LogLoss
         loss_train, loss_valid, loss_train_w, loss_valid_w = \
-            utils.print_loss(prob_train, self.y_train, self.w_train, prob_valid, y_valid, w_valid)
+            utils.print_loss(prob_train, y_train, w_train, prob_valid, y_valid, w_valid)
 
         # Save 'num_boost_round'
         if self.model_name in ['xgb', 'lgb']:
@@ -1712,7 +1715,8 @@ class DeepNeuralNetworks(ModelBase):
                 # Prediction
                 print('------------------------------------------------------')
                 print('Predicting Probabilities...')
-                prob_train = self.get_prob(sess, logits, self.x_train, self.batch_size, inputs, keep_prob, is_training)
+                prob_train = self.get_prob(sess, logits, x_train, self.batch_size, inputs, keep_prob, is_training)
+                prob_train_all = self.get_prob(sess, logits, self.x_train, self.batch_size, inputs, keep_prob, is_training)
                 prob_valid = self.get_prob(sess, logits, x_valid, self.batch_size, inputs, keep_prob, is_training)
                 prob_test = self.get_prob(sess, logits, self.x_test, self.batch_size, inputs, keep_prob, is_training)
 
@@ -1726,10 +1730,10 @@ class DeepNeuralNetworks(ModelBase):
                 
                 # Print Losses of CV
                 loss_train, loss_valid, loss_train_w, loss_valid_w = \
-                    utils.print_loss(prob_train, self.y_train, self.w_train, prob_valid, y_valid, w_valid)
+                    utils.print_loss(prob_train, y_train, w_train, prob_valid, y_valid, w_valid)
 
                 prob_test_total.append(prob_test)
-                prob_train_total.append(prob_train)
+                prob_train_total.append(prob_train_all)
                 loss_train_total.append(loss_train)
                 loss_valid_total.append(loss_valid)
                 loss_train_w_total.append(loss_train_w)
@@ -1737,7 +1741,8 @@ class DeepNeuralNetworks(ModelBase):
 
                 # Print and Get Accuracies of CV
                 acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
-                    utils.print_and_get_accuracy(prob_train, y_train, e_train, prob_valid, y_valid, e_valid, show_accuracy)
+                    utils.print_and_get_accuracy(prob_train, y_train, e_train,
+                                                 prob_valid, y_valid, e_valid, show_accuracy)
 
                 utils.save_loss_log(loss_log_path + self.model_name + '_', cv_counter, self.parameters, n_valid, n_cv,
                                     valid_era, loss_train, loss_valid, loss_train_w, loss_valid_w, train_seed, cv_seed,
@@ -1906,7 +1911,7 @@ class DeepNeuralNetworks(ModelBase):
             prob_test = 1.0 / (1.0 + np.exp(-logits_pred_test))
 
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
-                utils.print_loss(prob_train, self.y_train, self.w_train, prob_valid, y_valid, w_valid)
+                utils.print_loss(prob_train, y_train, w_train, prob_valid, y_valid, w_valid)
 
             losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
 
@@ -2026,7 +2031,7 @@ class DeepNeuralNetworks(ModelBase):
             prob_test = 1.0 / (1.0 + np.exp(-logits_pred_test))
 
             loss_train, loss_valid, loss_train_w, loss_valid_w = \
-                utils.print_loss(prob_train, self.y_train, self.w_train, prob_valid, y_valid, w_valid)
+                utils.print_loss(prob_train, y_train, w_train, prob_valid, y_valid, w_valid)
 
             # Save Final Result
             if save_final_pred:
@@ -2087,7 +2092,7 @@ def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, n_era, cv_seed, 
 
     total_time = time.time() - start_time
 
-    utils.seve_grid_search_log(log_path, params, params_grid, best_score, best_parameters, total_time)
+    utils.save_grid_search_log(log_path, params, params_grid, best_score, best_parameters, total_time)
 
 
 if __name__ == '__main__':
