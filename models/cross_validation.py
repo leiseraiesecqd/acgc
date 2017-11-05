@@ -683,8 +683,3 @@ class CrossValidation:
             trained_cv.append(set(valid_era))
 
             yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
-
-
-if __name__ == '__main__':
-
-    pass

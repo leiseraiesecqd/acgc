@@ -1,11 +1,11 @@
-from models import utils
 import preprocess
 import time
 import random
+from models import utils
 from MulticoreTSNE import MulticoreTSNE as TSNE
 
 preprocessed_data_path = preprocess.preprocessed_path
-tsne_outputs_path = './data/tsne_outputs/'
+tsne_outputs_path = '../data/tsne_outputs/'
 
 
 class MultiCoreTSNE:

@@ -614,8 +614,3 @@ def get_simple_param_name(param_name):
         return param_name_convert_dict[param_name]
     else:
         return param_name
-
-
-if __name__ == '__main__':
-
-    pass

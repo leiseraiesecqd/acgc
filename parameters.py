@@ -1,9 +1,9 @@
-from models import utils
-from models import models
-from models import stacking
-from models import prejudge
 import preprocess
 import numpy as np
+from models import utils
+from models import single_models
+from models import stacking
+from models import prejudge
 from models.cross_validation import CrossValidation
 
 
@@ -141,7 +141,7 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
-        model = models.LRegression(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
+        model = single_models.LRegression(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -174,7 +174,7 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
-        model = models.RandomForest(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
+        model = single_models.RandomForest(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -207,7 +207,7 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
-        model = models.ExtraTrees(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
+        model = single_models.ExtraTrees(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -232,7 +232,7 @@ class SingleModel:
                          'verbose': 2,
                          'warm_start': False}
 
-        clf_et = models.ExtraTreesClassifier(**et_parameters)
+        clf_et = single_models.ExtraTreesClassifier(**et_parameters)
 
         if parameters is None:
             parameters = {'algorithm': 'SAMME.R',
@@ -248,7 +248,7 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
-        model = models.AdaBoost(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
+        model = single_models.AdaBoost(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -283,7 +283,7 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
-        model = models.GradientBoosting(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
+        model = single_models.GradientBoosting(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -321,8 +321,8 @@ class SingleModel:
         if num_boost_round is None:
             num_boost_round = 150
 
-        model = models.XGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
-                               self.x_test, self.id_test, num_boost_round=num_boost_round)
+        model = single_models.XGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
+                                      self.x_test, self.id_test, num_boost_round=num_boost_round)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -360,7 +360,7 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
-        model = models.SKLearnXGBoost(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
+        model = single_models.SKLearnXGBoost(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -410,8 +410,8 @@ class SingleModel:
         if num_boost_round is None:
             num_boost_round = 100
 
-        model = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
-                                self.x_g_test, self.id_test, num_boost_round=num_boost_round)
+        model = single_models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
+                                       self.x_g_test, self.id_test, num_boost_round=num_boost_round)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -449,8 +449,8 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
-        model = models.SKLearnLightGBM(self.x_g_train, self.y_train, self.w_train,
-                                       self.e_train, self.x_g_test, self.id_test)
+        model = single_models.SKLearnLightGBM(self.x_g_train, self.y_train, self.w_train,
+                                              self.e_train, self.x_g_test, self.id_test)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -504,7 +504,7 @@ class SingleModel:
         self.train_args['cv_seed'] = cv_seed
         self.train_args['file_name_params'] = file_name_params
 
-        model = models.CatBoost(self.x_g_train, self.y_train, self.w_train, self.e_train, self.x_g_test, self.id_test)
+        model = single_models.CatBoost(self.x_g_train, self.y_train, self.w_train, self.e_train, self.x_g_test, self.id_test)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -542,8 +542,8 @@ class SingleModel:
         self.train_args['cv_seed'] = cv_seed
         self.train_args['file_name_params'] = file_name_params
 
-        model = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
-                                          self.e_train, self.x_test, self.id_test, parameters)
+        model = single_models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
+                                                 self.e_train, self.x_test, self.id_test, parameters)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -615,8 +615,8 @@ class SingleModel:
         if num_boost_round is None:
             num_boost_round = 100
 
-        LGB = models.LightGBM(blender_x_g_tree, self.y_train, self.w_train, self.e_train,
-                              blender_test_g_tree, self.id_test, num_boost_round=num_boost_round)
+        LGB = single_models.LightGBM(blender_x_g_tree, self.y_train, self.w_train, self.e_train,
+                                     blender_test_g_tree, self.id_test, num_boost_round=num_boost_round)
 
         # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
@@ -717,8 +717,8 @@ class ChampionModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
-        model = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
-                                self.x_g_test, self.id_test, num_boost_round=65)
+        model = single_models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
+                                       self.x_g_test, self.id_test, num_boost_round=65)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -754,7 +754,7 @@ class SKGridSearch:
                       'verbose': 2,
                       'warm_start': False}
 
-        LR = models.LRegression(x_train, y_train, w_train, e_train, x_test, id_test)
+        LR = single_models.LRegression(x_train, y_train, w_train, e_train, x_test, id_test)
 
         clf = LR.get_clf(parameters)
 
@@ -766,8 +766,8 @@ class SKGridSearch:
                            'tol': (0.001, 0.005, 0.01)
                            }
 
-        models.grid_search(_log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20, n_era=20,
-                           cv_seed=cv_seed, params=parameters, params_grid=parameters_grid)
+        single_models.grid_search(_log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20, n_era=20,
+                                  cv_seed=cv_seed, params=parameters, params_grid=parameters_grid)
 
         utils.print_grid_info('Logistic Regression', parameters, parameters_grid)
 
@@ -797,7 +797,7 @@ class SKGridSearch:
                       'verbose': 2,
                       'warm_start': False}
 
-        RF = models.RandomForest(x_train, y_train, w_train, e_train, x_test, id_test)
+        RF = single_models.RandomForest(x_train, y_train, w_train, e_train, x_test, id_test)
 
         clf = RF.get_clf(parameters)
 
@@ -811,8 +811,8 @@ class SKGridSearch:
                            'min_samples_split': (3972, 3974, 3976, 3978)
                            }
 
-        models.grid_search(_log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20, n_era=20,
-                           cv_seed=cv_seed, params=parameters, params_grid=parameters_grid)
+        single_models.grid_search(_log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20, n_era=20,
+                                  cv_seed=cv_seed, params=parameters, params_grid=parameters_grid)
 
         utils.print_grid_info('Random Forest', parameters, parameters_grid)
 
@@ -843,7 +843,7 @@ class SKGridSearch:
                       'verbose': 2,
                       'warm_start': False}
 
-        ET = models.ExtraTrees(x_train, y_train, w_train, e_train, x_test, id_test)
+        ET = single_models.ExtraTrees(x_train, y_train, w_train, e_train, x_test, id_test)
 
         clf = ET.get_clf(parameters)
 
@@ -857,8 +857,8 @@ class SKGridSearch:
                            'min_samples_split': (3000, 3500, 4000)
                            }
 
-        models.grid_search(_log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20, n_era=20,
-                           cv_seed=cv_seed, params=parameters, params_grid=parameters_grid)
+        single_models.grid_search(_log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20, n_era=20,
+                                  cv_seed=cv_seed, params=parameters, params_grid=parameters_grid)
 
         utils.print_grid_info('Extra Trees', parameters, parameters_grid)
 
@@ -887,7 +887,7 @@ class SKGridSearch:
                             'random_state': train_seed,
                             'verbose': 2,
                             'warm_start': False}
-        clf_et_for_ab = models.ExtraTreesClassifier(**et_for_ab_params)
+        clf_et_for_ab = single_models.ExtraTreesClassifier(**et_for_ab_params)
 
         parameters = {'algorithm': 'SAMME.R',
                       'base_estimator': clf_et_for_ab,
@@ -895,7 +895,7 @@ class SKGridSearch:
                       'n_estimators': 100,
                       'random_state': train_seed}
 
-        AB = models.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+        AB = single_models.AdaBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
         clf = AB.get_clf(parameters)
 
@@ -908,8 +908,8 @@ class SKGridSearch:
                            #  'base_estimator': clf_et,
                            }
 
-        models.grid_search(_log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20, n_era=20,
-                           cv_seed=cv_seed, params=parameters, params_grid=parameters_grid)
+        single_models.grid_search(_log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20, n_era=20,
+                                  cv_seed=cv_seed, params=parameters, params_grid=parameters_grid)
 
         utils.print_grid_info('AdaBoost', parameters, parameters_grid)
 
@@ -941,7 +941,7 @@ class SKGridSearch:
                       'verbose': 2,
                       'warm_start': False}
 
-        GB = models.GradientBoosting(x_train, y_train, w_train, e_train, x_test, id_test)
+        GB = single_models.GradientBoosting(x_train, y_train, w_train, e_train, x_test, id_test)
 
         clf = GB.get_clf(parameters)
 
@@ -957,8 +957,8 @@ class SKGridSearch:
                            'subsample': (0.6, 0.8, 1)
                            }
 
-        models.grid_search(_log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20, n_era=20,
-                           cv_seed=cv_seed, params=parameters, params_grid=parameters_grid)
+        single_models.grid_search(_log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20, n_era=20,
+                                  cv_seed=cv_seed, params=parameters, params_grid=parameters_grid)
 
         utils.print_grid_info('GradientBoosting', parameters, parameters_grid)
 
@@ -992,7 +992,7 @@ class SKGridSearch:
                       # 'scale_pos_weight': 1,
                       }
 
-        XGB = models.SKLearnXGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
+        XGB = single_models.SKLearnXGBoost(x_train, y_train, w_train, e_train, x_test, id_test)
 
         clf = XGB.get_clf(parameters)
 
@@ -1012,8 +1012,8 @@ class SKGridSearch:
                            # 'reg_lambda': 0,
                            }
 
-        models.grid_search(_log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20, n_era=20,
-                           cv_seed=cv_seed, params=parameters, params_grid=parameters_grid)
+        single_models.grid_search(_log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20, n_era=20,
+                                  cv_seed=cv_seed, params=parameters, params_grid=parameters_grid)
 
         utils.print_grid_info('XGBoost', parameters, parameters_grid)
 
@@ -1049,7 +1049,7 @@ class SKGridSearch:
                       'silent': False,
                       'seed': train_seed}
 
-        LGB = models.SKLearnLightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test)
+        LGB = single_models.SKLearnLightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test)
 
         clf = LGB.get_clf(parameters)
 
@@ -1070,8 +1070,8 @@ class SKGridSearch:
                            # 'max_bin': (255, 355, 455)
                            }
 
-        models.grid_search(_log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20, n_era=20,
-                           cv_seed=cv_seed, params=parameters, params_grid=parameters_grid)
+        single_models.grid_search(_log_path, x_train, y_train, e_train, clf, n_valid=4, n_cv=20, n_era=20,
+                                  cv_seed=cv_seed, params=parameters, params_grid=parameters_grid)
 
         utils.print_grid_info('LightGBM', parameters, parameters_grid)
 
@@ -1116,7 +1116,7 @@ class SKGridSearch:
                       'silent': False,
                       'random_state': train_seed}
 
-        LGB = models.SKLearnLightGBM(blender_x_g_tree, y_train, w_train, e_train, blender_test_g_tree, id_test)
+        LGB = single_models.SKLearnLightGBM(blender_x_g_tree, y_train, w_train, e_train, blender_test_g_tree, id_test)
 
         clf = LGB.get_clf(parameters)
 
@@ -1137,8 +1137,8 @@ class SKGridSearch:
             # 'max_bin': (255, 355, 455)
         }
 
-        models.grid_search(_log_path, blender_x_tree, y_train, e_train, clf, n_valid=4, n_cv=20, n_era=20,
-                           cv_seed=cv_seed, params=parameters, params_grid=parameters_grid)
+        single_models.grid_search(_log_path, blender_x_tree, y_train, e_train, clf, n_valid=4, n_cv=20, n_era=20,
+                                  cv_seed=cv_seed, params=parameters, params_grid=parameters_grid)
 
         utils.print_grid_info('LightGBM', parameters, parameters_grid)
 
@@ -1778,8 +1778,3 @@ class ModelStacking:
 
         STK.stack(pred_path=stack_pred_path, auto_train_pred_path=auto_train_path, loss_log_path=loss_log_path,
                   stack_output_path=stack_output_path, csv_log_path=csv_log_path+'stack_final_', csv_idx=idx)
-
-
-if __name__ == "__main__":
-
-    pass

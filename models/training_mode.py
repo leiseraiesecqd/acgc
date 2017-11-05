@@ -1,10 +1,6 @@
 import random
 import time
-from models import utils
-from models.parameters import SingleModel
-from models.parameters import ChampionModel
-from models.parameters import PrejudgeTraining
-from models.parameters import ModelStacking
+from parameters import *
 
 
 class TrainingMode:

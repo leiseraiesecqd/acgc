@@ -1,12 +1,12 @@
 import time
-from models import utils
 import os
 import sys
 import re
-from os.path import isdir
 import numpy as np
 import matplotlib.pyplot as plt
 import tensorflow as tf
+from models import utils
+from os.path import isdir
 
 from models.cross_validation import CrossValidation
 from sklearn.model_selection import GridSearchCV
@@ -2093,8 +2093,3 @@ def grid_search(log_path, tr_x, tr_y, tr_e, clf, n_valid, n_cv, n_era, cv_seed, 
     total_time = time.time() - start_time
 
     utils.save_grid_search_log(log_path, params, params_grid, best_score, best_parameters, total_time)
-
-
-if __name__ == '__main__':
-
-    pass

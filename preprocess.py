@@ -2,7 +2,7 @@ import time
 from models import utils
 import numpy as np
 import pandas as pd
-from models.adversarial_validation import generate_validation_set
+from adversarial_validation_train import GenerateValidation
 from sklearn.preprocessing import PolynomialFeatures
 
 train_csv_path = './inputs/stock_train_data_20171028.csv'
@@ -406,9 +406,9 @@ class DataPreProcess:
             similarity_prob = utils.load_pkl_to_data(gan_prob_path + 'similarity_prob.p')
         else:
             similarity_prob = \
-                generate_validation_set(train_path=train_csv_path, test_path=test_csv_path, global_epochs=1,
-                                        similarity_prob_path=gan_prob_path, return_similarity_prob=True,
-                                        load_preprocessed_data=True)
+                GenerateValidation.train(train_path=train_csv_path, test_path=test_csv_path, global_epochs=1,
+                                         similarity_prob_path=gan_prob_path, return_similarity_prob=True,
+                                         load_preprocessed_data=True)
 
         valid_idx = []
         train_idx = []

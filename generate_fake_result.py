@@ -1,7 +1,7 @@
-import utils
 import random
 import numpy as np
 import pandas as pd
+from models import utils
 
 fake_pred_path = './results/fake_result/'
 
