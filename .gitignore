@@ -19,7 +19,6 @@
 /data/
 *.jpg
 *.ipynb
-*.p
 *.csv
 *.html
 *.txt
