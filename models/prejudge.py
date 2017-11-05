@@ -428,7 +428,7 @@ class PrejudgeMultiClass:
         y_train = []
         w_train = []
         e_train = []
-        era_tag = 1
+        era_tag = 0
 
         for idx, era in enumerate(self.e_train):
 

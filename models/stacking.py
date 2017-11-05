@@ -2,6 +2,7 @@ import time
 import numpy as np
 from models import models
 from models import utils
+from models.dnn import DeepNeuralNetworks
 from models.cross_validation import CrossValidation
 
 
@@ -55,8 +56,8 @@ class DeepStack:
         #                           self.e_train, self.x_test, self.id_test)
         # GB_L1 = models.GradientBoosting(self.x_train, self.y_train, self.w_train,
         #                                 self.e_train, self.x_test, self.id_test)
-        DNN_L1 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
-                                           self.e_train, self.x_test, self.id_test, self.dnn_l1_params)
+        DNN_L1 = DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
+                                    self.e_train, self.x_test, self.id_test, self.dnn_l1_params)
 
         models_l1 = [
                      LGB_L1,
@@ -75,8 +76,8 @@ class DeepStack:
         LGB_L2 = models.LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
                                  self.x_g_test, self.id_test, self.num_boost_round_lgb_l2)
 
-        # DNN_L2 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
-        #                                    self.e_train, self.x_test, self.id_test, self.dnn_l2_params)
+        # DNN_L2 = DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
+        #                             self.e_train, self.x_test, self.id_test, self.dnn_l2_params)
 
         models_l2 = [
                      LGB_L2,
@@ -87,8 +88,8 @@ class DeepStack:
 
     def init_models_layer3(self):
 
-        DNN_L3 = models.DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
-                                           self.e_train, self.x_test, self.id_test, self.dnn_l3_params)
+        DNN_L3 = DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
+                                    self.e_train, self.x_test, self.id_test, self.dnn_l3_params)
 
         models_l3 = [DNN_L3]
 
@@ -262,8 +263,8 @@ class DeepStack:
 
         elif model_name == 'DNN':
 
-            model = models.DeepNeuralNetworks(x_outputs, self.y_train, self.w_train, self.e_train,
-                                              test_outputs, self.id_test, params)
+            model = DeepNeuralNetworks(x_outputs, self.y_train, self.w_train,
+                                       self.e_train, test_outputs, self.id_test, params)
             print('Start training ' + model_name + '...')
             model.train(self.pred_path + 'stack_results/', self.loss_log_path,
                         n_valid=n_valid, n_cv=n_cv, n_era=n_era, train_seed=self.train_seed,
@@ -765,8 +766,8 @@ class StackTree:
                                   self.e_train, x_test, self.id_test)
         GB_L1 = models.GradientBoosting(x_train, self.y_train, self.w_train,
                                         self.e_train, x_test, self.id_test)
-        DNN_L1 = models.DeepNeuralNetworks(x_train, self.y_train, self.w_train,
-                                           self.e_train, x_test, self.id_test, self.dnn_l1_params)
+        DNN_L1 = DeepNeuralNetworks(x_train, self.y_train, self.w_train,
+                                    self.e_train, x_test, self.id_test, self.dnn_l1_params)
 
         layer1_models = {'lgb': LGB_L1, 'xgb': XGB_L1, 'ab': AB_L1,
                          'rf': RF_L1, 'et': ET_L1, 'gb': GB_L1, 'dnn': DNN_L1}
@@ -783,8 +784,8 @@ class StackTree:
         LGB_L2 = models.LightGBM(x_g_train, self.y_train, self.w_train, self.e_train,
                                  x_g_test, self.id_test, num_boost_round=self.num_boost_round_lgb_l2)
 
-        DNN_L2 = models.DeepNeuralNetworks(x_train, self.y_train, self.w_train, self.e_train,
-                                           x_test, self.id_test, self.dnn_l2_params)
+        DNN_L2 = DeepNeuralNetworks(x_train, self.y_train, self.w_train, self.e_train,
+                                    x_test, self.id_test, self.dnn_l2_params)
 
         layer2_models = {'lgb': LGB_L2, 'dnn': DNN_L2}
         models_l2 = []
@@ -804,8 +805,8 @@ class StackTree:
             return LGB_END
 
         elif self.model_final == 'dnn':
-            DNN_END = models.DeepNeuralNetworks(blender_x_tree, self.y_train, self.w_train, self.e_train,
-                                                blender_test_tree, self.id_test, params)
+            DNN_END = DeepNeuralNetworks(blender_x_tree, self.y_train, self.w_train, self.e_train,
+                                         blender_test_tree, self.id_test, params)
             return DNN_END
 
         else:
@@ -1434,8 +1435,8 @@ class PrejudgeStackTree:
                                   self.e_train, x_test, self.id_test)
         GB_L1 = models.GradientBoosting(x_train, self.y_train, self.w_train,
                                         self.e_train, x_test, self.id_test)
-        DNN_L1 = models.DeepNeuralNetworks(x_train, self.y_train, self.w_train,
-                                           self.e_train, x_test, self.id_test, self.dnn_l1_params)
+        DNN_L1 = DeepNeuralNetworks(x_train, self.y_train, self.w_train,
+                                    self.e_train, x_test, self.id_test, self.dnn_l1_params)
 
         layer1_models = {'lgb': LGB_L1, 'xgb': XGB_L1, 'ab': AB_L1,
                          'rf': RF_L1, 'et': ET_L1, 'gb': GB_L1, 'dnn': DNN_L1}
@@ -1452,8 +1453,8 @@ class PrejudgeStackTree:
         LGB_L2 = models.LightGBM(x_g_train, self.y_train, self.w_train, self.e_train,
                                  x_g_test, self.id_test, num_boost_round=self.num_boost_round_lgb_l2)
 
-        DNN_L2 = models.DeepNeuralNetworks(x_train, self.y_train, self.w_train, self.e_train,
-                                           x_test, self.id_test, self.dnn_l2_params)
+        DNN_L2 = DeepNeuralNetworks(x_train, self.y_train, self.w_train, self.e_train,
+                                    x_test, self.id_test, self.dnn_l2_params)
 
         layer2_models = {'lgb': LGB_L2, 'dnn': DNN_L2}
         models_l2 = []
@@ -1473,8 +1474,8 @@ class PrejudgeStackTree:
             return LGB_END
 
         elif self.model_final == 'dnn':
-            DNN_END = models.DeepNeuralNetworks(blender_x_tree, self.y_train, self.w_train, self.e_train,
-                                                blender_test_tree, self.id_test, params)
+            DNN_END = DeepNeuralNetworks(blender_x_tree, self.y_train, self.w_train, self.e_train,
+                                         blender_test_tree, self.id_test, params)
             return DNN_END
 
         else:

@@ -112,7 +112,7 @@ class CrossValidation:
         for i in range(n_cv):
 
             if era_list is None:
-                era_list = range(1, n_era + 1)
+                era_list = range(0, n_era)
 
             valid_era = np.random.choice(era_list, n_valid, replace=False)
             while any(set(valid_era) == i_cv for i_cv in trained_cv):
@@ -146,7 +146,7 @@ class CrossValidation:
         for i in range(n_cv):
 
             if era_list is None:
-                era_list = range(1, n_era + 1)
+                era_list = range(0, n_era)
 
             valid_era = np.random.choice(era_list, n_valid, replace=False)
             while any(set(valid_era) == i_cv for i_cv in trained_cv):
@@ -202,7 +202,7 @@ class CrossValidation:
         for epoch in range(n_epoch):
 
             if era_list is None:
-                era_list = range(1, n_era + 1)
+                era_list = range(0, n_era)
 
             era_idx = [era_list]
 
@@ -218,7 +218,7 @@ class CrossValidation:
                             if set(valid_era) != set(era_idx[i]):
                                 valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                             else:
-                                valid_era = np.random.choice(range(1, n_era+1), n_valid, replace=False)
+                                valid_era = np.random.choice(era_list, n_valid, replace=False)
                     else:
                         valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
 
@@ -280,7 +280,7 @@ class CrossValidation:
 
                     else:
 
-                        era_idx_else = [t for t in list(range(1, n_era + 1)) if t not in era_idx[i]]
+                        era_idx_else = [t for t in list(range(0, n_era)) if t not in era_idx[i]]
 
                         valid_era = era_idx[i] + list(np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
                         while any(set(valid_era) == i_cv for i_cv in trained_cv):
@@ -325,7 +325,7 @@ class CrossValidation:
         for epoch in range(n_epoch):
 
             if era_list is None:
-                era_list = range(1, n_era + 1)
+                era_list = range(0, n_era)
 
             era_idx = [era_list]
 
@@ -481,7 +481,7 @@ class CrossValidation:
 
         for epoch in range(n_epoch):
 
-            era_idx = [list(range(1, n_era + 1))]
+            era_idx = [list(range(0, n_era))]
 
             if n_rest == 0:
 
@@ -495,7 +495,7 @@ class CrossValidation:
                             if set(valid_era) != set(era_idx[i]):
                                 valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
                             else:
-                                valid_era = np.random.choice(range(1, n_era+1), n_valid, replace=False)
+                                valid_era = np.random.choice(range(0, n_era), n_valid, replace=False)
                     else:
                         valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
 
@@ -595,7 +595,7 @@ class CrossValidation:
 
                     else:
 
-                        era_idx_else = [t for t in list(range(1, n_era + 1)) if t not in era_idx[i]]
+                        era_idx_else = [t for t in list(range(0, n_era)) if t not in era_idx[i]]
 
                         valid_era = era_idx[i] + list(
                             np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
@@ -650,7 +650,7 @@ class CrossValidation:
         for i in range(n_cv):
 
             if era_list is None:
-                era_list = range(1, n_era + 1)
+                era_list = range(0, n_era)
 
             valid_era = np.random.choice(era_list, n_valid, replace=False)
             while utils.check_bad_cv(trained_cv, valid_era):

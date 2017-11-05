@@ -461,7 +461,7 @@ class DataPreProcess:
             index_e = []
             similarity_prob_all = []
             index_all = []
-            era_tag = 1
+            era_tag = 0
             era_all = [era_tag]
 
             for idx, era in enumerate(self.e_train):
