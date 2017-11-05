@@ -5,7 +5,7 @@ import sys
 import numpy as np
 import tensorflow as tf
 from os.path import isdir
-from models.single_models import ModelBase
+from models.models import ModelBase
 from models import utils
 from models.cross_validation import CrossValidation
 
