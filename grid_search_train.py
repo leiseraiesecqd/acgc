@@ -74,7 +74,7 @@ class Training:
             Auto Grid Search Parameters
         """
         pg_list = [
-                   [['max_depth', [8, 9, 10]]],
+                   [['subsample', (0.82, 0.85, 0.88, 0.91, 0.94)]],
                    # [['min_child_weight', [6, 12, 18]]],
                    # [['learning_rate', [0.002, 0.003, 0.005]]],
                    # [['subsample', [0.8, 0.85, 0.9]]]
