@@ -229,8 +229,6 @@ class ModelBase(object):
             utils.check_dir([csv_log_path])
             csv_log_path += self.model_name + param_name + '/'
             utils.check_dir([csv_log_path])
-            csv_log_path += self.model_name + param_info + '/'
-            utils.check_dir([csv_log_path])
             csv_log_path += self.model_name
 
             utils.save_final_loss_log_to_csv(csv_idx, csv_log_path + param_name + '_',
