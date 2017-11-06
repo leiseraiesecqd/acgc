@@ -79,10 +79,9 @@ class Training:
                    # [['learning_rate', [0.002, 0.003, 0.005]]],
                    # [['subsample', [0.8, 0.85, 0.9]]]
                    ]
-        TM.auto_grid_search('xgb', parameter_grid_list=pg_list, n_epoch=200,
-                            base_parameters=base_parameters, save_final_pred=False,
-                            reduced_feature_list=reduced_feature_list, num_boost_round=30,
-                            grid_search_n_cv=5, train_args=train_args, train_options=train_options)
+        TM.auto_grid_search('xgb', parameter_grid_list=pg_list, n_epoch=200, base_parameters=base_parameters,
+                            save_final_pred=False, reduced_feature_list=reduced_feature_list, num_boost_round=30,
+                            grid_search_n_cv=5, train_args=train_args, train_options=train_options, use_multi_group=False)
 
 
 if __name__ == "__main__":

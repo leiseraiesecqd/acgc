@@ -30,7 +30,7 @@ class ModelBase(object):
     """
         Base Model Class of Models in scikit-learn Module
     """
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, use_multi_group=False):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -44,7 +44,7 @@ class ModelBase(object):
         self.model_name = ''
         self.num_boost_round = 0
 
-        self.use_multi_group = False
+        self.use_multi_group = use_multi_group
 
     @staticmethod
     def get_clf(parameters):
@@ -886,9 +886,9 @@ class XGBoost(ModelBase):
     """
         XGBoost
     """
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, num_boost_round):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, num_boost_round, use_multi_group=False):
 
-        super(XGBoost, self).__init__(x_tr, y_tr, w_tr, e_tr, x_te, id_te)
+        super(XGBoost, self).__init__(x_tr, y_tr, w_tr, e_tr, x_te, id_te, use_multi_group)
 
         self.num_boost_round = num_boost_round
 
@@ -1018,9 +1018,9 @@ class LightGBM(ModelBase):
     """
         LightGBM
     """
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, num_boost_round):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, num_boost_round, use_multi_group=False):
 
-        super(LightGBM, self).__init__(x_tr, y_tr, w_tr, e_tr, x_te, id_te)
+        super(LightGBM, self).__init__(x_tr, y_tr, w_tr, e_tr, x_te, id_te, use_multi_group)
 
         self.num_boost_round = num_boost_round
 

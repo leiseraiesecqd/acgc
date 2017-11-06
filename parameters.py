@@ -53,7 +53,7 @@ class SingleModel:
         Train single model
     """
     def __init__(self, reduced_feature_list=None, grid_search_n_cv=None,
-                 train_args=None, train_options=None, mode=None):
+                 train_args=None, train_options=None, use_multi_group=False, mode=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test \
             = utils.load_preprocessed_data(preprocessed_data_path)
@@ -75,6 +75,7 @@ class SingleModel:
         self.grid_search_n_cv = grid_search_n_cv
         self.train_args = train_args
         self.train_options = train_options
+        self.use_multi_group = use_multi_group
         self.mode = mode
 
         # Different Mode
@@ -141,7 +142,8 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
-        model = LRegression(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
+        model = LRegression(self.x_train, self.y_train, self.w_train, self.e_train,
+                            self.x_test, self.id_test, use_multi_group=self.use_multi_group)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -174,7 +176,8 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
-        model = RandomForest(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
+        model = RandomForest(self.x_train, self.y_train, self.w_train, self.e_train,
+                             self.x_test, self.id_test, use_multi_group=self.use_multi_group)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -207,7 +210,8 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
-        model = ExtraTrees(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
+        model = ExtraTrees(self.x_train, self.y_train, self.w_train, self.e_train,
+                           self.x_test, self.id_test, use_multi_group=self.use_multi_group)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -248,7 +252,8 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
-        model = AdaBoost(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
+        model = AdaBoost(self.x_train, self.y_train, self.w_train, self.e_train,
+                         self.x_test, self.id_test, use_multi_group=self.use_multi_group)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -283,7 +288,8 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
-        model = GradientBoosting(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
+        model = GradientBoosting(self.x_train, self.y_train, self.w_train, self.e_train,
+                                 self.x_test, self.id_test, use_multi_group=self.use_multi_group)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -321,8 +327,8 @@ class SingleModel:
         if num_boost_round is None:
             num_boost_round = 150
 
-        model = XGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
-                        self.x_test, self.id_test, num_boost_round=num_boost_round)
+        model = XGBoost(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test,
+                        use_multi_group=self.use_multi_group, num_boost_round=num_boost_round)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -360,7 +366,8 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
-        model = SKLearnXGBoost(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test)
+        model = SKLearnXGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
+                               self.x_test, self.id_test, use_multi_group=self.use_multi_group)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -410,8 +417,8 @@ class SingleModel:
         if num_boost_round is None:
             num_boost_round = 100
 
-        model = LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
-                         self.x_g_test, self.id_test, num_boost_round=num_boost_round)
+        model = LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train, self.x_g_test, self.id_test,
+                         use_multi_group=self.use_multi_group, num_boost_round=num_boost_round)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -449,7 +456,8 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
-        model = SKLearnLightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train, self.x_g_test, self.id_test)
+        model = SKLearnLightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
+                                self.x_g_test, self.id_test, use_multi_group=self.use_multi_group)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -503,7 +511,8 @@ class SingleModel:
         self.train_args['cv_seed'] = cv_seed
         self.train_args['file_name_params'] = file_name_params
 
-        model = CatBoost(self.x_g_train, self.y_train, self.w_train, self.e_train, self.x_g_test, self.id_test)
+        model = CatBoost(self.x_g_train, self.y_train, self.w_train, self.e_train,
+                         self.x_g_test, self.id_test, use_multi_group=self.use_multi_group)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -541,8 +550,8 @@ class SingleModel:
         self.train_args['cv_seed'] = cv_seed
         self.train_args['file_name_params'] = file_name_params
 
-        model = DeepNeuralNetworks(self.x_train, self.y_train, self.w_train,
-                                   self.e_train, self.x_test, self.id_test, parameters)
+        model = DeepNeuralNetworks(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test,
+                                   use_multi_group=self.use_multi_group, parameters=parameters)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -614,8 +623,8 @@ class SingleModel:
         if num_boost_round is None:
             num_boost_round = 100
 
-        LGB = LightGBM(blender_x_g_tree, self.y_train, self.w_train, self.e_train,
-                       blender_test_g_tree, self.id_test, num_boost_round=num_boost_round)
+        LGB = LightGBM(blender_x_g_tree, self.y_train, self.w_train, self.e_train, blender_test_g_tree,
+                       self.id_test, use_multi_group=self.use_multi_group, num_boost_round=num_boost_round)
 
         # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
@@ -625,8 +634,8 @@ class SingleModel:
 
 class ChampionModel:
 
-    def __init__(self, reduced_feature_list=None, save_auto_train_results=True,
-                 grid_search_n_cv=None, train_args=None, train_options=None, mode=None):
+    def __init__(self, reduced_feature_list=None, save_auto_train_results=True, grid_search_n_cv=None,
+                 train_args=None, train_options=None, use_multi_group=False, mode=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
             = utils.load_preprocessed_data(preprocessed_data_path)
@@ -649,6 +658,7 @@ class ChampionModel:
         self.grid_search_n_cv = grid_search_n_cv
         self.train_args = train_args
         self.train_options = train_options
+        self.use_multi_group = use_multi_group
         self.mode = mode
 
         # Different Mode
@@ -716,8 +726,8 @@ class ChampionModel:
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
-        model = LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
-                         self.x_g_test, self.id_test, num_boost_round=65)
+        model = LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train, self.x_g_test,
+                         self.id_test, use_multi_group=self.use_multi_group, num_boost_round=65)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 

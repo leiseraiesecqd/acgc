@@ -73,7 +73,7 @@ class Training:
         """
             Auto Train
         """
-        TM.auto_train('xgb', n_epoch=200, base_parameters=base_parameters,
+        TM.auto_train('xgb', n_epoch=200, base_parameters=base_parameters, use_multi_group=False,
                       reduced_feature_list=reduced_feature_list, train_args=train_args, train_options=train_options)
 
 if __name__ == "__main__":

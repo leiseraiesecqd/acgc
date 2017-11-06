@@ -10,20 +10,22 @@ class TrainingMode:
 
     @staticmethod
     def get_train_function(train_mode, model_name, grid_search_n_cv=None, reduced_feature_list=None,
-                           load_pickle=False, train_args=None, train_options=None):
+                           load_pickle=False, train_args=None, train_options=None, use_multi_group=False):
 
         if train_mode == 'train_single_model':
             model_arg = {'reduced_feature_list': reduced_feature_list, 'train_args': train_args,
-                         'train_options': train_options, 'mode': train_mode}
+                         'train_options': train_options, 'use_multi_group': use_multi_group, 'mode': train_mode}
         elif train_mode == 'auto_grid_search':
             model_arg = {'reduced_feature_list': reduced_feature_list, 'grid_search_n_cv': grid_search_n_cv,
-                         'train_args': train_args, 'train_options': train_options, 'mode': train_mode}
+                         'train_args': train_args, 'train_options': train_options,
+                         'use_multi_group': use_multi_group, 'mode': train_mode}
         elif train_mode == 'auto_train_boost_round':
             model_arg = {'reduced_feature_list': reduced_feature_list, 'grid_search_n_cv': grid_search_n_cv,
-                         'train_args': train_args, 'train_options': train_options, 'mode': train_mode}
+                         'train_args': train_args, 'train_options': train_options,
+                         'use_multi_group': use_multi_group, 'mode': train_mode}
         elif train_mode == 'auto_train':
             model_arg = {'reduced_feature_list': reduced_feature_list, 'train_args': train_args,
-                         'train_options': train_options, 'mode': train_mode}
+                         'train_options': train_options, 'use_multi_group': use_multi_group, 'mode': train_mode}
         else:
             raise ValueError('Wrong Training Mode!')
 
@@ -73,7 +75,7 @@ class TrainingMode:
 
     def train_single_model(self, model_name, train_seed, cv_seed, num_boost_round=None, epochs=None,
                            auto_idx=None, reduced_feature_list=None, load_pickle=False, base_parameters=None,
-                           train_args=None, train_options=None):
+                           train_args=None, train_options=None, use_multi_group=False):
         """
             Training Single Model
         """
@@ -81,7 +83,7 @@ class TrainingMode:
         train_function = \
             self.get_train_function('train_single_model', model_name, load_pickle=load_pickle,
                                     reduced_feature_list=reduced_feature_list, train_args=train_args,
-                                    train_options=train_options)
+                                    train_options=train_options, use_multi_group=use_multi_group)
 
         # Training Model
         if model_name == 'stack_lgb':
@@ -96,7 +98,7 @@ class TrainingMode:
 
     def auto_grid_search(self, model_name=None, parameter_grid_list=None, reduced_feature_list=None,
                          save_final_pred=False, n_epoch=1, grid_search_n_cv=5, base_parameters=None,
-                         train_args=None, train_options=None, num_boost_round=None):
+                         train_args=None, train_options=None, num_boost_round=None, use_multi_group=False):
         """
             Automatically Grid Searching
         """
@@ -105,7 +107,7 @@ class TrainingMode:
         train_function = \
             self.get_train_function('auto_grid_search', model_name, grid_search_n_cv=grid_search_n_cv,
                                     reduced_feature_list=reduced_feature_list, train_args=train_args,
-                                    train_options=train_options)
+                                    train_options=train_options, use_multi_group=use_multi_group)
 
         for parameter_grid in parameter_grid_list:
 
@@ -141,7 +143,7 @@ class TrainingMode:
                     train_seed = random.randint(0, 500)
                     cv_seed = random.randint(0, 500)
                     epoch_start_time = time.time()
-                    train_args['csv_idx'] = 'idx-' + str(i + 1)
+                    train_args['csv_idx'] = 'idx-' + str(i+1)
 
                     print('======================================================')
                     print('Parameter:' + param_info)
@@ -176,7 +178,7 @@ class TrainingMode:
     def auto_train_boost_round(self, model_name=None, train_seed_list=None, cv_seed_list=None, n_epoch=1,
                                num_boost_round=None, epochs=None, parameter_grid_list=None, reduced_feature_list=None,
                                grid_search_n_cv=20, save_final_pred=False, base_parameters=None,
-                               train_args=None, train_options=None):
+                               train_args=None, train_options=None, use_multi_group=False):
         """
             Automatically Training by Boost Round or Epoch
         """
@@ -203,7 +205,7 @@ class TrainingMode:
         train_function = self.get_train_function('auto_train_boost_round', model_name,
                                                  grid_search_n_cv=grid_search_n_cv,
                                                  reduced_feature_list=reduced_feature_list, train_args=train_args,
-                                                 train_options=train_options)
+                                                 train_options=train_options, use_multi_group=use_multi_group)
 
         for parameter_grid in parameter_grid_list:
 
@@ -237,12 +239,12 @@ class TrainingMode:
                 for i, (train_seed, cv_seed) in enumerate(zip(train_seed_list, cv_seed_list)):
 
                     epoch_start_time = time.time()
-                    train_args['csv_idx'] = 'idx-' + str(i + 1)
+                    train_args['csv_idx'] = 'idx-' + str(i+1)
 
                     print('======================================================')
                     print('Parameter:' + param_info)
                     print('------------------------------------------------------')
-                    print('Epoch: {}/{} | train_seed: {} | cv_seed: {}'.format(i + 1, n_epoch, train_seed, cv_seed))
+                    print('Epoch: {}/{} | train_seed: {} | cv_seed: {}'.format(i+1, n_epoch, train_seed, cv_seed))
 
                     # Training Model
                     if num_boost_round is not None:
@@ -272,8 +274,8 @@ class TrainingMode:
             print('Grid Searching Time: {}s'.format(time.time() - gs_start_time))
             print('======================================================')
 
-    def auto_train(self, model_name=None, reduced_feature_list=None, n_epoch=1,
-                   stack_final_epochs=None, base_parameters=None, train_args=None, train_options=None):
+    def auto_train(self, model_name=None, reduced_feature_list=None, n_epoch=1, stack_final_epochs=None,
+                   base_parameters=None, train_args=None, train_options=None, use_multi_group=False):
         """
             Automatically training a model for many times
         """
@@ -281,29 +283,29 @@ class TrainingMode:
         # Get Train Function
         train_function = \
             self.get_train_function('auto_train', model_name, reduced_feature_list=reduced_feature_list,
-                                    train_args=train_args, train_options=train_options)
+                                    train_args=train_args, train_options=train_options, use_multi_group=use_multi_group)
 
         for i in range(n_epoch):
 
             train_seed = random.randint(0, 500)
             cv_seed = random.randint(0, 500)
-            train_args['csv_idx'] = 'idx-' + str(i + 1)
+            train_args['csv_idx'] = 'idx-' + str(i+1)
             epoch_start_time = time.time()
 
             print('======================================================')
-            print('Auto Training Epoch {}/{}...'.format(i + 1, n_epoch))
+            print('Auto Training Epoch {}/{}...'.format(i+1, n_epoch))
 
             if model_name == 'stack_t':
                 train_function(train_seed, cv_seed)
                 train_function_s = \
-                    self.get_train_function('auto_train', 'stack_lgb', reduced_feature_list=reduced_feature_list,
-                                            train_args=train_args, train_options=train_options)
+                    self.get_train_function('auto_train', 'stack_lgb', train_args=train_args, train_options=train_options,
+                                            reduced_feature_list=reduced_feature_list, use_multi_group=use_multi_group)
 
                 for ii in range(stack_final_epochs):
                     t_seed = random.randint(0, 500)
                     c_seed = random.randint(0, 500)
-                    train_args['idx'] = 'auto_{}_epoch_{}'.format(i + 1, ii + 1)
-                    train_function_s(t_seed, c_seed, auto_idx=i + 1, parameters=base_parameters)
+                    train_args['idx'] = 'auto_{}_epoch_{}'.format(i+1, ii+1)
+                    train_function_s(t_seed, c_seed, auto_idx=i+1, parameters=base_parameters)
             else:
                 train_function(train_seed, cv_seed, parameters=base_parameters)
 

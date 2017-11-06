@@ -85,7 +85,7 @@ class Training:
         """
         TM.train_single_model('xgb', train_seed, cv_seed, num_boost_round=88,
                               reduced_feature_list=reduced_feature_list, base_parameters=base_parameters,
-                              train_args=train_args, train_options=train_options)
+                              train_args=train_args, train_options=train_options, use_multi_group=False)
 
         print('======================================================')
         print('Global Train Seed: {}'.format(train_seed))
