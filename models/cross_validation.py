@@ -695,9 +695,9 @@ class CrossValidation:
             valid_start = (i+1) * ((n_era-n_valid)//n_cv)
             train_era = range(0, valid_start)
             if i == (n_cv-1):
-                valid_era = range(valid_start, n_era-1)
+                valid_era = list(range(valid_start, n_era-1))
             else:
-                valid_era = range(valid_start, valid_start+n_valid)
+                valid_era = list(range(valid_start, valid_start+n_valid))
 
             train_index = []
             valid_index = []
