@@ -217,13 +217,13 @@ class ModelBase(object):
                      csv_idx, loss_train_w_mean, loss_valid_w_mean, acc_train,
                      train_seed, cv_seed, n_valid, n_cv, parameters, file_name_params=None):
 
-        param_info = ''
-        param_name = ''
-        for i in range(len(param_name_list)):
-            param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
-            param_name += '_' + utils.get_simple_param_name(param_name_list[i])
-
         if mode == 'auto_grid_search':
+
+            param_info = ''
+            param_name = ''
+            for i in range(len(param_name_list)):
+                param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
+                param_name += '_' + utils.get_simple_param_name(param_name_list[i])
 
             csv_log_path += self.model_name + '/'
             utils.check_dir([csv_log_path])
@@ -257,6 +257,7 @@ class ModelBase(object):
 
             utils.save_final_loss_log_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
                                              acc_train, train_seed, cv_seed, n_valid, n_cv, parameters)
+
         else:
 
             utils.save_final_loss_log_to_csv(csv_idx, csv_log_path + self.model_name + '_',
@@ -275,12 +276,6 @@ class ModelBase(object):
             for p_name, p_value in parameters.items():
                 params += utils.get_simple_param_name(p_name) + '-' + str(p_value) + '_'
 
-        param_info = ''
-        param_name = ''
-        for i in range(len(param_name_list)):
-            param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
-            param_name += '_' + utils.get_simple_param_name(param_name_list[i])
-
         if save_final_pred:
 
             if mode == 'auto_train':
@@ -293,6 +288,12 @@ class ModelBase(object):
                 utils.save_pred_to_csv(pred_path, self.id_test, prob_test_mean)
 
             elif mode == 'auto_train_boost_round':
+
+                param_info = ''
+                param_name = ''
+                for i in range(len(param_name_list)):
+                    param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
+                    param_name += '_' + utils.get_simple_param_name(param_name_list[i])
 
                 boost_round_log_path += self.model_name + '/'
                 utils.check_dir([boost_round_log_path])

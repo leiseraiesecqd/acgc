@@ -55,7 +55,7 @@ class Training:
 
         # Training Options
         train_options = {'show_importance': False,
-                         'show_accuracy': True,
+                         'show_accuracy': False,
                          'save_final_pred': True,
                          'save_final_prob_train': False,
                          'save_cv_pred': False,
