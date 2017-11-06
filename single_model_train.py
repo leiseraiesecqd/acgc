@@ -3,6 +3,7 @@ import time
 import parameters
 from models import utils
 from models.training_mode import TrainingMode
+from models.cross_validation import CrossValidation
 
 
 class Training:
@@ -47,7 +48,8 @@ class Training:
                       'n_era': 134,
                       'train_seed': train_seed,
                       'cv_seed': cv_seed,
-                      'cv_generator': None,
+                      # 'cv_generator': None,
+                      'cv_generator': CrossValidation.forward_validation,
                       'era_list': None,
                       'rescale': False}
 
@@ -64,28 +66,28 @@ class Training:
         reduced_feature_list = None
 
         # Base Parameters
-        base_parameters = {'learning_rate': 0.003,
-                           'gamma': 0.001,              # 如果loss function小于设定值，停止产生子节点
-                           'max_depth': 10,             # default=6
-                           'min_child_weight': 12,      # default=1，建立每个模型所需最小样本权重和
-                           'subsample': 0.92,           # 建立树模型时抽取子样本占整个样本的比例
-                           'colsample_bytree': 0.85,    # 建立树时对特征随机采样的比例
-                           'colsample_bylevel': 0.7,
-                           'lambda': 0,
-                           'alpha': 0,
-                           'early_stopping_rounds': 10000,
-                           'n_jobs': -1,
-                           'objective': 'binary:logistic',
-                           'eval_metric': 'logloss',
-                           'seed': train_seed}
-        # base_parameters = None
+        # base_parameters = {'learning_rate': 0.003,
+        #                    'gamma': 0.001,              # 如果loss function小于设定值，停止产生子节点
+        #                    'max_depth': 10,             # default=6
+        #                    'min_child_weight': 12,      # default=1，建立每个模型所需最小样本权重和
+        #                    'subsample': 0.92,           # 建立树模型时抽取子样本占整个样本的比例
+        #                    'colsample_bytree': 0.85,    # 建立树时对特征随机采样的比例
+        #                    'colsample_bylevel': 0.7,
+        #                    'lambda': 0,
+        #                    'alpha': 0,
+        #                    'early_stopping_rounds': 10000,
+        #                    'n_jobs': -1,
+        #                    'objective': 'binary:logistic',
+        #                    'eval_metric': 'logloss',
+        #                    'seed': train_seed}
+        base_parameters = None
 
         """
             Train Single Model
         """
-        TM.train_single_model('xgb', train_seed, cv_seed, num_boost_round=88,
+        TM.train_single_model('lgb', train_seed, cv_seed, num_boost_round=88,
                               reduced_feature_list=reduced_feature_list, base_parameters=base_parameters,
-                              train_args=train_args, train_options=train_options, use_multi_group=False)
+                              train_args=train_args, train_options=train_options, use_multi_group=True)
 
         print('======================================================')
         print('Global Train Seed: {}'.format(train_seed))

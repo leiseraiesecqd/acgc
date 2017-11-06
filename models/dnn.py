@@ -378,6 +378,8 @@ class DeepNeuralNetworks(ModelBase):
             # Get Cross Validation Generator
             if cv_generator is None:
                 cv_generator = CrossValidation.era_k_fold_with_weight
+            print('------------------------------------------------------')
+            print('Using CV Generator: {}'.format(getattr(cv_generator, '__name__')))
 
             for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era \
                     in cv_generator(self.x_train, self.y_train, self.w_train, self.e_train,
