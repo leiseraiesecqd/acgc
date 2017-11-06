@@ -53,7 +53,7 @@ class SingleModel:
         Train single model
     """
     def __init__(self, reduced_feature_list=None, grid_search_n_cv=None,
-                 train_args=None, train_options=None, use_multi_group=False, mode=None):
+                 train_args=None, use_multi_group=False, mode=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test \
             = utils.load_preprocessed_data(preprocessed_data_path)
@@ -74,7 +74,6 @@ class SingleModel:
         self.boost_round_log_path = boost_round_out_path
         self.grid_search_n_cv = grid_search_n_cv
         self.train_args = train_args
-        self.train_options = train_options
         self.use_multi_group = use_multi_group
         self.mode = mode
 
@@ -112,7 +111,7 @@ class SingleModel:
         # Parameters for Train
         model.train(pred_path=self.pred_path, loss_log_path=self.loss_log_path, csv_log_path=self.csv_log_path,
                     boost_round_log_path=self.boost_round_log_path, mode=self.mode, param_name_list=param_name_list,
-                    param_value_list=param_value_list, **self.train_args, **self.train_options)
+                    param_value_list=param_value_list, **self.train_args)
 
     def lr_train(self, train_seed, cv_seed, parameters=None, grid_search_tuple_list=None):
         """
@@ -617,13 +616,13 @@ class SingleModel:
         # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
         LGB.train(self.pred_path, self.loss_log_path, csv_log_path=self.csv_log_path + 'stack_final_',
-                  mode=self.mode, **self.train_args, **self.train_options)
+                  mode=self.mode, **self.train_args)
 
 
 class ChampionModel:
 
     def __init__(self, reduced_feature_list=None, save_auto_train_results=True, grid_search_n_cv=None,
-                 train_args=None, train_options=None, use_multi_group=False, mode=None):
+                 train_args=None, use_multi_group=False, mode=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
             = utils.load_preprocessed_data(preprocessed_data_path)
@@ -645,7 +644,6 @@ class ChampionModel:
         self.save_auto_train_results = save_auto_train_results
         self.grid_search_n_cv = grid_search_n_cv
         self.train_args = train_args
-        self.train_options = train_options
         self.use_multi_group = use_multi_group
         self.mode = mode
 
@@ -682,7 +680,7 @@ class ChampionModel:
         # Parameters for Train
         model.train(pred_path=self.single_model_pred_path, loss_log_path=self.loss_log_path,
                     csv_log_path=self.csv_log_path, mode=self.mode, param_name_list=param_name_list,
-                    param_value_list=param_value_list, **self.train_args, **self.train_options)
+                    param_value_list=param_value_list, **self.train_args)
 
     def Christar1991(self, train_seed, cv_seed, parameters=None, grid_search_tuple_list=None):
         """
@@ -1144,7 +1142,7 @@ class PrejudgeTraining:
     """
         Prejudge - Training by Split Era sign
     """
-    def __init__(self, reduced_feature_list=None, load_pickle=False, train_options=None):
+    def __init__(self, reduced_feature_list=None, load_pickle=False, train_args=None):
         
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
             = utils.load_preprocessed_data(preprocessed_data_path)
@@ -1155,8 +1153,8 @@ class PrejudgeTraining:
         self.x_train_n, self.y_train_n, self.w_train_n, self.e_train_n, self.x_g_train_n \
             = utils.load_preprocessed_negative_data(preprocessed_data_path)
         self.load_pickle = load_pickle
-        self.show_importance = train_options['show_importance']
-        self.show_accuracy = train_options['show_accuracy']
+        self.show_importance = train_args['show_importance']
+        self.show_accuracy = train_args['show_accuracy']
         # Choose Useful features
         if reduced_feature_list is not None:
             useful_feature_list_g = reduced_feature_list + [-1]
@@ -1359,8 +1357,7 @@ class ModelStacking:
     """
         Stacking
     """
-    def __init__(self, reduced_feature_list=None, save_auto_train_results=True,
-                 train_args=None, train_options=None, mode=None):
+    def __init__(self, reduced_feature_list=None, save_auto_train_results=True, train_args=None, mode=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
             = utils.load_preprocessed_data(preprocessed_data_path)
@@ -1378,7 +1375,13 @@ class ModelStacking:
 
         self.save_auto_train_results = save_auto_train_results
         self.train_args = train_args
-        self.train_options = train_options
+        self.train_options = {'show_importance': train_args['show_importance'],
+                              'show_accuracy': train_args['show_accuracy'],
+                              'save_final_pred': train_args['save_final_pred'],
+                              'save_final_prob_train': train_args['save_final_prob_train'],
+                              'save_cv_pred': train_args['save_cv_pred'],
+                              'save_cv_prob_train': train_args['save_cv_prob_train'],
+                              'save_csv_log': train_args['save_csv_log']}
         self.mode = mode
 
     @staticmethod

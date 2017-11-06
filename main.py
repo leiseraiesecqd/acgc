@@ -47,16 +47,14 @@ class Training:
                       'cv_seed': cv_seed,
                       'cv_generator': None,
                       'era_list': None,
-                      'rescale': False}
-
-        # Training Options
-        train_options = {'show_importance': False,
-                         'show_accuracy': True,
-                         'save_final_pred': True,
-                         'save_final_prob_train': False,
-                         'save_cv_pred': False,
-                         'save_cv_prob_train': False,
-                         'save_csv_log': True}
+                      'rescale': False,
+                      'show_importance': False,
+                      'show_accuracy': True,
+                      'save_final_pred': True,
+                      'save_final_prob_train': False,
+                      'save_cv_pred': False,
+                      'save_cv_prob_train': False,
+                      'save_csv_log': True}
 
         # Reduced Features
         reduced_feature_list = None
@@ -83,7 +81,7 @@ class Training:
         """
         # TM.train_single_model('xgb', train_seed, cv_seed, num_boost_round=88,
         #                       reduced_feature_list=reduced_feature_list, base_parameters=base_parameters,
-        #                       train_args=train_args, train_options=train_options, use_multi_group=False)
+        #                       train_args=train_args, use_multi_group=False)
 
         """
             Auto Train with Logs of Boost Round
@@ -98,7 +96,7 @@ class Training:
         TM.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=1, base_parameters=base_parameters,
                                   num_boost_round=115, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
-                                  train_args=train_args, train_options=train_options, use_multi_group=False)
+                                  train_args=train_args, use_multi_group=False)
 
         """
             Auto Grid Search Parameters
@@ -109,30 +107,27 @@ class Training:
         #            ]
         # TM.auto_grid_search('lgb', parameter_grid_list=pg_list, n_epoch=200, base_parameters=base_parameters,
         #                     save_final_pred=False, reduced_feature_list=reduced_feature_list, num_boost_round=30,
-        #                     grid_search_n_cv=5, train_args=train_args, train_options=train_options, use_multi_group=False)
+        #                     grid_search_n_cv=5, train_args=train_args, use_multi_group=False)
 
         """
             Auto Train
         """
         # TM.auto_train('lgb', n_epoch=10000, base_parameters=base_parameters,
-        #               reduced_feature_list=reduced_feature_list, train_args=train_args, train_options=train_options,
-        #               use_multi_group=False)
+        #               reduced_feature_list=reduced_feature_list, train_args=train_args, use_multi_group=False)
 
         """
             Others
         """
         # TM.train_single_model('dnn', train_seed, cv_seed,  reduced_feature_list=reduced_feature_list,
-        #                       base_parameters=base_parameters, train_args=train_args, train_options=train_options,
-        #                       use_multi_group=False)
+        #                       base_parameters=base_parameters, train_args=train_args,  use_multi_group=False)
         # TM.train_single_model('prejudge_b', train_seed, cv_seed, load_pickle=False,
         #                       base_parameters=base_parameters, reduced_feature_list=reduced_feature_list,
-        #                       train_args=train_args, train_options=train_options, use_multi_group=False)
+        #                       train_args=train_args, use_multi_group=False)
         # TM.train_single_model('stack_lgb', train_seed, cv_seed, auto_idx=1,
         #                       base_parameters=base_parameters, reduced_feature_list=reduced_feature_list,
-        #                       train_args=train_args, train_options=train_options, use_multi_group=False)
+        #                       train_args=train_args, use_multi_group=False)
         # TM.train_single_model('stack_pt', train_seed, cv_seed, reduced_feature_list=reduced_feature_list,
-        #                       base_parameters=base_parameters, train_args=train_args, train_options=train_options,
-        #                       use_multi_group=False)
+        #                       base_parameters=base_parameters, train_args=train_args, use_multi_group=False)
 
         # pg_list = [
         #            [['learning_rate', [0.00005]]],
@@ -156,11 +151,10 @@ class Training:
         # TM.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1, base_parameters=base_parameters,
         #                           epochs=2, parameter_grid_list=pg_list, save_final_pred=True,
         #                           reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
-        #                           train_args=train_args, train_options=train_options, use_multi_group=False)
+        #                           train_args=train_args, use_multi_group=False)
 
         # TM.auto_train('stack_t', n_epoch=2, stack_final_epochs=10, base_parameters=base_parameters,
-        #               reduced_feature_list=reduced_feature_list, train_args=train_args, train_options=train_options,
-        #               use_multi_group=False)
+        #               reduced_feature_list=reduced_feature_list, train_args=train_args, use_multi_group=False)
 
         print('======================================================')
         print('Global Train Seed: {}'.format(train_seed))

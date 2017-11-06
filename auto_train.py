@@ -40,16 +40,14 @@ class Training:
                       'n_era': 135,
                       'cv_generator': None,
                       'era_list': None,
-                      'rescale': False}
-
-        # Training Options
-        train_options = {'show_importance': False,
-                         'show_accuracy': True,
-                         'save_final_pred': True,
-                         'save_final_prob_train': False,
-                         'save_cv_pred': False,
-                         'save_cv_prob_train': False,
-                         'save_csv_log': True}
+                      'rescale': False,
+                      'show_importance': False,
+                      'show_accuracy': True,
+                      'save_final_pred': True,
+                      'save_final_prob_train': False,
+                      'save_cv_pred': False,
+                      'save_cv_prob_train': False,
+                      'save_csv_log': True}
 
         # Reduced Features
         reduced_feature_list = None
@@ -74,7 +72,7 @@ class Training:
             Auto Train
         """
         TM.auto_train('xgb', n_epoch=200, base_parameters=base_parameters, use_multi_group=False,
-                      reduced_feature_list=reduced_feature_list, train_args=train_args, train_options=train_options)
+                      reduced_feature_list=reduced_feature_list, train_args=train_args)
 
 if __name__ == "__main__":
 

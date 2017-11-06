@@ -40,16 +40,14 @@ class Training:
                       'n_era': 135,
                       'cv_generator': None,
                       'era_list': None,
-                      'rescale': False}
-
-        # Training Options
-        train_options = {'show_importance': False,
-                         'show_accuracy': True,
-                         'save_final_pred': True,
-                         'save_final_prob_train': False,
-                         'save_cv_pred': False,
-                         'save_cv_prob_train': False,
-                         'save_csv_log': True}
+                      'rescale': False,
+                      'show_importance': False,
+                      'show_accuracy': True,
+                      'save_final_pred': True,
+                      'save_final_prob_train': False,
+                      'save_cv_pred': False,
+                      'save_cv_prob_train': False,
+                      'save_csv_log': True}
 
         # Reduced Features
         reduced_feature_list = None
@@ -83,7 +81,7 @@ class Training:
         TM.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=1, base_parameters=base_parameters,
                                   num_boost_round=115, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
-                                  train_args=train_args, train_options=train_options, use_multi_group=False)
+                                  train_args=train_args, use_multi_group=False)
 
 
 if __name__ == "__main__":

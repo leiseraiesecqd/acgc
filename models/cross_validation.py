@@ -725,45 +725,52 @@ class CrossValidation:
 
             yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
-    # @staticmethod
-    # def forward_window_validation(x, y, w, e, n_valid, n_cv, n_era, window_size=None, seed=None):
-    #
-    #     if seed is not None:
-    #         np.random.seed(seed)
-    #
-    #     n_step = (n_era-window_size) // n_cv
-    #
-    #     for i in range(n_cv):
-    #
-    #         valid_start += n_step
-    #         train_era = range(0, valid_start)
-    #         if i == (n_cv - 1):
-    #             valid_era = list(range(valid_start, n_era))
-    #         else:
-    #             valid_era = list(range(valid_start, valid_start + n_valid))
-    #
-    #         train_index = []
-    #         valid_index = []
-    #
-    #         for ii, ele in enumerate(e):
-    #             if ele in train_era:
-    #                 train_index.append(ii)
-    #             elif ele in valid_era:
-    #                 valid_index.append(ii)
-    #
-    #         np.random.shuffle(train_index)
-    #         np.random.shuffle(valid_index)
-    #
-    #         # Training data
-    #         x_train = x[train_index]
-    #         y_train = y[train_index]
-    #         w_train = w[train_index]
-    #         e_train = e[train_index]
-    #
-    #         # Validation data
-    #         x_valid = x[valid_index]
-    #         y_valid = y[valid_index]
-    #         w_valid = w[valid_index]
-    #         e_valid = e[valid_index]
-    #
-    #         yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
+    @staticmethod
+    def forward_window_validation(x, y, w, e, n_valid, n_cv, n_era, window_size=None, seed=None):
+
+        if seed is not None:
+            np.random.seed(seed)
+
+        n_step = (n_era-window_size) // n_cv
+        train_start = 0
+
+        for i in range(n_cv):
+
+            if i == (n_cv - 1):
+                train_start = n_era - window_size
+                train_end = n_era - n_valid
+                valid_end = n_era
+            else:
+                train_end = train_start + window_size - n_valid
+                valid_end = train_start + window_size
+
+            train_era = list(range(train_start, train_end))
+            valid_era = list(range(train_end, valid_end))
+
+            train_index = []
+            valid_index = []
+
+            for ii, ele in enumerate(e):
+                if ele in train_era:
+                    train_index.append(ii)
+                elif ele in valid_era:
+                    valid_index.append(ii)
+
+            np.random.shuffle(train_index)
+            np.random.shuffle(valid_index)
+
+            # Training data
+            x_train = x[train_index]
+            y_train = y[train_index]
+            w_train = w[train_index]
+            e_train = e[train_index]
+
+            # Validation data
+            x_valid = x[valid_index]
+            y_valid = y[valid_index]
+            w_valid = w[valid_index]
+            e_valid = e[valid_index]
+
+            train_start += n_step
+
+            yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era

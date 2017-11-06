@@ -43,24 +43,23 @@ class Training:
         # cv_seed = 216  # 425 48 461 157
 
         # Training Arguments
-        train_args = {'n_valid': 1,  # 27,
-                      'n_cv': 134,  # 20,
+        train_args = {'n_valid': 7,  # 27,
+                      'n_cv': 10,  # 20,
                       'n_era': 135,
+                      'window_size': 35,
                       'train_seed': train_seed,
                       'cv_seed': cv_seed,
                       # 'cv_generator': None,
-                      'cv_generator': CrossValidation.forward_increase_validation,
+                      'cv_generator': CrossValidation.forward_window_validation,
                       'era_list': None,
-                      'rescale': False}
-
-        # Training Options
-        train_options = {'show_importance': False,
-                         'show_accuracy': False,
-                         'save_final_pred': True,
-                         'save_final_prob_train': False,
-                         'save_cv_pred': False,
-                         'save_cv_prob_train': False,
-                         'save_csv_log': True}
+                      'rescale': True,
+                      'show_importance': False,
+                      'show_accuracy': False,
+                      'save_final_pred': True,
+                      'save_final_prob_train': False,
+                      'save_cv_pred': False,
+                      'save_cv_prob_train': False,
+                      'save_csv_log': True}
 
         # Reduced Features
         reduced_feature_list = None
@@ -87,7 +86,7 @@ class Training:
         """
         TM.train_single_model('lgb', train_seed, cv_seed, num_boost_round=100,
                               reduced_feature_list=reduced_feature_list, base_parameters=base_parameters,
-                              train_args=train_args, train_options=train_options, use_multi_group=True)
+                              train_args=train_args, use_multi_group=True)
 
         print('======================================================')
         print('Global Train Seed: {}'.format(train_seed))

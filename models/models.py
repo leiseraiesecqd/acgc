@@ -321,11 +321,12 @@ class ModelBase(object):
 
         return positive_rate, rescale_rate
 
-    def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, boost_round_log_path=None, n_valid=4,
-              n_cv=20, n_era=20, train_seed=None, cv_seed=None, era_list=None, parameters=None, show_importance=False,
-              show_accuracy=False, save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True,
-              save_final_prob_train=False, save_csv_log=True, csv_idx=None, cv_generator=None, rescale=False,
-              return_prob_test=False, mode=None, param_name_list=None, param_value_list=None, file_name_params=None):
+    def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, boost_round_log_path=None,
+              n_valid=4, n_cv=20, n_era=20, train_seed=None, cv_seed=None, era_list=None,
+              window_size=None, parameters=None, show_importance=False, show_accuracy=False,
+              save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True, save_final_prob_train=False,
+              save_csv_log=True, csv_idx=None, cv_generator=None, rescale=False, return_prob_test=False,
+              mode=None, param_name_list=None, param_value_list=None, file_name_params=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -355,7 +356,11 @@ class ModelBase(object):
 
         cv_args = {}
         if era_list is not None:
+            print('Era List: ', era_list)
             cv_args['era_list'] = era_list
+        if window_size is not None:
+            print('Window Size: ', window_size)
+            cv_args['window_size'] = window_size
 
         # Training on Cross Validation Sets
         for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era \

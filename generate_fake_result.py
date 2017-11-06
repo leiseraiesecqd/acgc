@@ -38,7 +38,7 @@ def generate_fake_result(seed, fake_std):
     # for loc_i, loss_i in zip(loc_list, loss_list):
     #     print(loc_i, ': ', loss_i)
 
-    loc = 0.45
+    loc = 0.60
     prob = np.random.normal(loc=loc, size=len(index), scale=0.0002)
     # prob = [0.999 if ii > loc else ii for ii in prob]
     print(utils.log_loss(prob, label))
@@ -49,4 +49,4 @@ if __name__ == '__main__':
 
     global_seed = random.randint(0, 500)
 
-    generate_fake_result(global_seed, fake_std=0.45)
+    generate_fake_result(global_seed, fake_std=0.1)

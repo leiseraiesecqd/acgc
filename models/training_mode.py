@@ -10,22 +10,20 @@ class TrainingMode:
 
     @staticmethod
     def get_train_function(train_mode, model_name, grid_search_n_cv=None, reduced_feature_list=None,
-                           load_pickle=False, train_args=None, train_options=None, use_multi_group=False):
+                           load_pickle=False, train_args=None, use_multi_group=False):
 
         if train_mode == 'train_single_model':
             model_arg = {'reduced_feature_list': reduced_feature_list, 'train_args': train_args,
-                         'train_options': train_options, 'use_multi_group': use_multi_group, 'mode': train_mode}
+                         'use_multi_group': use_multi_group, 'mode': train_mode}
         elif train_mode == 'auto_grid_search':
             model_arg = {'reduced_feature_list': reduced_feature_list, 'grid_search_n_cv': grid_search_n_cv,
-                         'train_args': train_args, 'train_options': train_options,
-                         'use_multi_group': use_multi_group, 'mode': train_mode}
+                         'train_args': train_args, 'use_multi_group': use_multi_group, 'mode': train_mode}
         elif train_mode == 'auto_train_boost_round':
             model_arg = {'reduced_feature_list': reduced_feature_list, 'grid_search_n_cv': grid_search_n_cv,
-                         'train_args': train_args, 'train_options': train_options,
-                         'use_multi_group': use_multi_group, 'mode': train_mode}
+                         'train_args': train_args, 'use_multi_group': use_multi_group, 'mode': train_mode}
         elif train_mode == 'auto_train':
             model_arg = {'reduced_feature_list': reduced_feature_list, 'train_args': train_args,
-                         'train_options': train_options, 'use_multi_group': use_multi_group, 'mode': train_mode}
+                         'use_multi_group': use_multi_group, 'mode': train_mode}
         else:
             raise ValueError('Wrong Training Mode!')
 
@@ -62,12 +60,12 @@ class TrainingMode:
 
         elif model_name == 'prejudge_b':
             PJ = PrejudgeTraining(reduced_feature_list=reduced_feature_list,
-                                  load_pickle=load_pickle, train_options=train_options)
+                                  load_pickle=load_pickle, train_args=train_args)
             return PJ.binary_train
 
         elif model_name == 'prejudge_m':
             PJ = PrejudgeTraining(reduced_feature_list=reduced_feature_list,
-                                  load_pickle=load_pickle, train_options=train_options)
+                                  load_pickle=load_pickle, train_args=train_args)
             return PJ.multiclass_train
 
         else:
@@ -75,7 +73,7 @@ class TrainingMode:
 
     def train_single_model(self, model_name, train_seed, cv_seed, num_boost_round=None, epochs=None,
                            auto_idx=None, reduced_feature_list=None, load_pickle=False, base_parameters=None,
-                           train_args=None, train_options=None, use_multi_group=False):
+                           train_args=None, use_multi_group=False):
         """
             Training Single Model
         """
@@ -83,7 +81,7 @@ class TrainingMode:
         train_function = \
             self.get_train_function('train_single_model', model_name, load_pickle=load_pickle,
                                     reduced_feature_list=reduced_feature_list, train_args=train_args,
-                                    train_options=train_options, use_multi_group=use_multi_group)
+                                    use_multi_group=use_multi_group)
 
         # Training Model
         if model_name == 'stack_lgb':
@@ -98,16 +96,16 @@ class TrainingMode:
 
     def auto_grid_search(self, model_name=None, parameter_grid_list=None, reduced_feature_list=None,
                          save_final_pred=False, n_epoch=1, grid_search_n_cv=5, base_parameters=None,
-                         train_args=None, train_options=None, num_boost_round=None, use_multi_group=False):
+                         train_args=None, num_boost_round=None, use_multi_group=False):
         """
             Automatically Grid Searching
         """
         # Get Train Function
-        train_options['save_final_pred'] = save_final_pred
+        train_args['save_final_pred'] = save_final_pred
         train_function = \
             self.get_train_function('auto_grid_search', model_name, grid_search_n_cv=grid_search_n_cv,
                                     reduced_feature_list=reduced_feature_list, train_args=train_args,
-                                    train_options=train_options, use_multi_group=use_multi_group)
+                                    use_multi_group=use_multi_group)
 
         for parameter_grid in parameter_grid_list:
 
@@ -178,7 +176,7 @@ class TrainingMode:
     def auto_train_boost_round(self, model_name=None, train_seed_list=None, cv_seed_list=None, n_epoch=1,
                                num_boost_round=None, epochs=None, parameter_grid_list=None, reduced_feature_list=None,
                                grid_search_n_cv=20, save_final_pred=False, base_parameters=None,
-                               train_args=None, train_options=None, use_multi_group=False):
+                               train_args=None, use_multi_group=False):
         """
             Automatically Training by Boost Round or Epoch
         """
@@ -201,11 +199,10 @@ class TrainingMode:
             n_epoch = len(train_seed_list)
 
         # Get Train Function
-        train_options['save_final_pred'] = save_final_pred
-        train_function = self.get_train_function('auto_train_boost_round', model_name,
-                                                 grid_search_n_cv=grid_search_n_cv,
+        train_args['save_final_pred'] = save_final_pred
+        train_function = self.get_train_function('auto_train_boost_round', model_name, grid_search_n_cv=grid_search_n_cv,
                                                  reduced_feature_list=reduced_feature_list, train_args=train_args,
-                                                 train_options=train_options, use_multi_group=use_multi_group)
+                                                 use_multi_group=use_multi_group)
 
         for parameter_grid in parameter_grid_list:
 
@@ -275,7 +272,7 @@ class TrainingMode:
             print('======================================================')
 
     def auto_train(self, model_name=None, reduced_feature_list=None, n_epoch=1, stack_final_epochs=None,
-                   base_parameters=None, train_args=None, train_options=None, use_multi_group=False):
+                   base_parameters=None, train_args=None, use_multi_group=False):
         """
             Automatically training a model for many times
         """
@@ -283,7 +280,7 @@ class TrainingMode:
         # Get Train Function
         train_function = \
             self.get_train_function('auto_train', model_name, reduced_feature_list=reduced_feature_list,
-                                    train_args=train_args, train_options=train_options, use_multi_group=use_multi_group)
+                                    train_args=train_args, use_multi_group=use_multi_group)
 
         for i in range(n_epoch):
 
@@ -298,7 +295,7 @@ class TrainingMode:
             if model_name == 'stack_t':
                 train_function(train_seed, cv_seed)
                 train_function_s = \
-                    self.get_train_function('auto_train', 'stack_lgb', train_args=train_args, train_options=train_options,
+                    self.get_train_function('auto_train', 'stack_lgb', train_args=train_args,
                                             reduced_feature_list=reduced_feature_list, use_multi_group=use_multi_group)
 
                 for ii in range(stack_final_epochs):
