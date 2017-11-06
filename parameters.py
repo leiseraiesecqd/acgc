@@ -138,7 +138,6 @@ class SingleModel:
             parameters['random_state'] = train_seed
 
         self.train_args['parameters'] = parameters
-        self.train_args['cv_generator'] = None
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
@@ -172,7 +171,6 @@ class SingleModel:
             parameters['random_state'] = train_seed
 
         self.train_args['parameters'] = parameters
-        self.train_args['cv_generator'] = None
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
@@ -206,7 +204,6 @@ class SingleModel:
             parameters['random_state'] = train_seed
 
         self.train_args['parameters'] = parameters
-        self.train_args['cv_generator'] = None
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
@@ -248,7 +245,6 @@ class SingleModel:
             parameters['random_state'] = train_seed
 
         self.train_args['parameters'] = parameters
-        self.train_args['cv_generator'] = None
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
@@ -284,7 +280,6 @@ class SingleModel:
             parameters['random_state'] = train_seed
 
         self.train_args['parameters'] = parameters
-        self.train_args['cv_generator'] = None
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
@@ -319,7 +314,6 @@ class SingleModel:
                             'colsample_bytree', 'colsample_bylevel', 'gamma']
 
         self.train_args['parameters'] = parameters
-        self.train_args['cv_generator'] = None
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
         self.train_args['file_name_params'] = file_name_params
@@ -362,7 +356,6 @@ class SingleModel:
             parameters['seed'] = train_seed
 
         self.train_args['parameters'] = parameters
-        self.train_args['cv_generator'] = None
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
@@ -409,7 +402,6 @@ class SingleModel:
                             'feature_fraction', 'bagging_fraction', 'bagging_freq', 'min_data_in_bin']
 
         self.train_args['parameters'] = parameters
-        self.train_args['cv_generator'] = None
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
         self.train_args['file_name_params'] = file_name_params
@@ -452,7 +444,6 @@ class SingleModel:
             parameters['seed'] = train_seed
 
         self.train_args['parameters'] = parameters
-        self.train_args['cv_generator'] = None
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
@@ -506,7 +497,6 @@ class SingleModel:
         file_name_params = ['iterations', 'learning_rate', 'depth', 'rsm', 'bagging_temperature']
 
         self.train_args['parameters'] = parameters
-        self.train_args['cv_generator'] = None
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
         self.train_args['file_name_params'] = file_name_params
@@ -545,7 +535,6 @@ class SingleModel:
         file_name_params = ['epochs', 'unit_number', 'learning_rate', 'keep_probability', 'batch_size']
 
         self.train_args['parameters'] = parameters
-        self.train_args['cv_generator'] = None
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
         self.train_args['file_name_params'] = file_name_params
@@ -616,7 +605,6 @@ class SingleModel:
             self.train_args['n_cv'] = self.grid_search_n_cv
 
         self.train_args['parameters'] = parameters
-        self.train_args['cv_generator'] = None
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
 
