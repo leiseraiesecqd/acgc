@@ -9,9 +9,11 @@ train_csv_path = './inputs/stock_train_data_20171103.csv'
 test_csv_path = './inputs/stock_test_data_20171103.csv'
 preprocessed_path = './data/preprocessed_data/'
 gan_prob_path = './data/gan_outputs/'
-negative_era_list = [2, 3, 4, 5, 8, 10, 12, 16]
-positive_era_list = [1, 6, 7, 9, 11, 13, 14, 15, 17, 18, 19, 20]
-merge_era_range_list = [(0, 5), (6, 10)]
+negative_era_list = [2, 3, 4, 7, 9, 11, 15]
+positive_era_list = [0, 1, 5, 6, 8, 10, 12, 13, 14, 16, 17, 18, 19]
+merge_era_range_list = [(0, 6), (7, 13), (14, 20), (21, 27), (28, 34), (35, 41),  (42, 48),
+                        (49, 55), (56, 62), (63, 69), (70, 76), (77, 83), (84, 90), (91, 97),
+                        (98, 104), (105, 110), (111, 116), (117, 122), (123, 128), (129, 134)]
 drop_feature_list = []
 
 
@@ -115,6 +117,10 @@ class DataPreProcess:
 
     # Merge Eras
     def merge_eras(self):
+
+        print('------------------------------------------------------')
+        print('Merging Eras...')
+        print('Merge Era List:\n', self.merge_era_range_list)
 
         self.e_train = np.array(self.e_train, dtype=int)
         e_train_merged = np.zeros_like(self.e_train, dtype=int)
@@ -634,7 +640,7 @@ class DataPreProcess:
         self.load_data()
 
         # Merge Eras
-        self.merge_eras()
+        # self.merge_eras()
 
         # Drop outliers
         # self.drop_outliers_by_value()

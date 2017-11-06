@@ -683,3 +683,44 @@ class CrossValidation:
             trained_cv.append(set(valid_era))
 
             yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
+
+    @staticmethod
+    def forward_validation(x, y, w, e, n_valid, n_cv, n_era, seed=None, era_list=None):
+
+        if seed is not None:
+            np.random.seed(seed)
+
+        for i in range(n_cv):
+
+            valid_start = (i+1) * ((n_era-n_valid)//n_cv)
+            train_era = range(0, valid_start)
+            if i == (n_cv-1):
+                valid_era = range(valid_start, n_era-1)
+            else:
+                valid_era = range(valid_start, valid_start+n_valid)
+
+            train_index = []
+            valid_index = []
+
+            for ii, ele in enumerate(e):
+                if ele in train_era:
+                    train_index.append(ii)
+                elif ele in valid_era:
+                    valid_index.append(ii)
+
+            np.random.shuffle(train_index)
+            np.random.shuffle(valid_index)
+
+            # Training data
+            x_train = x[train_index]
+            y_train = y[train_index]
+            w_train = w[train_index]
+            e_train = e[train_index]
+
+            # Validation data
+            x_valid = x[valid_index]
+            y_valid = y[valid_index]
+            w_valid = w[valid_index]
+            e_valid = e[valid_index]
+
+            yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
