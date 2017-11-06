@@ -43,9 +43,9 @@ class Training:
         # cv_seed = 216  # 425 48 461 157
 
         # Training Arguments
-        train_args = {'n_valid': 27,
-                      'n_cv': 20,
-                      'n_era': 134,
+        train_args = {'n_valid': 1,  # 27,
+                      'n_cv': 134,  # 20,
+                      'n_era': 135,
                       'train_seed': train_seed,
                       'cv_seed': cv_seed,
                       # 'cv_generator': None,
@@ -85,7 +85,7 @@ class Training:
         """
             Train Single Model
         """
-        TM.train_single_model('lgb', train_seed, cv_seed, num_boost_round=88,
+        TM.train_single_model('lgb', train_seed, cv_seed, num_boost_round=100,
                               reduced_feature_list=reduced_feature_list, base_parameters=base_parameters,
                               train_args=train_args, train_options=train_options, use_multi_group=True)
 
