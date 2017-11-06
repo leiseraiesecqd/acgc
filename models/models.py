@@ -466,7 +466,7 @@ class ModelBase(object):
         if save_final_pred:
             self.save_final_pred(mode, save_final_pred, prob_test_mean, pred_path,
                                  parameters, csv_idx, train_seed, cv_seed, boost_round_log_path,
-                                 param_name_list, param_value_list, file_name_params=None)
+                                 param_name_list, param_value_list, file_name_params=file_name_params)
 
         # Save Final prob_train
         if save_final_prob_train:
