@@ -11,6 +11,7 @@ preprocessed_path = './data/preprocessed_data/'
 gan_prob_path = './data/gan_outputs/'
 negative_era_list = [2, 3, 4, 5, 8, 10, 12, 16]
 positive_era_list = [1, 6, 7, 9, 11, 13, 14, 15, 17, 18, 19, 20]
+merge_era_range_list = [(0, 5), (6, 10)]
 drop_feature_list = []
 
 
@@ -68,6 +69,7 @@ class DataPreProcess:
         self.y_valid = np.array([])
 
         self.drop_feature_list = ['feature' + str(f_num) for f_num in drop_feature_list]
+        self.merge_era_range_list = merge_era_range_list
 
     # Load CSV Files Using Pandas
     def load_csv(self):
@@ -110,6 +112,30 @@ class DataPreProcess:
         else:
             self.g_train = train_f['group1']
             self.g_test = test_f['group1']
+
+    # Merge Eras
+    def merge_eras(self):
+
+        self.e_train = np.array(self.e_train, dtype=int)
+        e_train_merged = np.zeros_like(self.e_train, dtype=int)
+
+        merge_counter = 0
+
+        for i, era in enumerate(self.e_train):
+
+            era_start, era_end = self.merge_era_range_list[merge_counter]
+
+            if era in range(era_start, era_end+1):
+                e_train_merged[i] = merge_counter
+            else:
+                merge_counter += 1
+                era_start, era_end = self.merge_era_range_list[merge_counter]
+                if era in range(era_start, era_end+1):
+                    e_train_merged[i] = merge_counter
+                else:
+                    raise ValueError('Merge Era List Must Be Continuous!')
+
+        self.e_train = e_train_merged
 
     # Drop Outlier of a Feature by Quantile
     def drop_feature_outliers_by_quantile(self, feature, upper_quantile_train=None, lower_quantile_train=None):
@@ -606,6 +632,9 @@ class DataPreProcess:
 
         # Load original data
         self.load_data()
+
+        # Merge Eras
+        self.merge_eras()
 
         # Drop outliers
         # self.drop_outliers_by_value()
