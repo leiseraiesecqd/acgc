@@ -707,7 +707,7 @@ class ChampionModel:
         else:
             parameters['seed'] = train_seed
 
-        cv_generator = CrossValidation.era_k_fold_with_weight_all_random
+        cv_generator = CrossValidation.era_k_fold_all_random
 
         self.train_args['parameters'] = parameters
         self.train_args['cv_generator'] = cv_generator

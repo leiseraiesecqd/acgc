@@ -494,7 +494,7 @@ class PrejudgeMultiClass:
             model = self.multiclass_model_initializer(x_train_era, x_g_train_era, y_train_era, w_train_era,
                                                       e_train_era, x_test_era, x_g_test_era, id_test_era)
 
-            cv_generator = CrossValidation.random_split_with_weight
+            cv_generator = CrossValidation.random_split
             prob_test_era = model.train(self.pred_path + 'multiclass/', self.loss_log_path + 'multiclass/',
                                         csv_log_path=self.csv_log_path, n_valid=self.n_valid_m, n_cv=self.n_cv_m,
                                         train_seed=self.train_seed, cv_seed=self.cv_seed,

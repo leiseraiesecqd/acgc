@@ -14,7 +14,7 @@ class CrossValidation:
         self.trained_cv = []
 
     @staticmethod
-    def random_split_with_weight(x, y, w, e, n_valid, n_cv, n_era, seed=None, era_list=None):
+    def random_split(x, y, w, e, n_valid, n_cv, n_era, seed=None):
 
         test_size = n_valid / n_era
         valid_era = []
@@ -37,7 +37,7 @@ class CrossValidation:
             yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
     @staticmethod
-    def sk_k_fold_with_weight(x, y, w, n_splits, n_cv, seed=None):
+    def sk_k_fold(x, y, w, n_splits, n_cv, seed=None):
 
         if seed is not None:
             np.random.seed(seed)
@@ -102,210 +102,7 @@ class CrossValidation:
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
     @staticmethod
-    def era_k_fold_split_all_random(e, n_valid, n_cv, n_era, seed=None, era_list=None):
-
-        if seed is not None:
-            np.random.seed(seed)
-
-        trained_cv = []
-
-        for i in range(n_cv):
-
-            if era_list is None:
-                era_list = range(0, n_era)
-
-            valid_era = np.random.choice(era_list, n_valid, replace=False)
-            while any(set(valid_era) == i_cv for i_cv in trained_cv):
-                print('This CV split has been chosen, choosing another one...')
-                valid_era = np.random.choice(era_list, n_valid, replace=False)
-
-            train_index = []
-            valid_index = []
-
-            for ii, ele in enumerate(e):
-
-                if ele in valid_era:
-                    valid_index.append(ii)
-                else:
-                    train_index.append(ii)
-
-            np.random.shuffle(train_index)
-            np.random.shuffle(valid_index)
-            trained_cv.append(set(valid_era))
-
-            yield train_index, valid_index
-
-    @staticmethod
-    def era_k_fold_with_weight_all_random(x, y, w, e, n_valid, n_cv, n_era, seed=None, era_list=None):
-
-        if seed is not None:
-            np.random.seed(seed)
-
-        trained_cv = []
-
-        for i in range(n_cv):
-
-            if era_list is None:
-                era_list = range(0, n_era)
-
-            valid_era = np.random.choice(era_list, n_valid, replace=False)
-            while any(set(valid_era) == i_cv for i_cv in trained_cv):
-                print('This CV split has been chosen, choosing another one...')
-                valid_era = np.random.choice(era_list, n_valid, replace=False)
-
-            train_index = []
-            valid_index = []
-
-            for ii, ele in enumerate(e):
-                if ele in valid_era:
-                    valid_index.append(ii)
-                else:
-                    train_index.append(ii)
-
-            np.random.shuffle(train_index)
-            np.random.shuffle(valid_index)
-
-            # Training data
-            x_train = x[train_index]
-            y_train = y[train_index]
-            w_train = w[train_index]
-            e_train = e[train_index]
-
-            # Validation data
-            x_valid = x[valid_index]
-            y_valid = y[valid_index]
-            w_valid = w[valid_index]
-            e_valid = e[valid_index]
-
-            trained_cv.append(set(valid_era))
-
-            yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
-
-    @staticmethod
-    def era_k_fold_split(e, n_valid, n_cv, n_era, seed=None, era_list=None):
-
-        if seed is not None:
-            np.random.seed(seed)
-
-        n_traverse = n_era // n_valid
-        n_rest = n_era % n_valid
-
-        if n_rest != 0:
-            n_traverse += 1
-
-        if n_cv % n_traverse != 0:
-            raise ValueError
-
-        n_epoch = n_cv // n_traverse
-        trained_cv = []
-
-        for epoch in range(n_epoch):
-
-            if era_list is None:
-                era_list = range(0, n_era)
-
-            era_idx = [era_list]
-
-            if n_rest == 0:
-
-                for i in range(n_traverse):
-
-                    # Choose eras that have not used
-                    if trained_cv:
-                        valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
-                        while any(set(valid_era) == i_cv for i_cv in trained_cv):
-                            print('This CV split has been chosen, choosing another one...')
-                            if set(valid_era) != set(era_idx[i]):
-                                valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
-                            else:
-                                valid_era = np.random.choice(era_list, n_valid, replace=False)
-                    else:
-                        valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
-
-                    # Generate era set for next choosing
-                    if i != n_traverse - 1:
-                        era_next = [rest for rest in era_idx[i] if rest not in valid_era]
-                        era_idx.append(era_next)
-
-                    train_index = []
-                    valid_index = []
-
-                    # Generate train-validation split index
-                    for ii, ele in enumerate(e):
-                        if ele in valid_era:
-                            valid_index.append(ii)
-                        else:
-                            train_index.append(ii)
-
-                    np.random.shuffle(train_index)
-                    np.random.shuffle(valid_index)
-
-                    trained_cv.append(set(valid_era))
-
-                    yield train_index, valid_index
-
-            # n_cv is not an integer multiple of n_valid
-            else:
-
-                for i in range(n_traverse):
-
-                    if i != n_traverse - 1:
-
-                        if trained_cv:
-                            valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
-                            while any(set(valid_era) == i_cv for i_cv in trained_cv):
-                                print('This CV split has been chosen, choosing another one...')
-                                valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
-                        else:
-                            valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
-
-                        era_next = [rest for rest in era_idx[i] if rest not in valid_era]
-                        era_idx.append(era_next)
-
-                        train_index = []
-                        valid_index = []
-
-                        for ii, ele in enumerate(e):
-                            if ele in valid_era:
-                                valid_index.append(ii)
-                            else:
-                                train_index.append(ii)
-
-                        np.random.shuffle(train_index)
-                        np.random.shuffle(valid_index)
-
-                        trained_cv.append(set(valid_era))
-
-                        yield train_index, valid_index
-
-                    else:
-
-                        era_idx_else = [t for t in list(range(0, n_era)) if t not in era_idx[i]]
-
-                        valid_era = era_idx[i] + list(np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
-                        while any(set(valid_era) == i_cv for i_cv in trained_cv):
-                            print('This CV split has been chosen, choosing another one...')
-                            valid_era = era_idx[i] + list(
-                                np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
-
-                        train_index = []
-                        valid_index = []
-
-                        for ii, ele in enumerate(e):
-                            if ele in valid_era:
-                                valid_index.append(ii)
-                            else:
-                                train_index.append(ii)
-
-                        np.random.shuffle(train_index)
-                        np.random.shuffle(valid_index)
-
-                        trained_cv.append(set(valid_era))
-
-                        yield train_index, valid_index
-
-    @staticmethod
-    def era_k_fold_with_weight(x, y, w, e, n_valid, n_cv, n_era, seed=None, era_list=None):
+    def era_k_fold(x, y, w, e, n_valid, n_cv, n_era, seed=None, era_list=None):
 
         if seed is not None:
             np.random.seed(seed)
@@ -462,6 +259,129 @@ class CrossValidation:
                         trained_cv.append(set(valid_era))
 
                         yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
+
+    @staticmethod
+    def era_k_fold_split(e, n_valid, n_cv, n_era, seed=None, era_list=None):
+
+        if seed is not None:
+            np.random.seed(seed)
+
+        n_traverse = n_era // n_valid
+        n_rest = n_era % n_valid
+
+        if n_rest != 0:
+            n_traverse += 1
+
+        if n_cv % n_traverse != 0:
+            raise ValueError
+
+        n_epoch = n_cv // n_traverse
+        trained_cv = []
+
+        for epoch in range(n_epoch):
+
+            if era_list is None:
+                era_list = range(0, n_era)
+
+            era_idx = [era_list]
+
+            if n_rest == 0:
+
+                for i in range(n_traverse):
+
+                    # Choose eras that have not used
+                    if trained_cv:
+                        valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                        while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                            print('This CV split has been chosen, choosing another one...')
+                            if set(valid_era) != set(era_idx[i]):
+                                valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                            else:
+                                valid_era = np.random.choice(era_list, n_valid, replace=False)
+                    else:
+                        valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+
+                    # Generate era set for next choosing
+                    if i != n_traverse - 1:
+                        era_next = [rest for rest in era_idx[i] if rest not in valid_era]
+                        era_idx.append(era_next)
+
+                    train_index = []
+                    valid_index = []
+
+                    # Generate train-validation split index
+                    for ii, ele in enumerate(e):
+                        if ele in valid_era:
+                            valid_index.append(ii)
+                        else:
+                            train_index.append(ii)
+
+                    np.random.shuffle(train_index)
+                    np.random.shuffle(valid_index)
+
+                    trained_cv.append(set(valid_era))
+
+                    yield train_index, valid_index
+
+            # n_cv is not an integer multiple of n_valid
+            else:
+
+                for i in range(n_traverse):
+
+                    if i != n_traverse - 1:
+
+                        if trained_cv:
+                            valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                            while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                                print('This CV split has been chosen, choosing another one...')
+                                valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+                        else:
+                            valid_era = np.random.choice(era_idx[i], n_valid, replace=False)
+
+                        era_next = [rest for rest in era_idx[i] if rest not in valid_era]
+                        era_idx.append(era_next)
+
+                        train_index = []
+                        valid_index = []
+
+                        for ii, ele in enumerate(e):
+                            if ele in valid_era:
+                                valid_index.append(ii)
+                            else:
+                                train_index.append(ii)
+
+                        np.random.shuffle(train_index)
+                        np.random.shuffle(valid_index)
+
+                        trained_cv.append(set(valid_era))
+
+                        yield train_index, valid_index
+
+                    else:
+
+                        era_idx_else = [t for t in list(range(0, n_era)) if t not in era_idx[i]]
+
+                        valid_era = era_idx[i] + list(np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
+                        while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                            print('This CV split has been chosen, choosing another one...')
+                            valid_era = era_idx[i] + list(
+                                np.random.choice(era_idx_else, n_valid - n_rest, replace=False))
+
+                        train_index = []
+                        valid_index = []
+
+                        for ii, ele in enumerate(e):
+                            if ele in valid_era:
+                                valid_index.append(ii)
+                            else:
+                                train_index.append(ii)
+
+                        np.random.shuffle(train_index)
+                        np.random.shuffle(valid_index)
+
+                        trained_cv.append(set(valid_era))
+
+                        yield train_index, valid_index
 
     def era_k_fold_for_stack(self, x, y, w, e, x_g, n_valid, n_cv, n_era, seed=None, return_train_index=False):
 
@@ -640,7 +560,7 @@ class CrossValidation:
                                   y_valid, w_valid, x_g_valid, valid_index, valid_era
 
     @staticmethod
-    def era_k_fold_with_weight_balance(x, y, w, e, n_valid, n_cv, n_era, seed=None, era_list=None):
+    def era_k_fold_balance(x, y, w, e, n_valid, n_cv, n_era, seed=None, era_list=None):
 
         if seed is not None:
             np.random.seed(seed)
@@ -685,7 +605,87 @@ class CrossValidation:
             yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
     @staticmethod
-    def forward_validation(x, y, w, e, n_valid, n_cv, n_era, seed=None, era_list=None):
+    def era_k_fold_all_random(x, y, w, e, n_valid, n_cv, n_era, seed=None, era_list=None):
+
+        if seed is not None:
+            np.random.seed(seed)
+
+        trained_cv = []
+
+        for i in range(n_cv):
+
+            if era_list is None:
+                era_list = range(0, n_era)
+
+            valid_era = np.random.choice(era_list, n_valid, replace=False)
+            while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                print('This CV split has been chosen, choosing another one...')
+                valid_era = np.random.choice(era_list, n_valid, replace=False)
+
+            train_index = []
+            valid_index = []
+
+            for ii, ele in enumerate(e):
+                if ele in valid_era:
+                    valid_index.append(ii)
+                else:
+                    train_index.append(ii)
+
+            np.random.shuffle(train_index)
+            np.random.shuffle(valid_index)
+
+            # Training data
+            x_train = x[train_index]
+            y_train = y[train_index]
+            w_train = w[train_index]
+            e_train = e[train_index]
+
+            # Validation data
+            x_valid = x[valid_index]
+            y_valid = y[valid_index]
+            w_valid = w[valid_index]
+            e_valid = e[valid_index]
+
+            trained_cv.append(set(valid_era))
+
+            yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
+
+    @staticmethod
+    def era_k_fold_split_all_random(e, n_valid, n_cv, n_era, seed=None, era_list=None):
+
+        if seed is not None:
+            np.random.seed(seed)
+
+        trained_cv = []
+
+        for i in range(n_cv):
+
+            if era_list is None:
+                era_list = range(0, n_era)
+
+            valid_era = np.random.choice(era_list, n_valid, replace=False)
+            while any(set(valid_era) == i_cv for i_cv in trained_cv):
+                print('This CV split has been chosen, choosing another one...')
+                valid_era = np.random.choice(era_list, n_valid, replace=False)
+
+            train_index = []
+            valid_index = []
+
+            for ii, ele in enumerate(e):
+
+                if ele in valid_era:
+                    valid_index.append(ii)
+                else:
+                    train_index.append(ii)
+
+            np.random.shuffle(train_index)
+            np.random.shuffle(valid_index)
+            trained_cv.append(set(valid_era))
+
+            yield train_index, valid_index
+
+    @staticmethod
+    def forward_increase_validation(x, y, w, e, n_valid, n_cv, n_era, seed=None):
 
         if seed is not None:
             np.random.seed(seed)
@@ -724,3 +724,46 @@ class CrossValidation:
             e_valid = e[valid_index]
 
             yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
+
+    # @staticmethod
+    # def forward_window_validation(x, y, w, e, n_valid, n_cv, n_era, window_size=None, seed=None):
+    #
+    #     if seed is not None:
+    #         np.random.seed(seed)
+    #
+    #     n_step = (n_era-window_size) // n_cv
+    #
+    #     for i in range(n_cv):
+    #
+    #         valid_start += n_step
+    #         train_era = range(0, valid_start)
+    #         if i == (n_cv - 1):
+    #             valid_era = list(range(valid_start, n_era))
+    #         else:
+    #             valid_era = list(range(valid_start, valid_start + n_valid))
+    #
+    #         train_index = []
+    #         valid_index = []
+    #
+    #         for ii, ele in enumerate(e):
+    #             if ele in train_era:
+    #                 train_index.append(ii)
+    #             elif ele in valid_era:
+    #                 valid_index.append(ii)
+    #
+    #         np.random.shuffle(train_index)
+    #         np.random.shuffle(valid_index)
+    #
+    #         # Training data
+    #         x_train = x[train_index]
+    #         y_train = y[train_index]
+    #         w_train = w[train_index]
+    #         e_train = e[train_index]
+    #
+    #         # Validation data
+    #         x_valid = x[valid_index]
+    #         y_valid = y[valid_index]
+    #         w_valid = w[valid_index]
+    #         e_valid = e[valid_index]
+    #
+    #         yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era

@@ -351,14 +351,18 @@ class ModelBase(object):
 
         # Get Cross Validation Generator
         if cv_generator is None:
-            cv_generator = CrossValidation.era_k_fold_with_weight
+            cv_generator = CrossValidation.era_k_fold
         print('------------------------------------------------------')
         print('Using CV Generator: {}'.format(getattr(cv_generator, '__name__')))
+
+        cv_args = {}
+        if era_list is not None:
+            cv_args['era_list'] = era_list
 
         # Training on Cross Validation Sets
         for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era \
                 in cv_generator(x=self.x_train, y=self.y_train, w=self.w_train, e=self.e_train,
-                                n_valid=n_valid, n_cv=n_cv, n_era=n_era, seed=cv_seed, era_list=era_list):
+                                n_valid=n_valid, n_cv=n_cv, n_era=n_era, seed=cv_seed, **cv_args):
 
             cv_count += 1
 
@@ -543,7 +547,7 @@ class ModelBase(object):
 
         # Get Cross Validation Generator
         if cv_generator is None:
-            cv_generator = CrossValidation.sk_k_fold_with_weight
+            cv_generator = CrossValidation.sk_k_fold
 
         # Cross Validation
         for x_train, y_train, w_train, \
@@ -1151,7 +1155,7 @@ class LightGBM(ModelBase):
 
         # Get Cross Validation Generator
         if cv_generator is None:
-            cv_generator = CrossValidation.sk_k_fold_with_weight
+            cv_generator = CrossValidation.sk_k_fold
         print('------------------------------------------------------')
         print('Using CV Generator: {}'.format(getattr(cv_generator, '__name__')))
 

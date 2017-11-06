@@ -735,7 +735,7 @@ class ChampionModel:
 
         LGBM = models.LightGBM(x_g_train, y_train, w_train, e_train, x_g_test, id_test, num_boost_round=65)
 
-        cv_generator = CrossValidation.era_k_fold_with_weight_all_random
+        cv_generator = CrossValidation.era_k_fold_all_random
 
         LGBM.train(single_model_pred_path, loss_log_path, csv_log_path=csv_log_path + 'christ1991_',
                    n_valid=4, n_cv=n_cv, n_era=20, train_seed=train_seed, save_final_pred=save_final_pred,
