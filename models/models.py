@@ -311,15 +311,15 @@ class ModelBase(object):
                 utils.save_pred_to_csv(pred_path, self.id_test, prob_test_mean)
 
     @staticmethod
-    def get_rescale_rate(y_train):
+    def get_rescale_rate(y):
 
         positive = 0
-        for y in y_train:
-            if y == 1:
+        for y_ in y:
+            if y_ == 1:
                 positive += 1
 
-        positive_rate = positive / len(y_train)
-        rescale_rate = len(y_train) / (2*positive)
+        positive_rate = positive / len(y)
+        rescale_rate = len(y) / (2*positive)
 
         return positive_rate, rescale_rate
 

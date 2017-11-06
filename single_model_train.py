@@ -85,7 +85,7 @@ class Training:
         """
             Train Single Model
         """
-        TM.train_single_model('lgb', train_seed, cv_seed, num_boost_round=100,
+        TM.train_single_model('lgb', train_seed, cv_seed, num_boost_round=5,
                               reduced_feature_list=reduced_feature_list, base_parameters=base_parameters,
                               train_args=train_args, train_options=train_options, use_multi_group=True)
 
