@@ -70,35 +70,36 @@ class Training:
         #                    'eval_metric': 'logloss'}
 
         """ LGB """
-        # base_parameters = {'application': 'binary',
-        #                    'boosting': 'gbdt',                  # gdbt,rf,dart,goss
-        #                    'learning_rate': 0.003,              # default=0.1
-        #                    'num_leaves': 88,                    # default=31       <2^(max_depth)
-        #                    'max_depth': 9,                      # default=-1
-        #                    'min_data_in_leaf': 2500,            # default=20       reduce over-fit
-        #                    'min_sum_hessian_in_leaf': 1e-3,     # default=1e-3     reduce over-fit
-        #                    'feature_fraction': 0.5,             # default=1
-        #                    'feature_fraction_seed': 19,         # default=2
-        #                    'bagging_fraction': 0.8,             # default=1
-        #                    'bagging_freq': 2,                   # default=0        perform bagging every k iteration
-        #                    'bagging_seed': 1,                   # default=3
-        #                    'lambda_l1': 0,                      # default=0
-        #                    'lambda_l2': 0,                      # default=0
-        #                    'min_gain_to_split': 0,              # default=0
-        #                    'max_bin': 225,                      # default=255
-        #                    'min_data_in_bin': 5,                # default=5
-        #                    'metric': 'binary_logloss',
-        #                    'num_threads': -1,
-        #                    'verbosity': 1,
-        #                    'early_stopping_rounds': 10000}
+        base_parameters = {'application': 'binary',
+                           'boosting': 'gbdt',                  # gdbt,rf,dart,goss
+                           'learning_rate': 0.003,              # default=0.1
+                           'num_leaves': 88,                    # default=31       <2^(max_depth)
+                           'max_depth': 9,                      # default=-1
+                           'min_data_in_leaf': 2500,            # default=20       reduce over-fit
+                           'min_sum_hessian_in_leaf': 1e-3,     # default=1e-3     reduce over-fit
+                           'feature_fraction': 0.5,             # default=1
+                           'feature_fraction_seed': 19,         # default=2
+                           'bagging_fraction': 0.8,             # default=1
+                           'bagging_freq': 2,                   # default=0        perform bagging every k iteration
+                           'bagging_seed': 1,                   # default=3
+                           'lambda_l1': 0,                      # default=0
+                           'lambda_l2': 0,                      # default=0
+                           'min_gain_to_split': 0,              # default=0
+                           'max_bin': 225,                      # default=255
+                           'min_data_in_bin': 5,                # default=5
+                           'metric': 'binary_logloss',
+                           'num_threads': -1,
+                           'verbosity': 1,
+                           'early_stopping_rounds': 10000}
 
-        base_parameters = None
+        # base_parameters = None
 
         """
             Auto Grid Search Parameters
         """
         pg_list = [
-                   [['subsample', (0.82, 0.85, 0.88, 0.91, 0.94)]],
+                   [['max_depth', (8, 9)]],
+                   # [['max_depth', (10, 11)]],
                    # [['min_child_weight', [6, 12, 18]]],
                    # [['learning_rate', [0.002, 0.003, 0.005]]],
                    # [['subsample', [0.8, 0.85, 0.9]]]
