@@ -1088,8 +1088,9 @@ class LightGBM(ModelBase):
             print('------------------------------------------------------')
             print('[W] Using Single Group...')
             idx_category = [x_train.shape[1] - 1]
-        # print('Index of categorical feature: {}'.format(idx_category))
-        # print('------------------------------------------------------')
+        print('------------------------------------------------------')
+        print('Index of categorical feature: {}'.format(idx_category))
+        print('------------------------------------------------------')
 
         d_train = lgb.Dataset(x_train, label=y_train, weight=w_train, categorical_feature=idx_category)
         d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
@@ -1110,6 +1111,7 @@ class LightGBM(ModelBase):
             print('------------------------------------------------------')
             print('[W] Using Single Group...')
             idx_category = [x_train.shape[1] - 1]
+        print('------------------------------------------------------')
         print('Index of categorical feature: {}'.format(idx_category))
         print('------------------------------------------------------')
 
@@ -1319,8 +1321,9 @@ class CatBoost(ModelBase):
             print('------------------------------------------------------')
             print('[W] Using Single Group...')
             idx_category = [x_train.shape[1] - 1]
-        # print('Index of categorical feature: {}'.format(idx_category))
-        # print('------------------------------------------------------')
+        print('------------------------------------------------------')
+        print('Index of categorical feature: {}'.format(idx_category))
+        print('------------------------------------------------------')
 
         # Convert Zeros in Weights to Small Positive Numbers
         w_train = [0.001 if w == 0 else w for w in w_train]
@@ -1344,6 +1347,7 @@ class CatBoost(ModelBase):
             print('------------------------------------------------------')
             print('[W] Using Single Group...')
             idx_category = [x_train.shape[1] - 1]
+        print('------------------------------------------------------')
         print('Index of categorical feature: {}'.format(idx_category))
         print('------------------------------------------------------')
 
