@@ -75,8 +75,8 @@ class DataPreProcess:
 
     # Load CSV Files Using Pandas
     def load_csv(self):
-        train_f = pd.read_csv(self.train_path, header=0, dtype=np.float64)
 
+        train_f = pd.read_csv(self.train_path, header=0, dtype=np.float64)
         test_f = pd.read_csv(self.test_path, header=0, dtype=np.float64)
 
         return train_f, test_f
@@ -409,8 +409,10 @@ class DataPreProcess:
         self.y_train = np.array(self.y_train, dtype=np.float64)
         self.w_train = np.array(self.w_train, dtype=np.float64)
         self.e_train = np.array(self.e_train, dtype=int)
+        self.code_id_train = np.array(self.code_id_train, dtype=int)
         self.x_test = np.array(self.x_test, dtype=np.float64)
         self.id_test = np.array(self.id_test, dtype=int)
+        self.code_id_test = np.array(self.code_id_test, dtype=int)
 
     # Add Polynomial Features
     def add_polynomial_features(self):

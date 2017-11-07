@@ -296,6 +296,15 @@ def load_preprocessed_data_g(data_file_path):
     return x_g_train, x_g_test
 
 
+# Load Preprocessed Code ID
+def load_preprocessed_code_id(data_file_path):
+
+    code_id_train = pd.read_pickle(data_file_path + 'code_id_train.p')
+    code_id_test = pd.read_pickle(data_file_path + 'code_id_test.p')
+
+    return code_id_train, code_id_test
+
+
 # Load Preprocessed Positive Data
 def load_preprocessed_positive_data(data_file_path):
 

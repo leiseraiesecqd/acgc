@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 from models import utils
 
-fake_pred_path = './results/fake_result/'
+fake_pred_path = './results/fake_results/'
 
 
 def generate_fake_result(seed, fake_std):
@@ -43,7 +43,7 @@ def generate_fake_result(seed, fake_std):
     # prob = [0.999 if ii > loc else ii for ii in prob]
     print(utils.log_loss(prob, label))
 
-    utils.save_pred_to_csv(fake_pred_path, index, prob)
+    utils.save_pred_to_csv(fake_pred_path + str(loc) + '_', index, prob)
 
 if __name__ == '__main__':
 
