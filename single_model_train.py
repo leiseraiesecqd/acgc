@@ -59,7 +59,8 @@ class Training:
                       'save_final_prob_train': False,
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
-                      'save_csv_log': True}
+                      'save_csv_log': True,
+                      'append_info': None}
 
         # Reduced Features
         reduced_feature_list = None

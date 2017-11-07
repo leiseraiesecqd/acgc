@@ -276,7 +276,7 @@ class DeepNeuralNetworks(ModelBase):
 
     def train_with_round_log(self, boost_round_log_path, sess, cv_counter, x_train, y_train, w_train,
                              x_valid, y_valid, w_valid, optimizer, merged, cost_, inputs, labels, weights,
-                             lr, keep_prob, is_training, start_time, param_name_list, param_value_list):
+                             lr, keep_prob, is_training, start_time, param_name_list, param_value_list, append_info=''):
 
         param_info = ''
         param_name = ''
@@ -285,6 +285,8 @@ class DeepNeuralNetworks(ModelBase):
             param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
 
         boost_round_log_path += self.model_name + '/'
+        utils.check_dir([boost_round_log_path])
+        boost_round_log_path += self.model_name + append_info + '/'
         utils.check_dir([boost_round_log_path])
         boost_round_log_path += self.model_name + param_name + '/'
         utils.check_dir([boost_round_log_path])
@@ -322,14 +324,20 @@ class DeepNeuralNetworks(ModelBase):
 
     # Training
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, boost_round_log_path=None,
-              n_valid=4, n_cv=20, n_era=20, train_seed=None, cv_seed=None, era_list=None,
-              window_size=None, parameters=None, show_importance=False, show_accuracy=False,
+              n_valid=4, n_cv=20, n_era=20, window_size=None, train_seed=None, cv_seed=None,
+              era_list=None, parameters=None, show_importance=False, show_accuracy=False,
               save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True, save_final_prob_train=False,
               save_csv_log=True, csv_idx=None, cv_generator=None, rescale=False, return_prob_test=False,
-              mode=None, param_name_list=None, param_value_list=None, file_name_params=None):
+              mode=None, param_name_list=None, param_value_list=None, file_name_params=None, append_info=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
+
+        # Append Information
+        if append_info is None:
+            append_info = 'v-' + str(n_valid) + '_c-' + str(n_cv) + '_e-' + str(n_era)
+            if window_size is not None:
+                append_info += '_w-' + str(window_size)
 
         if csv_idx is None:
             csv_idx = self.model_name
@@ -415,8 +423,8 @@ class DeepNeuralNetworks(ModelBase):
                     idx_round_cv, train_loss_round_cv, valid_loss_round_cv = \
                         self.train_with_round_log(boost_round_log_path, sess, cv_counter, x_train, y_train,
                                                   w_train, x_valid, y_valid, w_valid, optimizer, merged, cost_,
-                                                  inputs, labels, weights, lr, keep_prob, is_training,
-                                                  start_time, param_name_list, param_value_list)
+                                                  inputs, labels, weights, lr, keep_prob, is_training, start_time,
+                                                  param_name_list, param_value_list, append_info=append_info)
                     idx_round = idx_round_cv
                     train_loss_round_total.append(train_loss_round_cv)
                     valid_loss_round_total.append(valid_loss_round_cv)
@@ -493,13 +501,14 @@ class DeepNeuralNetworks(ModelBase):
                 train_loss_round_mean = np.mean(np.array(train_loss_round_total), axis=0)
                 valid_loss_round_mean = np.mean(np.array(valid_loss_round_total), axis=0)
                 self.save_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean, valid_loss_round_mean,
-                                          train_seed, cv_seed, csv_idx, parameters, param_name_list, param_value_list)
+                                          train_seed, cv_seed, csv_idx, parameters, param_name_list, param_value_list,
+                                          append_info=append_info)
 
             # Save Final Result
             if save_final_pred:
                 self.save_final_pred(mode, save_final_pred, prob_test_mean, pred_path,
                                      parameters, csv_idx, train_seed, cv_seed, boost_round_log_path,
-                                     param_name_list, param_value_list, file_name_params=None)
+                                     param_name_list, param_value_list, file_name_params=None, append_info=append_info)
 
             # Save Final prob_train
             if save_final_prob_train:
@@ -522,7 +531,8 @@ class DeepNeuralNetworks(ModelBase):
             if save_csv_log:
                 self.save_csv_log(mode, csv_log_path, param_name_list, param_value_list, csv_idx,
                                   loss_train_w_mean, loss_valid_w_mean, acc_train, train_seed,
-                                  cv_seed, n_valid, n_cv, parameters, file_name_params=file_name_params)
+                                  cv_seed, n_valid, n_cv, parameters, file_name_params=file_name_params,
+                                  append_info=append_info)
 
             # Return Final Result
             if return_prob_test:
