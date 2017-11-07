@@ -5,9 +5,9 @@ import sys
 import numpy as np
 import tensorflow as tf
 from os.path import isdir
-from .models import ModelBase
-from . import utils
-from .cross_validation import CrossValidation
+from models.models import ModelBase
+from models import utils
+from models.cross_validation import CrossValidation
 
 
 class DeepNeuralNetworks(ModelBase):

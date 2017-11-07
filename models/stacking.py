@@ -1,9 +1,9 @@
 import time
 import numpy as np
-from . import models
-from . import utils
-from .dnn import DeepNeuralNetworks
-from .cross_validation import CrossValidation
+from models import models
+from models import utils
+from models.dnn import DeepNeuralNetworks
+from models.cross_validation import CrossValidation
 
 
 class DeepStack:
