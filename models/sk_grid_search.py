@@ -1,7 +1,7 @@
 import time
-from models import utils
+from . import utils
 from sklearn.model_selection import GridSearchCV
-from models.cross_validation import CrossValidation
+from .cross_validation import CrossValidation
 
 
 class SKLearnGridSearch(object):

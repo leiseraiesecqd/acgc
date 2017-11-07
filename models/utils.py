@@ -4,7 +4,7 @@ import numpy as np
 import os
 import time
 import csv
-import preprocess
+from .. import preprocess
 from os.path import isdir
 
 prejudged_data_path = './results/prejudge/'

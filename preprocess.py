@@ -602,9 +602,11 @@ class DataPreProcess:
         utils.save_data_to_pkl(self.y_train, self.preprocess_path + 'y_train.p')
         utils.save_data_to_pkl(self.w_train, self.preprocess_path + 'w_train.p')
         utils.save_data_to_pkl(self.e_train, self.preprocess_path + 'e_train.p')
+        utils.save_data_to_pkl(self.code_id_train, self.preprocess_path + 'code_id_train.p')
         utils.save_data_to_pkl(self.x_test, self.preprocess_path + 'x_test.p')
         utils.save_data_to_pkl(self.x_g_test, self.preprocess_path + 'x_g_test.p')
         utils.save_data_to_pkl(self.id_test, self.preprocess_path + 'id_test.p')
+        utils.save_data_to_pkl(self.code_id_test, self.preprocess_path + 'code_id_test.p')
 
     # Save Data Split by Era Distribution
     def save_data_by_era_distribution_pd(self):

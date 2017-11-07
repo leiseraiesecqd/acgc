@@ -1,12 +1,12 @@
 import time
-import utils
-import models
-import stacking
-import prejudge
+from .. import utils
+from .. import models
+from .. import stacking
+from .. import prejudge
 import preprocess
 import numpy as np
 import random
-from cross_validation import CrossValidation
+from ..cross_validation import CrossValidation
 
 
 pred_path = './results/'

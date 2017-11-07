@@ -2,7 +2,7 @@ import sys
 import re
 import numpy as np
 import matplotlib.pyplot as plt
-from models import utils
+from . import utils
 
 from models.cross_validation import CrossValidation
 from sklearn.linear_model import LogisticRegression

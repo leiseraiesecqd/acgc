@@ -1,5 +1,5 @@
 import numpy as np
-from models import utils
+from . import utils
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.model_selection import RepeatedKFold
 from sklearn.model_selection import GroupKFold
