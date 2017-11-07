@@ -388,8 +388,7 @@ class SingleModel:
                           'metric': 'binary_logloss',
                           'num_threads': -1,
                           'verbosity': 1,
-                          'early_stopping_rounds': 10000,          # default=0
-                          'seed': train_seed}
+                          'early_stopping_rounds': 10000}
         else:
             parameters['seed'] = train_seed
         

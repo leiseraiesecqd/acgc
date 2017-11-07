@@ -54,6 +54,7 @@ class Training:
         reduced_feature_list = None
 
         # Base Parameters
+        """ XGB """
         base_parameters = {'learning_rate': 0.003,
                            'gamma': 0.001,              # 如果loss function小于设定值，停止产生子节点
                            'max_depth': 10,             # default=6
@@ -67,6 +68,30 @@ class Training:
                            'n_jobs': -1,
                            'objective': 'binary:logistic',
                            'eval_metric': 'logloss'}
+
+        """ LGB """
+        # base_parameters = {'application': 'binary',
+        #                    'boosting': 'gbdt',  # gdbt,rf,dart,goss
+        #                    'learning_rate': 0.003,  # default=0.1
+        #                    'num_leaves': 88,  # default=31       <2^(max_depth)
+        #                    'max_depth': 9,  # default=-1
+        #                    'min_data_in_leaf': 2500,  # default=20       reduce over-fit
+        #                    'min_sum_hessian_in_leaf': 1e-3,  # default=1e-3     reduce over-fit
+        #                    'feature_fraction': 0.5,  # default=1
+        #                    'feature_fraction_seed': 19,  # default=2
+        #                    'bagging_fraction': 0.8,  # default=1
+        #                    'bagging_freq': 2,  # default=0        perform bagging every k iteration
+        #                    'bagging_seed': 1,  # default=3
+        #                    'lambda_l1': 0,  # default=0
+        #                    'lambda_l2': 0,  # default=0
+        #                    'min_gain_to_split': 0,  # default=0
+        #                    'max_bin': 225,  # default=255
+        #                    'min_data_in_bin': 5,  # default=5
+        #                    'metric': 'binary_logloss',
+        #                    'num_threads': -1,
+        #                    'verbosity': 1,
+        #                    'early_stopping_rounds': 10000}
+
         # base_parameters = None
 
         """

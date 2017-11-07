@@ -106,7 +106,7 @@ class ModelBase(object):
 
         boost_round_log_path += self.model_name + '/'
         utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + append_info + '/'
+        boost_round_log_path += self.model_name + '_' + append_info + '/'
         utils.check_dir([boost_round_log_path])
         boost_round_log_path += self.model_name + param_name + '/'
         utils.check_dir([boost_round_log_path])
