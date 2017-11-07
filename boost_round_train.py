@@ -48,7 +48,7 @@ class Training:
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': None}
+                      'append_info': '5-fold'}
 
         # Reduced Features
         reduced_feature_list = None
@@ -56,12 +56,12 @@ class Training:
         # Base Parameters
         """ XGB """
         base_parameters = {'learning_rate': 0.003,
-                           'gamma': 0.001,              # 如果loss function小于设定值，停止产生子节点
-                           'max_depth': 10,             # default=6
-                           'min_child_weight': 12,      # default=1，建立每个模型所需最小样本权重和
-                           'subsample': 0.92,           # 建立树模型时抽取子样本占整个样本的比例
-                           'colsample_bytree': 0.85,    # 建立树时对特征随机采样的比例
-                           'colsample_bylevel': 0.7,
+                           'gamma': 0.001,
+                           'max_depth': 10,
+                           'min_child_weight': 6,
+                           'subsample': 0.88,
+                           'colsample_bytree': 0.85,
+                           'colsample_bylevel': 0.75,
                            'lambda': 0,
                            'alpha': 0,
                            'early_stopping_rounds': 10000,
@@ -71,22 +71,22 @@ class Training:
 
         """ LGB """
         # base_parameters = {'application': 'binary',
-        #                    'boosting': 'gbdt',                   # gdbt,rf,dart,goss
-        #                    'learning_rate': 0.003,               # default=0.1
-        #                    'num_leaves': 88,                     # default=31       <2^(max_depth)
-        #                    'max_depth': 9,                       # default=-1
-        #                    'min_data_in_leaf': 2500,             # default=20       reduce over-fit
-        #                    'min_sum_hessian_in_leaf': 1e-3,      # default=1e-3     reduce over-fit
-        #                    'feature_fraction': 0.5,              # default=1
-        #                    'feature_fraction_seed': 19,          # default=2
-        #                    'bagging_fraction': 0.8,              # default=1
-        #                    'bagging_freq': 2,                    # default=0        perform bagging every k iteration
-        #                    'bagging_seed': 1,                    # default=3
-        #                    'lambda_l1': 0,                       # default=0
-        #                    'lambda_l2': 0,                       # default=0
-        #                    'min_gain_to_split': 0,               # default=0
-        #                    'max_bin': 225,                       # default=255
-        #                    'min_data_in_bin': 5,                 # default=5
+        #                    'boosting': 'gbdt',
+        #                    'learning_rate': 0.003,
+        #                    'num_leaves': 88,
+        #                    'max_depth': 9,
+        #                    'min_data_in_leaf': 2500,
+        #                    'min_sum_hessian_in_leaf': 1e-3,
+        #                    'feature_fraction': 0.5,
+        #                    'feature_fraction_seed': 19,
+        #                    'bagging_fraction': 0.8,
+        #                    'bagging_freq': 2,
+        #                    'bagging_seed': 1,
+        #                    'lambda_l1': 0,
+        #                    'lambda_l2': 0,
+        #                    'min_gain_to_split': 0,
+        #                    'max_bin': 225,
+        #                    'min_data_in_bin': 5,
         #                    'metric': 'binary_logloss',
         #                    'num_threads': -1,
         #                    'verbosity': 1,
@@ -105,7 +105,7 @@ class Training:
         train_seed_list = None
         cv_seed_list = None
         TM.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=200, base_parameters=base_parameters,
-                                  num_boost_round=130, parameter_grid_list=pg_list, save_final_pred=True,
+                                  num_boost_round=135, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
                                   train_args=train_args, use_multi_group=False)
 
