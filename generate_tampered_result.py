@@ -8,11 +8,7 @@ fake_pred_path = './results/tampered_results/'
 preprocessed_data_path = preprocess.preprocessed_path
 
 
-def generate_fake_result(seed):
-
-    start_id = 2000
-    stop_id = 2500
-    loc = 0.9
+def generate_fake_result(seed, start_id, stop_id, loc):
 
     utils.check_dir([fake_pred_path])
 
@@ -20,8 +16,6 @@ def generate_fake_result(seed):
 
     index = pd.read_pickle(preprocessed_data_path + 'id_test.p')
     _, code_id_test = utils.load_preprocessed_code_id(preprocessed_data_path)
-    code_id_set = list(set(code_id_test))
-    print('Code ID Range: ', code_id_set[0], '-', code_id_set[-1])
 
     base_result = pd.read_csv(fake_pred_path + 'base_result.csv', header=0, dtype=np.float64)
     prob = np.array(base_result['proba'], dtype=np.float64)
@@ -46,4 +40,14 @@ if __name__ == '__main__':
 
     global_seed = random.randint(0, 500)
 
-    generate_fake_result(global_seed)
+    # Code ID Range: 0 2914
+    # start_id_ = 200
+    # stop_id_ = 300
+    loc_ = 0.1
+
+    for start_id_ in range(0, 2901, 100):
+        stop_id_ = start_id_ + 100
+        print(start_id_, '-', stop_id_)
+        generate_fake_result(global_seed, start_id_, stop_id_, loc_)
+
+    # generate_fake_result(global_seed, start_id, stop_id, loc)
