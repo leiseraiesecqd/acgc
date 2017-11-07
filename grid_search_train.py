@@ -55,19 +55,19 @@ class Training:
 
         # Base Parameters
         """ XGB """
-        base_parameters = {'learning_rate': 0.003,
-                           'gamma': 0.001,              # 如果loss function小于设定值，停止产生子节点
-                           'max_depth': 10,             # default=6
-                           'min_child_weight': 12,      # default=1，建立每个模型所需最小样本权重和
-                           'subsample': 0.92,           # 建立树模型时抽取子样本占整个样本的比例
-                           'colsample_bytree': 0.85,    # 建立树时对特征随机采样的比例
-                           'colsample_bylevel': 0.7,
-                           'lambda': 0,
-                           'alpha': 0,
-                           'early_stopping_rounds': 10000,
-                           'n_jobs': -1,
-                           'objective': 'binary:logistic',
-                           'eval_metric': 'logloss'}
+        # base_parameters = {'learning_rate': 0.003,
+        #                    'gamma': 0.001,              # 如果loss function小于设定值，停止产生子节点
+        #                    'max_depth': 10,             # default=6
+        #                    'min_child_weight': 12,      # default=1，建立每个模型所需最小样本权重和
+        #                    'subsample': 0.92,           # 建立树模型时抽取子样本占整个样本的比例
+        #                    'colsample_bytree': 0.85,    # 建立树时对特征随机采样的比例
+        #                    'colsample_bylevel': 0.7,
+        #                    'lambda': 0,
+        #                    'alpha': 0,
+        #                    'early_stopping_rounds': 10000,
+        #                    'n_jobs': -1,
+        #                    'objective': 'binary:logistic',
+        #                    'eval_metric': 'logloss'}
 
         """ LGB """
         # base_parameters = {'application': 'binary',
@@ -92,7 +92,7 @@ class Training:
         #                    'verbosity': 1,
         #                    'early_stopping_rounds': 10000}
 
-        # base_parameters = None
+        base_parameters = None
 
         """
             Auto Grid Search Parameters
@@ -103,9 +103,9 @@ class Training:
                    # [['learning_rate', [0.002, 0.003, 0.005]]],
                    # [['subsample', [0.8, 0.85, 0.9]]]
                    ]
-        TM.auto_grid_search('xgb', parameter_grid_list=pg_list, n_epoch=200, base_parameters=base_parameters,
-                            save_final_pred=False, reduced_feature_list=reduced_feature_list, num_boost_round=30,
-                            grid_search_n_cv=5, train_args=train_args, use_multi_group=False)
+        TM.auto_grid_search('lgb', parameter_grid_list=pg_list, n_epoch=200, base_parameters=base_parameters,
+                            save_final_pred=False, reduced_feature_list=reduced_feature_list, num_boost_round=65,
+                            grid_search_n_cv=5, train_args=train_args, use_multi_group=True)
 
 
 if __name__ == "__main__":
