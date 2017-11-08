@@ -46,27 +46,27 @@ class Training:
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': 'increase_dynamic_cv-10'}
+                      'append_info': 'era-merge_5-fold'}
 
         """
             Cross Validation Arguments
         """
-        # cv_args = {'n_valid': 4,
-        #            'n_cv': 20,
-        #            'n_era': 20}
+        cv_args = {'n_valid': 4,
+                   'n_cv': 20,
+                   'n_era': 20}
 
         # cv_args = {'n_valid': 27,
         #            'n_cv': 20,
         #            'n_era': 135}
 
-        cv_args = {'n_valid': 27,
-                   'n_cv': 10,
-                   'n_era': 135,
-                   # 'cv_generator': CrossValidation.forward_window_validation,
-                   # 'window_size': 35,
-                   'cv_generator': CrossValidation.forward_increase_validation,
-                   'valid_rate': 0.2
-                   }
+        # cv_args = {'n_valid': 27,
+        #            'n_cv': 10,
+        #            'n_era': 135,
+        #            # 'cv_generator': CrossValidation.forward_window_validation,
+        #            # 'window_size': 35,
+        #            'cv_generator': CrossValidation.forward_increase_validation,
+        #            'valid_rate': 0.2
+        #            }
 
         """
             Reduced Features
@@ -77,19 +77,19 @@ class Training:
             Base Parameters
         """
         """ XGB """
-        # base_parameters = {'learning_rate': 0.003,
-        #                    'gamma': 0.001,
-        #                    'max_depth': 10,
-        #                    'min_child_weight': 6,
-        #                    'subsample': 0.88,
-        #                    'colsample_bytree': 0.85,
-        #                    'colsample_bylevel': 0.75,
-        #                    'lambda': 0,
-        #                    'alpha': 0,
-        #                    'early_stopping_rounds': 10000,
-        #                    'n_jobs': -1,
-        #                    'objective': 'binary:logistic',
-        #                    'eval_metric': 'logloss'}
+        base_parameters = {'learning_rate': 0.003,
+                           'gamma': 0.001,
+                           'max_depth': 10,
+                           'min_child_weight': 8,
+                           'subsample': 0.9,
+                           'colsample_bytree': 0.85,
+                           'colsample_bylevel': 0.75,
+                           'lambda': 0,
+                           'alpha': 0,
+                           'early_stopping_rounds': 10000,
+                           'n_jobs': -1,
+                           'objective': 'binary:logistic',
+                           'eval_metric': 'logloss'}
 
         """ LGB """
         # base_parameters = {'application': 'binary',
@@ -114,22 +114,22 @@ class Training:
         #                    'verbosity': 1,
         #                    'early_stopping_rounds': 10000}
 
-        base_parameters = None
+        # base_parameters = None
 
         """
             Auto Train with Logs of Boost Round
         """
         pg_list = [
-                   [['learning_rate', [0.001]]]
+                   [['learning_rate', [0.003]]]
                    ]
-        train_seed_list = [750]
-        cv_seed_list = [543]
-        # train_seed_list = None
-        # cv_seed_list = None
-        TM.auto_train_boost_round('lgb', train_seed_list, cv_seed_list, n_epoch=1, base_parameters=base_parameters,
-                                  num_boost_round=100, parameter_grid_list=pg_list, save_final_pred=True,
-                                  reduced_feature_list=reduced_feature_list, grid_search_n_cv=30,
-                                  train_args=train_args, cv_args=cv_args, use_multi_group=True)
+        # train_seed_list = [750]
+        # cv_seed_list = [543]
+        train_seed_list = None
+        cv_seed_list = None
+        TM.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=200, base_parameters=base_parameters,
+                                  num_boost_round=90, parameter_grid_list=pg_list, save_final_pred=True,
+                                  reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
+                                  train_args=train_args, cv_args=cv_args, use_multi_group=False)
 
 
 if __name__ == "__main__":

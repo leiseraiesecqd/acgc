@@ -644,7 +644,7 @@ class DataPreProcess:
         self.load_data()
 
         # Merge Eras
-        # self.merge_eras()
+        self.merge_eras()
 
         # Drop outliers
         # self.drop_outliers_by_value()
@@ -686,5 +686,5 @@ class DataPreProcess:
 if __name__ == '__main__':
 
     utils.check_dir(['./data/', preprocessed_path])
-    DPP = DataPreProcess(train_csv_path, test_csv_path, preprocessed_path, use_multi_group=True)
+    DPP = DataPreProcess(train_csv_path, test_csv_path, preprocessed_path, use_multi_group=False)
     DPP.preprocess()
