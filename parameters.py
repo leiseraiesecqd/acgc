@@ -53,7 +53,7 @@ class SingleModel:
         Train single model
     """
     def __init__(self, reduced_feature_list=None, grid_search_n_cv=None,
-                 train_args=None, use_multi_group=False, mode=None):
+                 train_args=None, cv_args=None, use_multi_group=False, mode=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test \
             = utils.load_preprocessed_data(preprocessed_data_path)
@@ -74,6 +74,7 @@ class SingleModel:
         self.boost_round_log_path = boost_round_out_path
         self.grid_search_n_cv = grid_search_n_cv
         self.train_args = train_args
+        self.cv_args = cv_args
         self.use_multi_group = use_multi_group
         self.mode = mode
 
@@ -106,12 +107,12 @@ class SingleModel:
             param_value_list = None
 
         if self.grid_search_n_cv is not None:
-            self.train_args['n_cv'] = self.grid_search_n_cv
+            self.cv_args['n_cv'] = self.grid_search_n_cv
 
         # Parameters for Train
         model.train(pred_path=self.pred_path, loss_log_path=self.loss_log_path, csv_log_path=self.csv_log_path,
                     boost_round_log_path=self.boost_round_log_path, mode=self.mode, param_name_list=param_name_list,
-                    param_value_list=param_value_list, **self.train_args)
+                    param_value_list=param_value_list, cv_args=self.cv_args, **self.train_args)
 
     def lr_train(self, train_seed, cv_seed, parameters=None, grid_search_tuple_list=None):
         """
@@ -138,7 +139,7 @@ class SingleModel:
 
         self.train_args['parameters'] = parameters
         self.train_args['train_seed'] = train_seed
-        self.train_args['cv_seed'] = cv_seed
+        self.cv_args['cv_seed'] = cv_seed
 
         model = LRegression(self.x_train, self.y_train, self.w_train, self.e_train,
                             self.x_test, self.id_test, use_multi_group=self.use_multi_group)
@@ -171,7 +172,7 @@ class SingleModel:
 
         self.train_args['parameters'] = parameters
         self.train_args['train_seed'] = train_seed
-        self.train_args['cv_seed'] = cv_seed
+        self.cv_args['cv_seed'] = cv_seed
 
         model = RandomForest(self.x_train, self.y_train, self.w_train, self.e_train,
                              self.x_test, self.id_test, use_multi_group=self.use_multi_group)
@@ -204,7 +205,7 @@ class SingleModel:
 
         self.train_args['parameters'] = parameters
         self.train_args['train_seed'] = train_seed
-        self.train_args['cv_seed'] = cv_seed
+        self.cv_args['cv_seed'] = cv_seed
 
         model = ExtraTrees(self.x_train, self.y_train, self.w_train, self.e_train,
                            self.x_test, self.id_test, use_multi_group=self.use_multi_group)
@@ -245,7 +246,7 @@ class SingleModel:
 
         self.train_args['parameters'] = parameters
         self.train_args['train_seed'] = train_seed
-        self.train_args['cv_seed'] = cv_seed
+        self.cv_args['cv_seed'] = cv_seed
 
         model = AdaBoost(self.x_train, self.y_train, self.w_train, self.e_train,
                          self.x_test, self.id_test, use_multi_group=self.use_multi_group)
@@ -280,7 +281,7 @@ class SingleModel:
 
         self.train_args['parameters'] = parameters
         self.train_args['train_seed'] = train_seed
-        self.train_args['cv_seed'] = cv_seed
+        self.cv_args['cv_seed'] = cv_seed
 
         model = GradientBoosting(self.x_train, self.y_train, self.w_train, self.e_train,
                                  self.x_test, self.id_test, use_multi_group=self.use_multi_group)
@@ -315,7 +316,7 @@ class SingleModel:
         self.train_args['parameters'] = parameters
         self.train_args['train_seed'] = train_seed
         self.train_args['cv_seed'] = cv_seed
-        self.train_args['file_name_params'] = file_name_params
+        self.cv_args['file_name_params'] = file_name_params
 
         if num_boost_round is None:
             num_boost_round = 150
@@ -356,7 +357,7 @@ class SingleModel:
 
         self.train_args['parameters'] = parameters
         self.train_args['train_seed'] = train_seed
-        self.train_args['cv_seed'] = cv_seed
+        self.cv_args['cv_seed'] = cv_seed
 
         model = SKLearnXGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
                                self.x_test, self.id_test, use_multi_group=self.use_multi_group)
@@ -391,17 +392,13 @@ class SingleModel:
                           'early_stopping_rounds': 10000}
         else:
             parameters['seed'] = train_seed
-        
-        # cv_generator = CrossValidation.era_k_fold_with_weight_all_random
-        # cv_generator = CrossValidation.random_split_with_weight
-        # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
         file_name_params = ['num_boost_round', 'learning_rate', 'num_leaves', 'max_depth',
                             'feature_fraction', 'bagging_fraction', 'bagging_freq', 'min_data_in_bin']
 
         self.train_args['parameters'] = parameters
         self.train_args['train_seed'] = train_seed
-        self.train_args['cv_seed'] = cv_seed
+        self.cv_args['cv_seed'] = cv_seed
         self.train_args['file_name_params'] = file_name_params
 
         if num_boost_round is None:
@@ -419,9 +416,6 @@ class SingleModel:
         if parameters is None:
             parameters = {'learning_rate': 0.003,
                           'boosting_type': 'gbdt',        # traditional Gradient Boosting Decision Tree.
-                          # 'boosting_type': 'dart',        # Dropouts meet Multiple Additive Regression Trees.
-                          # 'boosting_type': 'goss',        # Gradient-based One-Side Sampling.
-                          # 'boosting_type': 'rf',          # Random Forest.
                           'num_leaves': 80,               # <2^(max_depth)
                           'max_depth': 7,                 # default=-1
                           'n_estimators': 50,
@@ -443,7 +437,7 @@ class SingleModel:
 
         self.train_args['parameters'] = parameters
         self.train_args['train_seed'] = train_seed
-        self.train_args['cv_seed'] = cv_seed
+        self.cv_args['cv_seed'] = cv_seed
 
         model = SKLearnLightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
                                 self.x_g_test, self.id_test, use_multi_group=self.use_multi_group)
@@ -496,7 +490,7 @@ class SingleModel:
 
         self.train_args['parameters'] = parameters
         self.train_args['train_seed'] = train_seed
-        self.train_args['cv_seed'] = cv_seed
+        self.cv_args['cv_seed'] = cv_seed
         self.train_args['file_name_params'] = file_name_params
 
         model = CatBoost(self.x_g_train, self.y_train, self.w_train, self.e_train,
@@ -534,7 +528,7 @@ class SingleModel:
 
         self.train_args['parameters'] = parameters
         self.train_args['train_seed'] = train_seed
-        self.train_args['cv_seed'] = cv_seed
+        self.cv_args['cv_seed'] = cv_seed
         self.train_args['file_name_params'] = file_name_params
 
         model = DeepNeuralNetworks(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test,
@@ -600,11 +594,11 @@ class SingleModel:
         if grid_search_tuple_list is not None:
             parameters[grid_search_tuple_list[0]] = grid_search_tuple_list[1]
         if self.grid_search_n_cv is not None:
-            self.train_args['n_cv'] = self.grid_search_n_cv
+            self.cv_args['n_cv'] = self.grid_search_n_cv
 
         self.train_args['parameters'] = parameters
         self.train_args['train_seed'] = train_seed
-        self.train_args['cv_seed'] = cv_seed
+        self.cv_args['cv_seed'] = cv_seed
 
         if num_boost_round is None:
             num_boost_round = 100
@@ -615,13 +609,13 @@ class SingleModel:
         # cv_generator = CrossValidation.era_k_fold_with_weight_balance
 
         LGB.train(self.pred_path, self.loss_log_path, csv_log_path=self.csv_log_path + 'stack_final_',
-                  mode=self.mode, **self.train_args)
+                  mode=self.mode, cv_args=self.cv_args, **self.train_args)
 
 
 class ChampionModel:
 
     def __init__(self, reduced_feature_list=None, save_auto_train_results=True, grid_search_n_cv=None,
-                 train_args=None, use_multi_group=False, mode=None):
+                 train_args=None, cv_args=None, use_multi_group=False, mode=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
             = utils.load_preprocessed_data(preprocessed_data_path)
@@ -643,6 +637,7 @@ class ChampionModel:
         self.save_auto_train_results = save_auto_train_results
         self.grid_search_n_cv = grid_search_n_cv
         self.train_args = train_args
+        self.cv_args = cv_args
         self.use_multi_group = use_multi_group
         self.mode = mode
 
@@ -674,12 +669,12 @@ class ChampionModel:
             param_value_list = None
 
         if self.grid_search_n_cv is not None:
-            self.train_args['n_cv'] = self.grid_search_n_cv
+            self.cv_args['n_cv'] = self.grid_search_n_cv
 
         # Parameters for Train
         model.train(pred_path=self.single_model_pred_path, loss_log_path=self.loss_log_path,
                     csv_log_path=self.csv_log_path, mode=self.mode, param_name_list=param_name_list,
-                    param_value_list=param_value_list, **self.train_args)
+                    param_value_list=param_value_list, cv_args=self.cv_args, **self.train_args)
 
     def Christar1991(self, train_seed, cv_seed, parameters=None, grid_search_tuple_list=None):
         """
@@ -707,9 +702,9 @@ class ChampionModel:
         cv_generator = CrossValidation.era_k_fold_all_random
 
         self.train_args['parameters'] = parameters
-        self.train_args['cv_generator'] = cv_generator
+        self.cv_args['cv_generator'] = cv_generator
         self.train_args['train_seed'] = train_seed
-        self.train_args['cv_seed'] = cv_seed
+        self.cv_args['cv_seed'] = cv_seed
 
         model = LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train, self.x_g_test,
                          self.id_test, use_multi_group=self.use_multi_group, num_boost_round=65)

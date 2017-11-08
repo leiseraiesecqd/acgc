@@ -2,6 +2,7 @@ import time
 import parameters
 from models import utils
 from models.training_mode import TrainingMode
+from models.cross_validation import CrossValidation
 
 
 class Training:
@@ -34,13 +35,11 @@ class Training:
         """
         TM = TrainingMode()
 
-        # Training Arguments
-        train_args = {'n_valid': 4,
-                      'n_cv': 5,
-                      'n_era': 20,
-                      'cv_generator': None,
-                      'era_list': None,
-                      'rescale': False,
+
+        """
+            Training Arguments
+        """
+        train_args = {'rescale': False,
                       'show_importance': False,
                       'show_accuracy': True,
                       'save_final_pred': True,
@@ -50,10 +49,34 @@ class Training:
                       'save_csv_log': True,
                       'append_info': None}
 
-        # Reduced Features
+        """
+            Cross Validation Arguments
+        """
+        cv_args = {'n_valid': 4,
+                   'n_cv': 20,
+                   'n_era': 20}
+
+        # cv_args = {'n_valid': 27,
+        #            'n_cv': 20,
+        #            'n_era': 135}
+
+        # cv_args = {'n_valid': 27,
+        #            'n_cv': 20,
+        #            'n_era': 135,
+        #            # 'cv_generator': CrossValidation.forward_window_validation,
+        #            # 'window_size': 35,
+        #            # 'cv_generator': CrossValidation.forward_increase_validation,
+        #            # 'valid_rate': 0.2
+        #            }
+
+        """
+            Reduced Features
+        """
         reduced_feature_list = None
 
-        # Base Parameters
+        """
+            Base Parameters
+        """
         """ XGB """
         # base_parameters = {'learning_rate': 0.003,
         #                    'gamma': 0.001,              # 如果loss function小于设定值，停止产生子节点
@@ -106,7 +129,7 @@ class Training:
                    ]
         TM.auto_grid_search('lgb', parameter_grid_list=pg_list, n_epoch=200, base_parameters=base_parameters,
                             save_final_pred=False, reduced_feature_list=reduced_feature_list, num_boost_round=65,
-                            grid_search_n_cv=5, train_args=train_args, use_multi_group=True)
+                            grid_search_n_cv=5, train_args=train_args, cv_args=cv_args, use_multi_group=True)
 
 
 if __name__ == "__main__":

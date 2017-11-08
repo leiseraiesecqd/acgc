@@ -14,11 +14,11 @@ class CrossValidation:
         self.trained_cv = []
 
     @staticmethod
-    def random_split(x, y, w, e, n_valid, n_cv, n_era, seed=None):
+    def random_split(x, y, w, e, n_valid=None, n_cv=None, n_era=None, cv_seed=None):
 
         test_size = n_valid / n_era
         valid_era = []
-        ss_train = StratifiedShuffleSplit(n_splits=n_cv, test_size=test_size, random_state=seed)
+        ss_train = StratifiedShuffleSplit(n_splits=n_cv, test_size=test_size, random_state=cv_seed)
 
         for train_index, valid_index in ss_train.split(x, y):
 
@@ -37,16 +37,16 @@ class CrossValidation:
             yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
     @staticmethod
-    def sk_k_fold(x, y, w, n_splits, n_cv, seed=None):
+    def sk_k_fold(x, y, w, n_splits=None, n_cv=None, cv_seed=None):
 
-        if seed is not None:
-            np.random.seed(seed)
+        if cv_seed is not None:
+            np.random.seed(cv_seed)
 
         if n_cv % n_splits != 0:
             raise ValueError('n_cv must be an integer multiple of n_splits!')
 
         n_repeats = int(n_cv / n_splits)
-        era_k_fold = RepeatedKFold(n_splits=n_splits, n_repeats=n_repeats, random_state=seed)
+        era_k_fold = RepeatedKFold(n_splits=n_splits, n_repeats=n_repeats, random_state=cv_seed)
 
         for train_index, valid_index in era_k_fold.split(x, y):
 
@@ -66,7 +66,7 @@ class CrossValidation:
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
     @staticmethod
-    def sk_group_k_fold(x, y, e, n_cv):
+    def sk_group_k_fold(x, y, e, n_cv=None):
 
         era_k_fold = GroupKFold(n_splits=n_cv)
 
@@ -83,7 +83,7 @@ class CrossValidation:
             yield x_train, y_train, x_valid, y_valid
 
     @staticmethod
-    def sk_group_k_fold_with_weight(x, y, w, e, n_cv):
+    def sk_group_k_fold_with_weight(x, y, w, e, n_cv=None):
 
         era_k_fold = GroupKFold(n_splits=n_cv)
 
@@ -102,10 +102,10 @@ class CrossValidation:
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
     @staticmethod
-    def era_k_fold(x, y, w, e, n_valid, n_cv, n_era, seed=None, era_list=None):
+    def era_k_fold(x, y, w, e, n_valid=None, n_cv=None, n_era=None, cv_seed=None, era_list=None):
 
-        if seed is not None:
-            np.random.seed(seed)
+        if cv_seed is not None:
+            np.random.seed(cv_seed)
 
         n_traverse = n_era // n_valid
         n_rest = n_era % n_valid
@@ -261,10 +261,10 @@ class CrossValidation:
                         yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
     @staticmethod
-    def era_k_fold_split(e, n_valid, n_cv, n_era, seed=None, era_list=None):
+    def era_k_fold_split(e, n_valid=None, n_cv=None, n_era=None, cv_seed=None, era_list=None):
 
-        if seed is not None:
-            np.random.seed(seed)
+        if cv_seed is not None:
+            np.random.seed(cv_seed)
 
         n_traverse = n_era // n_valid
         n_rest = n_era % n_valid
@@ -383,10 +383,11 @@ class CrossValidation:
 
                         yield train_index, valid_index
 
-    def era_k_fold_for_stack(self, x, y, w, e, x_g, n_valid, n_cv, n_era, seed=None, return_train_index=False):
+    def era_k_fold_for_stack(self, x, y, w, e, x_g, n_valid=None, n_cv=None,
+                             n_era=None, cv_seed=None, return_train_index=False):
 
-        if seed is not None:
-            np.random.seed(seed)
+        if cv_seed is not None:
+            np.random.seed(cv_seed)
 
         n_traverse = n_era // n_valid
         n_rest = n_era % n_valid
@@ -560,10 +561,10 @@ class CrossValidation:
                                   y_valid, w_valid, x_g_valid, valid_index, valid_era
 
     @staticmethod
-    def era_k_fold_balance(x, y, w, e, n_valid, n_cv, n_era, seed=None, era_list=None):
+    def era_k_fold_balance(x, y, w, e, n_valid=None, n_cv=None, n_era=None, cv_seed=None, era_list=None):
 
-        if seed is not None:
-            np.random.seed(seed)
+        if cv_seed is not None:
+            np.random.seed(cv_seed)
 
         trained_cv = []
 
@@ -605,10 +606,10 @@ class CrossValidation:
             yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
     @staticmethod
-    def era_k_fold_all_random(x, y, w, e, n_valid, n_cv, n_era, seed=None, era_list=None):
+    def era_k_fold_all_random(x, y, w, e, n_valid=None, n_cv=None, n_era=None, cv_seed=None, era_list=None):
 
-        if seed is not None:
-            np.random.seed(seed)
+        if cv_seed is not None:
+            np.random.seed(cv_seed)
 
         trained_cv = []
 
@@ -651,10 +652,10 @@ class CrossValidation:
             yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
     @staticmethod
-    def era_k_fold_split_all_random(e, n_valid, n_cv, n_era, seed=None, era_list=None):
+    def era_k_fold_split_all_random(e, n_valid=None, n_cv=None, n_era=None, cv_seed=None, era_list=None):
 
-        if seed is not None:
-            np.random.seed(seed)
+        if cv_seed is not None:
+            np.random.seed(cv_seed)
 
         trained_cv = []
 
@@ -685,19 +686,38 @@ class CrossValidation:
             yield train_index, valid_index
 
     @staticmethod
-    def forward_increase_validation(x, y, w, e, n_valid, n_cv, n_era, seed=None):
+    def forward_increase_validation(x, y, w, e, n_valid=None, n_cv=None, n_era=None, cv_seed=None, valid_rate=None):
 
-        if seed is not None:
-            np.random.seed(seed)
+        if cv_seed is not None:
+            np.random.seed(cv_seed)
+
+        # If valid_rate is provided, dynamically calculate n_valid
+        if valid_rate is not None:
+            n_valid_last = int(n_era*valid_rate)
+        else:
+            n_valid_last = n_valid
+        step = (n_era-n_valid_last)//n_cv
 
         for i in range(n_cv):
 
-            valid_start = (i+1) * ((n_era-n_valid)//n_cv)
-            train_era = range(0, valid_start)
-            if i == (n_cv-1):
-                valid_era = list(range(valid_start, n_era))
+            valid_start = (i+1) * step
+            # If valid_rate is provided, dynamically calculate n_valid
+            if valid_rate is not None:
+                n_valid = int(valid_start*valid_rate)
+                if n_valid < valid_start*valid_rate:
+                    n_valid += 1
+
+            if i == (n_cv - 1):
+                valid_stop = n_era
             else:
-                valid_era = list(range(valid_start, valid_start+n_valid))
+                valid_stop = valid_start + n_valid
+
+            print('======================================================')
+            print('Train Era: {}-{}'.format(0, valid_start-1))
+            print('Valid Era: {}-{}'.format(valid_start, valid_stop-1))
+
+            train_era = range(0, valid_start)
+            valid_era = list(range(valid_start, valid_stop))
 
             train_index = []
             valid_index = []
@@ -726,10 +746,10 @@ class CrossValidation:
             yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
     @staticmethod
-    def forward_window_validation(x, y, w, e, n_valid, n_cv, n_era, window_size=None, seed=None):
+    def forward_window_validation(x, y, w, e, n_valid=None, n_cv=None, n_era=None, window_size=None, cv_seed=None):
 
-        if seed is not None:
-            np.random.seed(seed)
+        if cv_seed is not None:
+            np.random.seed(cv_seed)
 
         n_step = (n_era-window_size) // n_cv
         train_start = 0
@@ -739,13 +759,17 @@ class CrossValidation:
             if i == (n_cv - 1):
                 train_start = n_era - window_size
                 train_end = n_era - n_valid
-                valid_end = n_era
+                valid_stop = n_era
             else:
                 train_end = train_start + window_size - n_valid
-                valid_end = train_start + window_size
+                valid_stop = train_start + window_size
+
+            print('======================================================')
+            print('Train Era: {}-{}'.format(train_start, train_end - 1))
+            print('Valid Era: {}-{}'.format(train_end, valid_stop - 1))
 
             train_era = list(range(train_start, train_end))
-            valid_era = list(range(train_end, valid_end))
+            valid_era = list(range(train_end, valid_stop))
 
             train_index = []
             valid_index = []

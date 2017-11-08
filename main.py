@@ -3,6 +3,7 @@ import time
 import parameters
 from models import utils
 from models.training_mode import TrainingMode
+from models.cross_validation import CrossValidation
 
 
 class Training:
@@ -33,20 +34,18 @@ class Training:
         """
         TM = TrainingMode()
 
-        # Create Global Seed for Training and Cross Validation
+        """
+            Global Seed
+        """
         train_seed = random.randint(0, 500)
         cv_seed = random.randint(0, 500)
         # train_seed = 666
         # cv_seed = 216  # 425 48 461 157
 
-        # Training Arguments
-        train_args = {'n_valid': 4,
-                      'n_cv': 20,
-                      'n_era': 20,
-                      'train_seed': train_seed,
-                      'cv_seed': cv_seed,
-                      'cv_generator': None,
-                      'era_list': None,
+        """
+            Training Arguments
+        """
+        train_args = {'train_seed': train_seed,
                       'rescale': False,
                       'show_importance': False,
                       'show_accuracy': True,
@@ -57,10 +56,39 @@ class Training:
                       'save_csv_log': True,
                       'append_info': None}
 
-        # Reduced Features
+        """
+            Cross Validation Arguments
+        """
+        cv_args = {'n_valid': 4,
+                   'n_cv': 20,
+                   'n_era': 20,
+                   'cv_seed': cv_seed,
+                   'cv_generator': None}
+
+        # cv_args = {'n_valid': 27,
+        #            'n_cv': 20,
+        #            'n_era': 135,
+        #            'cv_seed': cv_seed,
+        #            'cv_generator': None}
+
+        # cv_args = {'n_valid': 27,
+        #            'n_cv': 20,
+        #            'n_era': 135,
+        #            'cv_seed': cv_seed,
+        #            # 'cv_generator': CrossValidation.forward_window_validation,
+        #            # 'window_size': 35,
+        #            # 'cv_generator': CrossValidation.forward_increase_validation,
+        #            # 'valid_rate': 0.2
+        #            }
+
+        """
+            Reduced Features
+        """
         reduced_feature_list = None
 
-        # Base Parameters
+        """
+            Base Parameters
+        """
         """ XGB """
         base_parameters = {'learning_rate': 0.003,
                            'gamma': 0.001,              # 如果loss function小于设定值，停止产生子节点
@@ -121,7 +149,7 @@ class Training:
         TM.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=1, base_parameters=base_parameters,
                                   num_boost_round=115, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
-                                  train_args=train_args, use_multi_group=False)
+                                  train_args=train_args, cv_args=cv_args, use_multi_group=False)
 
         """
             Auto Grid Search Parameters
