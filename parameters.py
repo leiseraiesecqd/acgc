@@ -315,8 +315,8 @@ class SingleModel:
 
         self.train_args['parameters'] = parameters
         self.train_args['train_seed'] = train_seed
-        self.train_args['cv_seed'] = cv_seed
-        self.cv_args['file_name_params'] = file_name_params
+        self.cv_args['cv_seed'] = cv_seed
+        self.train_args['file_name_params'] = file_name_params
 
         if num_boost_round is None:
             num_boost_round = 150
