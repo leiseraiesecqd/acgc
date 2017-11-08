@@ -39,8 +39,8 @@ class Training:
         """
             Global Seed
         """
-        train_seed = random.randint(0, 500)
-        cv_seed = random.randint(0, 500)
+        train_seed = random.randint(0, 1000)
+        cv_seed = random.randint(0, 1000)
         # train_seed = 666
         # cv_seed = 216  # 425 48 461 157
 
@@ -86,19 +86,19 @@ class Training:
             Base Parameters
         """
         """ XGB """
-        base_parameters = {'learning_rate': 0.003,
-                           'gamma': 0.001,              # 如果loss function小于设定值，停止产生子节点
-                           'max_depth': 10,             # default=6
-                           'min_child_weight': 12,      # default=1，建立每个模型所需最小样本权重和
-                           'subsample': 0.92,           # 建立树模型时抽取子样本占整个样本的比例
-                           'colsample_bytree': 0.85,    # 建立树时对特征随机采样的比例
-                           'colsample_bylevel': 0.7,
-                           'lambda': 0,
-                           'alpha': 0,
-                           'early_stopping_rounds': 10000,
-                           'n_jobs': -1,
-                           'objective': 'binary:logistic',
-                           'eval_metric': 'logloss'}
+        # base_parameters = {'learning_rate': 0.003,
+        #                    'gamma': 0.001,              # 如果loss function小于设定值，停止产生子节点
+        #                    'max_depth': 10,             # default=6
+        #                    'min_child_weight': 12,      # default=1，建立每个模型所需最小样本权重和
+        #                    'subsample': 0.92,           # 建立树模型时抽取子样本占整个样本的比例
+        #                    'colsample_bytree': 0.85,    # 建立树时对特征随机采样的比例
+        #                    'colsample_bylevel': 0.7,
+        #                    'lambda': 0,
+        #                    'alpha': 0,
+        #                    'early_stopping_rounds': 10000,
+        #                    'n_jobs': -1,
+        #                    'objective': 'binary:logistic',
+        #                    'eval_metric': 'logloss'}
 
         """ LGB """
         # base_parameters = {'application': 'binary',
@@ -123,12 +123,12 @@ class Training:
         #                    'verbosity': 1,
         #                    'early_stopping_rounds': 10000}
 
-        # base_parameters = None
+        base_parameters = None
 
         """
             Train Single Model
         """
-        TM.train_single_model('lgb', train_seed, cv_seed, num_boost_round=100,
+        TM.train_single_model('lgb', train_seed, cv_seed, num_boost_round=65,
                               reduced_feature_list=reduced_feature_list, base_parameters=base_parameters,
                               train_args=train_args, cv_args=cv_args, use_multi_group=True)
 
