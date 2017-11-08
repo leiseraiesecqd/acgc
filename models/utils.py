@@ -574,7 +574,8 @@ def check_bad_cv(trained_cv, valid_era):
 # Get Simple Parameter's Name
 def get_simple_param_name(param_name):
 
-    param_name_convert_dict = {'learning_rate': 'lr',
+    param_name_convert_dict = {'num_boost_round': 'nbr',
+                               'learning_rate': 'lr',
                                'gamma': 'gma',
                                'max_depth': 'mdp',
                                'min_child_weight': 'mcw',

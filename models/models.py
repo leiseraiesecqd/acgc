@@ -319,8 +319,12 @@ class ModelBase(object):
                 utils.save_pred_to_csv(pred_path, self.id_test, prob_test_mean)
 
             else:
-                pred_path += 'final_results/' + self.model_name + '_' + append_info + '/' \
-                             + self.model_name + '_t-' + str(train_seed) + '_c-' + str(cv_seed) + params
+                pred_path += 'final_results/'
+                utils.check_dir([pred_path])
+                pred_path += self.model_name + '_' + append_info + '/'
+                utils.check_dir([pred_path])
+                pred_path += self.model_name + '_t-' + str(train_seed) + '_c-' + str(cv_seed) + params
+                utils.check_dir([pred_path])
                 utils.save_pred_to_csv(pred_path, self.id_test, prob_test_mean)
 
     @staticmethod
