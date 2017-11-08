@@ -19,6 +19,7 @@ class CrossValidation:
         test_size = n_valid / n_era
         valid_era = []
         ss_train = StratifiedShuffleSplit(n_splits=n_cv, test_size=test_size, random_state=cv_seed)
+        cv_count = 0
 
         for train_index, valid_index in ss_train.split(x, y):
 
@@ -34,6 +35,9 @@ class CrossValidation:
             w_valid = w[valid_index]
             e_valid = e[valid_index]
 
+            cv_count += 1
+            utils.print_cv_info(cv_count, n_cv)
+
             yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
     @staticmethod
@@ -47,6 +51,7 @@ class CrossValidation:
 
         n_repeats = int(n_cv / n_splits)
         era_k_fold = RepeatedKFold(n_splits=n_splits, n_repeats=n_repeats, random_state=cv_seed)
+        cv_count = 0
 
         for train_index, valid_index in era_k_fold.split(x, y):
 
@@ -63,12 +68,16 @@ class CrossValidation:
             y_valid = y[valid_index]
             w_valid = w[valid_index]
 
+            cv_count += 1
+            utils.print_cv_info(cv_count, n_cv)
+
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
     @staticmethod
     def sk_group_k_fold(x, y, e, n_cv=None):
 
         era_k_fold = GroupKFold(n_splits=n_cv)
+        cv_count = 0
 
         for train_index, valid_index in era_k_fold.split(x, y, e):
 
@@ -80,12 +89,16 @@ class CrossValidation:
             x_valid = x[valid_index]
             y_valid = y[valid_index]
 
+            cv_count += 1
+            utils.print_cv_info(cv_count, n_cv)
+
             yield x_train, y_train, x_valid, y_valid
 
     @staticmethod
     def sk_group_k_fold_with_weight(x, y, w, e, n_cv=None):
 
         era_k_fold = GroupKFold(n_splits=n_cv)
+        cv_count = 0
 
         for train_index, valid_index in era_k_fold.split(x, y, e):
 
@@ -98,6 +111,9 @@ class CrossValidation:
             x_valid = x[valid_index]
             y_valid = y[valid_index]
             w_valid = w[valid_index]
+
+            cv_count += 1
+            utils.print_cv_info(cv_count, n_cv)
 
             yield x_train, y_train, w_train, x_valid, y_valid, w_valid
 
@@ -118,6 +134,7 @@ class CrossValidation:
 
         n_epoch = n_cv // n_traverse
         trained_cv = []
+        cv_count = 0
 
         for epoch in range(n_epoch):
 
@@ -174,6 +191,9 @@ class CrossValidation:
 
                     trained_cv.append(set(valid_era))
 
+                    cv_count += 1
+                    utils.print_cv_info(cv_count, n_cv)
+
                     yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
             # n_cv is not an integer multiple of n_valid
@@ -220,6 +240,9 @@ class CrossValidation:
 
                         trained_cv.append(set(valid_era))
 
+                        cv_count += 1
+                        utils.print_cv_info(cv_count, n_cv)
+
                         yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
                     else:
@@ -258,6 +281,9 @@ class CrossValidation:
 
                         trained_cv.append(set(valid_era))
 
+                        cv_count += 1
+                        utils.print_cv_info(cv_count, n_cv)
+
                         yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
     @staticmethod
@@ -277,6 +303,7 @@ class CrossValidation:
 
         n_epoch = n_cv // n_traverse
         trained_cv = []
+        cv_count = 0
 
         for epoch in range(n_epoch):
 
@@ -321,6 +348,9 @@ class CrossValidation:
 
                     trained_cv.append(set(valid_era))
 
+                    cv_count += 1
+                    utils.print_cv_info(cv_count, n_cv)
+
                     yield train_index, valid_index
 
             # n_cv is not an integer multiple of n_valid
@@ -355,6 +385,9 @@ class CrossValidation:
 
                         trained_cv.append(set(valid_era))
 
+                        cv_count += 1
+                        utils.print_cv_info(cv_count, n_cv)
+
                         yield train_index, valid_index
 
                     else:
@@ -381,6 +414,9 @@ class CrossValidation:
 
                         trained_cv.append(set(valid_era))
 
+                        cv_count += 1
+                        utils.print_cv_info(cv_count, n_cv)
+
                         yield train_index, valid_index
 
     def era_k_fold_for_stack(self, x, y, w, e, x_g, n_valid=None, n_cv=None,
@@ -399,6 +435,7 @@ class CrossValidation:
             raise ValueError
 
         n_epoch = n_cv // n_traverse
+        cv_count = 0
 
         for epoch in range(n_epoch):
 
@@ -454,6 +491,9 @@ class CrossValidation:
 
                     self.trained_cv.append(set(valid_era))
 
+                    cv_count += 1
+                    utils.print_cv_info(cv_count, n_cv)
+
                     if return_train_index:
                         yield x_train, y_train, w_train, e_train, x_g_train, x_valid, \
                               y_valid, w_valid, e_valid, x_g_valid, train_index, valid_index, valid_era
@@ -507,6 +547,9 @@ class CrossValidation:
 
                         self.trained_cv.append(set(valid_era))
 
+                        cv_count += 1
+                        utils.print_cv_info(cv_count, n_cv)
+
                         if return_train_index:
                             yield x_train, y_train, w_train, e_train, x_g_train, x_valid, \
                                   y_valid, w_valid, e_valid, x_g_valid, train_index, valid_index, valid_era
@@ -552,6 +595,9 @@ class CrossValidation:
                         x_g_valid = x_g[valid_index]
 
                         self.trained_cv.append(set(valid_era))
+
+                        cv_count += 1
+                        utils.print_cv_info(cv_count, n_cv)
 
                         if return_train_index:
                             yield x_train, y_train, w_train, e_train, x_g_train, x_valid, \
@@ -603,6 +649,8 @@ class CrossValidation:
 
             trained_cv.append(set(valid_era))
 
+            utils.print_cv_info(i+1, n_cv)
+
             yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
     @staticmethod
@@ -649,6 +697,8 @@ class CrossValidation:
 
             trained_cv.append(set(valid_era))
 
+            utils.print_cv_info(i+1, n_cv)
+
             yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
     @staticmethod
@@ -681,12 +731,15 @@ class CrossValidation:
 
             np.random.shuffle(train_index)
             np.random.shuffle(valid_index)
+
             trained_cv.append(set(valid_era))
+
+            utils.print_cv_info(i+1, n_cv)
 
             yield train_index, valid_index
 
     @staticmethod
-    def forward_increase_validation(x, y, w, e, n_valid=None, n_cv=None, n_era=None, cv_seed=None, valid_rate=None):
+    def forward_increase(x, y, w, e, n_valid=None, n_cv=None, n_era=None, cv_seed=None, valid_rate=None):
 
         if cv_seed is not None:
             np.random.seed(cv_seed)
@@ -743,10 +796,12 @@ class CrossValidation:
             w_valid = w[valid_index]
             e_valid = e[valid_index]
 
+            utils.print_cv_info(i+1, n_cv)
+
             yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
     @staticmethod
-    def forward_window_validation(x, y, w, e, n_valid=None, n_cv=None, n_era=None, window_size=None, cv_seed=None):
+    def forward_window(x, y, w, e, n_valid=None, n_cv=None, n_era=None, window_size=None, cv_seed=None):
 
         if cv_seed is not None:
             np.random.seed(cv_seed)
@@ -796,5 +851,6 @@ class CrossValidation:
             e_valid = e[valid_index]
 
             train_start += n_step
+            utils.print_cv_info(i+1, n_cv)
 
             yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era

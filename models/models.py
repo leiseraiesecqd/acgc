@@ -43,7 +43,6 @@ class ModelBase(object):
         self.std = np.array([])
         self.model_name = ''
         self.num_boost_round = 0
-
         self.use_multi_group = use_multi_group
 
     @staticmethod
@@ -392,22 +391,24 @@ class ModelBase(object):
             print('Era List: ', cv_args['era_list'])
         if 'window_size' in cv_args:
             print('Window Size: ', cv_args['window_size'])
+        if 'cv_weights' in cv_args:
+            cv_weights = cv_args['cv_weights']
+            cv_args.pop('cv_weights')
+        else:
+            cv_weights = None
 
         # Training on Cross Validation Sets
         for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era \
                 in cv_generator(x=self.x_train, y=self.y_train, w=self.w_train, e=self.e_train, **cv_args):
 
-            cv_count += 1
-
             # Get Positive Rate of Train Set and Rescale Rate
             positive_rate_train, rescale_rate = self.get_rescale_rate(y_train)
             positive_rate_valid, _ = self.get_rescale_rate(y_valid)
 
-            print('======================================================')
-            print('Training on the Cross Validation Set: {}/{}'.format(cv_count, n_cv))
             print('------------------------------------------------------')
             print('Validation Set Era: ', valid_era)
             print('Number of Features: ', x_train.shape[1])
+            print('------------------------------------------------------')
             print('Positive Rate of Train Set: ', positive_rate_train)
             print('Positive Rate of Valid Set: ', positive_rate_valid)
             print('Rescale Rate of Valid Set: ', rescale_rate)
@@ -482,17 +483,15 @@ class ModelBase(object):
         print('======================================================')
         print('Calculating Final Result...')
 
-        prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
-        prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
-        loss_train_mean = np.mean(np.array(loss_train_total), axis=0)
-        loss_valid_mean = np.mean(np.array(loss_valid_total), axis=0)
-        loss_train_w_mean = np.mean(np.array(loss_train_w_total), axis=0)
-        loss_valid_w_mean = np.mean(np.array(loss_valid_w_total), axis=0)
+        # Calculate Means of prob and losses
+        prob_test_mean, prob_train_mean, loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean = \
+            utils.calculate_means(prob_test_total, prob_train_total, loss_train_total, loss_valid_total,
+                                  loss_train_w_total, loss_valid_w_total, weights=cv_weights)
 
         # Save Logs of num_boost_round
         if mode == 'auto_train_boost_round':
-            train_loss_round_mean = np.mean(np.array(train_loss_round_total), axis=0)
-            valid_loss_round_mean = np.mean(np.array(valid_loss_round_total), axis=0)
+            train_loss_round_mean, valid_loss_round_mean = \
+                utils.calculate_boost_round_means(train_loss_round_total, valid_loss_round_total, weights=cv_weights)
             self.save_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean, valid_loss_round_mean,
                                       train_seed, cv_seed, csv_idx, parameters, param_name_list, param_value_list,
                                       append_info=append_info)

@@ -75,9 +75,9 @@ class Training:
         #            'n_cv': 20,
         #            'n_era': 135,
         #            'cv_seed': cv_seed,
-        #            # 'cv_generator': CrossValidation.forward_window_validation,
+        #            # 'cv_generator': CrossValidation.forward_window,
         #            # 'window_size': 35,
-        #            # 'cv_generator': CrossValidation.forward_increase_validation,
+        #            # 'cv_generator': CrossValidation.forward_increase,
         #            # 'valid_rate': 0.2
         #            }
 

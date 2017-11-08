@@ -403,6 +403,12 @@ def print_positive_rate_test(era_sign_test=None):
     print('Positive Rate Prediction of Test Set: {:.6f}%'.format(positive_rate_test * 100))
 
 
+# Print Information of Cross Validation
+def print_cv_info(cv_count, n_cv):
+    print('======================================================')
+    print('Training on the Cross Validation Set: {}/{}'.format(cv_count, n_cv))
+
+
 # Check if directories exit or not
 def check_dir(path_list):
 
@@ -569,6 +575,42 @@ def check_bad_cv(trained_cv, valid_era):
     is_bad_cv = cv_is_trained or bad_num_negative_era
 
     return is_bad_cv
+
+
+# Calculate Means
+def calculate_means(prob_test_total, prob_train_total, loss_train_total,
+                    loss_valid_total, loss_train_w_total, loss_valid_w_total, weights=None):
+
+    if weights is None:
+        prob_test_mean = np.mean(np.array(prob_test_total), axis=0)
+        prob_train_mean = np.mean(np.array(prob_train_total), axis=0)
+        loss_train_mean = np.mean(loss_train_total)
+        loss_valid_mean = np.mean(loss_valid_total)
+        loss_train_w_mean = np.mean(loss_train_w_total)
+        loss_valid_w_mean = np.mean(loss_valid_w_total)
+    else:
+        prob_test_mean = np.average(np.array(prob_test_total), axis=0, weights=weights)
+        prob_train_mean = np.average(np.array(prob_train_total), axis=0, weights=weights)
+        loss_train_mean = np.average(loss_train_total, weights=weights)
+        loss_valid_mean = np.average(loss_valid_total, weights=weights)
+        loss_train_w_mean = np.average(loss_train_w_total, weights=weights)
+        loss_valid_w_mean = np.average(loss_valid_w_total, weights=weights)
+
+    return prob_test_mean, prob_train_mean, loss_train_mean, \
+           loss_valid_mean, loss_train_w_mean, loss_valid_w_mean
+
+
+# Calculate Boost Round Means
+def calculate_boost_round_means(train_loss_round_total, valid_loss_round_total, weights=None):
+
+    if weights is None:
+        train_loss_round_mean = np.mean(np.array(train_loss_round_total), axis=0)
+        valid_loss_round_mean = np.mean(np.array(valid_loss_round_total), axis=0)
+    else:
+        train_loss_round_mean = np.average(np.array(train_loss_round_total), axis=0, weights=weights)
+        valid_loss_round_mean = np.average(np.array(valid_loss_round_total), axis=0, weights=weights)
+
+    return train_loss_round_mean, valid_loss_round_mean
 
 
 # Get Simple Parameter's Name
