@@ -140,8 +140,8 @@ class TrainingMode:
 
                 for i in range(n_epoch):
 
-                    train_seed = random.randint(0, 500)
-                    cv_seed = random.randint(0, 500)
+                    train_seed = random.randint(0, 1000)
+                    cv_seed = random.randint(0, 1000)
                     epoch_start_time = time.time()
                     train_args['csv_idx'] = 'idx-' + str(i+1)
 
@@ -192,11 +192,11 @@ class TrainingMode:
             return random_list
 
         if train_seed_list is None:
-            train_seed_list = _random_int_list(500, 1000, n_epoch)
+            train_seed_list = _random_int_list(0, 1000, n_epoch)
         else:
             n_epoch = len(train_seed_list)
         if cv_seed_list is None:
-            cv_seed_list = _random_int_list(500, 1000, n_epoch)
+            cv_seed_list = _random_int_list(0, 1000, n_epoch)
         else:
             n_epoch = len(train_seed_list)
 
@@ -286,8 +286,8 @@ class TrainingMode:
 
         for i in range(n_epoch):
 
-            train_seed = random.randint(0, 500)
-            cv_seed = random.randint(0, 500)
+            train_seed = random.randint(0, 1000)
+            cv_seed = random.randint(0, 1000)
             train_args['csv_idx'] = 'idx-' + str(i+1)
             epoch_start_time = time.time()
 
@@ -301,8 +301,8 @@ class TrainingMode:
                                             reduced_feature_list=reduced_feature_list, use_multi_group=use_multi_group)
 
                 for ii in range(stack_final_epochs):
-                    t_seed = random.randint(0, 500)
-                    c_seed = random.randint(0, 500)
+                    t_seed = random.randint(0, 1000)
+                    c_seed = random.randint(0, 1000)
                     train_args['idx'] = 'auto_{}_epoch_{}'.format(i+1, ii+1)
                     train_function_s(t_seed, c_seed, auto_idx=i+1, parameters=base_parameters)
             else:

@@ -46,7 +46,7 @@ class Training:
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': 'increase_dynamic_cv'}
+                      'append_info': 'increase_dynamic_cv-10'}
 
         """
             Cross Validation Arguments
@@ -120,15 +120,15 @@ class Training:
             Auto Train with Logs of Boost Round
         """
         pg_list = [
-                   [['learning_rate', [0.003]]]
+                   [['learning_rate', [0.001]]]
                    ]
-        # train_seed_list = [666]
-        # cv_seed_list = [216]
-        train_seed_list = None
-        cv_seed_list = None
+        train_seed_list = [750]
+        cv_seed_list = [543]
+        # train_seed_list = None
+        # cv_seed_list = None
         TM.auto_train_boost_round('lgb', train_seed_list, cv_seed_list, n_epoch=1, base_parameters=base_parameters,
-                                  num_boost_round=200, parameter_grid_list=pg_list, save_final_pred=True,
-                                  reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
+                                  num_boost_round=100, parameter_grid_list=pg_list, save_final_pred=True,
+                                  reduced_feature_list=reduced_feature_list, grid_search_n_cv=30,
                                   train_args=train_args, cv_args=cv_args, use_multi_group=True)
 
 
