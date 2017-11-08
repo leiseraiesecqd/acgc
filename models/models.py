@@ -744,9 +744,8 @@ class LRegression(ModelBase):
 
     def print_start_info(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Training Logistic Regression...')
-        print('------------------------------------------------------')
 
         self.model_name = 'lr'
 
@@ -777,9 +776,8 @@ class KNearestNeighbor(ModelBase):
 
     def print_start_info(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Training k-Nearest Neighbor Classifier...')
-        print('------------------------------------------------------')
 
         self.model_name = 'knn'
 
@@ -798,9 +796,8 @@ class SupportVectorClustering(ModelBase):
 
     def print_start_info(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Training Support Vector Clustering...')
-        print('------------------------------------------------------')
 
         self.model_name = 'svc'
 
@@ -819,9 +816,8 @@ class Gaussian(ModelBase):
 
     def print_start_info(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Training Gaussian...')
-        print('------------------------------------------------------')
 
         self.model_name = 'gs'
 
@@ -840,9 +836,8 @@ class DecisionTree(ModelBase):
 
     def print_start_info(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Training Decision Tree...')
-        print('------------------------------------------------------')
 
         self.model_name = 'dt'
 
@@ -861,9 +856,8 @@ class RandomForest(ModelBase):
 
     def print_start_info(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Training Random Forest...')
-        print('------------------------------------------------------')
 
         self.model_name = 'rf'
 
@@ -882,9 +876,8 @@ class ExtraTrees(ModelBase):
 
     def print_start_info(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Training Extra Trees...')
-        print('------------------------------------------------------')
 
         self.model_name = 'et'
 
@@ -903,9 +896,8 @@ class AdaBoost(ModelBase):
 
     def print_start_info(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Training AdaBoost...')
-        print('------------------------------------------------------')
 
         self.model_name = 'ab'
 
@@ -924,9 +916,8 @@ class GradientBoosting(ModelBase):
 
     def print_start_info(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Training Gradient Boosting...')
-        print('------------------------------------------------------')
 
         self.model_name = 'gb'
 
@@ -943,9 +934,8 @@ class XGBoost(ModelBase):
 
     def print_start_info(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Training XGBoost...')
-        print('------------------------------------------------------')
 
         self.model_name = 'xgb'
 
@@ -1031,9 +1021,8 @@ class SKLearnXGBoost(ModelBase):
 
     def print_start_info(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Training XGBoost(sklearn)...')
-        print('------------------------------------------------------')
 
         self.model_name = 'xgb_sk'
 
@@ -1075,9 +1064,8 @@ class LightGBM(ModelBase):
 
     def print_start_info(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Training LightGBM...')
-        print('------------------------------------------------------')
 
         self.model_name = 'lgb'
 
@@ -1262,9 +1250,8 @@ class SKLearnLightGBM(ModelBase):
 
     def print_start_info(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Training LightGBM(sklearn)...')
-        print('------------------------------------------------------')
 
         self.model_name = 'lgb_sk'
 
@@ -1306,9 +1293,8 @@ class CatBoost(ModelBase):
 
     def print_start_info(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Training CatBoost...')
-        print('------------------------------------------------------')
 
         self.model_name = 'cb'
 

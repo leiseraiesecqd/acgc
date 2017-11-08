@@ -115,7 +115,6 @@ class TrainingMode:
 
             print('======================================================')
             print('Auto Grid Searching Parameter...')
-            print('======================================================')
 
             n_param = len(parameter_grid)
             n_value = len(parameter_grid[0][1])
@@ -163,17 +162,14 @@ class TrainingMode:
                     print('Train Seed: {}'.format(train_seed))
                     print('Cross Validation Seed: {}'.format(cv_seed))
                     print('Epoch Time: {}s'.format(time.time() - epoch_start_time))
-                    print('======================================================')
 
                 print('======================================================')
                 print('One Parameter Done!')
                 print('Parameter Time: {}s'.format(time.time() - param_start_time))
-                print('======================================================')
 
             print('======================================================')
             print('All Parameter Done!')
             print('Grid Searching Time: {}s'.format(time.time() - gs_start_time))
-            print('======================================================')
 
     def auto_train_boost_round(self, model_name=None, train_seed_list=None, cv_seed_list=None, n_epoch=1,
                                num_boost_round=None, epochs=None, parameter_grid_list=None, reduced_feature_list=None,
@@ -212,7 +208,6 @@ class TrainingMode:
 
             print('======================================================')
             print('Auto Train by Boost Round...')
-            print('======================================================')
 
             n_param = len(parameter_grid)
             n_value = len(parameter_grid[0][1])
@@ -261,17 +256,14 @@ class TrainingMode:
                     print('Train Seed: {}'.format(train_seed))
                     print('Cross Validation Seed: {}'.format(cv_seed))
                     print('Epoch Time: {}s'.format(time.time() - epoch_start_time))
-                    print('======================================================')
 
                 print('======================================================')
                 print('One Parameter Done!')
                 print('Parameter Time: {}s'.format(time.time() - param_start_time))
-                print('======================================================')
 
             print('======================================================')
             print('All Parameter Done!')
             print('Grid Searching Time: {}s'.format(time.time() - gs_start_time))
-            print('======================================================')
 
     def auto_train(self, model_name=None, reduced_feature_list=None, n_epoch=1, stack_final_epochs=None,
                    base_parameters=None, train_args=None, cv_args=None, use_multi_group=False):
