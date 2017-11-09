@@ -59,14 +59,17 @@ class Training:
         #            'n_cv': 20,
         #            'n_era': 135}
 
+        cv_weights = list(range(1, 21))
+        # from math import log
+        # cv_weights = [log(i/2 + 1) for i in range(1, 21)]
         cv_args = {'n_valid': 27,
                    'n_cv': 20,
                    'n_era': 135,
-                   'cv_generator': CrossValidation.forward_window,
-                   'window_size': 35,
-                   # 'cv_generator': CrossValidation.forward_increase,
-                   # 'valid_rate': 0.1,
-                   # 'cv_weights': list(range(1, 21)),
+                   # 'cv_generator': CrossValidation.forward_window,
+                   # 'window_size': 35,
+                   'cv_generator': CrossValidation.forward_increase,
+                   'valid_rate': 0.1,
+                   'cv_weights': cv_weights,
                    }
 
         """
@@ -115,23 +118,47 @@ class Training:
         #                    'verbosity': 1,
         #                    'early_stopping_rounds': 10000}
 
-        base_parameters = None
+        """ Forward Increase """
+        base_parameters = {'application': 'binary',
+                           'boosting': 'gbdt',
+                           'learning_rate': 0.003,
+                           'num_leaves': 88,
+                           'max_depth': 8,
+                           'min_data_in_leaf': 2500,
+                           'min_sum_hessian_in_leaf': 1e-3,
+                           'feature_fraction': 0.5,
+                           'feature_fraction_seed': 19,
+                           'bagging_fraction': 0.7,
+                           'bagging_freq': 9,
+                           'bagging_seed': 1,
+                           'lambda_l1': 0,
+                           'lambda_l2': 0,
+                           'min_gain_to_split': 0,
+                           'max_bin': 225,
+                           'min_data_in_bin': 5,
+                           'metric': 'binary_logloss',
+                           'num_threads': -1,
+                           'verbosity': 1,
+                           'early_stopping_rounds': 10000}
+
+        # base_parameters = None
 
         """
             Auto Train with Logs of Boost Round
         """
         pg_list = [
-                   [['max_depth', (7, 8, 9, 10, 11, 12)]],
-                   [['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
-                   [['bagging_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
-                   [['bagging_freq', (1, 3, 5, 7, 9, 11)]],
+                   [['learning_rate', [0.003]]]
+                   # [['max_depth', (7, 8, 9, 10, 11, 12)]],
+                   # [['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
+                   # [['bagging_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
+                   # [['bagging_freq', (1, 3, 5, 7, 9, 11)]],
                    ]
-        # train_seed_list = [666]
-        # cv_seed_list = [666]
-        train_seed_list = None
-        cv_seed_list = None
+        train_seed_list = [66]
+        cv_seed_list = [113]
+        # train_seed_list = None
+        # cv_seed_list = None
         TM.auto_train_boost_round('lgb', train_seed_list, cv_seed_list, n_epoch=3, base_parameters=base_parameters,
-                                  num_boost_round=150, parameter_grid_list=pg_list, save_final_pred=True,
+                                  num_boost_round=200, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
                                   train_args=train_args, cv_args=cv_args, use_multi_group=True)
 
