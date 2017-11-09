@@ -334,6 +334,8 @@ class ModelBase(object):
                 negative_idx.append(i)
         n_positive = len(positive_idx)
         n_negative = len(negative_idx)
+        print('Number of Positive Labels: {}'.format(n_positive))
+        print('Number of Negative Labels: {}'.format(n_negative))
 
         if n_positive > n_negative:
             positive_idx = list(np.random.choice(positive_idx, len(negative_idx), replace=False))
@@ -344,7 +346,7 @@ class ModelBase(object):
         if len(positive_idx) != len(negative_idx):
             raise ValueError('PreScaling Failed! len(positive_idx) != len(negative_idx)!')
         else:
-            print('Number of Positive and Negative Labels: {}'.format(len(positive_idx)))
+            print('Number of PreScaled Labels: {}'.format(len(positive_idx)))
 
         prescale_idx = list(np.sort(positive_idx + negative_idx))
         x_train = x_train[prescale_idx]
@@ -431,7 +433,6 @@ class ModelBase(object):
             print('------------------------------------------------------')
             print('Positive Rate of Train Set: {:.6f}'.format(positive_rate_train))
             print('Positive Rate of Valid Set: {:.6f}'.format(positive_rate_valid))
-            print('Rescale Rate of Valid Set: {:.6f}'.format(rescale_rate))
             print('------------------------------------------------------')
 
             # Prescale
@@ -477,6 +478,7 @@ class ModelBase(object):
             if rescale:
                 print('------------------------------------------------------')
                 print('[W] Rescaling Results...')
+                print('Rescale Rate: {:.6f}'.format(rescale_rate))
                 prob_test *= rescale_rate
                 prob_train *= rescale_rate
                 prob_valid *= rescale_rate

@@ -426,7 +426,6 @@ class DeepNeuralNetworks(ModelBase):
                 print('------------------------------------------------------')
                 print('Positive Rate of Train Set: ', positive_rate_train)
                 print('Positive Rate of Valid Set: ', positive_rate_valid)
-                print('Rescale Rate of Valid Set: ', rescale_rate)
                 print('------------------------------------------------------')
 
                 # Prescale
@@ -465,6 +464,7 @@ class DeepNeuralNetworks(ModelBase):
                 if rescale:
                     print('------------------------------------------------------')
                     print('[W] Rescaling Results...')
+                    print('Rescale Rate: {:.6f}'.format(rescale_rate))
                     prob_test *= rescale_rate
                     prob_train *= rescale_rate
                     prob_valid *= rescale_rate

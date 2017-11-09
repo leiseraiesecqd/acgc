@@ -37,8 +37,8 @@ class Training:
         """
             Training Arguments
         """
-        train_args = {'prescale': False,
-                      'rescale': True,
+        train_args = {'prescale': True,
+                      'rescale': False,
                       'show_importance': False,
                       'show_accuracy': True,
                       'save_final_pred': True,
@@ -46,7 +46,7 @@ class Training:
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': 'merge-era_scale'}
+                      'append_info': 'merge-era_5-fold_prescale'}
 
         """
             Cross Validation Arguments
