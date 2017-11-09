@@ -45,6 +45,7 @@ class Training:
             Training Arguments
         """
         train_args = {'train_seed': train_seed,
+                      'prescale': False,
                       'rescale': False,
                       'show_importance': False,
                       'show_accuracy': True,
