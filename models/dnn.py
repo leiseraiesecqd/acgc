@@ -327,7 +327,7 @@ class DeepNeuralNetworks(ModelBase):
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, boost_round_log_path=None,
               train_seed=None, cv_args=None, parameters=None, show_importance=False, show_accuracy=False,
               save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True, save_final_prob_train=False,
-              save_csv_log=True, csv_idx=None, rescale=False, return_prob_test=False, mode=None,
+              save_csv_log=True, csv_idx=None, rescale=False, prescale=False, return_prob_test=False, mode=None,
               param_name_list=None, param_value_list=None, file_name_params=None, append_info=None):
 
         # Check if directories exit or not
@@ -399,7 +399,7 @@ class DeepNeuralNetworks(ModelBase):
             else:
                 cv_generator = CrossValidation.era_k_fold
             print('------------------------------------------------------')
-            print('Using CV Generator: {}'.format(getattr(cv_generator, '__name__')))
+            print('[W] Using CV Generator: {}'.format(getattr(cv_generator, '__name__')))
 
             if 'era_list' in cv_args_copy:
                 print('Era List: ', cv_args_copy['era_list'])
@@ -428,6 +428,10 @@ class DeepNeuralNetworks(ModelBase):
                 print('Positive Rate of Valid Set: ', positive_rate_valid)
                 print('Rescale Rate of Valid Set: ', rescale_rate)
                 print('------------------------------------------------------')
+
+                # Prescale
+                if prescale:
+                    x_train, y_train, w_train, e_train = self.prescale(x_train, y_train, w_train, e_train)
 
                 # Training
                 if mode == 'auto_train_boost_round':
@@ -460,7 +464,7 @@ class DeepNeuralNetworks(ModelBase):
                 # Rescale
                 if rescale:
                     print('------------------------------------------------------')
-                    print('Rescaling Results...')
+                    print('[W] Rescaling Results...')
                     prob_test *= rescale_rate
                     prob_train *= rescale_rate
                     prob_valid *= rescale_rate
@@ -655,11 +659,10 @@ class DeepNeuralNetworks(ModelBase):
             return prob_valid, prob_test, losses
 
     def prejudge_stack_train(self, x_train, x_g_train, y_train, w_train, e_train, x_valid,
-                             x_g_valid, y_valid, w_valid, e_valid, x_test, x_g_test, id_test,
+                             x_g_valid, y_valid, w_valid, e_valid, x_test, x_g_test,
                              pred_path=None, loss_log_path=None, csv_log_path=None, n_valid=4, n_cv=20,
-                             train_seed=None, cv_seed=None, parameters=None, show_importance=False,
-                             show_accuracy=False, save_final_pred=True, save_final_prob_train=False,
-                             save_csv_log=True, csv_idx=None, return_prob_test=False,
+                             train_seed=None, cv_seed=None, parameters=None, show_importance=False, show_accuracy=False,
+                             save_final_pred=True, save_csv_log=True, csv_idx=None, return_prob_test=False,
                              mode=None, file_name_params=None, param_name_list=None, param_value_list=None):
 
         # Check if directories exit or not
