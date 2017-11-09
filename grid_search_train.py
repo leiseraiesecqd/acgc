@@ -125,10 +125,10 @@ class Training:
             Auto Grid Search Parameters
         """
         pg_list = [
-                   # [['max_depth', (8, 9, 10, 11, 12)]],
-                   # [['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
-                   [['bagging_fraction', (0.6, 0.7, 0.8, 0.9)]],
-                   [['bagging_freq', (1, 3, 5, 7)]],
+                   [['max_depth', (8, 9, 10, 11, 12)]],
+                   [['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
+                   # [['bagging_fraction', (0.6, 0.7, 0.8, 0.9)]],
+                   # [['bagging_freq', (1, 3, 5, 7)]],
                    ]
         TM.auto_grid_search('lgb', parameter_grid_list=pg_list, n_epoch=200, base_parameters=base_parameters,
                             save_final_pred=False, reduced_feature_list=reduced_feature_list, num_boost_round=65,
