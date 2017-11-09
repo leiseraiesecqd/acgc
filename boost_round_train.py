@@ -46,28 +46,28 @@ class Training:
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': 'merge-era_5-fold'}
+                      'append_info': 'forward_increase_weights'}
 
         """
             Cross Validation Arguments
         """
-        cv_args = {'n_valid': 4,
-                   'n_cv': 20,
-                   'n_era': 20}
+        # cv_args = {'n_valid': 4,
+        #            'n_cv': 20,
+        #            'n_era': 20}
 
         # cv_args = {'n_valid': 27,
         #            'n_cv': 20,
         #            'n_era': 135}
 
-        # cv_args = {'n_valid': 27,
-        #            'n_cv': 20,
-        #            'n_era': 135,
-        #            # 'cv_generator': CrossValidation.forward_window,
-        #            # 'window_size': 35,
-        #            'cv_generator': CrossValidation.forward_increase,
-        #            'valid_rate': 0.1,
-        #            'cv_weights': list(range(1, 21)),
-        #            }
+        cv_args = {'n_valid': 27,
+                   'n_cv': 20,
+                   'n_era': 135,
+                   # 'cv_generator': CrossValidation.forward_window,
+                   # 'window_size': 35,
+                   'cv_generator': CrossValidation.forward_increase,
+                   'valid_rate': 0.1,
+                   'cv_weights': list(range(1, 21)),
+                   }
 
         """
             Reduced Features
@@ -121,14 +121,17 @@ class Training:
             Auto Train with Logs of Boost Round
         """
         pg_list = [
-                   [['learning_rate', [0.004]]]
+                   [['max_depth', (7, 8, 9, 10, 11, 12)]],
+                   [['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
+                   [['bagging_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
+                   [['bagging_freq', (1, 3, 5, 7, 9, 11)]],
                    ]
         # train_seed_list = [666]
         # cv_seed_list = [666]
         train_seed_list = None
         cv_seed_list = None
-        TM.auto_train_boost_round('cb', train_seed_list, cv_seed_list, n_epoch=200, base_parameters=base_parameters,
-                                  num_boost_round=70, parameter_grid_list=pg_list, save_final_pred=True,
+        TM.auto_train_boost_round('lgb', train_seed_list, cv_seed_list, n_epoch=3, base_parameters=base_parameters,
+                                  num_boost_round=150, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
                                   train_args=train_args, cv_args=cv_args, use_multi_group=True)
 

@@ -1,5 +1,6 @@
 import sys
 import re
+import copy
 import numpy as np
 import matplotlib.pyplot as plt
 from models import utils
@@ -348,16 +349,17 @@ class ModelBase(object):
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
 
-        n_valid = cv_args['n_valid']
-        n_cv = cv_args['n_cv']
-        n_era = cv_args['n_era']
-        cv_seed = cv_args['cv_seed']
+        cv_args_copy = copy.deepcopy(cv_args)
+        n_valid = cv_args_copy['n_valid']
+        n_cv = cv_args_copy['n_cv']
+        n_era = cv_args_copy['n_era']
+        cv_seed = cv_args_copy['cv_seed']
 
         # Append Information
         if append_info is None:
             append_info = 'v-' + str(n_valid) + '_c-' + str(n_cv) + '_e-' + str(n_era)
-            if 'window_size' in cv_args:
-                append_info += '_w-' + str(cv_args['window_size'])
+            if 'window_size' in cv_args_copy:
+                append_info += '_w-' + str(cv_args_copy['window_size'])
 
         if csv_idx is None:
             csv_idx = self.model_name
@@ -377,23 +379,23 @@ class ModelBase(object):
         valid_loss_round_total = []
 
         # Get Cross Validation Generator
-        if 'cv_generator' in cv_args:
-            cv_generator = cv_args['cv_generator']
+        if 'cv_generator' in cv_args_copy:
+            cv_generator = cv_args_copy['cv_generator']
             if cv_generator is None:
                 cv_generator = CrossValidation.era_k_fold
-            cv_args.pop('cv_generator')
+            cv_args_copy.pop('cv_generator')
         else:
             cv_generator = CrossValidation.era_k_fold
         print('------------------------------------------------------')
         print('Using CV Generator: {}'.format(getattr(cv_generator, '__name__')))
 
-        if 'era_list' in cv_args:
-            print('Era List: ', cv_args['era_list'])
-        if 'window_size' in cv_args:
-            print('Window Size: ', cv_args['window_size'])
-        if 'cv_weights' in cv_args:
-            cv_weights = cv_args['cv_weights']
-            cv_args.pop('cv_weights')
+        if 'era_list' in cv_args_copy:
+            print('Era List: ', cv_args_copy['era_list'])
+        if 'window_size' in cv_args_copy:
+            print('Window Size: ', cv_args_copy['window_size'])
+        if 'cv_weights' in cv_args_copy:
+            cv_weights = cv_args_copy['cv_weights']
+            cv_args_copy.pop('cv_weights')
             if cv_weights is not None:
                 if len(cv_weights) != n_cv:
                     raise ValueError("The length of 'cv_weights' should be equal to 'n_cv'!")
@@ -402,7 +404,7 @@ class ModelBase(object):
 
         # Training on Cross Validation Sets
         for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era \
-                in cv_generator(x=self.x_train, y=self.y_train, w=self.w_train, e=self.e_train, **cv_args):
+                in cv_generator(x=self.x_train, y=self.y_train, w=self.w_train, e=self.e_train, **cv_args_copy):
 
             # Get Positive Rate of Train Set and Rescale Rate
             positive_rate_train, rescale_rate = self.get_rescale_rate(y_train)
@@ -658,9 +660,10 @@ class ModelBase(object):
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
 
-        n_valid = cv_args['n_valid']
-        n_cv = cv_args['n_cv']
-        cv_seed = cv_args['cv_seed']
+        cv_args_copy = copy.deepcopy(cv_args)
+        n_valid = cv_args_copy['n_valid']
+        n_cv = cv_args_copy['n_cv']
+        cv_seed = cv_args_copy['cv_seed']
 
         # Append Information
         if append_info is None:
