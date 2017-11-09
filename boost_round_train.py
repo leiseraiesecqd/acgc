@@ -59,9 +59,9 @@ class Training:
         #            'n_cv': 20,
         #            'n_era': 135}
 
-        # cv_weights = list(range(1, 21))
-        from math import log
-        cv_weights = [log(i/2 + 1) for i in range(1, 21)]
+        cv_weights = list(range(1, 21))
+        #  from math import log
+        #  cv_weights = [log(i/2 + 1) for i in range(1, 21)]
         cv_args = {'n_valid': 27,
                    'n_cv': 20,
                    'n_era': 135,
@@ -158,7 +158,7 @@ class Training:
         # train_seed_list = None
         # cv_seed_list = None
         TM.auto_train_boost_round('lgb', train_seed_list, cv_seed_list, n_epoch=1, base_parameters=base_parameters,
-                                  num_boost_round=200, parameter_grid_list=pg_list, save_final_pred=True,
+                                  num_boost_round=125, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
                                   train_args=train_args, cv_args=cv_args, use_multi_group=True)
 
