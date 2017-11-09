@@ -123,12 +123,12 @@ class Training:
         pg_list = [
                    [['learning_rate', [0.003]]]
                    ]
-        train_seed_list = [750]
-        cv_seed_list = [543]
+        train_seed_list = [666]
+        cv_seed_list = [666]
         # train_seed_list = None
         # cv_seed_list = None
         TM.auto_train_boost_round('lgb', train_seed_list, cv_seed_list, n_epoch=1, base_parameters=base_parameters,
-                                  num_boost_round=100, parameter_grid_list=pg_list, save_final_pred=True,
+                                  num_boost_round=300, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
                                   train_args=train_args, cv_args=cv_args, use_multi_group=True)
 
