@@ -2,9 +2,7 @@ import sys
 import re
 import copy
 import numpy as np
-import matplotlib.pyplot as plt
 from models import utils
-
 from models.cross_validation import CrossValidation
 from sklearn.linear_model import LogisticRegression
 from sklearn.neighbors import KNeighborsClassifier
@@ -20,11 +18,6 @@ from xgboost import XGBClassifier
 import lightgbm as lgb
 from lightgbm import LGBMClassifier
 from catboost import CatBoostClassifier
-
-import seaborn as sns
-sns.set(style="whitegrid", color_codes=True)
-sns.set(font_scale=1)
-color = sns.color_palette()
 
 
 class ModelBase(object):
@@ -58,7 +51,6 @@ class ModelBase(object):
 
         print('------------------------------------------------------')
         print('This Is Base Model!')
-        print('------------------------------------------------------')
 
         self.model_name = 'base'
 
@@ -169,18 +161,6 @@ class ModelBase(object):
             + str(train_seed) + '_c-' + str(cv_seed) + '_log.csv'
 
         utils.save_final_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean, valid_loss_round_mean)
-
-    def show(self):
-
-        feature_num = self.x_train.shape[1]
-
-        plt.figure(figsize=(20, 10))
-        plt.title('Feature Importance:')
-        plt.bar(range(feature_num), self.importance[self.indices],
-                color=color[5], yerr=self.std[self.indices], align="center")
-        plt.xticks(range(feature_num), self.indices)
-        plt.xlim([-1, feature_num])
-        plt.show()
 
     def get_importance(self, clf):
 
@@ -340,10 +320,39 @@ class ModelBase(object):
 
         return positive_rate, rescale_rate
 
+    @staticmethod
+    def prescale(x_train, y_train, w_train, e_train):
+
+        positive_idx = []
+        negative_idx = []
+        for i, y in enumerate(y_train):
+            if y == 1:
+                positive_idx.append(i)
+            else:
+                negative_idx.append(i)
+        n_positive = len(positive_idx)
+        n_negative = len(negative_idx)
+
+        if n_positive > n_negative:
+            positive_idx = list(np.random.choice(positive_idx, len(negative_idx), replace=False))
+        elif n_negative > n_positive:
+            negative_idx = list(np.random.choice(negative_idx, n_positive, replace=False))
+
+        prescale_idx = list(np.sort(positive_idx + negative_idx))
+
+        print('[W] PreScaling Train Set...')
+        print('------------------------------------------------------')
+        x_train = x_train[prescale_idx]
+        y_train = y_train[prescale_idx]
+        w_train = w_train[prescale_idx]
+        e_train = e_train[prescale_idx]
+
+        return x_train, y_train, w_train, e_train
+
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, boost_round_log_path=None,
               train_seed=None, cv_args=None, parameters=None, show_importance=False, show_accuracy=False,
               save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True, save_final_prob_train=False,
-              save_csv_log=True, csv_idx=None, rescale=False, return_prob_test=False, mode=None,
+              save_csv_log=True, csv_idx=None, rescale=False, prescale=False, return_prob_test=False, mode=None,
               param_name_list=None, param_value_list=None, file_name_params=None, append_info=None):
 
         # Check if directories exit or not
@@ -387,7 +396,7 @@ class ModelBase(object):
         else:
             cv_generator = CrossValidation.era_k_fold
         print('------------------------------------------------------')
-        print('Using CV Generator: {}'.format(getattr(cv_generator, '__name__')))
+        print('[W] Using CV Generator: {}'.format(getattr(cv_generator, '__name__')))
 
         if 'era_list' in cv_args_copy:
             print('Era List: ', cv_args_copy['era_list'])
@@ -414,10 +423,14 @@ class ModelBase(object):
             print('Validation Set Era: ', valid_era)
             print('Number of Features: ', x_train.shape[1])
             print('------------------------------------------------------')
-            print('Positive Rate of Train Set: ', positive_rate_train)
-            print('Positive Rate of Valid Set: ', positive_rate_valid)
-            print('Rescale Rate of Valid Set: ', rescale_rate)
+            print('Positive Rate of Train Set: {:.6f}'.format(positive_rate_train))
+            print('Positive Rate of Valid Set: {:.6f}'.format(positive_rate_valid))
+            print('Rescale Rate of Valid Set: {:.6f}'.format(rescale_rate))
             print('------------------------------------------------------')
+
+            # Prescale
+            if prescale:
+                x_train, y_train, w_train, e_train = self.prescale(x_train, y_train, w_train, e_train)
 
             # Fitting and Training Model
             if mode == 'auto_train_boost_round':
@@ -457,7 +470,7 @@ class ModelBase(object):
             # Rescale
             if rescale:
                 print('------------------------------------------------------')
-                print('Rescaling Results...')
+                print('[W] Rescaling Results...')
                 prob_test *= rescale_rate
                 prob_train *= rescale_rate
                 prob_valid *= rescale_rate
@@ -497,9 +510,9 @@ class ModelBase(object):
         if mode == 'auto_train_boost_round':
             train_loss_round_mean, valid_loss_round_mean = \
                 utils.calculate_boost_round_means(train_loss_round_total, valid_loss_round_total, weights=cv_weights)
-            self.save_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean, valid_loss_round_mean,
-                                      train_seed, cv_seed, csv_idx, parameters, param_name_list, param_value_list,
-                                      append_info=append_info)
+            self.save_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean,
+                                      valid_loss_round_mean, train_seed, cv_seed, csv_idx,
+                                      parameters, param_name_list, param_value_list, append_info=append_info)
 
         # Save 'num_boost_round'
         if self.model_name in ['xgb', 'lgb']:
@@ -651,11 +664,11 @@ class ModelBase(object):
         return prob_test_mean
 
     def prejudge_stack_train(self, x_train, x_g_train, y_train, w_train, e_train, x_valid,
-                             x_g_valid, y_valid, w_valid, e_valid, x_test, x_g_test, id_test,
+                             x_g_valid, y_valid, w_valid, e_valid, x_test, x_g_test,
                              pred_path=None, loss_log_path=None, csv_log_path=None, parameters=None, cv_args=None,
                              train_seed=None, show_importance=False, show_accuracy=False, save_final_pred=True,
-                             save_final_prob_train=False, save_csv_log=True, csv_idx=None, mode=None,
-                             file_name_params=None, param_name_list=None, param_value_list=None, append_info=None):
+                             save_csv_log=True, csv_idx=None, mode=None, file_name_params=None,
+                             param_name_list=None, param_value_list=None, append_info=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)

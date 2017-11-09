@@ -3,7 +3,6 @@ import time
 import parameters
 from models import utils
 from models.training_mode import TrainingMode
-from models.cross_validation import CrossValidation
 
 
 class Training:
@@ -71,14 +70,18 @@ class Training:
         #            'cv_seed': cv_seed,
         #            'cv_generator': None}
 
+        # cv_weights = list(range(1, 21))
+        # from math import log
+        # cv_weights = [log(i/2 + 1) for i in range(1, 21)]
+        # from models.cross_validation import CrossValidation
         # cv_args = {'n_valid': 27,
         #            'n_cv': 20,
         #            'n_era': 135,
-        #            'cv_seed': cv_seed,
         #            # 'cv_generator': CrossValidation.forward_window,
         #            # 'window_size': 35,
-        #            # 'cv_generator': CrossValidation.forward_increase,
-        #            # 'valid_rate': 0.2
+        #            'cv_generator': CrossValidation.forward_increase,
+        #            'valid_rate': 0.1,
+        #            'cv_weights': cv_weights,
         #            }
 
         """
