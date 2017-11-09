@@ -644,7 +644,7 @@ class DataPreProcess:
         self.load_data()
 
         # Merge Eras
-        # self.merge_eras()
+        self.merge_eras()
 
         # Drop outliers
         # self.drop_outliers_by_value()

@@ -449,12 +449,12 @@ class SingleModel:
             CatBoost
         """
         if parameters is None:
-            parameters = {'iterations': 88,
-                          'learning_rate': 0.003,
-                          'depth': 8,                            # Depth of the tree.
-                          'l2_leaf_reg': 0.3,                    # L2 regularization coefficient.
-                          'rsm': 0.9,                            # The percentage of features to use at each iteration.
-                          'bagging_temperature': 8.8,            # Controls intensity of Bayesian bagging. The higher the temperature the more aggressive bagging is.
+            parameters = {'iterations': 70,
+                          'learning_rate': 0.004,
+                          'depth': 9,                            # Depth of the tree.
+                          'l2_leaf_reg': 0.01,                   # L2 regularization coefficient.
+                          'rsm': 0.8,                            # The percentage of features to use at each iteration.
+                          'bagging_temperature': 0.7,            # Controls intensity of Bayesian bagging. The higher the temperature the more aggressive bagging is.
                           'loss_function': 'Logloss',
                           'border': 0.5,
                           'border_count': 128,
