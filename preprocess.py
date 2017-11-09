@@ -119,7 +119,7 @@ class DataPreProcess:
     def merge_eras(self):
 
         print('------------------------------------------------------')
-        print('Merging Eras...')
+        print('[W] Merging Eras...')
         print('Merge Era List:\n', self.merge_era_range_list)
 
         self.e_train = np.array(self.e_train, dtype=int)

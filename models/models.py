@@ -323,6 +323,8 @@ class ModelBase(object):
     @staticmethod
     def prescale(x_train, y_train, w_train, e_train):
 
+        print('[W] PreScaling Train Set...')
+
         positive_idx = []
         negative_idx = []
         for i, y in enumerate(y_train):
@@ -338,14 +340,18 @@ class ModelBase(object):
         elif n_negative > n_positive:
             negative_idx = list(np.random.choice(negative_idx, n_positive, replace=False))
 
-        prescale_idx = list(np.sort(positive_idx + negative_idx))
+        # Checking
+        if len(positive_idx) != len(negative_idx):
+            raise ValueError('PreScaling Failed! len(positive_idx) != len(negative_idx)!')
+        else:
+            print('Number of Positive and Negative Labels: {}'.format(len(positive_idx)))
 
-        print('[W] PreScaling Train Set...')
-        print('------------------------------------------------------')
+        prescale_idx = list(np.sort(positive_idx + negative_idx))
         x_train = x_train[prescale_idx]
         y_train = y_train[prescale_idx]
         w_train = w_train[prescale_idx]
         e_train = e_train[prescale_idx]
+        print('------------------------------------------------------')
 
         return x_train, y_train, w_train, e_train
 
