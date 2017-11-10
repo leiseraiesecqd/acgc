@@ -519,11 +519,6 @@ class SingleModel:
         else:
             parameters['seed'] = train_seed
 
-        if grid_search_tuple_list is not None:
-            param_name = grid_search_tuple_list[0]
-            param_value = grid_search_tuple_list[1]
-            parameters[param_name] = param_value
-
         if epochs is not None:
             parameters['epochs'] = epochs
 
