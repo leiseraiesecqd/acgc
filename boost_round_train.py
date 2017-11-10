@@ -95,7 +95,7 @@ class Training:
             Training Arguments
         """
         train_args = {'prescale': False,
-                      'postscale': False,
+                      'postscale': True,
                       'show_importance': False,
                       'show_accuracy': False,
                       'save_final_pred': True,
@@ -103,32 +103,32 @@ class Training:
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': 'dnn_nicai'}
+                      'append_info': 'forward_window_postscale'}
 
         """
             Cross Validation Arguments
         """
-        cv_args = {'n_valid': 4,
-                   'n_cv': 20,
-                   'n_era': 20}
+        # cv_args = {'n_valid': 4,
+        #            'n_cv': 20,
+        #            'n_era': 20}
 
         # cv_args = {'n_valid': 27,
         #            'n_cv': 20,
         #            'n_era': 135}
 
-        # cv_weights = list(range(1, 21))
+        # cv_weights = list(range(1, 6))
         # from math import log
         # cv_weights = [log(i/2 + 1) for i in range(1, 21)]
-        # from models.cross_validation import CrossValidation
-        # cv_args = {'n_valid': 27,
-        #            'valid_rate': 0.2,
-        #            'n_cv': 20,
-        #            'n_era': 135,
-        #            'cv_generator': CrossValidation.forward_window,
-        #            'window_size': 35,
-        #            # 'cv_generator': CrossValidation.forward_increase,
-        #            # 'cv_weights': cv_weights,
-        #            }
+        from models.cross_validation import CrossValidation
+        cv_args = {'n_valid': 27,
+                   'valid_rate': 0.1,
+                   'n_cv': 20,
+                   'n_era': 135,
+                   'cv_generator': CrossValidation.forward_window,
+                   'window_size': 35,
+                   # 'cv_generator': CrossValidation.forward_increase,
+                   # 'cv_weights': cv_weights,
+                   }
 
         """
             Reduced Features
@@ -176,35 +176,32 @@ class Training:
         #                    'verbosity': 1,
         #                    'early_stopping_rounds': 10000}
 
-        # base_parameters = self.get_base_params('fw')
+        base_parameters = self.get_base_params('fw')
 
-        base_parameters = None
+        # base_parameters = None
 
         """
             Auto Train with Logs of Boost Round
         """
         pg_list = [
-                   # [['n_cv', (5, 5, 5, 10, 10, 10, 20, 20, 20, 5, 5, 5, 10, 10, 10, 20, 20, 20)],
-                   #  ['window_size', (15, 35, 55, 15, 35, 55, 15, 35, 55, 15, 35, 55, 15, 35, 55, 15, 35, 55,)],
-                   #  ['valid_rate', (0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2, 0.2)]]
-                   [['learning_rate', [0.00001]]]
+                   # [['n_cv', (5, 10, 20, 5, 10, 20)],
+                   #  ['valid_rate', (0.1, 0.1, 0.1, 0.2, 0.2, 0.2)]],
+                   #  ['cv_weights', (list(range(1, 6)), list(range(1, 11)), list(range(1, 21)),
+                   #                  list(range(1, 6)), list(range(1, 11)), list(range(1, 21)))]]
+                   [['learning_rate', [0.003]]]
                    # [['max_depth', (7, 8, 9, 10, 11, 12)]],
                    # [['',feature_fraction (0.5, 0.6, 0.7, 0.8, 0.9)]],
                    # [['bagging_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
                    # [['bagging_freq', (1, 3, 5, 7, 9, 11)]],
                    ]
-        train_seed_list = [666]
-        cv_seed_list = [959]
+        train_seed_list = [736]
+        cv_seed_list = [72]
         # train_seed_list = None
         # cv_seed_list = None
-        # TM.auto_train_boost_round('lgb', train_seed_list, cv_seed_list, n_epoch=1, base_parameters=base_parameters,
-        #                           num_boost_round=100, parameter_grid_list=pg_list, save_final_pred=True,
-        #                           reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
-        #                           train_args=train_args, cv_args=cv_args, use_multi_group=True)
-        TM.auto_train_boost_round('dnn', train_seed_list, cv_seed_list, n_epoch=1, base_parameters=base_parameters,
-                                  epochs=10, parameter_grid_list=pg_list, save_final_pred=True,
+        TM.auto_train_boost_round('lgb', train_seed_list, cv_seed_list, n_epoch=1, base_parameters=base_parameters,
+                                  num_boost_round=200, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
-                                  train_args=train_args, cv_args=cv_args, use_multi_group=False)
+                                  train_args=train_args, cv_args=cv_args, use_multi_group=True)
 
 
 if __name__ == "__main__":

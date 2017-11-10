@@ -426,7 +426,8 @@ class ModelBase(object):
             cv_args_copy.pop('cv_weights')
             if cv_weights is not None:
                 if len(cv_weights) != n_cv:
-                    raise ValueError("The length of 'cv_weights' should be equal to 'n_cv'!")
+                    raise ValueError("The length of 'cv_weights'({}) should be equal to 'n_cv'({})!"
+                                     .format(len(cv_weights), n_cv))
         else:
             cv_weights = None
 

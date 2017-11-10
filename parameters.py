@@ -92,13 +92,16 @@ class SingleModel:
     def train_model(self, model=None, grid_search_tuple_list=None):
 
         # Grid Search
+        if self.grid_search_n_cv is not None:
+            self.cv_args['n_cv'] = self.grid_search_n_cv
+
         if grid_search_tuple_list is not None:
             param_name_list = []
             param_value_list = []
             for grid_search_tuple in grid_search_tuple_list:
                 param_name = grid_search_tuple[0]
                 param_value = grid_search_tuple[1]
-                if param_name in ['n_valid', 'n_cv', 'n_era', 'valid_rate', 'window_size']:
+                if param_name in ['n_valid', 'n_cv', 'n_era', 'valid_rate', 'window_size', 'cv_weights']:
                     self.cv_args[param_name] = param_value
                 else:
                     self.train_args['parameters'][param_name] = param_value
@@ -108,9 +111,6 @@ class SingleModel:
         else:
             param_name_list = None
             param_value_list = None
-
-        if self.grid_search_n_cv is not None:
-            self.cv_args['n_cv'] = self.grid_search_n_cv
 
         # Parameters for Train
         model.train(pred_path=self.pred_path, loss_log_path=self.loss_log_path, csv_log_path=self.csv_log_path,
@@ -653,6 +653,9 @@ class ChampionModel:
     def train_model(self, model=None, grid_search_tuple_list=None):
 
         # Grid Search
+        if self.grid_search_n_cv is not None:
+            self.cv_args['n_cv'] = self.grid_search_n_cv
+
         if grid_search_tuple_list is not None:
             param_name_list = []
             param_value_list = []
@@ -665,9 +668,6 @@ class ChampionModel:
         else:
             param_name_list = None
             param_value_list = None
-
-        if self.grid_search_n_cv is not None:
-            self.cv_args['n_cv'] = self.grid_search_n_cv
 
         # Parameters for Train
         model.train(pred_path=self.single_model_pred_path, loss_log_path=self.loss_log_path,
