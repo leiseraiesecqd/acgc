@@ -665,7 +665,8 @@ def get_simple_param_name(param_name):
                                'n_cv': 'cv',
                                'n_era': 'er',
                                'valid_rate': 'vr',
-                               'window_size': 'ws'}
+                               'window_size': 'ws',
+                               'cv_weights': 'cw'}
 
     if param_name in param_name_convert_dict.keys():
         return param_name_convert_dict[param_name]
