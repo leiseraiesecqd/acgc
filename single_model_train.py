@@ -11,7 +11,64 @@ class Training:
         pass
 
     @staticmethod
-    def train():
+    def get_base_params(model_name=None):
+        """
+            Get Base Parameters
+        """
+
+        if model_name == 'lgb_fi':
+            """ Forward Increase """
+            base_parameters = {'application': 'binary',
+                               'boosting': 'gbdt',
+                               'learning_rate': 0.003,
+                               'num_leaves': 88,
+                               'max_depth': 8,
+                               'min_data_in_leaf': 2500,
+                               'min_sum_hessian_in_leaf': 1e-3,
+                               'feature_fraction': 0.5,
+                               'feature_fraction_seed': 19,
+                               'bagging_fraction': 0.7,
+                               'bagging_freq': 9,
+                               'bagging_seed': 1,
+                               'lambda_l1': 0,
+                               'lambda_l2': 0,
+                               'min_gain_to_split': 0,
+                               'max_bin': 225,
+                               'min_data_in_bin': 5,
+                               'metric': 'binary_logloss',
+                               'num_threads': -1,
+                               'verbosity': 1,
+                               'early_stopping_rounds': 10000}
+
+        elif model_name == 'lgb_fw':
+            """ Forward Window """
+            base_parameters = {'application': 'binary',
+                               'boosting': 'gbdt',
+                               'learning_rate': 0.003,
+                               'num_leaves': 88,
+                               'max_depth': 8,
+                               'min_data_in_leaf': 2500,
+                               'min_sum_hessian_in_leaf': 1e-3,
+                               'feature_fraction': 0.5,
+                               'feature_fraction_seed': 19,
+                               'bagging_fraction': 0.5,
+                               'bagging_freq': 3,
+                               'bagging_seed': 1,
+                               'lambda_l1': 0,
+                               'lambda_l2': 0,
+                               'min_gain_to_split': 0,
+                               'max_bin': 225,
+                               'min_data_in_bin': 5,
+                               'metric': 'binary_logloss',
+                               'num_threads': -1,
+                               'verbosity': 1,
+                               'early_stopping_rounds': 10000}
+        else:
+            base_parameters = None
+
+        return base_parameters
+
+    def train(self):
         """
             ## Train Single Model ##
 
@@ -47,7 +104,7 @@ class Training:
             Training Arguments
         """
         train_args = {'prescale': False,
-                      'postscale': True,
+                      'postscale': False,
                       'show_importance': False,
                       'show_accuracy': False,
                       'save_final_pred': True,
@@ -55,14 +112,14 @@ class Training:
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': 'single_scale'}
+                      'append_info': 'fw_v0.2_c20_w35'}
 
         """
             Cross Validation Arguments
         """
-        cv_args = {'n_valid': 4,
-                   'n_cv': 20,
-                   'n_era': 20}
+        # cv_args = {'n_valid': 4,
+        #            'n_cv': 20,
+        #            'n_era': 20}
 
         # cv_args = {'n_valid': 27,
         #            'n_cv': 20,
@@ -71,16 +128,16 @@ class Training:
         # cv_weights = list(range(1, 21))
         # from math import log
         # cv_weights = [log(i/2 + 1) for i in range(1, 21)]
-        # from models.cross_validation import CrossValidation
-        # cv_args = {'n_valid': 27,
-        #            'n_cv': 20,
-        #            'n_era': 135,
-        #            # 'cv_generator': CrossValidation.forward_window,
-        #            # 'window_size': 35,
-        #            'cv_generator': CrossValidation.forward_increase,
-        #            'valid_rate': 0.1,
-        #            'cv_weights': cv_weights,
-        #            }
+        from models.cross_validation import CrossValidation
+        cv_args = {'n_valid': 27,
+                   'valid_rate': 0.2,
+                   'n_cv': 20,
+                   'n_era': 135,
+                   'cv_generator': CrossValidation.forward_window,
+                   'window_size': 35,
+                   # 'cv_generator': CrossValidation.forward_increase,
+                   # 'cv_weights': cv_weights,
+                   }
 
         """
             Reduced Features
@@ -128,12 +185,14 @@ class Training:
         #                    'verbosity': 1,
         #                    'early_stopping_rounds': 10000}
 
-        base_parameters = None
+        base_parameters = self.get_base_params('fw')
+
+        # base_parameters = None
 
         """
             Train Single Model
         """
-        TM.train_single_model('lgb', train_seed, cv_seed, num_boost_round=65,
+        TM.train_single_model('lgb', train_seed, cv_seed, num_boost_round=100,
                               reduced_feature_list=reduced_feature_list, base_parameters=base_parameters,
                               train_args=train_args, cv_args=cv_args, use_multi_group=True)
 

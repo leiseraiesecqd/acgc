@@ -98,7 +98,10 @@ class SingleModel:
             for grid_search_tuple in grid_search_tuple_list:
                 param_name = grid_search_tuple[0]
                 param_value = grid_search_tuple[1]
-                self.train_args['parameters'][param_name] = param_value
+                if param_name in ['n_valid', 'n_cv', 'n_era', 'valid_rate', 'window_size']:
+                    self.cv_args[param_name] = param_value
+                else:
+                    self.train_args['parameters'][param_name] = param_value
                 param_name_list.append(param_name)
                 param_value_list.append(param_value)
 

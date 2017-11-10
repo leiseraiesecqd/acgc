@@ -801,12 +801,15 @@ class CrossValidation:
             yield x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era
 
     @staticmethod
-    def forward_window(x, y, w, e, n_valid=None, n_cv=None, n_era=None, window_size=None, cv_seed=None):
+    def forward_window(x, y, w, e, n_valid=None, n_cv=None, n_era=None,
+                       window_size=None, cv_seed=None, valid_rate=None):
 
         if cv_seed is not None:
             np.random.seed(cv_seed)
 
         n_step = (n_era-window_size) // n_cv
+        if valid_rate is not None:
+            n_valid = int(window_size*valid_rate)
         train_start = 0
 
         for i in range(n_cv):

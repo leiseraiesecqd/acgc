@@ -660,7 +660,12 @@ def get_simple_param_name(param_name):
                                'epochs': 'epo',
                                'unit_number': 'unn',
                                'keep_probability': 'kpp',
-                               'batch_size': 'bs'}
+                               'batch_size': 'bs',
+                               'n_valid': 'va',
+                               'n_cv': 'cv',
+                               'n_era': 'er',
+                               'valid_rate': 'vr',
+                               'window_size': 'ws'}
 
     if param_name in param_name_convert_dict.keys():
         return param_name_convert_dict[param_name]
