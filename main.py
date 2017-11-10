@@ -46,7 +46,7 @@ class Training:
         """
         train_args = {'train_seed': train_seed,
                       'prescale': False,
-                      'rescale': False,
+                      'postscale': False,
                       'show_importance': False,
                       'show_accuracy': True,
                       'save_final_pred': True,

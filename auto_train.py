@@ -38,7 +38,7 @@ class Training:
             Training Arguments
         """
         train_args = {'prescale': False,
-                      'rescale': False,
+                      'postscale': False,
                       'show_importance': False,
                       'show_accuracy': True,
                       'save_final_pred': True,

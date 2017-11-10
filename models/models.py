@@ -308,7 +308,7 @@ class ModelBase(object):
                 utils.save_pred_to_csv(pred_path, self.id_test, prob_test_mean)
 
     @staticmethod
-    def get_rescale_rate(y):
+    def get_postscale_rate(y):
 
         positive = 0
         for y_ in y:
@@ -316,9 +316,9 @@ class ModelBase(object):
                 positive += 1
 
         positive_rate = positive / len(y)
-        rescale_rate = len(y) / (2*positive)
+        postscale_rate = len(y) / (2*positive)
 
-        return positive_rate, rescale_rate
+        return positive_rate, postscale_rate
 
     @staticmethod
     def prescale(x_train, y_train, w_train, e_train):
@@ -360,7 +360,7 @@ class ModelBase(object):
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, boost_round_log_path=None,
               train_seed=None, cv_args=None, parameters=None, show_importance=False, show_accuracy=False,
               save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True, save_final_prob_train=False,
-              save_csv_log=True, csv_idx=None, rescale=False, prescale=False, return_prob_test=False, mode=None,
+              save_csv_log=True, csv_idx=None, prescale=False, postscale=False, return_prob_test=False, mode=None,
               param_name_list=None, param_value_list=None, file_name_params=None, append_info=None):
 
         # Check if directories exit or not
@@ -423,9 +423,9 @@ class ModelBase(object):
         for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era \
                 in cv_generator(x=self.x_train, y=self.y_train, w=self.w_train, e=self.e_train, **cv_args_copy):
 
-            # Get Positive Rate of Train Set and Rescale Rate
-            positive_rate_train, rescale_rate = self.get_rescale_rate(y_train)
-            positive_rate_valid, _ = self.get_rescale_rate(y_valid)
+            # Get Positive Rate of Train Set and postscale Rate
+            positive_rate_train, postscale_rate = self.get_postscale_rate(y_train)
+            positive_rate_valid, _ = self.get_postscale_rate(y_valid)
 
             print('------------------------------------------------------')
             print('Validation Set Era: ', valid_era)
@@ -435,7 +435,7 @@ class ModelBase(object):
             print('Positive Rate of Valid Set: {:.6f}'.format(positive_rate_valid))
             print('------------------------------------------------------')
 
-            # Prescale
+            # prescale
             if prescale:
                 x_train, y_train, w_train, e_train = self.prescale(x_train, y_train, w_train, e_train)
 
@@ -474,14 +474,14 @@ class ModelBase(object):
             # Get Probabilities of Validation Set
             prob_valid = self.predict(clf, x_valid)
 
-            # Rescale
-            if rescale:
+            # postscale
+            if postscale:
                 print('------------------------------------------------------')
-                print('[W] Rescaling Results...')
-                print('Rescale Rate: {:.6f}'.format(rescale_rate))
-                prob_test *= rescale_rate
-                prob_train *= rescale_rate
-                prob_valid *= rescale_rate
+                print('[W] PostScaling Results...')
+                print('PostScale Rate: {:.6f}'.format(postscale_rate))
+                prob_test *= postscale_rate
+                prob_train *= postscale_rate
+                prob_valid *= postscale_rate
 
             # Print LogLoss
             print('------------------------------------------------------')
