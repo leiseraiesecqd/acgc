@@ -441,6 +441,8 @@ class ModelBase(object):
             if postscale:
                 self.postscale = True
                 self.postscale_rate = postscale_rate
+                if 'metric' in parameters.keys():
+                    parameters.pop('metric')
 
             print('------------------------------------------------------')
             print('Validation Set Era: ', valid_era)
