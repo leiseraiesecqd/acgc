@@ -38,6 +38,8 @@ class ModelBase(object):
         self.model_name = ''
         self.num_boost_round = 0
         self.use_multi_group = use_multi_group
+        self.postscale = False
+        self.postscale_rate = None
 
     @staticmethod
     def get_clf(parameters):
@@ -356,6 +358,16 @@ class ModelBase(object):
 
         return x_train, y_train, w_train, e_train
 
+    def postscale_feval(self, preds, train_data):
+
+        prob = copy.deepcopy(preds)
+        labels = train_data.get_label()
+        weights = train_data.get_weight()
+        prob *= self.postscale_rate
+        loss = utils.log_loss_with_weight(prob, labels, weights)
+
+        return 'binary_logloss', loss, False
+
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, boost_round_log_path=None,
               train_seed=None, cv_args=None, parameters=None, show_importance=False, show_accuracy=False,
               save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True, save_final_prob_train=False,
@@ -425,6 +437,10 @@ class ModelBase(object):
             # Get Positive Rate of Train Set and postscale Rate
             positive_rate_train, postscale_rate = self.get_postscale_rate(y_train)
             positive_rate_valid, _ = self.get_postscale_rate(y_valid)
+
+            if postscale:
+                self.postscale = True
+                self.postscale_rate = postscale_rate
 
             print('------------------------------------------------------')
             print('Validation Set Era: ', valid_era)
@@ -1119,8 +1135,13 @@ class LightGBM(ModelBase):
         d_valid = lgb.Dataset(x_valid, label=y_valid, weight=w_valid, categorical_feature=idx_category)
 
         # Booster
-        bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
-                        valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
+        if self.postscale:
+            bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
+                            valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'],
+                            feval=self.postscale_feval)
+        else:
+            bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
+                            valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
 
         return bst
 
@@ -1146,8 +1167,13 @@ class LightGBM(ModelBase):
             d_valid = lgb.Dataset(x_valid, label=y_valid, categorical_feature=idx_category)
 
         # Booster
-        bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
-                        valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
+        if self.postscale:
+            bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
+                            valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'],
+                            feval=self.postscale_feval)
+        else:
+            bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
+                            valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
 
         return bst
 

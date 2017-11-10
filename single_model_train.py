@@ -104,7 +104,7 @@ class Training:
             Training Arguments
         """
         train_args = {'prescale': False,
-                      'postscale': False,
+                      'postscale': True,
                       'show_importance': False,
                       'show_accuracy': False,
                       'save_final_pred': True,
@@ -121,23 +121,23 @@ class Training:
         #            'n_cv': 20,
         #            'n_era': 20}
 
-        # cv_args = {'n_valid': 27,
-        #            'n_cv': 20,
-        #            'n_era': 135}
+        cv_args = {'n_valid': 27,
+                   'n_cv': 20,
+                   'n_era': 135}
 
         # cv_weights = list(range(1, 21))
         # from math import log
         # cv_weights = [log(i/2 + 1) for i in range(1, 21)]
-        from models.cross_validation import CrossValidation
-        cv_args = {'n_valid': 27,
-                   'valid_rate': 0.2,
-                   'n_cv': 20,
-                   'n_era': 135,
-                   'cv_generator': CrossValidation.forward_window,
-                   'window_size': 35,
-                   # 'cv_generator': CrossValidation.forward_increase,
-                   # 'cv_weights': cv_weights,
-                   }
+        # from models.cross_validation import CrossValidation
+        # cv_args = {'n_valid': 27,
+        #            'valid_rate': 0.2,
+        #            'n_cv': 20,
+        #            'n_era': 135,
+        #            'cv_generator': CrossValidation.forward_window,
+        #            'window_size': 35,
+        #            # 'cv_generator': CrossValidation.forward_increase,
+        #            # 'cv_weights': cv_weights,
+        #            }
 
         """
             Reduced Features
@@ -185,9 +185,9 @@ class Training:
         #                    'verbosity': 1,
         #                    'early_stopping_rounds': 10000}
 
-        base_parameters = self.get_base_params('fw')
+        # base_parameters = self.get_base_params('fw')
 
-        # base_parameters = None
+        base_parameters = None
 
         """
             Train Single Model

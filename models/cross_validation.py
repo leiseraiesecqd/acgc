@@ -1,4 +1,5 @@
 import numpy as np
+from math import ceil
 from models import utils
 from sklearn.model_selection import StratifiedShuffleSplit
 from sklearn.model_selection import RepeatedKFold
@@ -746,7 +747,7 @@ class CrossValidation:
 
         # If valid_rate is provided, dynamically calculate n_valid
         if valid_rate is not None:
-            n_valid_last = int(n_era*valid_rate)
+            n_valid_last = ceil(n_era*valid_rate)
         else:
             n_valid_last = n_valid
         step = (n_era-n_valid_last)//n_cv
@@ -756,9 +757,7 @@ class CrossValidation:
             valid_start = (i+1) * step
             # If valid_rate is provided, dynamically calculate n_valid
             if valid_rate is not None:
-                n_valid = int(valid_start*valid_rate)
-                if n_valid < valid_start*valid_rate:
-                    n_valid += 1
+                n_valid = ceil(valid_start*valid_rate)
 
             if i == (n_cv - 1):
                 valid_stop = n_era
@@ -809,7 +808,7 @@ class CrossValidation:
 
         n_step = (n_era-window_size) // n_cv
         if valid_rate is not None:
-            n_valid = int(window_size*valid_rate)
+            n_valid = ceil(window_size*valid_rate)
         train_start = 0
 
         for i in range(n_cv):
