@@ -435,6 +435,10 @@ class DataPreProcess:
             group1_train_dummies = np.array(pd.get_dummies(self.g1_train, prefix='group1'))
             group2_train_dummies = np.array(pd.get_dummies(self.g2_train, prefix='group2'))
             group_train_dummies = np.concatenate((group1_train_dummies, group2_train_dummies), axis=1)
+
+            # TODO: Add zero group
+            group_train_dummies = np.column_stack((group_train_dummies, np.zeros_like(self.g1_train)))
+
             self.x_g_train = np.column_stack((self.x_train, np.array(self.g1_train)))
             self.x_g_train = np.column_stack((self.x_g_train, np.array(self.g2_train)))
         else:
