@@ -48,4 +48,6 @@ if __name__ == '__main__':
 
     global_seed = random.randint(0, 500)
 
-    generate_fake_result(global_seed, fake_std=0.6, label_std=0.6)
+    generate_fake_result(global_seed, fake_std=0.59, label_std=0.596)
+
+    # 0.59 0.67467

@@ -12,9 +12,9 @@ preprocessed_path = './data/preprocessed_data/'
 gan_prob_path = './data/gan_outputs/'
 negative_era_list = [2, 3, 4, 7, 9, 11, 15]
 positive_era_list = [0, 1, 5, 6, 8, 10, 12, 13, 14, 16, 17, 18, 19]
-merge_era_range_list = [(0, 6), (7, 13), (14, 20), (21, 27), (28, 34), (35, 41),  (42, 48),
-                        (49, 55), (56, 62), (63, 69), (70, 76), (77, 83), (84, 90), (91, 97),
-                        (98, 104), (105, 110), (111, 116), (117, 122), (123, 128), (129, 134)]
+merge_era_range_list = [(0, 5), (6, 11), (12, 17), (18, 23), (24, 29), (30, 35), (36, 41),
+                        (42, 47), (48, 53), (54, 59), (60, 65), (66, 71), (72, 77), (78, 83),
+                        (84, 89), (90, 95), (96, 101), (102, 107), (108, 113), (114, 118)]
 drop_feature_list = []
 
 
@@ -654,7 +654,7 @@ class DataPreProcess:
         self.load_data()
 
         # Merge Eras
-        # self.merge_eras()
+        self.merge_eras()
 
         # Drop outliers
         # self.drop_outliers_by_value()
@@ -671,7 +671,7 @@ class DataPreProcess:
         # self.add_polynomial_features()
 
         # Convert column 'group' to dummies
-        self.convert_group_to_dummies(add_train_dummies=True)
+        self.convert_group_to_dummies(add_train_dummies=False)
 
         # Split Adversarial Validation Set by GAN
         # self.split_data_by_gan(sample_ratio=0.2, sample_by_era=True, generate_mode='valid')

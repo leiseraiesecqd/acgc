@@ -43,10 +43,10 @@ class Training:
                                'max_depth': 9,
                                'min_data_in_leaf': 2500,
                                'min_sum_hessian_in_leaf': 1e-3,
-                               'feature_fraction': 0.5,
+                               'feature_fraction': 0.6,
                                'feature_fraction_seed': 19,
                                'bagging_fraction': 0.8,
-                               'bagging_freq': 2,
+                               'bagging_freq': 5,
                                'bagging_seed': 1,
                                'lambda_l1': 0,
                                'lambda_l2': 0,
@@ -151,18 +151,18 @@ class Training:
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': 'double_group'}
+                      'append_info': 'merge-era_5-fold'}
 
         """
             Cross Validation Arguments
         """
-        # cv_args = {'n_valid': 4,
-        #            'n_cv': 20,
-        #            'n_era': 20}
-
-        cv_args = {'n_valid': 27,
+        cv_args = {'n_valid': 4,
                    'n_cv': 20,
-                   'n_era': 135}
+                   'n_era': 20}
+
+        # cv_args = {'n_valid': 27,
+        #            'n_cv': 20,
+        #            'n_era': 135}
 
         # cv_weights = list(range(1, 6))
         # from math import log
@@ -186,8 +186,7 @@ class Training:
         """
             Base Parameters
         """
-
-        base_parameters = self.get_base_params('xgb')
+        base_parameters = self.get_base_params('lgb')
 
         # base_parameters = None
 
@@ -201,17 +200,17 @@ class Training:
                    #                  list(range(1, 6)), list(range(1, 11)), list(range(1, 21)))]]
                    [['learning_rate', [0.003]]]
                    # [['max_depth', (7, 8, 9, 10, 11, 12)]],
-                   # [['',feature_fraction (0.5, 0.6, 0.7, 0.8, 0.9)]],
+                   # [['feature_fraction' (0.5, 0.6, 0.7, 0.8, 0.9)]],
                    # [['bagging_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
                    # [['bagging_freq', (1, 3, 5, 7, 9, 11)]],
                    ]
-        train_seed_list = [736]
-        cv_seed_list = [72]
+        train_seed_list = [9 for _ in range(0, 200)]
+        cv_seed_list = range(0, 200)
         # train_seed_list = None
         # cv_seed_list = None
-        TM.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=1, base_parameters=base_parameters,
-                                  num_boost_round=30, parameter_grid_list=pg_list, save_final_pred=True,
-                                  reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
+        TM.auto_train_boost_round('lgb', train_seed_list, cv_seed_list, n_epoch=None, base_parameters=base_parameters,
+                                  num_boost_round=65, parameter_grid_list=pg_list, save_final_pred=True,
+                                  reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
                                   train_args=train_args, cv_args=cv_args, use_multi_group=True)
 
 
