@@ -4,9 +4,10 @@ import pandas as pd
 from models import utils
 from generate_adversarial_validation import GenerateValidation
 from sklearn.preprocessing import PolynomialFeatures
+from sklearn.preprocessing import LabelBinarizer
 
-train_csv_path = './inputs/stock_train_data_20171103.csv'
-test_csv_path = './inputs/stock_test_data_20171103.csv'
+train_csv_path = './inputs/stock_train_data_20171111.csv'
+test_csv_path = './inputs/stock_test_data_20171111.csv'
 preprocessed_path = './data/preprocessed_data/'
 gan_prob_path = './data/gan_outputs/'
 negative_era_list = [2, 3, 4, 7, 9, 11, 15]
@@ -22,18 +23,17 @@ class DataPreProcess:
     def __init__(self, train_path, test_path, preprocess_path, use_multi_group=False):
 
         self.use_multi_group = use_multi_group
+        self.g1_train = pd.DataFrame()
+        self.g1_test = pd.DataFrame()
+
         if use_multi_group:
             print('------------------------------------------------------')
             print('[W] Using Multi Groups...')
-            self.g1_train = pd.DataFrame()
             self.g2_train = pd.DataFrame()
-            self.g1_test = pd.DataFrame()
             self.g2_test = pd.DataFrame()
         else:
             print('------------------------------------------------------')
             print('[W] Using Single Group...')
-            self.g_train = pd.DataFrame()
-            self.g_test = pd.DataFrame()
 
         self.train_path = train_path
         self.test_path = test_path
@@ -106,14 +106,12 @@ class DataPreProcess:
         self.id_test = test_f['id']
         self.code_id_test = test_f['code_id']
 
+        self.g1_train = train_f['group1']
+        self.g1_test = test_f['group1']
+
         if self.use_multi_group:
-            self.g1_train = train_f['group1']
             self.g2_train = train_f['group2']
-            self.g1_test = test_f['group1']
             self.g2_test = test_f['group2']
-        else:
-            self.g_train = train_f['group1']
-            self.g_test = test_f['group1']
 
     # Merge Eras
     def merge_eras(self):
@@ -426,24 +424,29 @@ class DataPreProcess:
         self.x_test = poly.fit_transform(self.x_test)
 
     # Convert Column 'group' to Dummies
-    def convert_group_to_dummies(self):
+    def convert_group_to_dummies(self, add_train_dummies=False):
+
+        lb1 = LabelBinarizer()
+        lb2 = LabelBinarizer()
+        if add_train_dummies is not None:
+            lb1.fit(np.append(self.g1_train, [13]))
+        else:
+            lb1.fit(self.g1_train)
+        lb2.fit(self.g2_train)
 
         print('------------------------------------------------------')
         print('Converting Groups of Train Set to Dummies...')
 
+        group1_train_dummies = lb1.transform(self.g1_train)
+        group_train_dummies = group1_train_dummies
+        self.x_g_train = np.column_stack((self.x_train, np.array(self.g1_train)))
         if self.use_multi_group:
-            group1_train_dummies = np.array(pd.get_dummies(self.g1_train, prefix='group1'))
-            group2_train_dummies = np.array(pd.get_dummies(self.g2_train, prefix='group2'))
+            group2_train_dummies = lb2.transform(self.g2_train)
             group_train_dummies = np.concatenate((group1_train_dummies, group2_train_dummies), axis=1)
-
-            # TODO: Add zero group
-            group_train_dummies = np.column_stack((group_train_dummies, np.zeros_like(self.g1_train)))
-
-            self.x_g_train = np.column_stack((self.x_train, np.array(self.g1_train)))
             self.x_g_train = np.column_stack((self.x_g_train, np.array(self.g2_train)))
-        else:
-            group_train_dummies = np.array(pd.get_dummies(self.g_train, prefix='group'))
-            self.x_g_train = np.column_stack((self.x_train, np.array(self.g_train)))
+
+        print('Train_features: {}'.format(self.x_train.shape[1]),
+              'Train_Dummies: {}'.format(group_train_dummies.shape[1]))
 
         if self.x_train.shape[1] > 500:
             print('So Many Features!')
@@ -457,15 +460,16 @@ class DataPreProcess:
         print('------------------------------------------------------')
         print('Converting Groups of Test Set to Dummies...')
 
+        group1_test_dummies = lb1.transform(self.g1_test)
+        group_test_dummies = group1_test_dummies
+        self.x_g_test = np.column_stack((self.x_test, np.array(self.g1_test)))
         if self.use_multi_group:
-            group1_test_dummies = np.array(pd.get_dummies(self.g1_test, prefix='group1'))
-            group2_test_dummies = np.array(pd.get_dummies(self.g2_test, prefix='group2'))
+            group2_test_dummies = lb2.transform(self.g2_test)
             group_test_dummies = np.concatenate((group1_test_dummies, group2_test_dummies), axis=1)
-            self.x_g_test = np.column_stack((self.x_test, np.array(self.g1_test)))
             self.x_g_test = np.column_stack((self.x_g_test, np.array(self.g2_test)))
-        else:
-            group_test_dummies = np.array(pd.get_dummies(self.g_test, prefix='group'))
-            self.x_g_test = np.column_stack((self.x_test, np.array(self.g_test)))
+
+        print('Test_features: {}'.format(self.x_test.shape[1]),
+              'Test_Dummies: {}'.format(group_test_dummies.shape[1]))
 
         if self.x_test.shape[1] > 500:
             print('So Many Features!')
@@ -648,7 +652,7 @@ class DataPreProcess:
         self.load_data()
 
         # Merge Eras
-        self.merge_eras()
+        # self.merge_eras()
 
         # Drop outliers
         # self.drop_outliers_by_value()
@@ -665,7 +669,7 @@ class DataPreProcess:
         # self.add_polynomial_features()
 
         # Convert column 'group' to dummies
-        self.convert_group_to_dummies()
+        self.convert_group_to_dummies(add_train_dummies=False)
 
         # Split Adversarial Validation Set by GAN
         # self.split_data_by_gan(sample_ratio=0.2, sample_by_era=True, generate_mode='valid')

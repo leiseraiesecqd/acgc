@@ -6,7 +6,7 @@ from models import utils
 fake_pred_path = './results/fake_results/'
 
 
-def generate_fake_result(seed, fake_std):
+def generate_fake_result(seed, fake_std, label_std):
 
     utils.check_dir([fake_pred_path])
 
@@ -16,7 +16,7 @@ def generate_fake_result(seed, fake_std):
 
     label = np.zeros_like(index)
     for i in range(len(label)):
-        if i < (fake_std*len(index)):
+        if i < (label_std*len(index)):
             label[i] = 1
         else:
             label[i] = 0
@@ -38,15 +38,14 @@ def generate_fake_result(seed, fake_std):
     # for loc_i, loss_i in zip(loc_list, loss_list):
     #     print(loc_i, ': ', loss_i)
 
-    loc = 0.4
-    prob = np.random.normal(loc=loc, size=len(index), scale=0.0002)
+    prob = np.random.normal(loc=fake_std, size=len(index), scale=0.0002)
     # prob = [0.999 if ii > loc else ii for ii in prob]
     print(utils.log_loss(prob, label))
 
-    utils.save_pred_to_csv(fake_pred_path + str(loc) + '_', index, prob)
+    utils.save_pred_to_csv(fake_pred_path + str(fake_std) + '_', index, prob)
 
 if __name__ == '__main__':
 
     global_seed = random.randint(0, 500)
 
-    generate_fake_result(global_seed, fake_std=0.5)
+    generate_fake_result(global_seed, fake_std=0.5, label_std=0.6)
