@@ -3,6 +3,7 @@ import pandas as pd
 import numpy as np
 import os
 import time
+import random
 import csv
 import preprocess
 from os.path import isdir
@@ -611,6 +612,18 @@ def calculate_boost_round_means(train_loss_round_total, valid_loss_round_total, 
         valid_loss_round_mean = np.average(np.array(valid_loss_round_total), axis=0, weights=weights)
 
     return train_loss_round_mean, valid_loss_round_mean
+
+
+# Generate random int list
+def random_int_list(start, stop, length):
+
+    start, stop = (int(start), int(stop)) if start <= stop else (int(stop), int(start))
+    length = int(abs(length)) if length else 0
+    random_list = []
+    for _ in range(length):
+        random_list.append(random.randint(start, stop))
+
+    return random_list
 
 
 # Get Simple Parameter's Name

@@ -178,23 +178,19 @@ class TrainingMode:
         """
             Automatically Training by Boost Round or Epoch
         """
-
-        def _random_int_list(start, stop, length):
-            start, stop = (int(start), int(stop)) if start <= stop else (int(stop), int(start))
-            length = int(abs(length)) if length else 0
-            random_list = []
-            for _ in range(length):
-                random_list.append(random.randint(start, stop))
-            return random_list
-
         if train_seed_list is None:
-            train_seed_list = _random_int_list(0, 1000, n_epoch)
+            train_seed_list = utils.random_int_list(0, 1000, n_epoch)
+        elif len(train_seed_list) == 1:
+            train_seed_list = [train_seed_list[0] for _ in range(n_epoch)]
         else:
             n_epoch = len(train_seed_list)
+
         if cv_seed_list is None:
-            cv_seed_list = _random_int_list(0, 1000, n_epoch)
+            cv_seed_list = utils.random_int_list(0, 1000, n_epoch)
+        elif len(cv_seed_list) == 1:
+            cv_seed_list = [cv_seed_list[0] for _ in range(n_epoch)]
         else:
-            n_epoch = len(train_seed_list)
+            n_epoch = len(cv_seed_list)
 
         # Get Train Function
         train_args['save_final_pred'] = save_final_pred
