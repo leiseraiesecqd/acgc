@@ -430,6 +430,8 @@ class DataPreProcess:
         lb2 = LabelBinarizer()
         lb1.fit(self.g1_train)
         if add_train_dummies:
+            print('------------------------------------------------------')
+            print('Add Zero Dummies to Train Set')
             lb2.fit(np.append(self.g2_train, [13]))
         else:
             lb2.fit(self.g2_train)
@@ -669,7 +671,7 @@ class DataPreProcess:
         # self.add_polynomial_features()
 
         # Convert column 'group' to dummies
-        self.convert_group_to_dummies(add_train_dummies=False)
+        self.convert_group_to_dummies(add_train_dummies=True)
 
         # Split Adversarial Validation Set by GAN
         # self.split_data_by_gan(sample_ratio=0.2, sample_by_era=True, generate_mode='valid')

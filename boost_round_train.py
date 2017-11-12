@@ -156,13 +156,13 @@ class Training:
         """
             Cross Validation Arguments
         """
-        cv_args = {'n_valid': 4,
-                   'n_cv': 20,
-                   'n_era': 20}
-
-        # cv_args = {'n_valid': 27,
+        # cv_args = {'n_valid': 4,
         #            'n_cv': 20,
-        #            'n_era': 135}
+        #            'n_era': 20}
+
+        cv_args = {'n_valid': 27,
+                   'n_cv': 20,
+                   'n_era': 135}
 
         # cv_weights = list(range(1, 6))
         # from math import log
@@ -210,7 +210,7 @@ class Training:
         # train_seed_list = None
         # cv_seed_list = None
         TM.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=1, base_parameters=base_parameters,
-                                  num_boost_round=60, parameter_grid_list=pg_list, save_final_pred=True,
+                                  num_boost_round=30, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
                                   train_args=train_args, cv_args=cv_args, use_multi_group=True)
 
