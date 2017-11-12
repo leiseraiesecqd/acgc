@@ -428,11 +428,11 @@ class DataPreProcess:
 
         lb1 = LabelBinarizer()
         lb2 = LabelBinarizer()
-        if add_train_dummies is not None:
-            lb1.fit(np.append(self.g1_train, [13]))
+        lb1.fit(self.g1_train)
+        if add_train_dummies:
+            lb2.fit(np.append(self.g2_train, [13]))
         else:
-            lb1.fit(self.g1_train)
-        lb2.fit(self.g2_train)
+            lb2.fit(self.g2_train)
 
         print('------------------------------------------------------')
         print('Converting Groups of Train Set to Dummies...')
@@ -445,7 +445,7 @@ class DataPreProcess:
             group_train_dummies = np.concatenate((group1_train_dummies, group2_train_dummies), axis=1)
             self.x_g_train = np.column_stack((self.x_g_train, np.array(self.g2_train)))
 
-        print('Train_features: {}'.format(self.x_train.shape[1]),
+        print('Train_features: {}\n'.format(self.x_train.shape[1]),
               'Train_Dummies: {}'.format(group_train_dummies.shape[1]))
 
         if self.x_train.shape[1] > 500:
@@ -468,7 +468,7 @@ class DataPreProcess:
             group_test_dummies = np.concatenate((group1_test_dummies, group2_test_dummies), axis=1)
             self.x_g_test = np.column_stack((self.x_g_test, np.array(self.g2_test)))
 
-        print('Test_features: {}'.format(self.x_test.shape[1]),
+        print('Test_features: {}\n'.format(self.x_test.shape[1]),
               'Test_Dummies: {}'.format(group_test_dummies.shape[1]))
 
         if self.x_test.shape[1] > 500:
