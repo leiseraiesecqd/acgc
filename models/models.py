@@ -45,7 +45,7 @@ class ModelBase(object):
         self.model_name = ''
         self.num_boost_round = 0
         self.use_multi_group = use_multi_group
-        self.use_global_valid=False
+        self.use_global_valid = False
         self.postscale = False
         self.postscale_rate = None
 

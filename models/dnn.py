@@ -15,8 +15,8 @@ class DeepNeuralNetworks(ModelBase):
     """
         Deep Neural Networks
     """
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te,
-                 x_va, y_va, w_va, e_va, use_multi_group=False, parameters=None):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_va=None, y_va=None, w_va=None, e_va=None,
+                 use_multi_group=False, parameters=None):
 
         super(DeepNeuralNetworks, self).__init__(x_tr, y_tr, w_tr, e_tr, x_te, id_te,
                                                  x_va, y_va, w_va, e_va, use_multi_group)
@@ -281,20 +281,8 @@ class DeepNeuralNetworks(ModelBase):
                              x_valid, y_valid, w_valid, optimizer, merged, cost_, inputs, labels, weights,
                              lr, keep_prob, is_training, start_time, param_name_list, param_value_list, append_info=''):
 
-        param_info = ''
-        param_name = ''
-        for i in range(len(param_name_list)):
-            param_name += '_' + utils.get_simple_param_name(param_name_list[i])
-            param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
-
-        boost_round_log_path += self.model_name + '/'
-        utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + append_info + '/'
-        utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + param_name + '/'
-        utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + param_info + '/'
-        utils.check_dir([boost_round_log_path])
+        boost_round_log_path = utils.get_boost_round_log_path(boost_round_log_path, self.model_name,
+                                                              param_name_list, param_value_list, append_info)
         boost_round_log_path += 'cv_cache/'
         utils.check_dir([boost_round_log_path])
         boost_round_log_path += self.model_name + '_cv_{}_log.txt'.format(cv_counter)
@@ -329,11 +317,15 @@ class DeepNeuralNetworks(ModelBase):
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, boost_round_log_path=None,
               train_seed=None, cv_args=None, parameters=None, show_importance=False, show_accuracy=False,
               save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True, save_final_prob_train=False,
-              save_csv_log=True, csv_idx=None, prescale=False, postscale=False, return_prob_test=False, mode=None,
-              param_name_list=None, param_value_list=None, file_name_params=None, append_info=None):
+              save_csv_log=True, csv_idx=None, prescale=False, postscale=False, use_global_valid=False,
+              return_prob_test=False, mode=None, param_name_list=None, param_value_list=None,
+              file_name_params=None, append_info=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
+
+        # Global Validation
+        self.use_global_valid = use_global_valid
 
         cv_args_copy = copy.deepcopy(cv_args)
         n_valid = cv_args_copy['n_valid']
@@ -374,6 +366,10 @@ class DeepNeuralNetworks(ModelBase):
         # Training
         self.print_start_info()
 
+        if use_global_valid:
+            print('------------------------------------------------------')
+            print('[W] Using Global Validation...')
+
         with tf.Session(graph=train_graph) as sess:
 
             # Merge all the summaries
@@ -391,6 +387,9 @@ class DeepNeuralNetworks(ModelBase):
             idx_round = []
             train_loss_round_total = []
             valid_loss_round_total = []
+            prob_global_valid_total = []
+            loss_global_valid_total = []
+            loss_global_valid_w_total = []
 
             # Get Cross Validation Generator
             if 'cv_generator' in cv_args_copy:
@@ -462,6 +461,13 @@ class DeepNeuralNetworks(ModelBase):
                 prob_valid = self.get_prob(sess, logits, x_valid, self.batch_size, inputs, keep_prob, is_training)
                 prob_test = self.get_prob(sess, logits, self.x_test, self.batch_size, inputs, keep_prob, is_training)
 
+                # Predict Global Validation Set
+                if use_global_valid:
+                    prob_global_valid = self.get_prob(sess, logits, self.x_global_valid,
+                                                      self.batch_size, inputs, keep_prob, is_training)
+                else:
+                    prob_global_valid = np.array([])
+
                 # postscale
                 if postscale:
                     print('------------------------------------------------------')
@@ -470,6 +476,8 @@ class DeepNeuralNetworks(ModelBase):
                     prob_test *= postscale_rate
                     prob_train *= postscale_rate
                     prob_valid *= postscale_rate
+                    if use_global_valid:
+                        prob_global_valid *= postscale_rate
 
                 # Print Losses of CV
                 loss_train, loss_valid, loss_train_w, loss_valid_w = \
@@ -487,6 +495,16 @@ class DeepNeuralNetworks(ModelBase):
                     utils.print_and_get_accuracy(prob_train, y_train, e_train,
                                                  prob_valid, y_valid, e_valid, show_accuracy)
 
+                # Print Loss and Accuracy of Global Validation Set
+                if use_global_valid:
+                    loss_global_valid, loss_global_valid_w, acc_global_valid = \
+                        utils.print_global_valid_loss_and_acc(prob_global_valid, self.y_global_valid,
+                                                              self.w_global_valid)
+                    prob_global_valid_total.append(prob_global_valid)
+                    loss_global_valid_total.append(loss_global_valid)
+                    loss_global_valid_w_total.append(loss_global_valid_w)
+
+                # Save losses
                 utils.save_loss_log(loss_log_path + self.model_name + '_', cv_counter, self.parameters, n_valid, n_cv,
                                     valid_era, loss_train, loss_valid, loss_train_w, loss_valid_w, train_seed, cv_seed,
                                     acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era)
@@ -542,12 +560,32 @@ class DeepNeuralNetworks(ModelBase):
                                       loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean,
                                       train_seed, cv_seed, acc_train, acc_train_era)
 
+            # Print Global Validation Information and Save
+            if use_global_valid:
+                # Calculate Means of Probabilities and Losses
+                prob_global_valid_mean, loss_global_valid_mean, loss_global_valid_w_mean = \
+                    utils.calculate_global_valid_means(prob_global_valid_total, loss_global_valid_total,
+                                                       loss_global_valid_w_total, weights=cv_weights)
+                # Print Loss and Accuracy
+                acc_total_global_valid = \
+                    utils.print_total_global_valid_loss_and_acc(prob_global_valid_mean, self.y_global_valid,
+                                                                loss_global_valid_mean, loss_global_valid_w_mean)
+                # Save csv log
+                if save_csv_log:
+                    self.save_csv_log(mode, csv_log_path, param_name_list, param_value_list, csv_idx, loss_train_w_mean,
+                                      loss_valid_w_mean, acc_train, train_seed, cv_seed, n_valid, n_cv, parameters,
+                                      boost_round_log_path=boost_round_log_path, file_name_params=file_name_params,
+                                      append_info=append_info, use_global_valid=use_global_valid,
+                                      loss_global_valid=loss_global_valid_w_mean,
+                                      acc_global_valid=acc_total_global_valid)
+
             # Save Loss Log to csv File
             if save_csv_log:
-                self.save_csv_log(mode, csv_log_path, param_name_list, param_value_list, csv_idx,
-                                  loss_train_w_mean, loss_valid_w_mean, acc_train, train_seed,
-                                  cv_seed, n_valid, n_cv, parameters, file_name_params=file_name_params,
-                                  append_info=append_info)
+                if not use_global_valid:
+                    self.save_csv_log(mode, csv_log_path, param_name_list, param_value_list, csv_idx,
+                                      loss_train_w_mean, loss_valid_w_mean, acc_train, train_seed,
+                                      cv_seed, n_valid, n_cv, parameters, file_name_params=file_name_params,
+                                      append_info=append_info)
 
             # Return Final Result
             if return_prob_test:

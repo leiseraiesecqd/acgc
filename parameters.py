@@ -493,11 +493,11 @@ class SingleModel:
 
         if self.train_args['use_global_valid']:
             model = SKLearnLightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
-                                   self.x_g_test, self.id_test, self.x_g_gl_valid, self.y_gl_valid,
-                                   self.w_gl_valid, self.e_gl_valid, use_multi_group=self.use_multi_group)
+                                    self.x_g_test, self.id_test, self.x_g_gl_valid, self.y_gl_valid,
+                                    self.w_gl_valid, self.e_gl_valid, use_multi_group=self.use_multi_group)
         else:
             model = SKLearnLightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
-                                   self.x_g_test, self.id_test, use_multi_group=self.use_multi_group)
+                                    self.x_g_test, self.id_test, use_multi_group=self.use_multi_group)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
