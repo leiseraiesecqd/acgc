@@ -152,7 +152,7 @@ class Training:
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': '135_5-fold'}
+                      'append_info': 'sui_bian_ba'}
 
         """
             Cross Validation Arguments
@@ -205,11 +205,11 @@ class Training:
                    # [['bagging_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
                    # [['bagging_freq', (1, 3, 5, 7, 9, 11)]],
                    ]
-        train_seed_list = [9]
+        train_seed_list = [999]
         # cv_seed_list = range(0, 200)
         # train_seed_list = None
-        cv_seed_list = None
-        TM.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=200, base_parameters=base_parameters,
+        cv_seed_list = list(range(301, 341))
+        TM.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=100, base_parameters=base_parameters,
                                   num_boost_round=100, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
                                   train_args=train_args, cv_args=cv_args, use_multi_group=True)
