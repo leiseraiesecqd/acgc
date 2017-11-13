@@ -2,6 +2,7 @@ import time
 import numpy as np
 import pandas as pd
 from models import utils
+from math import ceil
 from generate_adversarial_validation import GenerateValidation
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import LabelBinarizer
@@ -57,6 +58,9 @@ class DataPreProcess:
         self.x_valid = np.array([])
         self.x_g_valid = np.array([])
         self.y_valid = np.array([])
+        self.w_valid = np.array([])
+        self.e_valid = np.array([])
+        self.code_id_valid = np.array([])
 
         self.use_group_list = use_group_list
         self.drop_feature_list = []
@@ -481,6 +485,45 @@ class DataPreProcess:
               'Total Features of x_g_train: {}\n'.format(self.x_g_train.shape[1]),
               'Total Features of x_g_test: {}'.format(self.x_g_test.shape[1]))
 
+    # Spilt Validation Set by valid_rate
+    def split_validation_set(self, valid_rate=None):
+
+        print('======================================================')
+        print('Splitting Validation Set by Valid Rate: {}'.format(valid_rate))
+
+        n_era = len(set(self.e_train))
+        n_era_valid = ceil(valid_rate*n_era)
+        valid_era = list(range(n_era))[-n_era_valid:]
+
+        print('Number of Eras: {}\n'.format(n_era))
+        print('Valid Eras: {}'.format(valid_era))
+
+        train_index = []
+        valid_index = []
+
+        # Generate train-validation split index
+        for ii, ele in enumerate(self.e_train):
+            if ele in valid_era:
+                valid_index.append(ii)
+            else:
+                train_index.append(ii)
+
+        # Validation Set
+        self.x_valid = self.x_train[valid_index]
+        self.x_g_valid = self.x_g_train[valid_index]
+        self.y_valid = self.y_train[valid_index]
+        self.w_valid = self.w_train[valid_index]
+        self.e_valid = self.e_train[valid_index]
+        self.code_id_valid = self.code_id_train[valid_index]
+
+        # Train Set
+        self.x_train = self.x_train[train_index]
+        self.x_g_train = self.x_g_train[train_index]
+        self.y_train = self.y_train[train_index]
+        self.w_train = self.w_train[train_index]
+        self.e_train = self.e_train[train_index]
+        self.code_id_train = self.code_id_train[train_index]
+
     # Split Adversarial Validation Set by GAN
     def split_data_by_gan(self, load_pickle=True, sample_ratio=None, sample_by_era=True, generate_mode='valid'):
 
@@ -619,6 +662,18 @@ class DataPreProcess:
         utils.save_data_to_pkl(self.id_test, self.preprocess_path + 'id_test.p')
         utils.save_data_to_pkl(self.code_id_test, self.preprocess_path + 'code_id_test.p')
 
+    # Save Validation Set
+    def save_validation_set(self):
+
+        print('======================================================')
+        print('Saving Validation Set...')
+        utils.save_data_to_pkl(self.x_valid, self.preprocess_path + 'x_global_valid.p')
+        utils.save_data_to_pkl(self.x_g_valid, self.preprocess_path + 'x_g_global_valid.p')
+        utils.save_data_to_pkl(self.y_valid, self.preprocess_path + 'y_global_valid.p')
+        utils.save_data_to_pkl(self.w_valid, self.preprocess_path + 'w_global_valid.p')
+        utils.save_data_to_pkl(self.e_valid, self.preprocess_path + 'e_global_valid.p')
+        utils.save_data_to_pkl(self.code_id_valid, self.preprocess_path + 'code_id_global_valid.p')
+
     # Save Data Split by Era Distribution
     def save_data_by_era_distribution_pd(self):
 
@@ -672,6 +727,9 @@ class DataPreProcess:
         # Convert column 'group' to dummies
         self.convert_group_to_dummies(add_train_dummies=False)
 
+        # Spilt Validation Set by valid_rate
+        self.split_validation_set(valid_rate=0.1)
+
         # Split Adversarial Validation Set by GAN
         # self.split_data_by_gan(sample_ratio=0.2, sample_by_era=True, generate_mode='valid')
 
@@ -680,6 +738,9 @@ class DataPreProcess:
 
         # Save Data to pickle files
         self.save_data()
+
+        # Save Validation Set
+        self.save_validation_set()
 
         # Save Data Split by Era Distribution
         # self.save_data_by_era_distribution_pd()
