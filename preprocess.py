@@ -783,8 +783,8 @@ if __name__ == '__main__':
 
     utils.check_dir(['./data/', preprocessed_path])
 
-    preprocess_args = {'merge_eras': False,
-                       'use_group_list': [1, 2],
+    preprocess_args = {'merge_eras': True,
+                       'use_group_list': [2],
                        'add_train_dummies': False,
                        'use_global_valid': True,
                        'global_valid_rate': 0.1,
