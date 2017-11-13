@@ -786,7 +786,7 @@ if __name__ == '__main__':
     preprocess_args = {'merge_eras': True,
                        'use_group_list': [2],
                        'add_train_dummies': False,
-                       'use_global_valid': True,
+                       'use_global_valid': False,
                        'global_valid_rate': 0.1,
                        'drop_outliers_by_value': False,
                        'drop_outliers_by_quantile': False,

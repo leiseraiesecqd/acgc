@@ -144,7 +144,7 @@ class Training:
         """
         train_args = {'prescale': False,
                       'postscale': False,
-                      'use_global_valid': True,
+                      'use_global_valid': False,
                       'show_importance': False,
                       'show_accuracy': False,
                       'save_final_pred': True,
@@ -152,7 +152,7 @@ class Training:
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': 'sui_bian_ba'}
+                      'append_info': 'ri_le_gou_le'}
 
         """
             Cross Validation Arguments
