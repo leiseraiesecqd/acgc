@@ -191,7 +191,7 @@ def save_log_with_global_valid_to_csv(idx, log_path, loss_train_w_mean, loss_val
         print('Creating csv File of Final Loss Log with Global Validation...')
 
         with open(log_path + 'csv_log.csv', 'w') as f:
-            header = ['id', 'time', 'loss_train', 'loss_valid', 'loss_global_valid', 'train_accuracy',
+            header = ['id', 'time', 'loss_train', 'valid_loss', 'global_valid_loss', 'train_accuracy',
                       'global_valid_accuracy', 'train_seed', 'cv_seed', 'n_valid', 'n_cv', 'parameters']
             writer = csv.writer(f)
             writer.writerow(header)
@@ -222,6 +222,7 @@ def save_boost_round_log_to_csv(boost_round_log_path, csv_idx, idx_round, valid_
     lowest_valid_loss_idx = list(np.argsort(valid_loss_round_mean)[:5])
     lowest_valid_loss = valid_loss_round_mean[lowest_valid_loss_idx[0]]
     lowest_train_loss = train_loss_round_mean[lowest_valid_loss_idx[0]]
+    lowest_round = np.array(idx_round)[lowest_valid_loss_idx[0]]
     lowest_idx = np.array(idx_round)[lowest_valid_loss_idx]
     lowest_idx = np.sort(lowest_idx)
 
@@ -234,8 +235,8 @@ def save_boost_round_log_to_csv(boost_round_log_path, csv_idx, idx_round, valid_
         print('Creating csv File of Boost Round Log...')
 
         with open(boost_round_log_path + 'boost_round_log.csv', 'w') as f:
-            header = ['idx', 'time', 'lowest_loss_valid', 'lowest_loss_train', 'round',
-                      'loss_valid', 'loss_train', 'train_seed', 'cv_seed', 'parameters']
+            header = ['idx', 'time', 'lowest_round', 'lowest_valid_loss', 'lowest_train_loss', 'round',
+                      'valid_loss', 'train_loss', 'train_seed', 'cv_seed', 'parameters']
             writer = csv.writer(f)
             writer.writerow(header)
 
@@ -247,10 +248,63 @@ def save_boost_round_log_to_csv(boost_round_log_path, csv_idx, idx_round, valid_
         for i, (round_idx, (valid_loss, train_loss)) in enumerate(lowest_loss_dict.items()):
             if i == 0:
                 local_time = time.strftime('%Y/%m/%d-%H:%M:%S', time.localtime(time.time()))
-                log = [csv_idx, local_time, lowest_valid_loss, lowest_train_loss, round_idx,
+                log = [csv_idx, local_time, lowest_round, lowest_valid_loss, lowest_train_loss, round_idx,
                        valid_loss, train_loss, train_seed, cv_seed, str(parameters)]
             else:
-                log = [csv_idx, '', '', '', round_idx, valid_loss, train_loss, train_seed, cv_seed, '']
+                log = [csv_idx, '', '', '', '', round_idx, valid_loss, train_loss, train_seed, cv_seed, '']
+            writer = csv.writer(f)
+            writer.writerow(log)
+
+
+# Save Boost Round Log with Global Validation to csv File
+def save_boost_round_log_gl_to_csv(boost_round_log_path, csv_idx, idx_round, valid_loss_round_mean,
+                                   train_loss_round_mean, global_valid_loss_round_mean, train_seed,
+                                   cv_seed, parameters):
+
+    gl_valid_loss_dict = {}
+    valid_loss_dict = {}
+    train_loss_dict = {}
+    lowest_loss_dict = {}
+
+    for i, idx in enumerate(idx_round):
+        gl_valid_loss_dict[idx] = global_valid_loss_round_mean[i]
+        valid_loss_dict[idx] = valid_loss_round_mean[i]
+        train_loss_dict[idx] = train_loss_round_mean[i]
+
+    lowest_gl_valid_loss_idx = list(np.argsort(global_valid_loss_round_mean)[:5])
+    lowest_gl_valid_loss = valid_loss_round_mean[lowest_gl_valid_loss_idx[0]]
+    lowest_valid_loss = valid_loss_round_mean[np.argsort(valid_loss_round_mean)[0]]
+    lowest_round = np.array(idx_round)[lowest_gl_valid_loss_idx[0]]
+    lowest_idx = np.array(idx_round)[lowest_gl_valid_loss_idx]
+    lowest_idx = np.sort(lowest_idx)
+
+    for idx in lowest_idx:
+        lowest_loss_dict[idx] = (gl_valid_loss_dict[idx], valid_loss_dict[idx], train_loss_dict[idx])
+
+    if not os.path.isfile(boost_round_log_path + 'boost_round_log.csv'):
+        print('------------------------------------------------------')
+        print('Creating csv File of Boost Round Log...')
+
+        with open(boost_round_log_path + 'boost_round_log.csv', 'w') as f:
+            header = ['idx', 'time', 'lowest_round', 'lowest_global_valid_loss', 'lowest_cv_valid_loss',
+                      'round', 'global_valid_loss', 'cv_valid_loss', 'cv_train_loss',
+                      'train_seed', 'cv_seed', 'parameters']
+            writer = csv.writer(f)
+            writer.writerow(header)
+
+    with open(boost_round_log_path + 'boost_round_log.csv', 'a') as f:
+
+        print('------------------------------------------------------')
+        print('Saving Boost Round Log with Global Validation to csv File...')
+
+        for i, (round_idx, (gl_valid_loss, valid_loss, train_loss)) in enumerate(lowest_loss_dict.items()):
+            if i == 0:
+                local_time = time.strftime('%Y/%m/%d-%H:%M:%S', time.localtime(time.time()))
+                log = [csv_idx, local_time, lowest_round, lowest_gl_valid_loss, lowest_valid_loss, round_idx,
+                       gl_valid_loss, valid_loss, train_loss, train_seed, cv_seed, str(parameters)]
+            else:
+                log = [csv_idx, '', '', '', '', round_idx, gl_valid_loss,
+                       valid_loss, train_loss, train_seed, cv_seed, '']
             writer = csv.writer(f)
             writer.writerow(log)
 
@@ -263,6 +317,24 @@ def save_final_boost_round_log(boost_round_log_path, idx_round, train_loss_round
     df = pd.DataFrame({'idx': idx_round,
                        'train_loss': train_loss_round_mean,
                        'valid_loss': valid_loss_round_mean})
+    cols = ['idx', 'train_loss', 'valid_loss']
+    df = df.loc[:, cols]
+    df.to_csv(boost_round_log_path, sep=',', index=False)
+
+
+def save_final_boost_round_gl_log(boost_round_log_path, idx_round, train_loss_round_mean,
+                                  valid_loss_round_mean, global_valid_loss_round_mean):
+
+    print('------------------------------------------------------')
+    print('Saving Final Boost Round Log with Global Validation...')
+
+    df = pd.DataFrame({'idx': idx_round,
+                       'cv_train_loss': train_loss_round_mean,
+                       'cv_valid_loss': valid_loss_round_mean,
+                       'global_valid_loss:': global_valid_loss_round_mean})
+    cols = ['idx', 'cv_train_loss', 'cv_valid_loss', 'global_valid_loss:']
+    df = df.loc[:, cols]
+    print(df)
     df.to_csv(boost_round_log_path, sep=',', index=False)
 
 
@@ -683,7 +755,8 @@ def calculate_global_valid_means(prob_global_valid_total, loss_global_valid_tota
 
 
 # Calculate Boost Round Means
-def calculate_boost_round_means(train_loss_round_total, valid_loss_round_total, weights=None):
+def calculate_boost_round_means(train_loss_round_total, valid_loss_round_total,
+                                weights=None, global_valid_loss_round_total=None):
 
     if weights is None:
         train_loss_round_mean = np.mean(np.array(train_loss_round_total), axis=0)
@@ -692,7 +765,14 @@ def calculate_boost_round_means(train_loss_round_total, valid_loss_round_total, 
         train_loss_round_mean = np.average(np.array(train_loss_round_total), axis=0, weights=weights)
         valid_loss_round_mean = np.average(np.array(valid_loss_round_total), axis=0, weights=weights)
 
-    return train_loss_round_mean, valid_loss_round_mean
+    if global_valid_loss_round_total is not None:
+        if weights is None:
+            global_valid_loss_round_mean = np.mean(np.array(global_valid_loss_round_total), axis=0)
+        else:
+            global_valid_loss_round_mean = np.average(np.array(global_valid_loss_round_total), axis=0, weights=weights)
+        return train_loss_round_mean, valid_loss_round_mean, global_valid_loss_round_mean
+    else:
+        return train_loss_round_mean, valid_loss_round_mean
 
 
 # Generate random int list

@@ -64,8 +64,6 @@ class SingleModel:
             self.x_gl_valid, self.x_g_gl_valid, self.y_gl_valid, self.w_gl_valid, self.e_gl_valid = \
                 utils.load_global_valid_data(preprocessed_data_path)
 
-        print(self.x_gl_valid.shape, self.x_g_gl_valid.shape, self.y_gl_valid.shape, self.w_gl_valid.shape, self.e_gl_valid.shape)
-
         # Choose Useful features
         if reduced_feature_list is not None:
 
