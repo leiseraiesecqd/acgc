@@ -477,7 +477,9 @@ class DataPreProcess:
 
         print('------------------------------------------------------')
         print('Total Features of x_train: {}\n'.format(self.x_train.shape[1]),
-              'Total Features of x_test: {}'.format(self.x_test.shape[1]))
+              'Total Features of x_test: {}\n'.format(self.x_test.shape[1]),
+              'Total Features of x_g_train: {}\n'.format(self.x_g_train.shape[1]),
+              'Total Features of x_g_test: {}'.format(self.x_g_test.shape[1]))
 
     # Split Adversarial Validation Set by GAN
     def split_data_by_gan(self, load_pickle=True, sample_ratio=None, sample_by_era=True, generate_mode='valid'):
