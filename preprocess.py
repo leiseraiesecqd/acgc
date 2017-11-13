@@ -22,7 +22,10 @@ drop_feature_list = None
 
 class DataPreProcess:
 
-    def __init__(self, train_path, test_path, preprocess_path, use_group_list=None):
+    def __init__(self, train_path, test_path, preprocess_path, use_group_list=None, add_train_dummies=False,
+                 merge_eras=False, use_global_valid=False, global_valid_rate=None, drop_outliers_by_value=False,
+                 drop_outliers_by_quantile=False, standard_scale=False, min_max_scale=False,
+                 add_polynomial_features=False, split_data_by_gan=False, split_data_by_era=False):
 
         self.train_path = train_path
         self.test_path = test_path
@@ -63,8 +66,19 @@ class DataPreProcess:
         self.code_id_valid = np.array([])
 
         self.use_group_list = use_group_list
+        self.add_train_dummies_ = add_train_dummies
         self.drop_feature_list = []
         self.merge_era_range_list = merge_era_range_list
+        self.merge_eras_ = merge_eras
+        self.use_global_valid_ = use_global_valid
+        self.global_valid_rate = global_valid_rate
+        self.drop_outliers_by_value_ = drop_outliers_by_value
+        self.drop_outliers_by_quantile_ = drop_outliers_by_quantile
+        self.standard_scale_ = standard_scale
+        self.min_max_scale_ = min_max_scale
+        self.add_polynomial_features_ = add_polynomial_features
+        self.split_data_by_gan_ = split_data_by_gan
+        self.split_data_by_era_ = split_data_by_era
 
         if use_group_list is not None:
             self.g_train = pd.DataFrame()
@@ -709,42 +723,53 @@ class DataPreProcess:
         self.load_data()
 
         # Merge Eras
-        # self.merge_eras()
+        if self.merge_eras_:
+            self.merge_eras()
 
         # Drop outliers
-        # self.drop_outliers_by_value()
-        # self.drop_outliers_by_quantile()
+        if self.drop_outliers_by_value_:
+            self.drop_outliers_by_value()
+        if self.drop_outliers_by_quantile_:
+            self.drop_outliers_by_quantile()
 
         # Scale features
-        # self.standard_scale()
-        # self.min_max_scale()
+        if self.standard_scale_:
+            self.standard_scale()
+        if self.min_max_scale_:
+            self.min_max_scale()
 
         # Convert pandas DataFrames to numpy arrays
         self.convert_pd_to_np()
 
         # Add Polynomial Features
-        # self.add_polynomial_features()
+        if self.add_polynomial_features_:
+            self.add_polynomial_features()
 
         # Convert column 'group' to dummies
-        self.convert_group_to_dummies(add_train_dummies=False)
+        self.convert_group_to_dummies(add_train_dummies=self.add_train_dummies_)
 
         # Spilt Validation Set by valid_rate
-        self.split_validation_set(valid_rate=0.1)
+        if self.use_global_valid_:
+            self.split_validation_set(valid_rate=self.global_valid_rate)
 
         # Split Adversarial Validation Set by GAN
-        # self.split_data_by_gan(sample_ratio=0.2, sample_by_era=True, generate_mode='valid')
+        if self.split_data_by_gan_:
+            self.split_data_by_gan(sample_ratio=0.2, sample_by_era=True, generate_mode='valid')
 
         # Split Positive and Negative Era Set
-        # self.split_data_by_era_distribution()
+        if self.split_data_by_era_:
+            self.split_data_by_era_distribution()
 
         # Save Data to pickle files
         self.save_data()
 
         # Save Validation Set
-        self.save_global_valid_set()
+        if self.use_global_valid_:
+            self.save_global_valid_set()
 
         # Save Data Split by Era Distribution
-        # self.save_data_by_era_distribution_pd()
+        if self.split_data_by_era_:
+            self.save_data_by_era_distribution_pd()
 
         end_time = time.time()
 
@@ -757,5 +782,19 @@ class DataPreProcess:
 if __name__ == '__main__':
 
     utils.check_dir(['./data/', preprocessed_path])
-    DPP = DataPreProcess(train_csv_path, test_csv_path, preprocessed_path, use_group_list=[1, 2])
+
+    preprocess_args = {'merge_eras': False,
+                       'use_group_list': [1, 2],
+                       'add_train_dummies': False,
+                       'use_global_valid': True,
+                       'global_valid_rate': 0.1,
+                       'drop_outliers_by_value': False,
+                       'drop_outliers_by_quantile': False,
+                       'standard_scale': False,
+                       'min_max_scale': False,
+                       'add_polynomial_features': False,
+                       'split_data_by_gan': False,
+                       'split_data_by_era': False}
+
+    DPP = DataPreProcess(train_csv_path, test_csv_path, preprocessed_path, **preprocess_args)
     DPP.preprocess()
