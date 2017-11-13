@@ -144,6 +144,7 @@ class Training:
         """
         train_args = {'prescale': False,
                       'postscale': False,
+                      'use_global_valid': True,
                       'show_importance': False,
                       'show_accuracy': False,
                       'save_final_pred': True,
@@ -186,7 +187,7 @@ class Training:
         """
             Base Parameters
         """
-        base_parameters = self.get_base_params('xgb')
+        base_parameters = self.get_base_params('lgb')
 
         # base_parameters = None
 
@@ -208,9 +209,9 @@ class Training:
         # cv_seed_list = range(0, 200)
         # train_seed_list = None
         cv_seed_list = None
-        TM.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=10, base_parameters=base_parameters,
-                                  num_boost_round=100, parameter_grid_list=pg_list, save_final_pred=True,
-                                  reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
+        TM.auto_train_boost_round('lgb', train_seed_list, cv_seed_list, n_epoch=1, base_parameters=base_parameters,
+                                  num_boost_round=5, parameter_grid_list=pg_list, save_final_pred=True,
+                                  reduced_feature_list=reduced_feature_list, grid_search_n_cv=5,
                                   train_args=train_args, cv_args=cv_args, use_multi_group=True)
 
 

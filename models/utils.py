@@ -51,7 +51,7 @@ def save_grid_search_log(log_path, params, params_grid, best_score, best_paramet
         f.write('Time: {}\n'.format(local_time))
         f.write('------------------------------------------------------')
         f.write('Total Time: {:.3f}s\n'.format(total_time))
-        f.write('Best Score: {:.6f}\n'.format(best_score))
+        f.write('Best Score: {:.8f}\n'.format(best_score))
         f.write('Parameters:\n')
         f.write('\t' + str(params) + '\n\n')
         f.write('Parameters Grid:\n')
@@ -84,10 +84,10 @@ def save_loss_log(log_path, count, parameters, n_valid, n_cv, valid_era, loss_tr
         f.write('Parameters:\n')
         f.write('\t' + str(parameters) + '\n\n')
         f.write('Losses:\n')
-        f.write('\tCV Train LogLoss: {:.6f}\n'.format(loss_train))
-        f.write('\tCV Validation LogLoss: {:.6f}\n'.format(loss_valid))
-        f.write('\tCV Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w))
-        f.write('\tCV Validation LogLoss with Weight: {:.6f}\n\n'.format(loss_valid_w))
+        f.write('\tCV Train LogLoss: {:.8f}\n'.format(loss_train))
+        f.write('\tCV Validation LogLoss: {:.8f}\n'.format(loss_valid))
+        f.write('\tCV Train LogLoss with Weight: {:.8f}\n'.format(loss_train_w))
+        f.write('\tCV Validation LogLoss with Weight: {:.8f}\n\n'.format(loss_valid_w))
         f.write('Accuracies:\n')
         f.write('\tCV Train Accuracy: {:.3f}%\n'.format(acc_train * 100))
         f.write('\tCV Valid Accuracy: {:.3f}%\n'.format(acc_valid * 100))
@@ -118,10 +118,10 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean,
         f.write('Parameters:\n')
         f.write('\t' + str(parameters) + '\n\n')
         f.write('Losses:\n')
-        f.write('\tTotal Train LogLoss: {:.6f}\n'.format(loss_train_mean))
-        f.write('\tTotal Validation LogLoss: {:.6f}\n'.format(loss_valid_mean))
-        f.write('\tTotal Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean))
-        f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n\n'.format(loss_valid_w_mean))
+        f.write('\tTotal Train LogLoss: {:.8f}\n'.format(loss_train_mean))
+        f.write('\tTotal Validation LogLoss: {:.8f}\n'.format(loss_valid_mean))
+        f.write('\tTotal Train LogLoss with Weight: {:.8f}\n'.format(loss_train_w_mean))
+        f.write('\tTotal Validation LogLoss with Weight: {:.8f}\n\n'.format(loss_valid_w_mean))
         f.write('Accuracy:\n')
         f.write('\tTotal Train Accuracy: {:.3f}%\n\n'.format(acc_train * 100))
         f.write('\tTotal Train Eras Accuracies:\n')
@@ -144,10 +144,10 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean,
         f.write('Parameters:\n')
         f.write('\t' + str(parameters) + '\n\n')
         f.write('Losses:\n')
-        f.write('\tTotal Train LogLoss: {:.6f}\n'.format(loss_train_mean))
-        f.write('\tTotal Validation LogLoss: {:.6f}\n'.format(loss_valid_mean))
-        f.write('\tTotal Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean))
-        f.write('\tTotal Validation LogLoss with Weight: {:.6f}\n\n'.format(loss_valid_w_mean))
+        f.write('\tTotal Train LogLoss: {:.8f}\n'.format(loss_train_mean))
+        f.write('\tTotal Validation LogLoss: {:.8f}\n'.format(loss_valid_mean))
+        f.write('\tTotal Train LogLoss with Weight: {:.8f}\n'.format(loss_train_w_mean))
+        f.write('\tTotal Validation LogLoss with Weight: {:.8f}\n\n'.format(loss_valid_w_mean))
         f.write('Accuracy:\n')
         f.write('\tTotal Train Accuracy: {:.3f}%\n\n'.format(acc_train * 100))
         f.write('\tTotal Train Eras Accuracies:\n')
@@ -158,18 +158,18 @@ def save_final_loss_log(log_path, parameters, n_valid, n_cv, loss_train_mean,
 def save_final_loss_log_to_csv(idx, log_path, loss_train_w_mean, loss_valid_w_mean, acc_train,
                                train_seed, cv_seed, n_valid, n_cv, parameters):
 
-    if not os.path.isfile(log_path + 'log.csv'):
+    if not os.path.isfile(log_path + 'csv_log.csv'):
 
         print('------------------------------------------------------')
         print('Creating csv File of Final Loss Log...')
 
-        with open(log_path + 'log.csv', 'w') as f:
+        with open(log_path + 'csv_log.csv', 'w') as f:
             header = ['id', 'time', 'loss_train', 'loss_valid', 'train_accuracy',
                       'train_seed', 'cv_seed', 'n_valid', 'n_cv', 'parameters']
             writer = csv.writer(f)
             writer.writerow(header)
 
-    with open(log_path + 'log.csv', 'a') as f:
+    with open(log_path + 'csv_log.csv', 'a') as f:
 
         print('------------------------------------------------------')
         print('Saving Final Losses to csv File...')
@@ -177,6 +177,32 @@ def save_final_loss_log_to_csv(idx, log_path, loss_train_w_mean, loss_valid_w_me
         local_time = time.strftime('%Y/%m/%d-%H:%M:%S', time.localtime(time.time()))
         log = [idx, local_time, loss_train_w_mean, loss_valid_w_mean, acc_train,
                train_seed, cv_seed, n_valid, n_cv, str(parameters)]
+        writer = csv.writer(f)
+        writer.writerow(log)
+
+
+# Save Loss Log with Global Validation to csv File
+def save_log_with_global_valid_to_csv(idx, log_path, loss_train_w_mean, loss_valid_w_mean, acc_train,
+                                      train_seed, loss_global_valid_w_mean, acc_total_global_valid,
+                                      cv_seed, n_valid, n_cv, parameters):
+
+    if not os.path.isfile(log_path + 'csv_log.csv'):
+        print('------------------------------------------------------')
+        print('Creating csv File of Final Loss Log with Global Validation...')
+
+        with open(log_path + 'csv_log.csv', 'w') as f:
+            header = ['id', 'time', 'loss_train', 'loss_valid', 'loss_global_valid', 'train_accuracy',
+                      'global_valid_accuracy', 'train_seed', 'cv_seed', 'n_valid', 'n_cv', 'parameters']
+            writer = csv.writer(f)
+            writer.writerow(header)
+
+    with open(log_path + 'csv_log.csv', 'a') as f:
+        print('------------------------------------------------------')
+        print('Saving Final Losses with Global Validation to csv File...')
+
+        local_time = time.strftime('%Y/%m/%d-%H:%M:%S', time.localtime(time.time()))
+        log = [idx, local_time, loss_train_w_mean, loss_valid_w_mean, loss_global_valid_w_mean, acc_train,
+               acc_total_global_valid, train_seed, cv_seed, n_valid, n_cv, str(parameters)]
         writer = csv.writer(f)
         writer.writerow(log)
 
@@ -288,6 +314,18 @@ def load_preprocessed_data(data_file_path):
     return x_train, y_train, w_train, e_train, x_test, id_test
 
 
+# Load Preprocessed Data
+def load_global_valid_data(data_file_path):
+
+    x_global_valid = pd.read_pickle(data_file_path + 'x_global_valid.p')
+    x_g_global_valid = pd.read_pickle(data_file_path + 'x_g_global_valid.p')
+    y_global_valid = pd.read_pickle(data_file_path + 'y_global_valid.p')
+    w_global_valid = pd.read_pickle(data_file_path + 'w_global_valid.p')
+    e_global_valid = pd.read_pickle(data_file_path + 'e_global_valid.p')
+
+    return x_global_valid, x_g_global_valid, y_global_valid, w_global_valid, e_global_valid
+
+
 # Load Preprocessed Category Data
 def load_preprocessed_data_g(data_file_path):
 
@@ -374,22 +412,49 @@ def print_loss(prob_train, y_train, w_train, prob_valid, y_valid, w_valid):
     loss_valid_w = log_loss_with_weight(prob_valid, y_valid, w_valid)
 
     print('------------------------------------------------------')
-    print('Train LogLoss: {:>.8f}\n'.format(loss_train),
-          'Validation LogLoss: {:>.8f}\n'.format(loss_valid),
-          'Train LogLoss with Weight: {:>.8f}\n'.format(loss_train_w),
-          'Validation LogLoss with Weight: {:>.8f}'.format(loss_valid_w))
+    print('Train LogLoss: {:.8f}\n'.format(loss_train),
+          'Validation LogLoss: {:.8f}\n'.format(loss_valid),
+          'Train LogLoss with Weight: {:.8f}\n'.format(loss_train_w),
+          'Validation LogLoss with Weight: {:.8f}'.format(loss_valid_w))
 
     return loss_train, loss_valid, loss_train_w, loss_valid_w
+
+
+# Print Loss and Accuracy of Global Validation Set
+def print_global_valid_loss_and_acc(prob_global_valid, y_global_valid, w_global_valid):
+    
+    loss_global_valid = log_loss(prob_global_valid, y_global_valid)
+    loss_global_valid_w = log_loss_with_weight(prob_global_valid, y_global_valid, w_global_valid)
+    acc_global_valid = get_accuracy(prob_global_valid, y_global_valid)
+    print('------------------------------------------------------')
+    print('Global Valid LogLoss: {:.8f}\n'.format(loss_global_valid),
+          'Global Valid LogLoss with Weight: {:.8f}\n'.format(loss_global_valid_w),
+          'Global Valid Accuracy: {:.8f}'.format(acc_global_valid))
+    
+    return loss_global_valid, loss_global_valid_w, acc_global_valid
 
 
 # Print Total Losses
 def print_total_loss(loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean):
 
     print('------------------------------------------------------')
-    print('Total Train LogLoss: {:.6f}\n'.format(loss_train_mean),
-          'Total Validation LogLoss: {:.6f}\n'.format(loss_valid_mean),
-          'Total Train LogLoss with Weight: {:.6f}\n'.format(loss_train_w_mean),
-          'Total Validation LogLoss with Weight: {:.6f}'.format(loss_valid_w_mean))
+    print('Total Train LogLoss: {:.8f}\n'.format(loss_train_mean),
+          'Total Validation LogLoss: {:.8f}\n'.format(loss_valid_mean),
+          'Total Train LogLoss with Weight: {:.8f}\n'.format(loss_train_w_mean),
+          'Total Validation LogLoss with Weight: {:.8f}'.format(loss_valid_w_mean))
+
+
+# Print Total Loss of Global Validation Set
+def print_total_global_valid_loss_and_acc(prob_global_valid_mean, y_global_valid,
+                                          loss_global_valid_mean, loss_global_valid_w_mean):
+
+    acc_total_global_valid = get_accuracy(prob_global_valid_mean, y_global_valid)
+    print('------------------------------------------------------')
+    print('Total Global Valid LogLoss: {:.8f}\n'.format(loss_global_valid_mean),
+          'Total Global Valid LogLoss with Weight: {:.8f}\n'.format(loss_global_valid_w_mean),
+          'Total Global Valid Accuracy: {:.8f}'.format(acc_total_global_valid))
+
+    return acc_total_global_valid
 
 
 # Print Prediction of Positive Era Rate
@@ -401,7 +466,7 @@ def print_positive_rate_test(era_sign_test=None):
     positive_rate_test = np.sum(era_sign_test) / len(era_sign_test)
 
     print('------------------------------------------------------')
-    print('Positive Rate Prediction of Test Set: {:.6f}%'.format(positive_rate_test * 100))
+    print('Positive Rate Prediction of Test Set: {:.8f}%'.format(positive_rate_test * 100))
 
 
 # Print Information of Cross Validation
@@ -601,6 +666,22 @@ def calculate_means(prob_test_total, prob_train_total, loss_train_total,
            loss_valid_mean, loss_train_w_mean, loss_valid_w_mean
 
 
+# Calculate Global Validation Means
+def calculate_global_valid_means(prob_global_valid_total, loss_global_valid_total, 
+                                 loss_global_valid_w_total, weights=None):
+
+    if weights is None:
+        prob_global_valid_mean = np.mean(np.array(prob_global_valid_total), axis=0)
+        loss_global_valid_mean = np.mean(loss_global_valid_total)
+        loss_global_valid_w_mean = np.mean(loss_global_valid_w_total)
+    else:
+        prob_global_valid_mean = np.average(np.array(prob_global_valid_total), axis=0, weights=weights)
+        loss_global_valid_mean = np.average(loss_global_valid_total, weights=weights)
+        loss_global_valid_w_mean = np.average(loss_global_valid_w_total, weights=weights)
+
+    return prob_global_valid_mean, loss_global_valid_mean, loss_global_valid_w_mean
+
+
 # Calculate Boost Round Means
 def calculate_boost_round_means(train_loss_round_total, valid_loss_round_total, weights=None):
 
@@ -624,6 +705,47 @@ def random_int_list(start, stop, length):
         random_list.append(random.randint(start, stop))
 
     return random_list
+
+
+# Get Path of Boost Round Train
+def get_boost_round_log_path(boost_round_log_path, model_name, param_name_list, param_value_list, append_info):
+
+    param_info = ''
+    param_name = ''
+    for i in range(len(param_name_list)):
+        param_info += '_' + get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
+        param_name += '_' + get_simple_param_name(param_name_list[i])
+
+    boost_round_log_path += model_name + '/'
+    check_dir([boost_round_log_path])
+    boost_round_log_path += model_name + '_' + append_info + '/'
+    check_dir([boost_round_log_path])
+    boost_round_log_path += model_name + param_name + '/'
+    check_dir([boost_round_log_path])
+    boost_round_log_path += model_name + param_info + '/'
+    check_dir([boost_round_log_path])
+
+    return boost_round_log_path
+
+
+# Get Path of Grid Search
+def get_grid_search_log_path(csv_log_path, model_name, param_name_list, param_value_list, append_info):
+
+    param_info = ''
+    param_name = ''
+    for i in range(len(param_name_list)):
+        param_info += '_' + get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
+        param_name += '_' + get_simple_param_name(param_name_list[i])
+
+    csv_log_path += model_name + '/'
+    check_dir([csv_log_path])
+    csv_log_path += model_name + '_' + append_info + '/'
+    check_dir([csv_log_path])
+    csv_log_path += model_name + param_name + '/'
+    check_dir([csv_log_path])
+    csv_log_path += model_name
+
+    return csv_log_path, param_name, param_info
 
 
 # Get Simple Parameter's Name

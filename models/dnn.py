@@ -15,9 +15,11 @@ class DeepNeuralNetworks(ModelBase):
     """
         Deep Neural Networks
     """
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, use_multi_group=False, parameters=None):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te,
+                 x_va, y_va, w_va, e_va, use_multi_group=False, parameters=None):
 
-        super(DeepNeuralNetworks, self).__init__(x_tr, y_tr, w_tr, e_tr, x_te, id_te, use_multi_group)
+        super(DeepNeuralNetworks, self).__init__(x_tr, y_tr, w_tr, e_tr, x_te, id_te,
+                                                 x_va, y_va, w_va, e_va, use_multi_group)
 
         # Hyperparameters
         self.parameters = parameters

@@ -24,7 +24,8 @@ class ModelBase(object):
     """
         Base Model Class of Models in scikit-learn Module
     """
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, use_multi_group=False):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te,
+                 x_va=None, y_va=None, w_va=None, e_va=None, use_multi_group=False):
 
         self.x_train = x_tr
         self.y_train = y_tr
@@ -32,12 +33,19 @@ class ModelBase(object):
         self.e_train = e_tr
         self.x_test = x_te
         self.id_test = id_te
+
+        self.x_global_valid = x_va
+        self.y_global_valid = y_va
+        self.w_global_valid = w_va
+        self.e_global_valid = e_va
+
         self.importance = np.array([])
         self.indices = np.array([])
         self.std = np.array([])
         self.model_name = ''
         self.num_boost_round = 0
         self.use_multi_group = use_multi_group
+        self.use_global_valid=False
         self.postscale = False
         self.postscale_rate = None
 
@@ -92,20 +100,8 @@ class ModelBase(object):
                            w_train, x_valid, y_valid, w_valid, parameters,
                            param_name_list, param_value_list, append_info=''):
 
-        param_info = ''
-        param_name = ''
-        for i in range(len(param_name_list)):
-            param_name += '_' + utils.get_simple_param_name(param_name_list[i])
-            param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
-
-        boost_round_log_path += self.model_name + '/'
-        utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + '_' + append_info + '/'
-        utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + param_name + '/'
-        utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + param_info + '/'
-        utils.check_dir([boost_round_log_path])
+        boost_round_log_path = utils.get_boost_round_log_path(boost_round_log_path, self.model_name,
+                                                              param_name_list, param_value_list, append_info)
         boost_round_log_path += 'cv_cache/'
         utils.check_dir([boost_round_log_path])
         boost_round_log_path += self.model_name + '_cv_{}_log.txt'.format(cv_count)
@@ -139,21 +135,8 @@ class ModelBase(object):
                              valid_loss_round_mean, train_seed, cv_seed, csv_idx, parameters,
                              param_name_list, param_value_list, append_info=''):
 
-        param_info = ''
-        param_name = ''
-        for i in range(len(param_name_list)):
-            param_name += '_' + utils.get_simple_param_name(param_name_list[i])
-            param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
-
-        boost_round_log_path += self.model_name + '/'
-        utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + '_' + append_info + '/'
-        utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + param_name + '/'
-        utils.check_dir([boost_round_log_path])
-        boost_round_log_path += self.model_name + param_info + '/'
-        utils.check_dir([boost_round_log_path])
-
+        boost_round_log_path = utils.get_boost_round_log_path(boost_round_log_path, self.model_name,
+                                                              param_name_list, param_value_list, append_info)
         utils.save_boost_round_log_to_csv(boost_round_log_path, csv_idx, idx_round, valid_loss_round_mean,
                                           train_loss_round_mean, train_seed, cv_seed, parameters)
 
@@ -201,35 +184,47 @@ class ModelBase(object):
 
         return prob_train
 
-    def save_csv_log(self, mode, csv_log_path, param_name_list, param_value_list, csv_idx,
-                     loss_train_w_mean, loss_valid_w_mean, acc_train, train_seed, cv_seed,
-                     n_valid, n_cv, parameters, file_name_params=None, append_info=''):
+    def save_csv_log(self, mode, csv_log_path, param_name_list, param_value_list, csv_idx, loss_train_w_mean,
+                     loss_valid_w_mean, acc_train, train_seed, cv_seed, n_valid, n_cv, parameters,
+                     boost_round_log_path=None, file_name_params=None, append_info='',
+                     use_global_valid=False, loss_global_valid=None, acc_global_valid=None):
 
         if mode == 'auto_grid_search':
 
-            param_info = ''
-            param_name = ''
-            for i in range(len(param_name_list)):
-                param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
-                param_name += '_' + utils.get_simple_param_name(param_name_list[i])
+            csv_log_path, param_name, param_info = \
+                utils.get_grid_search_log_path(csv_log_path, self.model_name,
+                                               param_name_list, param_value_list, append_info)
+            if use_global_valid:
+                utils.save_log_with_global_valid_to_csv(csv_idx, csv_log_path + param_name + '_',
+                                                        loss_train_w_mean, loss_valid_w_mean, acc_train, train_seed,
+                                                        loss_global_valid, acc_global_valid,
+                                                        cv_seed, n_valid, n_cv, parameters)
+                csv_log_path += str(param_info) + '_'
+                utils.save_log_with_global_valid_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
+                                                        acc_train, train_seed, loss_global_valid,
+                                                        acc_global_valid, cv_seed, n_valid, n_cv, parameters)
+            else:
+                utils.save_final_loss_log_to_csv(csv_idx, csv_log_path + param_name + '_',
+                                                 loss_train_w_mean, loss_valid_w_mean, acc_train,
+                                                 train_seed, cv_seed, n_valid, n_cv, parameters)
+                csv_log_path += str(param_info) + '_'
+                utils.save_final_loss_log_to_csv(csv_idx, csv_log_path, loss_train_w_mean,
+                                                 loss_valid_w_mean, acc_train, train_seed,
+                                                 cv_seed, n_valid, n_cv, parameters)
 
-            csv_log_path += self.model_name + '/'
-            utils.check_dir([csv_log_path])
-            csv_log_path += self.model_name + '_' + append_info + '/'
-            utils.check_dir([csv_log_path])
-            csv_log_path += self.model_name + param_name + '/'
-            utils.check_dir([csv_log_path])
-            csv_log_path += self.model_name
+        elif mode == 'auto_train_boost_round':
 
-            utils.save_final_loss_log_to_csv(csv_idx, csv_log_path + param_name + '_',
-                                             loss_train_w_mean, loss_valid_w_mean, acc_train,
-                                             train_seed, cv_seed, n_valid, n_cv, parameters)
-
-            csv_log_path += str(param_info) + '_'
-
-            utils.save_final_loss_log_to_csv(csv_idx, csv_log_path, loss_train_w_mean,
-                                             loss_valid_w_mean, acc_train, train_seed,
-                                             cv_seed, n_valid, n_cv, parameters)
+            boost_round_log_path = utils.get_boost_round_log_path(boost_round_log_path, self.model_name,
+                                                                  param_name_list, param_value_list, append_info)
+            boost_round_log_path += self.model_name + '_' + append_info + '_'
+            if use_global_valid:
+                utils.save_log_with_global_valid_to_csv(csv_idx, boost_round_log_path, loss_train_w_mean,
+                                                        loss_valid_w_mean, acc_train, train_seed,
+                                                        loss_global_valid, acc_global_valid,
+                                                        cv_seed, n_valid, n_cv, parameters)
+            else:
+                utils.save_final_loss_log_to_csv(csv_idx, boost_round_log_path, loss_train_w_mean, loss_valid_w_mean,
+                                                 acc_train, train_seed, cv_seed, n_valid, n_cv, parameters)
 
         elif mode == 'auto_train':
 
@@ -245,14 +240,24 @@ class ModelBase(object):
                 for p_name, p_value in parameters.items():
                     csv_log_path += str(p_value) + '_'
 
-            utils.save_final_loss_log_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
-                                             acc_train, train_seed, cv_seed, n_valid, n_cv, parameters)
+            if use_global_valid:
+                utils.save_log_with_global_valid_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
+                                                        acc_train, train_seed, loss_global_valid,
+                                                        acc_global_valid, cv_seed, n_valid, n_cv, parameters)
+            else:
+                utils.save_final_loss_log_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
+                                                 acc_train, train_seed, cv_seed, n_valid, n_cv, parameters)
 
         else:
 
-            utils.save_final_loss_log_to_csv(csv_idx, csv_log_path + self.model_name + '_',
-                                             loss_train_w_mean, loss_valid_w_mean, acc_train,
-                                             train_seed, cv_seed, n_valid, n_cv, parameters)
+            csv_log_path += self.model_name + '_' + append_info + '_'
+            if use_global_valid:
+                utils.save_log_with_global_valid_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
+                                                        acc_train, train_seed, loss_global_valid,
+                                                        acc_global_valid, cv_seed, n_valid, n_cv, parameters)
+            else:
+                utils.save_final_loss_log_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
+                                                 acc_train, train_seed, cv_seed, n_valid, n_cv, parameters)
 
     def save_final_pred(self, mode, save_final_pred, prob_test_mean, pred_path, parameters,
                         csv_idx, train_seed, cv_seed, boost_round_log_path=None, param_name_list=None,
@@ -281,20 +286,8 @@ class ModelBase(object):
 
             elif mode == 'auto_train_boost_round':
 
-                param_info = ''
-                param_name = ''
-                for i in range(len(param_name_list)):
-                    param_info += '_' + utils.get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
-                    param_name += '_' + utils.get_simple_param_name(param_name_list[i])
-
-                boost_round_log_path += self.model_name + '/'
-                utils.check_dir([boost_round_log_path])
-                boost_round_log_path += self.model_name + '_' + append_info + '/'
-                utils.check_dir([boost_round_log_path])
-                boost_round_log_path += self.model_name + param_name + '/'
-                utils.check_dir([boost_round_log_path])
-                boost_round_log_path += self.model_name + param_info + '/'
-                utils.check_dir([boost_round_log_path])
+                boost_round_log_path = utils.get_boost_round_log_path(boost_round_log_path, self.model_name,
+                                                                      param_name_list, param_value_list, append_info)
                 pred_path = boost_round_log_path + 'final_results/'
                 utils.check_dir([pred_path])
                 pred_path += self.model_name + '_' + str(csv_idx) + '_t-' + str(train_seed) + '_c-' + str(cv_seed) + '_'
@@ -371,11 +364,15 @@ class ModelBase(object):
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, boost_round_log_path=None,
               train_seed=None, cv_args=None, parameters=None, show_importance=False, show_accuracy=False,
               save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True, save_final_prob_train=False,
-              save_csv_log=True, csv_idx=None, prescale=False, postscale=False, return_prob_test=False, mode=None,
-              param_name_list=None, param_value_list=None, file_name_params=None, append_info=None):
+              save_csv_log=True, csv_idx=None, prescale=False, postscale=False, use_global_valid=False,
+              return_prob_test=False, mode=None, param_name_list=None, param_value_list=None,
+              file_name_params=None, append_info=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
+
+        # Global Validation
+        self.use_global_valid = use_global_valid
 
         cv_args_copy = copy.deepcopy(cv_args)
         n_valid = cv_args_copy['n_valid']
@@ -395,6 +392,10 @@ class ModelBase(object):
         # Print Start Information and Get Model Name
         self.print_start_info()
 
+        if use_global_valid:
+            print('------------------------------------------------------')
+            print('[W] Using Global Validation...')
+
         cv_count = 0
         prob_test_total = []
         prob_train_total = []
@@ -405,6 +406,9 @@ class ModelBase(object):
         idx_round = []
         train_loss_round_total = []
         valid_loss_round_total = []
+        prob_global_valid_total = []
+        loss_global_valid_total = []
+        loss_global_valid_w_total = []
 
         # Get Cross Validation Generator
         if 'cv_generator' in cv_args_copy:
@@ -439,6 +443,7 @@ class ModelBase(object):
             positive_rate_train, postscale_rate = self.get_postscale_rate(y_train)
             positive_rate_valid, _ = self.get_postscale_rate(y_valid)
 
+            # Remove Metric of Post Scale
             if postscale:
                 self.postscale = True
                 self.postscale_rate = postscale_rate
@@ -489,6 +494,12 @@ class ModelBase(object):
             prob_train = self.get_prob_train(clf, x_train, pred_path=cv_prob_train_path)
             prob_train_all = self.get_prob_train(clf, self.x_train, pred_path=cv_prob_train_path)
 
+            # Predict Global Validation Set
+            if use_global_valid:
+                prob_global_valid = self.predict(clf, self.x_global_valid)
+            else:
+                prob_global_valid = np.array([])
+
             # Get Probabilities of Validation Set
             prob_valid = self.predict(clf, x_valid)
 
@@ -500,6 +511,8 @@ class ModelBase(object):
                 prob_test *= postscale_rate
                 prob_train *= postscale_rate
                 prob_valid *= postscale_rate
+                if use_global_valid:
+                    prob_global_valid *= postscale_rate
 
             # Print LogLoss
             print('------------------------------------------------------')
@@ -511,6 +524,14 @@ class ModelBase(object):
             acc_train_cv, acc_valid_cv, acc_train_cv_era, acc_valid_cv_era = \
                 utils.print_and_get_accuracy(prob_train, y_train, e_train,
                                              prob_valid, y_valid, e_valid, show_accuracy)
+
+            # Print Loss and Accuracy of Global Validation Set
+            if use_global_valid:
+                loss_global_valid, loss_global_valid_w, acc_global_valid = \
+                    utils.print_global_valid_loss_and_acc(prob_global_valid, self.y_global_valid, self.w_global_valid)
+                prob_global_valid_total.append(prob_global_valid)
+                loss_global_valid_total.append(loss_global_valid)
+                loss_global_valid_w_total.append(loss_global_valid_w)
 
             # Save Losses to File
             utils.save_loss_log(loss_log_path + self.model_name + '_', cv_count, parameters, n_valid, n_cv, valid_era,
@@ -567,11 +588,35 @@ class ModelBase(object):
                                   loss_train_mean, loss_valid_mean, loss_train_w_mean, loss_valid_w_mean,
                                   train_seed, cv_seed, acc_train, acc_train_era)
 
+        # Print Global Validation Information and Save
+        if use_global_valid:
+            # Calculate Means of Probabilities and Losses
+            prob_global_valid_mean, loss_global_valid_mean, loss_global_valid_w_mean = \
+                utils.calculate_global_valid_means(prob_global_valid_total, loss_global_valid_total,
+                                                   loss_global_valid_w_total, weights=cv_weights)
+            # Print Loss and Accuracy
+            acc_total_global_valid = \
+                utils.print_total_global_valid_loss_and_acc(prob_global_valid_mean, self.y_global_valid,
+                                                            loss_global_valid_mean, loss_global_valid_w_mean)
+            # Save csv log
+            if save_csv_log:
+                self.save_csv_log(mode, csv_log_path, param_name_list, param_value_list, csv_idx, loss_train_w_mean,
+                                  loss_valid_w_mean, acc_train, train_seed, cv_seed, n_valid, n_cv, parameters,
+                                  boost_round_log_path=boost_round_log_path, file_name_params=file_name_params,
+                                  append_info=append_info, use_global_valid=use_global_valid,
+                                  loss_global_valid=loss_global_valid_w_mean, acc_global_valid=acc_total_global_valid)
+
         # Save Loss Log to csv File
         if save_csv_log:
-            self.save_csv_log(mode, csv_log_path, param_name_list, param_value_list, csv_idx,
-                              loss_train_w_mean, loss_valid_w_mean, acc_train, train_seed, cv_seed,
-                              n_valid, n_cv, parameters, file_name_params=file_name_params, append_info=append_info)
+            if not use_global_valid:
+                self.save_csv_log(mode, csv_log_path, param_name_list, param_value_list, csv_idx, loss_train_w_mean,
+                                  loss_valid_w_mean, acc_train, train_seed, cv_seed, n_valid, n_cv, parameters,
+                                  boost_round_log_path=boost_round_log_path, file_name_params=file_name_params,
+                                  append_info=append_info)
+
+        # Remove 'num_boost_round' of parameters
+        if 'num_boost_round' in parameters:
+            parameters.pop('num_boost_round')
 
         # Return Final Result
         if return_prob_test:
@@ -971,9 +1016,11 @@ class XGBoost(ModelBase):
     """
         XGBoost
     """
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, num_boost_round, use_multi_group=False):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_va=None, y_va=None, w_va=None, e_va=None,
+                 num_boost_round=None, use_multi_group=False):
 
-        super(XGBoost, self).__init__(x_tr, y_tr, w_tr, e_tr, x_te, id_te, use_multi_group)
+        super(XGBoost, self).__init__(x_tr, y_tr, w_tr, e_tr, x_te, id_te,
+                                      x_va, y_va, w_va, e_va, use_multi_group)
 
         self.num_boost_round = num_boost_round
 
@@ -1101,9 +1148,11 @@ class LightGBM(ModelBase):
     """
         LightGBM
     """
-    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, num_boost_round, use_multi_group=False):
+    def __init__(self, x_tr, y_tr, w_tr, e_tr, x_te, id_te, x_va=None, y_va=None, w_va=None, e_va=None,
+                 num_boost_round=None, use_multi_group=False):
 
-        super(LightGBM, self).__init__(x_tr, y_tr, w_tr, e_tr, x_te, id_te, use_multi_group)
+        super(LightGBM, self).__init__(x_tr, y_tr, w_tr, e_tr, x_te, id_te,
+                                       x_va, y_va, w_va, e_va, use_multi_group)
 
         self.num_boost_round = num_boost_round
 

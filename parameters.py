@@ -55,20 +55,29 @@ class SingleModel:
     def __init__(self, reduced_feature_list=None, grid_search_n_cv=None,
                  train_args=None, cv_args=None, use_multi_group=False, mode=None):
 
-        self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test \
-            = utils.load_preprocessed_data(preprocessed_data_path)
-        self.x_g_train, self.x_g_test\
-            = utils.load_preprocessed_data_g(preprocessed_data_path)
+        self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test = \
+            utils.load_preprocessed_data(preprocessed_data_path)
+        self.x_g_train, self.x_g_test = \
+            utils.load_preprocessed_data_g(preprocessed_data_path)
+
+        if train_args['use_global_valid']:
+            self.x_gl_valid, self.x_g_gl_valid, self.y_gl_valid, self.w_gl_valid, self.e_gl_valid = \
+                utils.load_global_valid_data(preprocessed_data_path)
+
+        print(self.x_gl_valid.shape, self.x_g_gl_valid.shape, self.y_gl_valid.shape, self.w_gl_valid.shape, self.e_gl_valid.shape)
 
         # Choose Useful features
         if reduced_feature_list is not None:
 
-            useful_feature_list_g = reduced_feature_list + [-1]
+            reduced_feature_list_g = reduced_feature_list + [-1]
             reduced_feature_list.extend(list(range(-1, -29, -1)))
             self.x_train = self.x_train[:, reduced_feature_list]
-            self.x_g_train = self.x_g_train[:, useful_feature_list_g]
+            self.x_g_train = self.x_g_train[:, reduced_feature_list_g]
             self.x_test = self.x_test[:, reduced_feature_list]
-            self.x_g_test = self.x_g_test[:, useful_feature_list_g]
+            self.x_g_test = self.x_g_test[:, reduced_feature_list_g]
+            if train_args['use_global_valid']:
+                self.x_gl_valid = self.x_gl_valid[reduced_feature_list]
+                self.x_g_gl_valid = self.x_g_gl_valid[reduced_feature_list_g]
 
         self.loss_log_path = loss_log_path
         self.boost_round_log_path = boost_round_out_path
@@ -144,8 +153,13 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.cv_args['cv_seed'] = cv_seed
 
-        model = LRegression(self.x_train, self.y_train, self.w_train, self.e_train,
-                            self.x_test, self.id_test, use_multi_group=self.use_multi_group)
+        if self.train_args['use_global_valid']:
+            model = LRegression(self.x_train, self.y_train, self.w_train, self.e_train,
+                                self.x_test, self.id_test, self.x_gl_valid, self.y_gl_valid,
+                                self.w_gl_valid, self.e_gl_valid, use_multi_group=self.use_multi_group)
+        else:
+            model = LRegression(self.x_train, self.y_train, self.w_train, self.e_train,
+                                self.x_test, self.id_test, use_multi_group=self.use_multi_group)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -177,8 +191,13 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.cv_args['cv_seed'] = cv_seed
 
-        model = RandomForest(self.x_train, self.y_train, self.w_train, self.e_train,
-                             self.x_test, self.id_test, use_multi_group=self.use_multi_group)
+        if self.train_args['use_global_valid']:
+            model = RandomForest(self.x_train, self.y_train, self.w_train, self.e_train,
+                                 self.x_test, self.id_test, self.x_gl_valid, self.y_gl_valid,
+                                 self.w_gl_valid, self.e_gl_valid, use_multi_group=self.use_multi_group)
+        else:
+            model = RandomForest(self.x_train, self.y_train, self.w_train, self.e_train,
+                                 self.x_test, self.id_test, use_multi_group=self.use_multi_group)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -210,8 +229,13 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.cv_args['cv_seed'] = cv_seed
 
-        model = ExtraTrees(self.x_train, self.y_train, self.w_train, self.e_train,
-                           self.x_test, self.id_test, use_multi_group=self.use_multi_group)
+        if self.train_args['use_global_valid']:
+            model = ExtraTrees(self.x_train, self.y_train, self.w_train, self.e_train,
+                               self.x_test, self.id_test, self.x_gl_valid, self.y_gl_valid,
+                               self.w_gl_valid, self.e_gl_valid, use_multi_group=self.use_multi_group)
+        else:
+            model = ExtraTrees(self.x_train, self.y_train, self.w_train, self.e_train,
+                               self.x_test, self.id_test, use_multi_group=self.use_multi_group)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -251,8 +275,13 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.cv_args['cv_seed'] = cv_seed
 
-        model = AdaBoost(self.x_train, self.y_train, self.w_train, self.e_train,
-                         self.x_test, self.id_test, use_multi_group=self.use_multi_group)
+        if self.train_args['use_global_valid']:
+            model = AdaBoost(self.x_train, self.y_train, self.w_train, self.e_train,
+                             self.x_test, self.id_test, self.x_gl_valid, self.y_gl_valid,
+                             self.w_gl_valid, self.e_gl_valid, use_multi_group=self.use_multi_group)
+        else:
+            model = AdaBoost(self.x_train, self.y_train, self.w_train, self.e_train,
+                             self.x_test, self.id_test, use_multi_group=self.use_multi_group)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -286,8 +315,13 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.cv_args['cv_seed'] = cv_seed
 
-        model = GradientBoosting(self.x_train, self.y_train, self.w_train, self.e_train,
-                                 self.x_test, self.id_test, use_multi_group=self.use_multi_group)
+        if self.train_args['use_global_valid']:
+            model = GradientBoosting(self.x_train, self.y_train, self.w_train, self.e_train,
+                                     self.x_test, self.id_test, self.x_gl_valid, self.y_gl_valid,
+                                     self.w_gl_valid, self.e_gl_valid, use_multi_group=self.use_multi_group)
+        else:
+            model = GradientBoosting(self.x_train, self.y_train, self.w_train, self.e_train,
+                                     self.x_test, self.id_test, use_multi_group=self.use_multi_group)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -324,8 +358,13 @@ class SingleModel:
         if num_boost_round is None:
             num_boost_round = 150
 
-        model = XGBoost(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test,
-                        use_multi_group=self.use_multi_group, num_boost_round=num_boost_round)
+        if self.train_args['use_global_valid']:
+            model = XGBoost(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test,
+                            self.x_gl_valid, self.y_gl_valid, self.w_gl_valid, self.e_gl_valid,
+                            use_multi_group=self.use_multi_group, num_boost_round=num_boost_round)
+        else:
+            model = XGBoost(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test,
+                            use_multi_group=self.use_multi_group, num_boost_round=num_boost_round)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -362,8 +401,13 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.cv_args['cv_seed'] = cv_seed
 
-        model = SKLearnXGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
-                               self.x_test, self.id_test, use_multi_group=self.use_multi_group)
+        if self.train_args['use_global_valid']:
+            model = SKLearnXGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
+                                   self.x_test, self.id_test, self.x_gl_valid, self.y_gl_valid,
+                                   self.w_gl_valid, self.e_gl_valid, use_multi_group=self.use_multi_group)
+        else:
+            model = SKLearnXGBoost(self.x_train, self.y_train, self.w_train, self.e_train,
+                                   self.x_test, self.id_test, use_multi_group=self.use_multi_group)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -407,8 +451,13 @@ class SingleModel:
         if num_boost_round is None:
             num_boost_round = 100
 
-        model = LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train, self.x_g_test, self.id_test,
-                         use_multi_group=self.use_multi_group, num_boost_round=num_boost_round)
+        if self.train_args['use_global_valid']:
+            model = LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train, self.x_g_test, self.id_test,
+                             self.x_g_gl_valid, self.y_gl_valid, self.w_gl_valid, self.e_gl_valid,
+                             use_multi_group=self.use_multi_group, num_boost_round=num_boost_round)
+        else:
+            model = LightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train, self.x_g_test, self.id_test,
+                             use_multi_group=self.use_multi_group, num_boost_round=num_boost_round)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -442,8 +491,13 @@ class SingleModel:
         self.train_args['train_seed'] = train_seed
         self.cv_args['cv_seed'] = cv_seed
 
-        model = SKLearnLightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
-                                self.x_g_test, self.id_test, use_multi_group=self.use_multi_group)
+        if self.train_args['use_global_valid']:
+            model = SKLearnLightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
+                                   self.x_g_test, self.id_test, self.x_g_gl_valid, self.y_gl_valid,
+                                   self.w_gl_valid, self.e_gl_valid, use_multi_group=self.use_multi_group)
+        else:
+            model = SKLearnLightGBM(self.x_g_train, self.y_train, self.w_train, self.e_train,
+                                   self.x_g_test, self.id_test, use_multi_group=self.use_multi_group)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -496,8 +550,13 @@ class SingleModel:
         self.cv_args['cv_seed'] = cv_seed
         self.train_args['file_name_params'] = file_name_params
 
-        model = CatBoost(self.x_g_train, self.y_train, self.w_train, self.e_train,
-                         self.x_g_test, self.id_test, use_multi_group=self.use_multi_group)
+        if self.train_args['use_global_valid']:
+            model = CatBoost(self.x_g_train, self.y_train, self.w_train, self.e_train,
+                             self.x_g_test, self.id_test, self.x_g_gl_valid, self.y_gl_valid,
+                             self.w_gl_valid, self.e_gl_valid, use_multi_group=self.use_multi_group)
+        else:
+            model = CatBoost(self.x_g_train, self.y_train, self.w_train, self.e_train,
+                             self.x_g_test, self.id_test, use_multi_group=self.use_multi_group)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 
@@ -529,8 +588,13 @@ class SingleModel:
         self.cv_args['cv_seed'] = cv_seed
         self.train_args['file_name_params'] = file_name_params
 
-        model = DeepNeuralNetworks(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test,
-                                   use_multi_group=self.use_multi_group, parameters=parameters)
+        if self.train_args['use_global_valid']:
+            model = DeepNeuralNetworks(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test,
+                                       self.id_test, self.x_gl_valid, self.y_gl_valid, self.w_gl_valid,
+                                       self.e_gl_valid, use_multi_group=self.use_multi_group, parameters=parameters)
+        else:
+            model = DeepNeuralNetworks(self.x_train, self.y_train, self.w_train, self.e_train, self.x_test,
+                                       self.id_test, use_multi_group=self.use_multi_group, parameters=parameters)
 
         self.train_model(model=model, grid_search_tuple_list=grid_search_tuple_list)
 

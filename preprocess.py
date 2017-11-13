@@ -495,8 +495,9 @@ class DataPreProcess:
         n_era_valid = ceil(valid_rate*n_era)
         valid_era = list(range(n_era))[-n_era_valid:]
 
-        print('Number of Eras: {}\n'.format(n_era))
-        print('Valid Eras: {}'.format(valid_era))
+        print('Number of Eras: {}\n'.format(n_era),
+              'Number of Valid Eras: {}\n'.format(n_era_valid),
+              'Valid Eras: {}-{}'.format(valid_era[0], valid_era[-1]))
 
         train_index = []
         valid_index = []
@@ -663,7 +664,7 @@ class DataPreProcess:
         utils.save_data_to_pkl(self.code_id_test, self.preprocess_path + 'code_id_test.p')
 
     # Save Validation Set
-    def save_validation_set(self):
+    def save_global_valid_set(self):
 
         print('======================================================')
         print('Saving Validation Set...')
@@ -740,7 +741,7 @@ class DataPreProcess:
         self.save_data()
 
         # Save Validation Set
-        self.save_validation_set()
+        self.save_global_valid_set()
 
         # Save Data Split by Era Distribution
         # self.save_data_by_era_distribution_pd()
