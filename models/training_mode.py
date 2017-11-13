@@ -181,6 +181,8 @@ class TrainingMode:
         if train_seed_list is None:
             train_seed_list = utils.random_int_list(0, 1000, n_epoch)
         elif len(train_seed_list) == 1:
+            if cv_seed_list is not None:
+                n_epoch = len(cv_seed_list)
             train_seed_list = [train_seed_list[0] for _ in range(n_epoch)]
         else:
             n_epoch = len(train_seed_list)
@@ -188,6 +190,8 @@ class TrainingMode:
         if cv_seed_list is None:
             cv_seed_list = utils.random_int_list(0, 1000, n_epoch)
         elif len(cv_seed_list) == 1:
+            if train_seed_list is not None:
+                n_epoch = len(train_seed_list)
             cv_seed_list = [cv_seed_list[0] for _ in range(n_epoch)]
         else:
             n_epoch = len(cv_seed_list)

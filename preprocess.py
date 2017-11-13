@@ -15,25 +15,28 @@ positive_era_list = [0, 1, 5, 6, 8, 10, 12, 13, 14, 16, 17, 18, 19]
 merge_era_range_list = [(0, 5), (6, 11), (12, 17), (18, 23), (24, 29), (30, 35), (36, 41),
                         (42, 47), (48, 53), (54, 59), (60, 65), (66, 71), (72, 77), (78, 83),
                         (84, 89), (90, 95), (96, 101), (102, 107), (108, 113), (114, 118)]
+group_list = [1, 2]
 drop_feature_list = []
 
 
 class DataPreProcess:
 
-    def __init__(self, train_path, test_path, preprocess_path, use_multi_group=False):
+    def __init__(self, train_path, test_path, preprocess_path, use_group_list=None):
 
-        self.use_multi_group = use_multi_group
-        self.g1_train = pd.DataFrame()
-        self.g1_test = pd.DataFrame()
+        self.use_group_list = use_group_list
 
-        if use_multi_group:
-            print('------------------------------------------------------')
-            print('[W] Using Multi Groups...')
-            self.g2_train = pd.DataFrame()
-            self.g2_test = pd.DataFrame()
-        else:
-            print('------------------------------------------------------')
-            print('[W] Using Single Group...')
+        if use_group_list is not None:
+
+            self.g_train = pd.DataFrame()
+            self.g_test = pd.DataFrame()
+            self.g_train_dict = {}
+            self.g_test_dict = {}
+            if len(use_group_list) > 1:
+                print('======================================================')
+                print('[W] Using Multi Groups: {}'.format(use_group_list))
+            else:
+                print('======================================================')
+                print('[W] Using Single Group...')
 
         self.train_path = train_path
         self.test_path = test_path
@@ -85,7 +88,7 @@ class DataPreProcess:
     def load_data(self):
 
         try:
-            print('------------------------------------------------------')
+            print('======================================================')
             print('Loading data...')
             train_f, test_f = self.load_csv()
         except Exception as e:
@@ -95,28 +98,29 @@ class DataPreProcess:
         print('------------------------------------------------------')
         print('Dropping Features:\n\t', self.drop_feature_list)
 
+        self.drop_feature_list.extend(['group' + str(g) for g in group_list])
+
         # Drop Unnecessary Columns
-        # self.x_train = train_f.drop(['id', 'weight', 'label', 'group', 'era'], axis=1)
-        self.x_train = train_f.drop(['id', 'weight', 'label', 'group1', 'group2', 'era', 'code_id', *self.drop_feature_list], axis=1)
+        self.x_train = train_f.drop(['id', 'weight', 'label', 'era', 'code_id', *self.drop_feature_list], axis=1)
         self.y_train = train_f['label']
         self.w_train = train_f['weight']
         self.code_id_train = train_f['code_id']
         self.e_train = train_f['era']
-        self.x_test = test_f.drop(['id', 'group1', 'group2', 'code_id', *self.drop_feature_list], axis=1)
+        self.x_test = test_f.drop(['id', 'code_id', *self.drop_feature_list], axis=1)
         self.id_test = test_f['id']
         self.code_id_test = test_f['code_id']
 
-        self.g1_train = train_f['group1']
-        self.g1_test = test_f['group1']
-
-        if self.use_multi_group:
-            self.g2_train = train_f['group2']
-            self.g2_test = test_f['group2']
+        if self.use_group_list is not None:
+            for i in self.use_group_list:
+                self.g_train_dict[i] = train_f['group' + str(i)]
+                self.g_test_dict[i] = test_f['group' + str(i)]
+                self.x_g_train = self.x_train
+                self.x_g_test = self.x_test
 
     # Merge Eras
     def merge_eras(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('[W] Merging Eras...')
         print('Merge Era List:\n', self.merge_era_range_list)
 
@@ -176,7 +180,7 @@ class DataPreProcess:
     # Dropping Outliers by Value
     def drop_outliers_by_value(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Dropping Outliers by Value...')
 
         self.drop_feature_outliers_by_value('feature0', 6.22, None)
@@ -271,7 +275,7 @@ class DataPreProcess:
     # Drop Outliers by Quantile
     def drop_outliers_by_quantile(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Dropping Outliers by Quantile...')
 
         # for i in range(self.x_train.shape[1]):
@@ -370,7 +374,7 @@ class DataPreProcess:
     # Standard Scale
     def standard_scale(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Standard Scaling Data...')
 
         mean = np.zeros(len(self.x_train.columns), dtype=np.float64)
@@ -386,7 +390,7 @@ class DataPreProcess:
     # Min Max scale
     def min_max_scale(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Min-Max Scaling Data...')
 
         for each in self.x_train.columns:
@@ -400,7 +404,7 @@ class DataPreProcess:
     # Convert pandas DataFrames to numpy arrays
     def convert_pd_to_np(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Converting pandas DataFrames to numpy arrays...')
 
         self.x_train = np.array(self.x_train, dtype=np.float64)
@@ -415,7 +419,7 @@ class DataPreProcess:
     # Add Polynomial Features
     def add_polynomial_features(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Adding Polynomial Features...')
 
         poly = PolynomialFeatures(degree=2, interaction_only=True, include_bias=False)
@@ -426,66 +430,55 @@ class DataPreProcess:
     # Convert Column 'group' to Dummies
     def convert_group_to_dummies(self, add_train_dummies=False):
 
-        lb1 = LabelBinarizer()
-        lb2 = LabelBinarizer()
-        lb1.fit(self.g1_train)
-        if add_train_dummies:
-            print('------------------------------------------------------')
-            print('Add Zero Dummies to Train Set')
-            lb2.fit(np.append(self.g2_train, [13]))
-        else:
-            lb2.fit(self.g2_train)
-
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Converting Groups of Train Set to Dummies...')
 
-        group1_train_dummies = lb1.transform(self.g1_train)
-        group_train_dummies = group1_train_dummies
-        self.x_g_train = np.column_stack((self.x_train, np.array(self.g1_train)))
-        if self.use_multi_group:
-            group2_train_dummies = lb2.transform(self.g2_train)
-            group_train_dummies = np.concatenate((group1_train_dummies, group2_train_dummies), axis=1)
-            self.x_g_train = np.column_stack((self.x_g_train, np.array(self.g2_train)))
+        lb_dict = {}
+        for i in self.use_group_list:
+            lb = LabelBinarizer()
+            if add_train_dummies:
+                print('------------------------------------------------------')
+                print('Add Zero Dummies to Train Set of Group: {}'.format(i))
+                add_list = list((set(self.g_train_dict[i]) ^ set(self.g_test_dict[i])) & set(self.g_test_dict[i]))
+                lb.fit(np.append(self.g_train_dict[i], add_list))
+            else:
+                lb.fit(self.g_train_dict[i])
+            lb_dict[i] = lb
 
-        print('Train_features: {}\n'.format(self.x_train.shape[1]),
-              'Train_Dummies: {}'.format(group_train_dummies.shape[1]))
+        for i in self.use_group_list:
 
-        if self.x_train.shape[1] > 500:
-            print('So Many Features!')
-            self.x_train = list(self.x_train)
-            for i in range(len(self.x_train)):
-                self.x_train[i] = np.concatenate((self.x_train[i], group_train_dummies[i]))
-            self.x_train = np.array(self.x_train, dtype=np.float64)
-        else:
-            self.x_train = np.concatenate((self.x_train, group_train_dummies), axis=1)
+            print('------------------------------------------------------')
+            print('Converting Group {} to Dummies...'.format(i))
+
+            train_dummies = lb_dict[i].transform(self.g_train_dict[i])
+            test_dummies = lb_dict[i].transform(self.g_test_dict[i])
+
+            print('Train Features: {}\n'.format(self.x_train.shape[1]),
+                  'Train Dummies: {}\n'.format(train_dummies.shape[1]),
+                  'Test Features: {}\n'.format(self.x_test.shape[1]),
+                  'Test Dummies: {}'.format(test_dummies.shape[1]))
+
+            if self.x_train.shape[1] > 500:
+                print('So Many Features!')
+                for ii in range(len(self.x_train)):
+                    self.x_train[ii] = np.concatenate((self.x_train[ii], train_dummies[ii]))
+                for ii in range(len(self.x_test)):
+                    self.x_test[i] = np.concatenate((self.x_test[ii], test_dummies[ii]))
+            else:
+                self.x_train = np.concatenate((self.x_train, train_dummies), axis=1)
+                self.x_test = np.concatenate((self.x_test, test_dummies), axis=1)
+
+            self.x_g_train = np.column_stack((self.x_g_train, self.g_train_dict[i]))
+            self.x_g_test = np.column_stack((self.x_g_test, self.g_test_dict[i]))
 
         print('------------------------------------------------------')
-        print('Converting Groups of Test Set to Dummies...')
-
-        group1_test_dummies = lb1.transform(self.g1_test)
-        group_test_dummies = group1_test_dummies
-        self.x_g_test = np.column_stack((self.x_test, np.array(self.g1_test)))
-        if self.use_multi_group:
-            group2_test_dummies = lb2.transform(self.g2_test)
-            group_test_dummies = np.concatenate((group1_test_dummies, group2_test_dummies), axis=1)
-            self.x_g_test = np.column_stack((self.x_g_test, np.array(self.g2_test)))
-
-        print('Test_features: {}\n'.format(self.x_test.shape[1]),
-              'Test_Dummies: {}'.format(group_test_dummies.shape[1]))
-
-        if self.x_test.shape[1] > 500:
-            print('So Many Features!')
-            self.x_test = list(self.x_test)
-            for i in range(len(self.x_test)):
-                self.x_test[i] = np.concatenate((self.x_test[i], group_test_dummies[i]))
-            self.x_test = np.array(self.x_test, dtype=np.float64)
-        else:
-            self.x_test = np.concatenate((self.x_test, group_test_dummies), axis=1)
+        print('Total Features of x_train: {}\n'.format(self.x_train.shape[1]),
+              'Total Features of x_test: {}'.format(self.x_test.shape[1]))
 
     # Split Adversarial Validation Set by GAN
     def split_data_by_gan(self, load_pickle=True, sample_ratio=None, sample_by_era=True, generate_mode='valid'):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Splitting Adversarial Validation Set by GAN...')
 
         if load_pickle:
@@ -576,7 +569,7 @@ class DataPreProcess:
     # Split Positive and Negative Era Set
     def split_data_by_era_distribution(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Splitting Positive and Negative Era Set...')
         print('Negative Eras: ', negative_era_list)
 
@@ -607,7 +600,7 @@ class DataPreProcess:
     # Save Data
     def save_data(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Saving Preprocessed Data...')
         utils.save_data_to_pkl(self.x_train, self.preprocess_path + 'x_train.p')
         utils.save_data_to_pkl(self.x_g_train, self.preprocess_path + 'x_g_train.p')
@@ -623,7 +616,7 @@ class DataPreProcess:
     # Save Data Split by Era Distribution
     def save_data_by_era_distribution_pd(self):
 
-        print('------------------------------------------------------')
+        print('======================================================')
         print('Saving Preprocessed Data Split by Era Distribution...')
 
         # Positive Data
@@ -654,7 +647,7 @@ class DataPreProcess:
         self.load_data()
 
         # Merge Eras
-        self.merge_eras()
+        # self.merge_eras()
 
         # Drop outliers
         # self.drop_outliers_by_value()
@@ -696,5 +689,5 @@ class DataPreProcess:
 if __name__ == '__main__':
 
     utils.check_dir(['./data/', preprocessed_path])
-    DPP = DataPreProcess(train_csv_path, test_csv_path, preprocessed_path, use_multi_group=True)
+    DPP = DataPreProcess(train_csv_path, test_csv_path, preprocessed_path, use_group_list=[1])
     DPP.preprocess()
