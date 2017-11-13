@@ -23,21 +23,6 @@ class DataPreProcess:
 
     def __init__(self, train_path, test_path, preprocess_path, use_group_list=None):
 
-        self.use_group_list = use_group_list
-
-        if use_group_list is not None:
-
-            self.g_train = pd.DataFrame()
-            self.g_test = pd.DataFrame()
-            self.g_train_dict = {}
-            self.g_test_dict = {}
-            if len(use_group_list) > 1:
-                print('======================================================')
-                print('[W] Using Multi Groups: {}'.format(use_group_list))
-            else:
-                print('======================================================')
-                print('[W] Using Single Group...')
-
         self.train_path = train_path
         self.test_path = test_path
         self.preprocess_path = preprocess_path
@@ -73,8 +58,24 @@ class DataPreProcess:
         self.x_g_valid = np.array([])
         self.y_valid = np.array([])
 
-        self.drop_feature_list = ['feature' + str(f_num) for f_num in drop_feature_list]
+        self.use_group_list = use_group_list
+        self.drop_feature_list = []
         self.merge_era_range_list = merge_era_range_list
+
+        if use_group_list is not None:
+            self.g_train = pd.DataFrame()
+            self.g_test = pd.DataFrame()
+            self.g_train_dict = {}
+            self.g_test_dict = {}
+            if len(use_group_list) > 1:
+                print('======================================================')
+                print('[W] Using Multi Groups: {}'.format(use_group_list))
+            else:
+                print('======================================================')
+                print('[W] Using Single Group: {}'.format(use_group_list[0]))
+
+        if drop_feature_list is not None:
+            self.drop_feature_list = ['feature' + str(f_num) for f_num in drop_feature_list]
 
     # Load CSV Files Using Pandas
     def load_csv(self):
@@ -95,8 +96,9 @@ class DataPreProcess:
             print('Unable to read data: ', e)
             raise
 
-        print('------------------------------------------------------')
-        print('Dropping Features:\n\t', self.drop_feature_list)
+        if drop_feature_list is not None:
+            print('------------------------------------------------------')
+            print('Dropping Features:\n\t', self.drop_feature_list)
 
         self.drop_feature_list.extend(['group' + str(g) for g in group_list])
 
@@ -109,6 +111,10 @@ class DataPreProcess:
         self.x_test = test_f.drop(['id', 'code_id', *self.drop_feature_list], axis=1)
         self.id_test = test_f['id']
         self.code_id_test = test_f['code_id']
+
+        print('------------------------------------------------------')
+        print('Train Features: {}\n'.format(self.x_train.shape[1]),
+              'Test Features: {}'.format(self.x_test.shape[1]))
 
         if self.use_group_list is not None:
             for i in self.use_group_list:
@@ -453,9 +459,7 @@ class DataPreProcess:
             train_dummies = lb_dict[i].transform(self.g_train_dict[i])
             test_dummies = lb_dict[i].transform(self.g_test_dict[i])
 
-            print('Train Features: {}\n'.format(self.x_train.shape[1]),
-                  'Train Dummies: {}\n'.format(train_dummies.shape[1]),
-                  'Test Features: {}\n'.format(self.x_test.shape[1]),
+            print('Train Dummies: {}\n'.format(train_dummies.shape[1]),
                   'Test Dummies: {}'.format(test_dummies.shape[1]))
 
             if self.x_train.shape[1] > 500:
@@ -689,5 +693,5 @@ class DataPreProcess:
 if __name__ == '__main__':
 
     utils.check_dir(['./data/', preprocessed_path])
-    DPP = DataPreProcess(train_csv_path, test_csv_path, preprocessed_path, use_group_list=[1])
+    DPP = DataPreProcess(train_csv_path, test_csv_path, preprocessed_path, use_group_list=[1, 2])
     DPP.preprocess()
