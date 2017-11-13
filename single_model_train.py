@@ -15,9 +15,54 @@ class Training:
         """
             Get Base Parameters
         """
+        if model_name == 'xgb':
+            """
+                XGB
+            """
+            base_parameters = {'learning_rate': 0.003,
+                               'gamma': 0.001,
+                               'max_depth': 10,
+                               'min_child_weight': 8,
+                               'subsample': 0.92,
+                               'colsample_bytree': 0.85,
+                               'colsample_bylevel': 0.7,
+                               'lambda': 0,
+                               'alpha': 0,
+                               'early_stopping_rounds': 10000,
+                               'n_jobs': -1,
+                               'objective': 'binary:logistic',
+                               'eval_metric': 'logloss'}
 
-        if model_name == 'lgb_fi':
-            """ Forward Increase """
+        elif model_name == 'lgb':
+            """
+                LGB
+            """
+            base_parameters = {'application': 'binary',
+                               'boosting': 'gbdt',
+                               'learning_rate': 0.003,
+                               'num_leaves': 88,
+                               'max_depth': 9,
+                               'min_data_in_leaf': 2500,
+                               'min_sum_hessian_in_leaf': 1e-3,
+                               'feature_fraction': 0.6,
+                               'feature_fraction_seed': 19,
+                               'bagging_fraction': 0.8,
+                               'bagging_freq': 5,
+                               'bagging_seed': 1,
+                               'lambda_l1': 0,
+                               'lambda_l2': 0,
+                               'min_gain_to_split': 0,
+                               'max_bin': 225,
+                               'min_data_in_bin': 5,
+                               'metric': 'binary_logloss',
+                               'num_threads': -1,
+                               'verbosity': 1,
+                               'early_stopping_rounds': 10000}
+
+        elif model_name == 'lgb_fi':
+            """
+                LGB Forward Increase
+            """
             base_parameters = {'application': 'binary',
                                'boosting': 'gbdt',
                                'learning_rate': 0.003,
@@ -41,7 +86,9 @@ class Training:
                                'early_stopping_rounds': 10000}
 
         elif model_name == 'lgb_fw':
-            """ Forward Window """
+            """
+               LGB Forward Window
+            """
             base_parameters = {'application': 'binary',
                                'boosting': 'gbdt',
                                'learning_rate': 0.003,
@@ -63,6 +110,7 @@ class Training:
                                'num_threads': -1,
                                'verbosity': 1,
                                'early_stopping_rounds': 10000}
+
         else:
             base_parameters = None
 
@@ -105,6 +153,7 @@ class Training:
         """
         train_args = {'prescale': False,
                       'postscale': True,
+                      'use_global_valid': False,
                       'show_importance': False,
                       'show_accuracy': False,
                       'save_final_pred': True,
@@ -147,47 +196,9 @@ class Training:
         """
             Base Parameters
         """
-        """ XGB """
-        # base_parameters = {'learning_rate': 0.003,
-        #                    'gamma': 0.001,              # 如果loss function小于设定值，停止产生子节点
-        #                    'max_depth': 10,             # default=6
-        #                    'min_child_weight': 12,      # default=1，建立每个模型所需最小样本权重和
-        #                    'subsample': 0.92,           # 建立树模型时抽取子样本占整个样本的比例
-        #                    'colsample_bytree': 0.85,    # 建立树时对特征随机采样的比例
-        #                    'colsample_bylevel': 0.7,
-        #                    'lambda': 0,
-        #                    'alpha': 0,
-        #                    'early_stopping_rounds': 10000,
-        #                    'n_jobs': -1,
-        #                    'objective': 'binary:logistic',
-        #                    'eval_metric': 'logloss'}
+        base_parameters = self.get_base_params('lgb')
 
-        """ LGB """
-        # base_parameters = {'application': 'binary',
-        #                    'boosting': 'gbdt',                  # gdbt,rf,dart,goss
-        #                    'learning_rate': 0.003,              # default=0.1
-        #                    'num_leaves': 88,                    # default=31       <2^(max_depth)
-        #                    'max_depth': 9,                      # default=-1
-        #                    'min_data_in_leaf': 2500,            # default=20       reduce over-fit
-        #                    'min_sum_hessian_in_leaf': 1e-3,     # default=1e-3     reduce over-fit
-        #                    'feature_fraction': 0.5,             # default=1
-        #                    'feature_fraction_seed': 19,         # default=2
-        #                    'bagging_fraction': 0.8,             # default=1
-        #                    'bagging_freq': 2,                   # default=0        perform bagging every k iteration
-        #                    'bagging_seed': 1,                   # default=3
-        #                    'lambda_l1': 0,                      # default=0
-        #                    'lambda_l2': 0,                      # default=0
-        #                    'min_gain_to_split': 0,              # default=0
-        #                    'max_bin': 225,                      # default=255
-        #                    'min_data_in_bin': 5,                # default=5
-        #                    'metric': 'binary_logloss',
-        #                    'num_threads': -1,
-        #                    'verbosity': 1,
-        #                    'early_stopping_rounds': 10000}
-
-        # base_parameters = self.get_base_params('fw')
-
-        base_parameters = None
+        # base_parameters = None
 
         """
             Train Single Model
