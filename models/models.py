@@ -458,6 +458,8 @@ class ModelBase(object):
             cv_count += 1
 
             # Get Positive Rate of Train Set and postscale Rate
+            print(y_valid.shape)
+
             positive_rate_train, postscale_rate = self.get_postscale_rate(y_train)
             positive_rate_valid, _ = self.get_postscale_rate(y_valid)
 
