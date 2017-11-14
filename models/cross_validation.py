@@ -757,7 +757,7 @@ class CrossValidation:
             valid_start = (i+1) * step
             # If valid_rate is provided, dynamically calculate n_valid
             if valid_rate is not None:
-                n_valid = ceil(valid_start*valid_rate)
+                n_valid = ceil((valid_start*valid_rate)/(1-valid_rate))
 
             if i == (n_cv - 1):
                 valid_stop = n_era
