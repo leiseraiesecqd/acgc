@@ -209,22 +209,23 @@ class ModelBase(object):
                 utils.get_grid_search_log_path(csv_log_path, self.model_name,
                                                param_name_list, param_value_list, append_info)
             if self.use_global_valid:
-                utils.save_log_with_global_valid_to_csv(csv_idx, csv_log_path + param_name + '_',
-                                                        loss_train_w_mean, loss_valid_w_mean, acc_train, train_seed,
-                                                        loss_global_valid, acc_global_valid,
-                                                        cv_seed, n_valid, n_cv, parameters)
+                utils.save_grid_search_log_with_glv_to_csv(csv_idx, csv_log_path + param_name + '_',
+                                                           loss_train_w_mean, loss_valid_w_mean, acc_train, train_seed,
+                                                           loss_global_valid, acc_global_valid, cv_seed, n_valid, n_cv,
+                                                           parameters, param_name_list, param_value_list)
                 csv_log_path += str(param_info) + '_'
-                utils.save_log_with_global_valid_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
-                                                        acc_train, train_seed, loss_global_valid,
-                                                        acc_global_valid, cv_seed, n_valid, n_cv, parameters)
+                utils.save_grid_search_log_with_glv_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
+                                                           acc_train, train_seed, loss_global_valid, acc_global_valid,
+                                                           cv_seed, n_valid, n_cv, parameters, param_name_list,
+                                                           param_value_list)
             else:
-                utils.save_final_loss_log_to_csv(csv_idx, csv_log_path + param_name + '_',
-                                                 loss_train_w_mean, loss_valid_w_mean, acc_train,
-                                                 train_seed, cv_seed, n_valid, n_cv, parameters)
+                utils.save_grid_search_log_to_csv(csv_idx, csv_log_path + param_name + '_', loss_train_w_mean,
+                                                  loss_valid_w_mean, acc_train, train_seed, cv_seed, n_valid,
+                                                  n_cv, parameters, param_name_list, param_value_list)
                 csv_log_path += str(param_info) + '_'
-                utils.save_final_loss_log_to_csv(csv_idx, csv_log_path, loss_train_w_mean,
-                                                 loss_valid_w_mean, acc_train, train_seed,
-                                                 cv_seed, n_valid, n_cv, parameters)
+                utils.save_grid_search_log_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
+                                                  acc_train, train_seed, cv_seed, n_valid, n_cv,
+                                                  parameters, param_name_list, param_value_list)
 
         elif mode == 'auto_train_boost_round':
 
@@ -232,10 +233,10 @@ class ModelBase(object):
                                                                   param_name_list, param_value_list, append_info)
             boost_round_log_path += self.model_name + '_' + append_info + '_'
             if self.use_global_valid:
-                utils.save_log_with_global_valid_to_csv(csv_idx, boost_round_log_path, loss_train_w_mean,
-                                                        loss_valid_w_mean, acc_train, train_seed,
-                                                        loss_global_valid, acc_global_valid,
-                                                        cv_seed, n_valid, n_cv, parameters)
+                utils.save_log_with_glv_to_csv(csv_idx, boost_round_log_path, loss_train_w_mean,
+                                               loss_valid_w_mean, acc_train, train_seed,
+                                               loss_global_valid, acc_global_valid,
+                                               cv_seed, n_valid, n_cv, parameters)
             else:
                 utils.save_final_loss_log_to_csv(csv_idx, boost_round_log_path, loss_train_w_mean, loss_valid_w_mean,
                                                  acc_train, train_seed, cv_seed, n_valid, n_cv, parameters)
@@ -255,9 +256,9 @@ class ModelBase(object):
                     csv_log_path += str(p_value) + '_'
 
             if self.use_global_valid:
-                utils.save_log_with_global_valid_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
-                                                        acc_train, train_seed, loss_global_valid,
-                                                        acc_global_valid, cv_seed, n_valid, n_cv, parameters)
+                utils.save_log_with_glv_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
+                                               acc_train, train_seed, loss_global_valid,
+                                               acc_global_valid, cv_seed, n_valid, n_cv, parameters)
             else:
                 utils.save_final_loss_log_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
                                                  acc_train, train_seed, cv_seed, n_valid, n_cv, parameters)
@@ -266,9 +267,9 @@ class ModelBase(object):
 
             csv_log_path += self.model_name + '_' + append_info + '_'
             if self.use_global_valid:
-                utils.save_log_with_global_valid_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
-                                                        acc_train, train_seed, loss_global_valid,
-                                                        acc_global_valid, cv_seed, n_valid, n_cv, parameters)
+                utils.save_log_with_glv_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
+                                               acc_train, train_seed, loss_global_valid,
+                                               acc_global_valid, cv_seed, n_valid, n_cv, parameters)
             else:
                 utils.save_final_loss_log_to_csv(csv_idx, csv_log_path, loss_train_w_mean, loss_valid_w_mean,
                                                  acc_train, train_seed, cv_seed, n_valid, n_cv, parameters)

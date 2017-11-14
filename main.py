@@ -220,21 +220,28 @@ class Training:
         # cv_seed_list = [216]
         train_seed_list = None
         cv_seed_list = None
-        TM.auto_train_boost_round('xgb', train_seed_list, cv_seed_list, n_epoch=1, base_parameters=base_parameters,
-                                  num_boost_round=115, parameter_grid_list=pg_list, save_final_pred=True,
-                                  reduced_feature_list=reduced_feature_list, grid_search_n_cv=20,
-                                  train_args=train_args, cv_args=cv_args, use_multi_group=False)
+        TM.auto_train_boost_round('xgb', num_boost_round=100, grid_search_n_cv=20, n_epoch=100,
+                                  use_multi_group=True, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
+                                  base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
+                                  reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
 
         """
             Auto Grid Search Parameters
         """
         # pg_list = [
-        #            # [['max_depth', [8, 9, 10]], ['min_child_weight', [6, 12, 18]]],
-        #            [['learning_rate', [0.002, 0.003, 0.005]], ['subsample', [0.8, 0.85, 0.9]]]
+        #            [['max_depth', (8, 9, 10, 11, 12)],
+        #             ['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)],
+        #             ['bagging_fraction', (0.6, 0.7, 0.8, 0.9)],
+        #             ['bagging_freq', (1, 3, 5, 7)]]
         #            ]
-        # TM.auto_grid_search('lgb', parameter_grid_list=pg_list, n_epoch=200, base_parameters=base_parameters,
-        #                     save_final_pred=False, reduced_feature_list=reduced_feature_list, num_boost_round=30,
-        #                     grid_search_n_cv=5, train_args=train_args, use_multi_group=False)
+        # train_seed_list = [999]
+        # cv_seed_list = [888]
+        # # train_seed_list = None
+        # # cv_seed_list = None
+        # TM.auto_grid_search('lgb', num_boost_round=65, grid_search_n_cv=5, n_epoch=1, use_multi_group=True,
+        #                     full_grid_search=True, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
+        #                     parameter_grid_list=pg_list, base_parameters=base_parameters, save_final_pred=False,
+        #                     reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
 
         """
             Auto Train

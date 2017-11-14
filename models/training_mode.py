@@ -96,12 +96,31 @@ class TrainingMode:
             else:
                 train_function(train_seed, cv_seed, parameters=base_parameters)
 
-    def auto_grid_search(self, model_name=None, parameter_grid_list=None, reduced_feature_list=None,
+    def auto_grid_search(self, model_name=None, full_grid_search=False, train_seed_list=None,
+                         cv_seed_list=None, parameter_grid_list=None, reduced_feature_list=None,
                          save_final_pred=False, n_epoch=1, grid_search_n_cv=5, base_parameters=None,
                          train_args=None, cv_args=None, num_boost_round=None, use_multi_group=False):
         """
             Automatically Grid Searching
         """
+        if train_seed_list is None:
+            train_seed_list = utils.random_int_list(0, 1000, n_epoch)
+        elif len(train_seed_list) == 1:
+            if cv_seed_list is not None:
+                n_epoch = len(cv_seed_list)
+            train_seed_list = [train_seed_list[0] for _ in range(n_epoch)]
+        else:
+            n_epoch = len(train_seed_list)
+
+        if cv_seed_list is None:
+            cv_seed_list = utils.random_int_list(0, 1000, n_epoch)
+        elif len(cv_seed_list) == 1:
+            if train_seed_list is not None:
+                n_epoch = len(train_seed_list)
+            cv_seed_list = [cv_seed_list[0] for _ in range(n_epoch)]
+        else:
+            n_epoch = len(cv_seed_list)
+
         # Get Train Function
         train_args['save_final_pred'] = save_final_pred
         train_function = \
@@ -116,15 +135,47 @@ class TrainingMode:
             print('======================================================')
             print('Auto Grid Searching Parameter...')
 
-            n_param = len(parameter_grid)
-            n_value = len(parameter_grid[0][1])
-            param_name = []
-            param_value = []
-            for i in range(n_param):
-                if len(parameter_grid[i][1]) != n_value:
-                    raise ValueError('The number of value of parameters should be the same as each other!')
-                param_name.append(parameter_grid[i][0])
-                param_value.append(parameter_grid[i][1])
+            if full_grid_search:
+
+                n_param = len(parameter_grid)
+                n_value = 1
+                param_name = []
+                for i in range(n_param):
+                    param_name.append(parameter_grid[i][0])
+                    n_value *= len(parameter_grid[i][1])
+
+                param_value = np.zeros((n_param, n_value)).tolist()
+                global value_list
+                global value_col
+                value_list = []
+                value_col = 0
+
+                def generate_value_matrix_(idx_param):
+                    idx_param_next = idx_param + 1
+                    for value in parameter_grid[idx_param][1]:
+                        global value_list
+                        value_list.append(value)
+                        if idx_param_next < n_param:
+                            generate_value_matrix_(idx_param_next)
+                        else:
+                            global value_col
+                            for i_row, row in enumerate(param_value):
+                                row[value_col] = value_list[i_row]
+                            value_col += 1
+                        value_list.pop()
+
+                generate_value_matrix_(0)
+
+            else:
+                n_param = len(parameter_grid)
+                n_value = len(parameter_grid[0][1])
+                param_name = []
+                param_value = []
+                for i in range(n_param):
+                    if len(parameter_grid[i][1]) != n_value:
+                        raise ValueError('The number of value of parameters should be the same as each other!')
+                    param_name.append(parameter_grid[i][0])
+                    param_value.append(parameter_grid[i][1])
 
             for i_param_value in range(n_value):
 
@@ -137,10 +188,8 @@ class TrainingMode:
                     param_info += ' ' + utils.get_simple_param_name(param_name_i) + '-' + str(param_value_i)
                     grid_search_tuple_list.append((param_name_i, param_value_i))
 
-                for i in range(n_epoch):
+                for i, (train_seed, cv_seed) in enumerate(zip(train_seed_list, cv_seed_list)):
 
-                    train_seed = random.randint(0, 1000)
-                    cv_seed = random.randint(0, 1000)
                     epoch_start_time = time.time()
                     train_args['csv_idx'] = 'idx-' + str(i+1)
 

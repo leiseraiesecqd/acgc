@@ -187,7 +187,7 @@ class Training:
         """
             Base Parameters
         """
-        base_parameters = self.get_base_params('xgb')
+        base_parameters = self.get_base_params('lgb')
 
         # base_parameters = None
 
@@ -195,14 +195,24 @@ class Training:
             Auto Grid Search Parameters
         """
         pg_list = [
-                   # [['max_depth', (8, 9, 10, 11, 12)]],
-                   # [['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
-                   [['bagging_fraction', (0.6, 0.7, 0.8, 0.9)]],
-                   # [['bagging_freq', (1, 3, 5, 7)]],
+                   [['max_depth', (8, 9)],
+                    ['feature_fraction', (0.5, 0.6)],
+                    ['bagging_fraction', [0.6]],
+                    # ['bagging_freq', (1, 3, 5, 7)]
+                    ]
+                   # [['max_depth', (8, 9, 10, 11, 12)],
+                   #  ['feature_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)],
+                   #  ['bagging_fraction', (0.6, 0.7, 0.8, 0.9)],
+                   #  ['bagging_freq', (1, 3, 5, 7)]]
                    ]
-        TM.auto_grid_search('lgb', parameter_grid_list=pg_list, n_epoch=200, base_parameters=base_parameters,
-                            save_final_pred=False, reduced_feature_list=reduced_feature_list, num_boost_round=65,
-                            grid_search_n_cv=5, train_args=train_args, cv_args=cv_args, use_multi_group=True)
+        train_seed_list = [999]
+        cv_seed_list = [888]
+        # train_seed_list = None
+        # cv_seed_list = None
+        TM.auto_grid_search('lgb', num_boost_round=5, grid_search_n_cv=5, n_epoch=1, use_multi_group=False,
+                            full_grid_search=True, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
+                            parameter_grid_list=pg_list, base_parameters=base_parameters, save_final_pred=False,
+                            reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
 
 
 if __name__ == "__main__":
