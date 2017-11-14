@@ -220,7 +220,7 @@ class Training:
         # cv_seed_list = [216]
         train_seed_list = None
         cv_seed_list = None
-        TM.auto_train_boost_round('xgb', num_boost_round=100, grid_search_n_cv=20, n_epoch=100,
+        TM.auto_train_boost_round('xgb', num_boost_round=100, grid_search_n_cv=20, n_epoch=100, full_grid_search=False,
                                   use_multi_group=True, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
                                   base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
