@@ -154,6 +154,20 @@ class Training:
 
         return base_parameters
 
+    @staticmethod
+    def get_cv_weight(mode, start, stop):
+
+        from math import log
+
+        if mode == 'range':
+            cv_weights = list(range(start, stop))
+        elif mode == 'log':
+            cv_weights = [log(i/2 + 1) for i in range(start, stop)]
+        else:
+            cv_weights = [1 for _ in range(start, stop)]
+
+        return cv_weights
+
     def train(self):
         """
             ## Auto Train with Logs of Boost Round ##
@@ -192,7 +206,7 @@ class Training:
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': 'xgb_window_postscale'}
+                      'append_info': 'forward_increase_postscale'}
 
         """
             Cross Validation Arguments
@@ -205,10 +219,8 @@ class Training:
         #            'n_cv': 20,
         #            'n_era': 119}
 
-        cv_weights = list(range(1, 11))
-        # from math import log
-        # cv_weights = [log(i/2 + 1) for i in range(1, 21)]
         from models.cross_validation import CrossValidation
+        cv_weights = self.get_cv_weight('range', 1, 11)
         cv_args = {'n_valid': 24,
                    'valid_rate': 0.1,
                    'n_cv': 10,
@@ -234,20 +246,21 @@ class Training:
         """
             Auto Train with Logs of Boost Round
         """
+        cv_weights_range = [self.get_cv_weight('range', 1, i) for i in [5, 8, 10, 12, 15, 20]]
+        cv_weights_log = [self.get_cv_weight('log', 1, i) for i in [5, 8, 10, 12, 15, 20]]
         pg_list = [
                    # [['n_cv', (5, 10, 15, 20, 30)],
                    #  ['valid_rate', (0.005, 0.1, 0.15, 0.2, 0.25)],
                    #  ['window_size', (25, 30, 35, 40, 45, 50)]]
-                   # [['n_cv', (5, 10, 15, 20, 5, 10, 15, 20, 5, 10, 15, 20, 5, 10, 15, 20)],
-                   #  ['valid_rate', (0.05, 0.05, 0.05, 0.05,
-                   #                  0.1, 0.1, 0.1, 0.1,
-                   #                  0.15, 0.15, 0.15, 0.15,
-                   #                  0.2, 0.2, 0.2, 0.2)],
-                   #  ['cv_weights', (list(range(1, 6)), list(range(1, 11)), list(range(1, 16)), list(range(1, 21)),
-                   #                  list(range(1, 6)), list(range(1, 11)), list(range(1, 16)), list(range(1, 21)),
-                   #                  list(range(1, 6)), list(range(1, 11)), list(range(1, 16)), list(range(1, 21)),
-                   #                  list(range(1, 6)), list(range(1, 11)), list(range(1, 16)), list(range(1, 21)))]]
-                   [['learning_rate', [0.003]]]
+                   [['n_cv', (5, 8, 10, 12, 15, 20, 5, 8, 10, 12, 15, 20, 5, 8, 10, 12, 15, 20, 5, 8, 10, 12, 15, 20,
+                              5, 8, 10, 12, 15, 20, 5, 8, 10, 12, 15, 20, 5, 8, 10, 12, 15, 20, 5, 8, 10, 12, 15, 20)],
+                    ['valid_rate', (0.075, 0.075, 0.075, 0.075, 0.075, 0.075, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                                    0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15,
+                                    0.075, 0.075, 0.075, 0.075, 0.075, 0.075, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                                    0.125, 0.125, 0.125, 0.125, 0.125, 0.125, 0.15, 0.15, 0.15, 0.15, 0.15, 0.15)],
+                    ['cv_weights', (*cv_weights_range, *cv_weights_range, *cv_weights_range, *cv_weights_range,
+                                    *cv_weights_log, *cv_weights_log, *cv_weights_log, *cv_weights_log)]]
+                   # [['learning_rate', [0.003]]]
                    # [['max_depth', (7, 8, 9, 10, 11, 12)]],
                    # [['feature_fraction' (0.5, 0.6, 0.7, 0.8, 0.9)]],
                    # [['bagging_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
@@ -257,7 +270,7 @@ class Training:
         cv_seed_list = [95]
         # train_seed_list = None
         # cv_seed_list = None
-        TM.auto_train_boost_round('xgb', num_boost_round=52, n_epoch=1, full_grid_search=False,
+        TM.auto_train_boost_round('xgb', num_boost_round=150, n_epoch=1, full_grid_search=False,
                                   use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
                                   base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
