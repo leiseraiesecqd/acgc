@@ -248,10 +248,10 @@ class Training:
         """
         cv_weights_range = [self.get_cv_weight('range', 1, i+1) for i in [5, 8, 10, 12, 15, 20]]
         cv_weights_log = [self.get_cv_weight('log', 1, i+1) for i in [5, 8, 10, 12, 15, 20]]
-        n_cv_list = [5, 8, 10, 12, 15, 20] * 10
+        n_cv_list = [5, 8, 10, 12, 15, 20] * 12
         import numpy as np
-        valid_rate_list = np.array([[i]*6 for i in [0.075, 0.1, 0.125, 0.15, 0.2]]*2).reshape(-1,).tolist()
-        cv_weights_list = cv_weights_range*5 + cv_weights_log*5
+        valid_rate_list = np.array([[i]*6 for i in [0.075, 0.1, 0.125, 0.15, 0.175, 0.2]]*2).reshape(-1,).tolist()
+        cv_weights_list = cv_weights_range*6 + cv_weights_log*6
         pg_list = [
                    # [['n_cv', (5, 10, 12, 15, 20)],
                    #  ['valid_rate', (0.1, 0.125, 0.166, 0.2, 0.25)],
