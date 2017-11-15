@@ -239,7 +239,7 @@ class Training:
         """
             Base Parameters
         """
-        base_parameters = self.get_base_params('xgb_fw')
+        base_parameters = self.get_base_params('lgb_fw')
 
         # base_parameters = None
 
@@ -249,9 +249,9 @@ class Training:
         # cv_weights_range = [self.get_cv_weight('range', 1, i+1) for i in [5, 8, 10, 12, 15, 20]]
         # cv_weights_log = [self.get_cv_weight('log', 1, i+1) for i in [5, 8, 10, 12, 15, 20]]
         pg_list = [
-                   [['n_cv', (10, 12, 15, 20)],
-                    ['valid_rate', (0.1, 0.125, 0.166, 0.2)],
-                    ['window_size', (32, 35, 40, 48, 60)]]
+                   [['n_cv', (5, 10, 12, 15, 20)],
+                    ['valid_rate', (0.1, 0.125, 0.166, 0.2, 0.25)],
+                    ['window_size', (32, 35, 40, 48, 54, 60)]]
                    # [['n_cv', (5, 8, 10, 12, 15, 20, 5, 8, 10, 12, 15, 20, 5, 8, 10, 12, 15, 20, 5, 8, 10, 12, 15, 20,
                    #            5, 8, 10, 12, 15, 20, 5, 8, 10, 12, 15, 20, 5, 8, 10, 12, 15, 20, 5, 8, 10, 12, 15, 20)],
                    #  ['valid_rate', (0.075, 0.075, 0.075, 0.075, 0.075, 0.075, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
@@ -270,8 +270,8 @@ class Training:
         cv_seed_list = [95]
         # train_seed_list = None
         # cv_seed_list = None
-        TM.auto_train_boost_round('xgb', num_boost_round=150, n_epoch=1, full_grid_search=True,
-                                  use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
+        TM.auto_train_boost_round('lgb', num_boost_round=200, n_epoch=1, full_grid_search=True,
+                                  use_multi_group=True, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
                                   base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
 
