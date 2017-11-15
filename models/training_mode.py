@@ -97,8 +97,8 @@ class TrainingMode:
 
     def auto_grid_search(self, model_name=None, full_grid_search=False, train_seed_list=None,
                          cv_seed_list=None, parameter_grid_list=None, reduced_feature_list=None,
-                         save_final_pred=False, n_epoch=1, grid_search_n_cv=5, base_parameters=None,
-                         train_args=None, cv_args=None, num_boost_round=None, use_multi_group=False):
+                         save_final_pred=False, n_epoch=1, base_parameters=None,  train_args=None,
+                         cv_args=None, num_boost_round=None, use_multi_group=False):
         """
             Automatically Grid Searching
         """
@@ -122,7 +122,7 @@ class TrainingMode:
 
         # Get Train Function
         train_args['save_final_pred'] = save_final_pred
-        train_function = self.get_train_function('auto_grid_search', model_name, grid_search_n_cv=grid_search_n_cv,
+        train_function = self.get_train_function('auto_grid_search', model_name,
                                                  reduced_feature_list=reduced_feature_list, train_args=train_args,
                                                  cv_args=cv_args, use_multi_group=use_multi_group)
 
@@ -219,8 +219,8 @@ class TrainingMode:
 
     def auto_train_boost_round(self, model_name=None, full_grid_search=False, train_seed_list=None, cv_seed_list=None,
                                n_epoch=1, num_boost_round=None, epochs=None, parameter_grid_list=None,
-                               reduced_feature_list=None, grid_search_n_cv=20, save_final_pred=False,
-                               base_parameters=None, train_args=None, cv_args=None, use_multi_group=False):
+                               reduced_feature_list=None, save_final_pred=False, base_parameters=None,
+                               train_args=None, cv_args=None, use_multi_group=False):
         """
             Automatically Training by Boost Round or Epoch
         """
@@ -244,7 +244,7 @@ class TrainingMode:
 
         # Get Train Function
         train_args['save_final_pred'] = save_final_pred
-        train_function = self.get_train_function('auto_train_boost_round', model_name, grid_search_n_cv=grid_search_n_cv,
+        train_function = self.get_train_function('auto_train_boost_round', model_name,
                                                  reduced_feature_list=reduced_feature_list, train_args=train_args,
                                                  cv_args=cv_args, use_multi_group=use_multi_group)
 

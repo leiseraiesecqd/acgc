@@ -209,7 +209,7 @@ class Training:
         cv_seed_list = [888]
         # train_seed_list = None
         # cv_seed_list = None
-        TM.auto_grid_search('lgb', num_boost_round=5, grid_search_n_cv=5, n_epoch=1, use_multi_group=False,
+        TM.auto_grid_search('lgb', num_boost_round=5, n_epoch=1, use_multi_group=False,
                             full_grid_search=True, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
                             parameter_grid_list=pg_list, base_parameters=base_parameters, save_final_pred=False,
                             reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)

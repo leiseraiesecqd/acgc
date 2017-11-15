@@ -52,8 +52,7 @@ class SingleModel:
     """
         Train single model
     """
-    def __init__(self, reduced_feature_list=None, grid_search_n_cv=None,
-                 train_args=None, cv_args=None, use_multi_group=False, mode=None):
+    def __init__(self, reduced_feature_list=None, train_args=None, cv_args=None, use_multi_group=False, mode=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test = \
             utils.load_preprocessed_data(preprocessed_data_path)
@@ -79,7 +78,6 @@ class SingleModel:
 
         self.loss_log_path = loss_log_path
         self.boost_round_log_path = boost_round_out_path
-        self.grid_search_n_cv = grid_search_n_cv
         self.train_args = train_args
         self.cv_args = cv_args
         self.use_multi_group = use_multi_group
@@ -97,10 +95,6 @@ class SingleModel:
             self.pred_path = single_model_pred_path
 
     def train_model(self, model=None, grid_search_tuple_list=None):
-
-        # Grid Search
-        if self.grid_search_n_cv is not None:
-            self.cv_args['n_cv'] = self.grid_search_n_cv
 
         if grid_search_tuple_list is not None:
             param_name_list = []
@@ -653,8 +647,6 @@ class SingleModel:
         # Grid Search
         if grid_search_tuple_list is not None:
             parameters[grid_search_tuple_list[0]] = grid_search_tuple_list[1]
-        if self.grid_search_n_cv is not None:
-            self.cv_args['n_cv'] = self.grid_search_n_cv
 
         self.train_args['parameters'] = parameters
         self.train_args['train_seed'] = train_seed
@@ -674,7 +666,7 @@ class SingleModel:
 
 class ChampionModel:
 
-    def __init__(self, reduced_feature_list=None, save_auto_train_results=True, grid_search_n_cv=None,
+    def __init__(self, reduced_feature_list=None, save_auto_train_results=True,
                  train_args=None, cv_args=None, use_multi_group=False, mode=None):
 
         self.x_train, self.y_train, self.w_train, self.e_train, self.x_test, self.id_test\
@@ -695,7 +687,6 @@ class ChampionModel:
         self.loss_log_path = loss_log_path
         self.csv_log_path = csv_log_path + 'christar1991_'
         self.save_auto_train_results = save_auto_train_results
-        self.grid_search_n_cv = grid_search_n_cv
         self.train_args = train_args
         self.cv_args = cv_args
         self.use_multi_group = use_multi_group
@@ -713,10 +704,6 @@ class ChampionModel:
             self.pred_path = single_model_pred_path
 
     def train_model(self, model=None, grid_search_tuple_list=None):
-
-        # Grid Search
-        if self.grid_search_n_cv is not None:
-            self.cv_args['n_cv'] = self.grid_search_n_cv
 
         if grid_search_tuple_list is not None:
             param_name_list = []
