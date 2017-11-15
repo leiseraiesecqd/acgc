@@ -9,20 +9,18 @@ class TrainingMode:
         pass
 
     @staticmethod
-    def get_train_function(train_mode, model_name, grid_search_n_cv=None, reduced_feature_list=None,
+    def get_train_function(train_mode, model_name, reduced_feature_list=None,
                            load_pickle=False, train_args=None, cv_args=None, use_multi_group=False):
 
         if train_mode == 'train_single_model':
             model_arg = {'reduced_feature_list': reduced_feature_list, 'train_args': train_args,
                          'cv_args': cv_args, 'use_multi_group': use_multi_group, 'mode': train_mode}
         elif train_mode == 'auto_grid_search':
-            model_arg = {'reduced_feature_list': reduced_feature_list, 'grid_search_n_cv': grid_search_n_cv,
-                         'train_args': train_args, 'cv_args': cv_args, 'use_multi_group': use_multi_group,
-                         'mode': train_mode}
+            model_arg = {'reduced_feature_list': reduced_feature_list, 'train_args': train_args,
+                         'cv_args': cv_args, 'use_multi_group': use_multi_group, 'mode': train_mode}
         elif train_mode == 'auto_train_boost_round':
-            model_arg = {'reduced_feature_list': reduced_feature_list, 'grid_search_n_cv': grid_search_n_cv,
-                         'train_args': train_args, 'cv_args': cv_args, 'use_multi_group': use_multi_group,
-                         'mode': train_mode}
+            model_arg = {'reduced_feature_list': reduced_feature_list, 'train_args': train_args,
+                         'cv_args': cv_args, 'use_multi_group': use_multi_group, 'mode': train_mode}
         elif train_mode == 'auto_train':
             model_arg = {'reduced_feature_list': reduced_feature_list, 'train_args': train_args,
                          'cv_args': cv_args, 'use_multi_group': use_multi_group, 'mode': train_mode}
