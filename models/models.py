@@ -46,6 +46,7 @@ class ModelBase(object):
         self.num_boost_round = 0
         self.use_multi_group = use_multi_group
         self.use_global_valid = False
+        self.use_custom_obj = False
         self.postscale = False
         self.postscale_rate = None
 
@@ -390,13 +391,16 @@ class ModelBase(object):
               save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True, save_final_prob_train=False,
               save_csv_log=True, csv_idx=None, prescale=False, postscale=False, use_global_valid=False,
               return_prob_test=False, mode=None, param_name_list=None, param_value_list=None,
-              file_name_params=None, append_info=None):
+              use_custom_obj=False, file_name_params=None, append_info=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
 
         # Global Validation
         self.use_global_valid = use_global_valid
+
+        # Use Custom Objective Function
+        self.use_custom_obj = use_custom_obj
 
         cv_args_copy = copy.deepcopy(cv_args)
         n_valid = cv_args_copy['n_valid']
@@ -1076,6 +1080,16 @@ class XGBoost(ModelBase):
 
         self.model_name = 'xgb'
 
+    @staticmethod
+    def logloss_obj(pred, d_train):
+
+        y = d_train.get_label()
+
+        grad = (pred - y) / ((1.0 - pred) * pred)
+        hess = (pred * pred - 2.0 * pred * y + y) / ((1.0 - pred) * (1.0 - pred) * pred * pred)
+
+        return grad, hess
+
     def fit(self, x_train, y_train, w_train, x_valid, y_valid, w_valid, parameters=None):
 
         d_train = xgb.DMatrix(x_train, label=y_train, weight=w_train)
@@ -1089,10 +1103,18 @@ class XGBoost(ModelBase):
             eval_list = [(d_train, 'Train'), (d_valid, 'Valid')]
 
         if self.postscale:
-            bst = xgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
-                            evals=eval_list, feval=self.xgb_postscale_feval)
+            if self.use_custom_obj:
+                bst = xgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
+                                evals=eval_list, obj=self.logloss_obj, feval=self.xgb_postscale_feval)
+            else:
+                bst = xgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
+                                evals=eval_list, feval=self.xgb_postscale_feval)
         else:
-            bst = xgb.train(parameters, d_train, num_boost_round=self.num_boost_round, evals=eval_list)
+            if self.use_custom_obj:
+                bst = xgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
+                                obj=self.logloss_obj, evals=eval_list)
+            else:
+                bst = xgb.train(parameters, d_train, num_boost_round=self.num_boost_round, evals=eval_list)
 
         return bst
 

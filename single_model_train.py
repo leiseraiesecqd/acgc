@@ -154,6 +154,7 @@ class Training:
         train_args = {'prescale': False,
                       'postscale': True,
                       'use_global_valid': False,
+                      'use_custom_obj': False,
                       'show_importance': False,
                       'show_accuracy': False,
                       'save_final_pred': True,
