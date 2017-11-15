@@ -246,8 +246,8 @@ class Training:
         """
             Auto Train with Logs of Boost Round
         """
-        cv_weights_range = [self.get_cv_weight('range', 1, i) for i in [5, 8, 10, 12, 15, 20]]
-        cv_weights_log = [self.get_cv_weight('log', 1, i) for i in [5, 8, 10, 12, 15, 20]]
+        cv_weights_range = [self.get_cv_weight('range', 1, i+1) for i in [5, 8, 10, 12, 15, 20]]
+        cv_weights_log = [self.get_cv_weight('log', 1, i+1) for i in [5, 8, 10, 12, 15, 20]]
         pg_list = [
                    # [['n_cv', (5, 10, 15, 20, 30)],
                    #  ['valid_rate', (0.005, 0.1, 0.15, 0.2, 0.25)],
