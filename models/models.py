@@ -365,7 +365,7 @@ class ModelBase(object):
 
         return x_train, y_train, w_train, e_train
 
-    def postscale_feval(self, preds, train_data):
+    def lgb_postscale_feval(self, preds, train_data):
 
         prob = copy.deepcopy(preds)
         labels = train_data.get_label()
@@ -374,6 +374,16 @@ class ModelBase(object):
         loss = utils.log_loss_with_weight(prob, labels, weights)
 
         return 'binary_logloss', loss, False
+
+    def xgb_postscale_feval(self, preds, train_data):
+
+        prob = copy.deepcopy(preds)
+        labels = train_data.get_label()
+        weights = train_data.get_weight()
+        prob *= self.postscale_rate
+        loss = utils.log_loss_with_weight(prob, labels, weights)
+
+        return 'logloss', loss
 
     def train(self, pred_path=None, loss_log_path=None, csv_log_path=None, boost_round_log_path=None,
               train_seed=None, cv_args=None, parameters=None, show_importance=False, show_accuracy=False,
@@ -466,6 +476,8 @@ class ModelBase(object):
                 self.postscale_rate = postscale_rate
                 if 'metric' in parameters.keys():
                     parameters.pop('metric')
+                if 'eval_metric' in parameters.keys():
+                    parameters.pop('eval_metric')
 
             print('------------------------------------------------------')
             print('Validation Set Era: ', valid_era)
@@ -1075,7 +1087,12 @@ class XGBoost(ModelBase):
             eval_list = [(d_train, 'Train'), (d_valid, 'Valid'), (d_gl_valid, 'Global_Valid')]
         else:
             eval_list = [(d_train, 'Train'), (d_valid, 'Valid')]
-        bst = xgb.train(parameters, d_train, num_boost_round=self.num_boost_round, evals=eval_list)
+
+        if self.postscale:
+            bst = xgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
+                            evals=eval_list, feval=self.xgb_postscale_feval)
+        else:
+            bst = xgb.train(parameters, d_train, num_boost_round=self.num_boost_round, evals=eval_list)
 
         return bst
 
@@ -1097,11 +1114,15 @@ class XGBoost(ModelBase):
     def get_pattern(self):
 
         if self.use_global_valid:
-            # [0]	Train-logloss:0.692695	Valid-logloss:0.693275	Global_Valid-logloss:0.692695
-            return re.compile(r'\[(\d*)\]\tTrain-logloss:(.*)\tValid-logloss:(.*)\tGlobal_Valid-logloss:(.*)')
+            if self.postscale:
+                return re.compile(r'\[(\d*)\].*\tTrain-logloss:(.*)\tValid-logloss:(.*)\tGlobal_Valid-logloss:(.*)')
+            else:
+                return re.compile(r'\[(\d*)\]\tTrain-logloss:(.*)\tValid-logloss:(.*)\tGlobal_Valid-logloss:(.*)')
         else:
-            # [0]	Train-logloss:0.692695	Valid-logloss:0.693275
-            return re.compile(r'\[(\d*)\]\tTrain-logloss:(.*)\tValid-logloss:(.*)')
+            if self.postscale:
+                return re.compile(r'\[(\d*)\].*\tTrain-logloss:(.*)\tValid-logloss:(.*)')
+            else:
+                return re.compile(r'\[(\d*)\]\tTrain-logloss:(.*)\tValid-logloss:(.*)')
 
     def get_importance(self, model):
 
@@ -1235,7 +1256,7 @@ class LightGBM(ModelBase):
             if self.postscale:
                 bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
                                 valid_sets=[d_valid, d_gl_valid, d_train],
-                                valid_names=['Valid', 'Global_Valid', 'Train'], feval=self.postscale_feval)
+                                valid_names=['Valid', 'Global_Valid', 'Train'], feval=self.lgb_postscale_feval)
             else:
                 bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
                                 valid_sets=[d_valid, d_gl_valid, d_train],
@@ -1244,7 +1265,7 @@ class LightGBM(ModelBase):
             if self.postscale:
                 bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
                                 valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'],
-                                feval=self.postscale_feval)
+                                feval=self.lgb_postscale_feval)
             else:
                 bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
                                 valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
@@ -1276,7 +1297,7 @@ class LightGBM(ModelBase):
         if self.postscale:
             bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
                             valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'],
-                            feval=self.postscale_feval)
+                            feval=self.lgb_postscale_feval)
         else:
             bst = lgb.train(parameters, d_train, num_boost_round=self.num_boost_round,
                             valid_sets=[d_valid, d_train], valid_names=['Valid', 'Train'])
@@ -1522,7 +1543,6 @@ class CatBoost(ModelBase):
 
     def get_pattern(self):
 
-        # 0:	learn 0.6930110854	test 0.6932013607	bestTest 0.6932013607		total: 1.11s	remaining: 1m 36s
         return re.compile(r'(\d*):\tlearn (.*)\ttest (.*)\tbestTest')
 
     def get_importance(self, clf):

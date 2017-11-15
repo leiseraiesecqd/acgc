@@ -100,7 +100,8 @@ class Training:
                                'early_stopping_rounds': 10000,
                                'n_jobs': -1,
                                'objective': 'binary:logistic',
-                               'eval_metric': 'logloss'}
+                               'eval_metric': 'logloss'
+                               }
 
         elif model_name == 'lgb_fw':
             """
