@@ -280,8 +280,8 @@ class DeepNeuralNetworks(ModelBase):
                              x_valid, y_valid, w_valid, optimizer, merged, cost_, inputs, labels, weights,
                              lr, keep_prob, is_training, start_time, param_name_list, param_value_list, append_info=''):
 
-        boost_round_log_path = utils.get_boost_round_log_path(boost_round_log_path, self.model_name,
-                                                              param_name_list, param_value_list, append_info)
+        boost_round_log_path, _ = utils.get_boost_round_log_path(boost_round_log_path, self.model_name,
+                                                                 param_name_list, param_value_list, append_info)
         boost_round_log_path += 'cv_cache/'
         utils.check_dir([boost_round_log_path])
         boost_round_log_path += self.model_name + '_cv_{}_log.txt'.format(cv_counter)

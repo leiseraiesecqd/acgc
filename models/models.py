@@ -100,8 +100,8 @@ class ModelBase(object):
                            w_train, x_valid, y_valid, w_valid, parameters,
                            param_name_list, param_value_list, append_info=''):
 
-        boost_round_log_path = utils.get_boost_round_log_path(boost_round_log_path, self.model_name,
-                                                              param_name_list, param_value_list, append_info)
+        boost_round_log_path, _ = utils.get_boost_round_log_path(boost_round_log_path, self.model_name,
+                                                                 param_name_list, param_value_list, append_info)
         boost_round_log_path += 'cv_cache/'
         utils.check_dir([boost_round_log_path])
         boost_round_log_path += self.model_name + '_cv_{}_log.txt'.format(cv_count)
@@ -235,8 +235,8 @@ class ModelBase(object):
 
         elif mode == 'auto_train_boost_round':
 
-            boost_round_log_path = utils.get_boost_round_log_path(boost_round_log_path, self.model_name,
-                                                                  param_name_list, param_value_list, append_info)
+            boost_round_log_path, _ = utils.get_boost_round_log_path(boost_round_log_path, self.model_name,
+                                                                     param_name_list, param_value_list, append_info)
             boost_round_log_path += self.model_name + '_' + append_info + '_'
             if self.use_global_valid:
                 utils.save_grid_search_log_to_csv(csv_idx, boost_round_log_path, loss_train_w_mean, loss_valid_w_mean,
@@ -306,8 +306,8 @@ class ModelBase(object):
 
             elif mode == 'auto_train_boost_round':
 
-                boost_round_log_path = utils.get_boost_round_log_path(boost_round_log_path, self.model_name,
-                                                                      param_name_list, param_value_list, append_info)
+                boost_round_log_path, _ = utils.get_boost_round_log_path(boost_round_log_path, self.model_name,
+                                                                         param_name_list, param_value_list, append_info)
                 pred_path = boost_round_log_path + 'final_results/'
                 utils.check_dir([pred_path])
                 pred_path += self.model_name + '_' + str(csv_idx) + '_t-' + str(train_seed) + '_c-' + str(cv_seed) + '_'
