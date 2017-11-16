@@ -845,7 +845,10 @@ def get_boost_round_log_path(boost_round_log_path, model_name, param_name_list, 
     param_info = ''
     param_name = ''
     for i in range(len(param_name_list)):
-        param_info += '_' + get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
+        if param_name_list[i] == 'cv_weights':
+            param_info += '_' + get_simple_param_name(param_name_list[i])
+        else:
+            param_info += '_' + get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
         param_name += '_' + get_simple_param_name(param_name_list[i])
 
     boost_round_log_path += model_name + '/'
@@ -866,7 +869,10 @@ def get_grid_search_log_path(csv_log_path, model_name, param_name_list, param_va
     param_info = ''
     param_name = ''
     for i in range(len(param_name_list)):
-        param_info += '_' + get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
+        if param_name_list[i] == 'cv_weights':
+            param_info += '_' + get_simple_param_name(param_name_list[i])
+        else:
+            param_info += '_' + get_simple_param_name(param_name_list[i]) + '-' + str(param_value_list[i])
         param_name += '_' + get_simple_param_name(param_name_list[i])
 
     csv_log_path += model_name + '/'
