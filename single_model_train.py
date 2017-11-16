@@ -116,6 +116,75 @@ class Training:
 
         return base_parameters
 
+    def get_cv_args(self, model_name=None):
+
+        from models.cross_validation import CrossValidation
+
+        if model_name == 'lgb_fi':
+            """
+                LGB Forward Increase
+            """
+            cv_weights = self.get_cv_weight('range', 1, 21)
+            cv_args = {'valid_rate': 0.125,
+                       'n_cv': 20,
+                       'n_era': 119,
+                       'cv_generator': CrossValidation.forward_increase,
+                       'cv_weights': cv_weights}
+
+        elif model_name == 'xgb_fi':
+            """
+                XGB Forward Increase
+            """
+            cv_weights = self.get_cv_weight('range', 1, 21)
+            cv_args = {'valid_rate': 0.125,
+                       'n_cv': 20,
+                       'n_era': 119,
+                       'cv_generator': CrossValidation.forward_increase,
+                       'cv_weights': cv_weights}
+
+        elif model_name == 'lgb_fw':
+            """
+               LGB Forward Window
+            """
+            cv_args = {'valid_rate': 0.1,
+                       'n_cv': 10,
+                       'n_era': 119,
+                       'cv_generator': CrossValidation.forward_window,
+                       'window_size': 40}
+
+        elif model_name == 'xgb_fw':
+            """
+                XGB Forward Window
+            """
+            cv_args = {'valid_rate': 0.1,
+                       'n_cv': 10,
+                       'n_era': 119,
+                       'cv_generator': CrossValidation.forward_window,
+                       'window_size': 40}
+
+        else:
+            cv_args = {'n_valid': 27,
+                       'n_cv': 20,
+                       'n_era': 119}
+            print('------------------------------------------------------')
+            print('[W] Training with Base cv_args:\n', cv_args)
+
+        return cv_args
+
+    @staticmethod
+    def get_cv_weight(mode, start, stop):
+
+        from math import log
+
+        if mode == 'range':
+            cv_weights = list(range(start, stop))
+        elif mode == 'log':
+            cv_weights = [log(i / 2 + 1) for i in range(start, stop)]
+        else:
+            cv_weights = [1 for _ in range(start, stop)]
+
+        return cv_weights
+
     def train(self):
         """
             ## Train Single Model ##
@@ -171,23 +240,7 @@ class Training:
         #            'n_cv': 20,
         #            'n_era': 20}
 
-        cv_args = {'n_valid': 27,
-                   'n_cv': 20,
-                   'n_era': 135}
-
-        # cv_weights = list(range(1, 21))
-        # from math import log
-        # cv_weights = [log(i/2 + 1) for i in range(1, 21)]
-        # from models.cross_validation import CrossValidation
-        # cv_args = {'n_valid': 27,
-        #            'valid_rate': 0.2,
-        #            'n_cv': 20,
-        #            'n_era': 135,
-        #            'cv_generator': CrossValidation.forward_window,
-        #            'window_size': 35,
-        #            # 'cv_generator': CrossValidation.forward_increase,
-        #            # 'cv_weights': cv_weights,
-        #            }
+        cv_args = self.get_cv_args('lgb_fi')
 
         """
             Reduced Features
