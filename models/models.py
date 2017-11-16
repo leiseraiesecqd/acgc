@@ -141,14 +141,19 @@ class ModelBase(object):
                              valid_loss_round_mean, train_seed, cv_seed, csv_idx, parameters,
                              param_name_list, param_value_list, append_info='', global_valid_loss_round_mean=None):
 
-        boost_round_log_path = utils.get_boost_round_log_path(boost_round_log_path, self.model_name,
-                                                              param_name_list, param_value_list, append_info)
-        utils.save_boost_round_log_to_csv(boost_round_log_path, csv_idx, idx_round, valid_loss_round_mean,
-                                          train_loss_round_mean, train_seed, cv_seed, parameters)
+        boost_round_log_upper_path = \
+            utils.get_boost_round_log_upper_path(boost_round_log_path, self.model_name, param_name_list, append_info)
+        boost_round_log_path, param_name = \
+            utils.get_boost_round_log_path(boost_round_log_path, self.model_name,
+                                           param_name_list, param_value_list, append_info)
+        utils.save_boost_round_log_to_csv(self.model_name, boost_round_log_path, boost_round_log_upper_path, csv_idx,
+                                          idx_round, valid_loss_round_mean, train_loss_round_mean, train_seed,
+                                          cv_seed, parameters, param_name_list, param_value_list, param_name)
         if self.use_global_valid:
-            utils.save_boost_round_log_gl_to_csv(boost_round_log_path + 'global_valid_', csv_idx, idx_round,
-                                                 valid_loss_round_mean, train_loss_round_mean,
-                                                 global_valid_loss_round_mean, train_seed, cv_seed, parameters)
+            utils.save_boost_round_log_gl_to_csv(self.model_name, boost_round_log_path, boost_round_log_upper_path,
+                                                 csv_idx, idx_round, valid_loss_round_mean, train_loss_round_mean,
+                                                 global_valid_loss_round_mean, train_seed, cv_seed, parameters,
+                                                 param_name_list, param_value_list, param_name)
 
         boost_round_log_path += 'final_logs/'
         utils.check_dir([boost_round_log_path])

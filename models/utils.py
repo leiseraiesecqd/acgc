@@ -260,8 +260,9 @@ def save_grid_search_log_with_glv_to_csv(idx, log_path, loss_train_w_mean, loss_
 
 
 # Save Boost Round Log to csv File
-def save_boost_round_log_to_csv(boost_round_log_path, csv_idx, idx_round, valid_loss_round_mean,
-                                train_loss_round_mean, train_seed, cv_seed, parameters):
+def save_boost_round_log_to_csv(model_name, boost_round_log_path, boost_round_log_upper_path, csv_idx, idx_round,
+                                valid_loss_round_mean, train_loss_round_mean, train_seed, cv_seed,
+                                parameters, param_name_list, param_value_list, param_name):
 
     valid_loss_dict = {}
     train_loss_dict = {}
@@ -281,37 +282,43 @@ def save_boost_round_log_to_csv(boost_round_log_path, csv_idx, idx_round, valid_
     for idx in lowest_idx:
         lowest_loss_dict[idx] = (valid_loss_dict[idx], train_loss_dict[idx])
 
-    if not os.path.isfile(boost_round_log_path + 'boost_round_log.csv'):
+    def _save_log(log_path):
 
-        print('------------------------------------------------------')
-        print('Creating csv File of Boost Round Log...')
+        if not os.path.isfile(log_path + 'boost_round_log.csv'):
 
-        with open(boost_round_log_path + 'boost_round_log.csv', 'w') as f:
-            header = ['idx', 'time', 'lowest_round', 'lowest_valid_loss', 'lowest_train_loss', 'round',
-                      'valid_loss', 'train_loss', 'train_seed', 'cv_seed', 'parameters']
-            writer = csv.writer(f)
-            writer.writerow(header)
+            print('------------------------------------------------------')
+            print('Creating csv File of Boost Round Log...')
 
-    with open(boost_round_log_path + 'boost_round_log.csv', 'a') as f:
+            with open(log_path + 'boost_round_log.csv', 'w') as f:
+                header = ['idx', 'time', 'lowest_round', 'lowest_valid_loss', 'lowest_train_loss', 'round',
+                          'valid_loss', 'train_loss', *param_name_list, 'train_seed', 'cv_seed', 'parameters']
+                writer = csv.writer(f)
+                writer.writerow(header)
 
-        print('------------------------------------------------------')
-        print('Saving Boost Round Log to csv File...')
+        with open(log_path + 'boost_round_log.csv', 'a') as f:
 
-        for i, (round_idx, (valid_loss, train_loss)) in enumerate(lowest_loss_dict.items()):
-            if i == 0:
-                local_time = time.strftime('%Y/%m/%d-%H:%M:%S', time.localtime(time.time()))
-                log = [csv_idx, local_time, lowest_round, lowest_valid_loss, lowest_train_loss, round_idx,
-                       valid_loss, train_loss, train_seed, cv_seed, str(parameters)]
-            else:
-                log = [csv_idx, '', '', '', '', round_idx, valid_loss, train_loss, train_seed, cv_seed, '']
-            writer = csv.writer(f)
-            writer.writerow(log)
+            print('------------------------------------------------------')
+            print('Saving Boost Round Log to csv File...')
+
+            for i, (round_idx, (valid_loss, train_loss)) in enumerate(lowest_loss_dict.items()):
+                if i == 0:
+                    local_time = time.strftime('%Y/%m/%d-%H:%M:%S', time.localtime(time.time()))
+                    log = [csv_idx, local_time, lowest_round, lowest_valid_loss, lowest_train_loss, round_idx,
+                           valid_loss, train_loss, *param_value_list, train_seed, cv_seed, str(parameters)]
+                else:
+                    log = [csv_idx, '', '', '', '', round_idx, valid_loss, train_loss, train_seed, cv_seed, '']
+                writer = csv.writer(f)
+                writer.writerow(log)
+
+    _save_log(boost_round_log_path)
+    boost_round_log_upper_path += model_name + param_name
+    _save_log(boost_round_log_upper_path)
 
 
 # Save Boost Round Log with Global Validation to csv File
-def save_boost_round_log_gl_to_csv(boost_round_log_path, csv_idx, idx_round, valid_loss_round_mean,
-                                   train_loss_round_mean, global_valid_loss_round_mean, train_seed,
-                                   cv_seed, parameters):
+def save_boost_round_log_gl_to_csv(model_name, boost_round_log_path, boost_round_log_upper_path, csv_idx, idx_round,
+                                   valid_loss_round_mean, train_loss_round_mean, global_valid_loss_round_mean,
+                                   train_seed, cv_seed, parameters, param_name_list, param_value_list, param_name):
 
     gl_valid_loss_dict = {}
     valid_loss_dict = {}
@@ -333,32 +340,38 @@ def save_boost_round_log_gl_to_csv(boost_round_log_path, csv_idx, idx_round, val
     for idx in lowest_idx:
         lowest_loss_dict[idx] = (gl_valid_loss_dict[idx], valid_loss_dict[idx], train_loss_dict[idx])
 
-    if not os.path.isfile(boost_round_log_path + 'boost_round_log.csv'):
-        print('------------------------------------------------------')
-        print('Creating csv File of Boost Round Log...')
+    def _save_log(log_path):
 
-        with open(boost_round_log_path + 'boost_round_log.csv', 'w') as f:
-            header = ['idx', 'time', 'lowest_round', 'lowest_global_valid_loss', 'lowest_cv_valid_loss',
-                      'round', 'global_valid_loss', 'cv_valid_loss', 'cv_train_loss',
-                      'train_seed', 'cv_seed', 'parameters']
-            writer = csv.writer(f)
-            writer.writerow(header)
+        if not os.path.isfile(log_path + 'boost_round_log.csv'):
+            print('------------------------------------------------------')
+            print('Creating csv File of Boost Round Log...')
 
-    with open(boost_round_log_path + 'boost_round_log.csv', 'a') as f:
+            with open(log_path + 'boost_round_log.csv', 'w') as f:
+                header = ['idx', 'time', 'lowest_round', 'lowest_global_valid_loss', 'lowest_cv_valid_loss',
+                          'round', 'global_valid_loss', 'cv_valid_loss', 'cv_train_loss',
+                          *param_name_list, 'train_seed', 'cv_seed', 'parameters']
+                writer = csv.writer(f)
+                writer.writerow(header)
 
-        print('------------------------------------------------------')
-        print('Saving Boost Round Log with Global Validation to csv File...')
+        with open(log_path + 'boost_round_log.csv', 'a') as f:
 
-        for i, (round_idx, (gl_valid_loss, valid_loss, train_loss)) in enumerate(lowest_loss_dict.items()):
-            if i == 0:
-                local_time = time.strftime('%Y/%m/%d-%H:%M:%S', time.localtime(time.time()))
-                log = [csv_idx, local_time, lowest_round, lowest_gl_valid_loss, lowest_valid_loss, round_idx,
-                       gl_valid_loss, valid_loss, train_loss, train_seed, cv_seed, str(parameters)]
-            else:
-                log = [csv_idx, '', '', '', '', round_idx, gl_valid_loss,
-                       valid_loss, train_loss, train_seed, cv_seed, '']
-            writer = csv.writer(f)
-            writer.writerow(log)
+            print('------------------------------------------------------')
+            print('Saving Boost Round Log with Global Validation to csv File...')
+
+            for i, (round_idx, (gl_valid_loss, valid_loss, train_loss)) in enumerate(lowest_loss_dict.items()):
+                if i == 0:
+                    local_time = time.strftime('%Y/%m/%d-%H:%M:%S', time.localtime(time.time()))
+                    log = [csv_idx, local_time, lowest_round, lowest_gl_valid_loss, lowest_valid_loss, round_idx,
+                           gl_valid_loss, valid_loss, train_loss, *param_value_list, train_seed, cv_seed, str(parameters)]
+                else:
+                    log = [csv_idx, '', '', '', '', round_idx, gl_valid_loss,
+                           valid_loss, train_loss, train_seed, cv_seed, '']
+                writer = csv.writer(f)
+                writer.writerow(log)
+
+    _save_log(boost_round_log_path)
+    boost_round_log_upper_path += model_name + param_name
+    _save_log(boost_round_log_upper_path)
 
 
 def save_final_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean, valid_loss_round_mean):
@@ -858,6 +871,23 @@ def get_boost_round_log_path(boost_round_log_path, model_name, param_name_list, 
     boost_round_log_path += model_name + param_name + '/'
     check_dir([boost_round_log_path])
     boost_round_log_path += model_name + param_info + '/'
+    check_dir([boost_round_log_path])
+
+    return boost_round_log_path, param_name
+
+
+# Get Path of Boost Round Train
+def get_boost_round_log_upper_path(boost_round_log_path, model_name, param_name_list, append_info):
+
+    param_name = ''
+    for i in range(len(param_name_list)):
+        param_name += '_' + get_simple_param_name(param_name_list[i])
+
+    boost_round_log_path += model_name + '/'
+    check_dir([boost_round_log_path])
+    boost_round_log_path += model_name + '_' + append_info + '/'
+    check_dir([boost_round_log_path])
+    boost_round_log_path += model_name + param_name + '/'
     check_dir([boost_round_log_path])
 
     return boost_round_log_path
