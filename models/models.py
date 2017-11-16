@@ -1,5 +1,6 @@
 import sys
 import re
+import time
 import copy
 import numpy as np
 from models import utils
@@ -478,6 +479,9 @@ class ModelBase(object):
         for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era \
                 in cv_generator(x=self.x_train, y=self.y_train, w=self.w_train, e=self.e_train, **cv_args_copy):
 
+            # CV Start Time
+            cv_start_time = time.time()
+
             cv_count += 1
 
             # Get Positive Rate of Train Set and postscale Rate
@@ -594,6 +598,10 @@ class ModelBase(object):
             loss_valid_total.append(loss_valid)
             loss_train_w_total.append(loss_train_w)
             loss_valid_w_total.append(loss_valid_w)
+
+            # CV End Time
+            print('------------------------------------------------------')
+            print('CV Done! Using Time: {}s'.format(time.time() - cv_start_time))
 
         print('======================================================')
         print('Calculating Final Result...')

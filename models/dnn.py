@@ -419,6 +419,9 @@ class DeepNeuralNetworks(ModelBase):
             for x_train, y_train, w_train, e_train, x_valid, y_valid, w_valid, e_valid, valid_era \
                     in cv_generator(self.x_train, self.y_train, self.w_train, self.e_train, **cv_args_copy):
 
+                # CV Start Time
+                cv_start_time = time.time()
+
                 cv_counter += 1
 
                 # Get Positive Rate of Train Set and postscale Rate
@@ -516,6 +519,10 @@ class DeepNeuralNetworks(ModelBase):
                 if save_cv_pred:
                     utils.save_pred_to_csv(pred_path + 'cv_results/' + self.model_name + '_cv_{}_'.format(cv_counter),
                                            self.id_test, prob_test)
+
+                # CV End Time
+                print('------------------------------------------------------')
+                print('CV Done! Using Time: {}s'.format(time.time() - cv_start_time))
 
             # Final Result
             print('======================================================')
