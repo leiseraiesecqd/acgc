@@ -246,19 +246,19 @@ class Training:
             Auto Train with Logs of Boost Round
         """
         # cv_weights_range = [self.get_cv_weight('range', 1, i+1) for i in [5, 8, 10, 12, 15, 20]]
-        # cv_weights_log = [self.get_cv_weight('log', 1, i+1) for i in [5, 8, 10, 12, 15, 20]]
-        # n_cv_list = [5, 8, 10, 12, 15, 20] * 12
-        # import numpy as np
-        # valid_rate_list = np.array([[i]*6 for i in [0.075, 0.1, 0.125, 0.15, 0.175, 0.2]]*2).reshape(-1,).tolist()
-        # cv_weights_list = cv_weights_range*6 + cv_weights_log*6
+        cv_weights_log = [self.get_cv_weight('log', 1, i+1) for i in [5, 8, 10, 12, 15, 20]]
+        n_cv_list = [5, 8, 10, 12, 15, 20] * 6
+        import numpy as np
+        valid_rate_list = np.array([[i]*6 for i in [0.075, 0.1, 0.125, 0.15, 0.175, 0.2]]).reshape(-1,).tolist()
+        cv_weights_list = cv_weights_log*6
         pg_list = [
                    # [['n_cv', (5, 10, 12, 15, 20)],
                    #  ['valid_rate', (0.1, 0.125, 0.166, 0.2, 0.25)],
                    #  ['window_size', (32, 35, 40, 48, 54, 60)]]
-                   # [['n_cv', n_cv_list],
-                   #  ['valid_rate', valid_rate_list],
-                   #  ['cv_weights', cv_weights_list]]
-                   [['learning_rate', [0.003]]]
+                   [['n_cv', n_cv_list],
+                    ['valid_rate', valid_rate_list],
+                    ['cv_weights', cv_weights_list]]
+                   # [['learning_rate', [0.003]]]
                    # [['max_depth', (7, 8, 9, 10, 11, 12)]],
                    # [['feature_fraction' (0.5, 0.6, 0.7, 0.8, 0.9)]],
                    # [['bagging_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
@@ -268,7 +268,7 @@ class Training:
         cv_seed_list = [95]
         # train_seed_list = None
         # cv_seed_list = None
-        TM.auto_train_boost_round('xgb', num_boost_round=70, n_epoch=1, full_grid_search=False,
+        TM.auto_train_boost_round('xgb', num_boost_round=150, n_epoch=1, full_grid_search=False,
                                   use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
                                   base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
