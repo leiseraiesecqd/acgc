@@ -206,7 +206,7 @@ class Training:
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': 'forward_increase_postscale'}
+                      'append_info': 'forward_increase_log_postscale'}
 
         """
             Cross Validation Arguments
