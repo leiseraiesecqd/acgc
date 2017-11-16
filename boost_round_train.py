@@ -261,7 +261,7 @@ class Training:
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': 'forward_increase_postscale'}
+                      'append_info': 'forward_window_postscale'}
 
         """
             Cross Validation Arguments
@@ -270,7 +270,7 @@ class Training:
         #            'n_cv': 20,
         #            'n_era': 20}
 
-        cv_args = self.get_cv_args('xgb_fi')
+        cv_args = self.get_cv_args('xgb_fw')
 
         """
             Reduced Features
@@ -280,7 +280,7 @@ class Training:
         """
             Base Parameters
         """
-        base_parameters = self.get_base_params('xgb_fi')
+        base_parameters = self.get_base_params('xgb_fw')
 
         # base_parameters = None
 
