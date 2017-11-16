@@ -42,8 +42,7 @@ class DeepNeuralNetworks(ModelBase):
 
         self.model_name = 'dnn'
 
-    @staticmethod
-    def get_pattern():
+    def get_pattern(self):
 
         # [0] | CV: 10 | Epoch: 4/4 | Batch: 7300 | Time: 352.85s | Train_Loss: 0.71237314 | Valid_Loss: 0.72578128
         return re.compile(r'\[(\d*)\].*Train_Loss: (.*) \| Valid_Loss: (.*)')
@@ -319,7 +318,7 @@ class DeepNeuralNetworks(ModelBase):
               save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True, save_final_prob_train=False,
               save_csv_log=True, csv_idx=None, prescale=False, postscale=False, use_global_valid=False,
               return_prob_test=False, mode=None, param_name_list=None, param_value_list=None,
-              file_name_params=None, append_info=None):
+              use_custom_obj=False, file_name_params=None, append_info=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -328,7 +327,12 @@ class DeepNeuralNetworks(ModelBase):
         self.use_global_valid = use_global_valid
 
         cv_args_copy = copy.deepcopy(cv_args)
-        n_valid = cv_args_copy['n_valid']
+        if 'n_valid' in cv_args:
+            n_valid = cv_args_copy['n_valid']
+        elif 'valid_rate' in cv_args:
+            n_valid = cv_args_copy['valid_rate']
+        else:
+            n_valid = ''
         n_cv = cv_args_copy['n_cv']
         n_era = cv_args_copy['n_era']
         cv_seed = cv_args_copy['cv_seed']
@@ -575,8 +579,7 @@ class DeepNeuralNetworks(ModelBase):
                     self.save_csv_log(mode, csv_log_path, param_name_list, param_value_list, csv_idx, loss_train_w_mean,
                                       loss_valid_w_mean, acc_train, train_seed, cv_seed, n_valid, n_cv, parameters,
                                       boost_round_log_path=boost_round_log_path, file_name_params=file_name_params,
-                                      append_info=append_info, use_global_valid=use_global_valid,
-                                      loss_global_valid=loss_global_valid_w_mean,
+                                      append_info=append_info, loss_global_valid=loss_global_valid_w_mean,
                                       acc_global_valid=acc_total_global_valid)
 
             # Save Loss Log to csv File
@@ -700,13 +703,23 @@ class DeepNeuralNetworks(ModelBase):
 
     def prejudge_stack_train(self, x_train, x_g_train, y_train, w_train, e_train, x_valid,
                              x_g_valid, y_valid, w_valid, e_valid, x_test, x_g_test,
-                             pred_path=None, loss_log_path=None, csv_log_path=None, n_valid=4, n_cv=20,
-                             train_seed=None, cv_seed=None, parameters=None, show_importance=False, show_accuracy=False,
-                             save_final_pred=True, save_csv_log=True, csv_idx=None, return_prob_test=False,
-                             mode=None, file_name_params=None, param_name_list=None, param_value_list=None):
+                             pred_path=None, loss_log_path=None, csv_log_path=None, parameters=None, cv_args=None,
+                             train_seed=None, show_importance=False, show_accuracy=False, save_final_pred=True,
+                             save_csv_log=True, csv_idx=None, mode=None, file_name_params=None,
+                             param_name_list=None, param_value_list=None, append_info=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
+
+        cv_args_copy = copy.deepcopy(cv_args)
+        if 'n_valid' in cv_args:
+            n_valid = cv_args_copy['n_valid']
+        elif 'valid_rate' in cv_args:
+            n_valid = cv_args_copy['valid_rate']
+        else:
+            n_valid = ''
+        n_cv = cv_args_copy['n_cv']
+        cv_seed = cv_args_copy['cv_seed']
 
         if csv_idx is None:
             csv_idx = self.model_name
@@ -820,6 +833,7 @@ class DeepNeuralNetworks(ModelBase):
 
             # Print Total Losses
             utils.print_total_loss(loss_train, loss_valid, loss_train_w, loss_valid_w)
+            losses = [loss_train, loss_valid, loss_train_w, loss_valid_w]
 
             # Print and Get Accuracies of CV
             acc_train, acc_valid, acc_train_era, acc_valid_era = \
@@ -837,6 +851,4 @@ class DeepNeuralNetworks(ModelBase):
                                   loss_train_w, loss_valid_w, acc_train, train_seed,
                                   cv_seed, n_valid, n_cv, parameters, file_name_params=file_name_params)
 
-            # Return Final Result
-            if return_prob_test:
-                return prob_test
+            return prob_valid, prob_test, losses

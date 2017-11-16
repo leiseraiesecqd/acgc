@@ -403,7 +403,12 @@ class ModelBase(object):
         self.use_custom_obj = use_custom_obj
 
         cv_args_copy = copy.deepcopy(cv_args)
-        n_valid = cv_args_copy['n_valid']
+        if 'n_valid' in cv_args:
+            n_valid = cv_args_copy['n_valid']
+        elif 'valid_rate' in cv_args:
+            n_valid = cv_args_copy['valid_rate']
+        else:
+            n_valid = ''
         n_cv = cv_args_copy['n_cv']
         n_era = cv_args_copy['n_era']
         cv_seed = cv_args_copy['cv_seed']
@@ -794,7 +799,12 @@ class ModelBase(object):
         utils.check_dir_model(pred_path, loss_log_path)
 
         cv_args_copy = copy.deepcopy(cv_args)
-        n_valid = cv_args_copy['n_valid']
+        if 'n_valid' in cv_args:
+            n_valid = cv_args_copy['n_valid']
+        elif 'valid_rate' in cv_args:
+            n_valid = cv_args_copy['valid_rate']
+        else:
+            n_valid = ''
         n_cv = cv_args_copy['n_cv']
         cv_seed = cv_args_copy['cv_seed']
 
