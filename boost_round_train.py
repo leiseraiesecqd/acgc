@@ -305,13 +305,11 @@ class Training:
                    # [['feature_fraction' (0.5, 0.6, 0.7, 0.8, 0.9)]],
                    # [['bagging_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
                    # [['bagging_freq', (1, 3, 5, 7, 9, 11)]]
-                   [
                     [['max_depth', (8, 9, 10, 11)]],
                     [['min_child_weight', (2, 4, 6, 8)]],
                     [['subsample', (0.75, 0.8, 0.85, 0.9)]],
                     [['colsample_bytree', (0.8, 0.85, 0.9)]],
                     [['colsample_bylevel', (0.7, 0.75, 0.8)]]
-                    ]
                    ]
         train_seed_list = [999]
         cv_seed_list = [95]
