@@ -135,10 +135,10 @@ class Training:
             """
             base_parameters = {'learning_rate': 0.003,
                                'gamma': 0.001,
-                               'max_depth': 10,
+                               'max_depth': 9,
                                'min_child_weight': 8,
-                               'subsample': 0.92,
-                               'colsample_bytree': 0.85,
+                               'subsample': 0.87,
+                               'colsample_bytree': 0.9,
                                'colsample_bylevel': 0.7,
                                'lambda': 0,
                                'alpha': 0,
@@ -261,7 +261,7 @@ class Training:
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': 'forward_increase_postscale'}
+                      'append_info': 'forward_window_postscale_sub'}
 
         """
             Cross Validation Arguments
@@ -270,7 +270,7 @@ class Training:
         #            'n_cv': 20,
         #            'n_era': 20}
 
-        cv_args = self.get_cv_args('xgb_fi')
+        cv_args = self.get_cv_args('xgb_fw')
 
         """
             Reduced Features
@@ -280,7 +280,7 @@ class Training:
         """
             Base Parameters
         """
-        base_parameters = self.get_base_params('xgb_fi')
+        base_parameters = self.get_base_params('xgb_fw')
 
         # base_parameters = None
 
@@ -300,16 +300,16 @@ class Training:
                    # [['n_cv', n_cv_list],
                    #  ['valid_rate', valid_rate_list],
                    #  ['cv_weights', cv_weights_list]]
-                   # [['learning_rate', [0.003]]]
+                   [['learning_rate', [0.003]]]
                    # [['max_depth', (7, 8, 9, 10, 11, 12)]],
                    # [['feature_fraction' (0.5, 0.6, 0.7, 0.8, 0.9)]],
                    # [['bagging_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
                    # [['bagging_freq', (1, 3, 5, 7, 9, 11)]]
-                    [['max_depth', (8, 9, 10, 11)]],
-                    [['min_child_weight', (2, 4, 6, 8)]],
-                    [['subsample', (0.75, 0.8, 0.85, 0.9)]],
-                    [['colsample_bytree', (0.8, 0.85, 0.9)]],
-                    [['colsample_bylevel', (0.7, 0.75, 0.8)]]
+                   #  [['max_depth', (8, 9, 10, 11)]],
+                   #  [['min_child_weight', (2, 4, 6, 8)]],
+                   #  [['subsample', (0.75, 0.8, 0.85, 0.9)]],
+                   #  [['colsample_bytree', (0.8, 0.85, 0.9)]],
+                   #  [['colsample_bylevel', (0.7, 0.75, 0.8)]]
                    ]
         train_seed_list = [999]
         cv_seed_list = [95]
