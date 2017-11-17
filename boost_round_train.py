@@ -261,7 +261,7 @@ class Training:
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': 'forward_window_postscale'}
+                      'append_info': 'forward_increase_postscale'}
 
         """
             Cross Validation Arguments
@@ -270,7 +270,7 @@ class Training:
         #            'n_cv': 20,
         #            'n_era': 20}
 
-        cv_args = self.get_cv_args('xgb_fw')
+        cv_args = self.get_cv_args('xgb_fi')
 
         """
             Reduced Features
@@ -280,7 +280,7 @@ class Training:
         """
             Base Parameters
         """
-        base_parameters = self.get_base_params('xgb_fw')
+        base_parameters = self.get_base_params('xgb_fi')
 
         # base_parameters = None
 
@@ -306,18 +306,18 @@ class Training:
                    # [['bagging_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
                    # [['bagging_freq', (1, 3, 5, 7, 9, 11)]]
                    [
-                    ['max_depth', (9, 10)],
-                    ['min_child_weight', (2, 4, 6)],
-                    ['subsample', (0.8, 0.85, 0.9)],
-                    ['colsample_bytree', (0.8, 0.85, 0.9)],
-                    ['colsample_bylevel', (0.7, 0.75, 0.8)]
+                    [['max_depth', (8, 9, 10, 11)]],
+                    [['min_child_weight', (2, 4, 6, 8)]],
+                    [['subsample', (0.75, 0.8, 0.85, 0.9)]],
+                    [['colsample_bytree', (0.8, 0.85, 0.9)]],
+                    [['colsample_bylevel', (0.7, 0.75, 0.8)]]
                     ]
                    ]
         train_seed_list = [999]
         cv_seed_list = [95]
-        # train_seed_list = None
+        # train_seed_list = Non
         # cv_seed_list = None
-        TM.auto_train_boost_round('xgb', num_boost_round=120, n_epoch=1, full_grid_search=True,
+        TM.auto_train_boost_round('xgb', num_boost_round=120, n_epoch=1, full_grid_search=False,
                                   use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
                                   base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
