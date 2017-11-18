@@ -222,6 +222,7 @@ class Training:
         """
         train_args = {'prescale': False,
                       'postscale': True,
+                      'use_scale_pos_weight': False,
                       'use_global_valid': False,
                       'use_custom_obj': False,
                       'show_importance': False,

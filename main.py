@@ -221,6 +221,7 @@ class Training:
         train_args = {'train_seed': train_seed,
                       'prescale': False,
                       'postscale': False,
+                      'use_scale_pos_weight': False,
                       'use_global_valid': False,
                       'use_custom_obj': False,
                       'show_importance': False,

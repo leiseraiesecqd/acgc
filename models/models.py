@@ -397,7 +397,7 @@ class ModelBase(object):
               save_cv_pred=True, save_cv_prob_train=False, save_final_pred=True, save_final_prob_train=False,
               save_csv_log=True, csv_idx=None, prescale=False, postscale=False, use_global_valid=False,
               return_prob_test=False, mode=None, param_name_list=None, param_value_list=None,
-              use_custom_obj=False, file_name_params=None, append_info=None):
+              use_custom_obj=False, use_scale_pos_weight=False, file_name_params=None, append_info=None):
 
         # Check if directories exit or not
         utils.check_dir_model(pred_path, loss_log_path)
@@ -496,6 +496,10 @@ class ModelBase(object):
                     parameters.pop('metric')
                 if 'eval_metric' in parameters.keys():
                     parameters.pop('eval_metric')
+
+            if use_scale_pos_weight:
+                if self.model_name == 'xgb':
+                    parameters['scale_pos_weight'] = postscale_rate
 
             print('------------------------------------------------------')
             print('Validation Set Era: ', valid_era)
