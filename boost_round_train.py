@@ -295,7 +295,7 @@ class Training:
         # valid_rate_list = np.array([[i]*6 for i in [0.075, 0.1, 0.125, 0.15, 0.175, 0.2]]).reshape(-1,).tolist()
         # cv_weights_list = cv_weights_log*6
         pg_list = [
-                   [['n_cv', (8, 9, 10, 11, 12, 15)],
+                   [['n_cv', (7, 8, 9, 10, 11, 12, 13, 14, 15, 18, 20)],
                     ['valid_rate', (0.005, 0.075, 0.1, 0.125, 0.15, 0.166, 0.175, 0.2)],
                     ['window_size', (32, 34, 36, 48, 40, 42, 44, 46)]]
                    # [['n_cv', n_cv_list],

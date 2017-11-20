@@ -7,8 +7,8 @@ from generate_adversarial_validation import GenerateValidation
 from sklearn.preprocessing import PolynomialFeatures
 from sklearn.preprocessing import LabelBinarizer
 
-train_csv_path = './inputs/stock_train_data_20171111.csv'
-test_csv_path = './inputs/stock_test_data_20171111.csv'
+train_csv_path = './inputs/stock_train_data_20171117.csv'
+test_csv_path = './inputs/stock_test_data_20171117.csv'
 preprocessed_path = './data/preprocessed_data/'
 gan_prob_path = './data/gan_outputs/'
 negative_era_list = [2, 3, 4, 7, 9, 11, 15]
