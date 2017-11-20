@@ -39,6 +39,7 @@ def generate_fake_result(seed, fake_std, label_std):
     #     print(loc_i, ': ', loss_i)
 
     prob = np.random.normal(loc=fake_std, size=len(index), scale=0.0002)
+    # prob[0:10000] = 1
     # prob = [0.999 if ii > loc else ii for ii in prob]
     print(utils.log_loss(prob, label))
 

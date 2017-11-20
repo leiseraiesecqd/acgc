@@ -360,8 +360,8 @@ def save_boost_round_log_gl_to_csv(model_name, boost_round_log_path, boost_round
             print('------------------------------------------------------')
             print('Saving Boost Round Log with Global Validation to csv File...')
 
-            for i, (round_idx, (gl_valid_loss, valid_loss, train_loss)) in enumerate(lowest_loss_dict.items()):
-                if i == 0:
+            for ii, (round_idx, (gl_valid_loss, valid_loss, train_loss)) in enumerate(lowest_loss_dict.items()):
+                if ii == 0:
                     local_time = time.strftime('%Y/%m/%d-%H:%M:%S', time.localtime(time.time()))
                     log = [csv_idx, local_time, lowest_round, lowest_gl_valid_loss, lowest_valid_loss, round_idx,
                            gl_valid_loss, valid_loss, train_loss, *param_value_list, train_seed, cv_seed, str(parameters)]
