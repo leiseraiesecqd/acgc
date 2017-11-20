@@ -119,13 +119,14 @@ class SearchSameID(object):
         print('Same Code Pairs: {}'.format(len(same_idx_list)))
         print('------------------------------------------------------')
         print('Saving Data to csv File...'.format(len(same_idx_list)))
+
         same_idx = np.concatenate(np.array(same_idx_list)).tolist()
         test_f = pd.read_csv(test_path, header=0, dtype=np.float64)
         df = test_f.iloc[same_idx]
-        df['code_id'] = np.concatenate(np.array(same_id_list), axis=0)
         cols = ['code_id', *['feature{}'.format(i) for i in range(97)], 'group1', 'group2', 'id']
         df = df.loc[:, cols]
         df.to_csv(preprocess_path + 'same_test_pairs.csv', sep=',', index=False)
+
         utils.save_data_to_pkl(same_idx_list, preprocess_path + 'same_test_idx_pairs.p')
 
 if __name__ == "__main__":
