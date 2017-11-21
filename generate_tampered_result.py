@@ -44,6 +44,8 @@ class GenerateTamperedData(object):
         #     if code_id in tampered_id_list:
         #         tampered_idx.append(i)
 
+        # tampered_idx = tampered_idx_
+
         tampered_prob = np.random.normal(loc=loc, size=len(tampered_idx), scale=0.0002)
         for i, idx in enumerate(tampered_idx):
             self.prob[idx] = tampered_prob[i]
