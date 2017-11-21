@@ -188,7 +188,7 @@ class Training:
                        'n_cv': 10,
                        'n_era': 119,
                        'cv_generator': CrossValidation.forward_window,
-                       'window_size': 40}
+                       'window_size': 42}
 
         elif model_name == 'xgb_fw':
             """
@@ -198,7 +198,7 @@ class Training:
                        'n_cv': 10,
                        'n_era': 119,
                        'cv_generator': CrossValidation.forward_window,
-                       'window_size': 40}
+                       'window_size': 42}
 
         else:
             cv_args = {'n_valid': 27,
@@ -257,7 +257,7 @@ class Training:
                       'use_custom_obj': False,
                       'show_importance': False,
                       'show_accuracy': False,
-                      'save_final_pred': True,
+                      'save_final_pred': False,
                       'save_final_prob_train': False,
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
@@ -295,9 +295,9 @@ class Training:
         # valid_rate_list = np.array([[i]*6 for i in [0.075, 0.1, 0.125, 0.15, 0.175, 0.2]]).reshape(-1,).tolist()
         # cv_weights_list = cv_weights_log*6
         pg_list = [
-                   [['n_cv', (7, 8, 9, 10, 11, 12, 13, 14, 15, 18, 20)],
-                    ['valid_rate', (0.005, 0.075, 0.1, 0.125, 0.15, 0.166, 0.175, 0.2)],
-                    ['window_size', (32, 34, 36, 48, 40, 42, 44, 46)]]
+                   # [['n_cv', (7, 8, 9, 10, 11, 12, 13, 14, 15, 18, 20)],
+                   #  ['valid_rate', (0.05, 0.075, 0.1, 0.125, 0.15, 0.166, 0.175, 0.2)],
+                   #  ['window_size', (32, 34, 36, 40, 42, 44, 46, 48)]]
                    # [['n_cv', n_cv_list],
                    #  ['valid_rate', valid_rate_list],
                    #  ['cv_weights', cv_weights_list]]
@@ -306,15 +306,15 @@ class Training:
                    # [['feature_fraction' (0.5, 0.6, 0.7, 0.8, 0.9)]],
                    # [['bagging_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
                    # [['bagging_freq', (1, 3, 5, 7, 9, 11)]]
-                   #  [
-                   #   ['max_depth', (9, 12, 13)],
-                   #   ['min_child_weight', (2, 8, 16, 32, 64)],
-                   #   ['subsample', [0.9]],
-                   #   ['colsample_bytree', [0.9]],
-                   #   ['colsample_bylevel', [0.7]],
-                   #   ['gamma', (0.0001, 0.0005, 0.001, 0.005, 0.01, 0.1)],
-                   #   ['lambda', (0.01, 0.05, 0.1, 0.5, 1)]
-                   #  ]
+                   [
+                    ['max_depth', (8, 9, 10, 12, 13)],
+                    ['min_child_weight', (1, 2, 3, 5, 7, 9)],
+                    ['subsample', (0.86, 0.88, 0.9, 0.92)],
+                    ['colsample_bytree', (0.86, 0.88, 0.9, 0.92)],
+                    ['colsample_bylevel', (0.65, 0.7, 0.75, 0.8)],
+                    # ['gamma', (0.0001, 0.0005, 0.001, 0.005, 0.01, 0.1)],
+                    # ['lambda', (0.01, 0.05, 0.1, 0.5, 1)]
+                    ]
                    ]
         train_seed_list = [999]
         cv_seed_list = [95]
@@ -322,7 +322,7 @@ class Training:
         # cv_seed_list = None
         TM.auto_train_boost_round('xgb', num_boost_round=150, n_epoch=1, full_grid_search=True,
                                   use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
-                                  base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
+                                  base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=False,
                                   reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
 
 
