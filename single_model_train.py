@@ -1,7 +1,7 @@
 import random
 import time
-import parameters
-from models import utils
+
+from models import utils, parameters
 from models.training_mode import TrainingMode
 
 

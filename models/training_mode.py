@@ -1,6 +1,5 @@
 import random
-import time
-from parameters import *
+from models.parameters import *
 
 
 class TrainingMode:
