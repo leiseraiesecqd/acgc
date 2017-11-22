@@ -15,7 +15,7 @@ class SearchSameID(object):
     def __init__(self):
 
         self.x_test, self.id_test = utils.load_preprocessed_data(preprocess_path)[-2:]
-        self.code_id_test = utils.load_preprocessed_code_id(preprocess_path)[-1]
+        self.code_id_train, self.code_id_test = utils.load_preprocessed_code_id(preprocess_path)
 
         self.x_test = self.x_test[:, feature_list]
 
@@ -26,6 +26,18 @@ class SearchSameID(object):
             if i_x1 != i_x2:
                 is_same = False
         return is_same
+
+    def search_diff_code_id(self):
+
+        print('Searching Different Code ID of Test Set...')
+        print('------------------------------------------------------')
+
+        diff_code_id_test = np.array(list(set([i for i in self.code_id_test if i not in self.code_id_train])), dtype=int)
+        diff_code_id_test.reshape(-1, 1)
+
+        print('Number of diff_code_id_test: ', diff_code_id_test.shape[0])
+        print('Saving {} ...'.format(preprocess_path + 'diff_code_id_test.csv'))
+        np.savetxt(preprocess_path + 'diff_code_id_test.csv', diff_code_id_test, delimiter=',', fmt='%d')
 
     def get_same_id_list(self, x_test, id_test, test_idx):
 
@@ -101,10 +113,16 @@ class SearchSameID(object):
 
     def main(self):
 
+        print('Split Data Set by Code ID...')
+        print('------------------------------------------------------')
+
         x_test_list, id_test_list, code_id_list, test_idx_list = self.split_data_by_code_id()
 
         same_id_list = []
         same_idx_list = []
+
+        print('Searching Same ID Pairs...')
+        print('------------------------------------------------------')
 
         for i in tqdm.trange(len(id_test_list)):
 
@@ -134,11 +152,10 @@ if __name__ == "__main__":
     start_time = time.time()
 
     print('======================================================')
-    print('Searching Same ID Pairs...')
-    print('------------------------------------------------------')
 
     SSI = SearchSameID()
-    SSI.main()
+    # SSI.main()
+    SSI.search_diff_code_id()
 
     print('------------------------------------------------------')
     print('Done!')

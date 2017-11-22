@@ -307,7 +307,7 @@ class Training:
                    # [['bagging_fraction', (0.5, 0.6, 0.7, 0.8, 0.9)]],
                    # [['bagging_freq', (1, 3, 5, 7, 9, 11)]]
                    [
-                    ['max_depth', (8, 9, 10, 12, 13)],
+                    ['max_depth', (9, 10, 11)],
                     ['min_child_weight', (1, 2, 3, 5, 7, 9)],
                     ['subsample', (0.86, 0.88, 0.9, 0.92)],
                     ['colsample_bytree', (0.86, 0.88, 0.9, 0.92)],
