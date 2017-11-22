@@ -9,6 +9,7 @@ from models import utils
 base_model_path = './results/fake_results/'
 tampered_pred_path = './results/tampered_results/'
 preprocessed_data_path = preprocess.preprocessed_path
+test_path = preprocess.test_csv_path
 
 
 class GenerateTamperedData(object):
@@ -23,6 +24,10 @@ class GenerateTamperedData(object):
         self.id_test = utils.load_pkl_to_data(preprocessed_data_path + 'id_test.p')
         self.same_idx_list = utils.load_pkl_to_data(preprocessed_data_path + 'same_test_idx_pairs.p')
         self.code_id_train, self.code_id_test = utils.load_preprocessed_code_id(preprocessed_data_path)
+
+        self.test_id_to_idx_dict = {}
+        for idx, id_ in enumerate(self.id_test):
+            self.test_id_to_idx_dict[id_] = idx
 
     def generate_single_fake_result(self, loc):
 
@@ -66,6 +71,10 @@ class GenerateTamperedData(object):
 
         df.to_csv(data_path + '{}_{}-{}_{}-{}_result.csv'.format(i+1, id1, x1, id2, x2), sep=',', index=False)
 
+    def get_test_idx(self, id_):
+
+        return self.test_id_to_idx_dict[id_]
+
     def tamper_result(self, idx_pair_list):
 
         print('------------------------------------------------------')
@@ -74,10 +83,10 @@ class GenerateTamperedData(object):
 
         for i in tqdm.trange(len(idx_pair_list)):
 
-            idx1, idx2 = self.same_idx_list[i]
+            idx1, idx2 = idx_pair_list[i]
             id1, id2 = self.id_test[idx1], self.id_test[idx2]
 
-            data_path = tampered_pred_path + '{}_{}_{}/'.format(i + 1, id1, id2)
+            data_path = tampered_pred_path + '{}_{}_{}/'.format(i+1, id1, id2)
             utils.check_dir([data_path])
 
             self.save_tampered_results(i, self.prob, 1, 0, idx1, idx2, id1, id2, data_path)
@@ -127,7 +136,9 @@ class GenerateTamperedData(object):
             for idx_s, code_id_s in enumerate(same_test_code_id):
                 if code_id_bw == code_id_s:
                     # print('is_first: {} | {}'.format(is_first, same_test_df.iloc[idx_s]['feature0']))
-                    big_weight_idx_pair.append(idx_s)
+                    id_bw = same_test_id[idx_s]
+                    test_idx_bw = self.get_test_idx(id_bw)
+                    big_weight_idx_pair.append(test_idx_bw)
                     if is_first:
                         is_first = False
                     else:
@@ -136,7 +147,7 @@ class GenerateTamperedData(object):
                         is_first = True
                     w_train_col.append(w_train_bw)
                     code_id_col.append(code_id_bw)
-                    id_col.append(same_test_id[idx_s])
+                    id_col.append(id_bw)
                     if len(big_weight_idx_pair_list) >= n_pairs:
                         exit_flag = True
                         break
@@ -164,7 +175,10 @@ class GenerateTamperedData(object):
         print('------------------------------------------------------')
         print('Saving big_weight_same_pairs.csv...')
         big_weight_idx = np.concatenate(np.array(big_weight_idx_pair_list)).tolist()
-        df = same_test_df.iloc[big_weight_idx]
+        test_f = pd.read_csv(test_path, header=0, dtype=np.float64)
+        df = test_f.iloc[big_weight_idx]
+        cols = ['code_id', *['feature{}'.format(i) for i in range(97)], 'group1', 'group2', 'id']
+        df = df.loc[:, cols]
         df.to_csv(preprocessed_data_path + 'big_weight_same_pairs.csv', sep=',', index=False)
 
         print('------------------------------------------------------')
@@ -197,7 +211,9 @@ class GenerateTamperedData(object):
             for idx_s, code_id_s in enumerate(same_test_code_id):
                 if code_id_ab == code_id_s:
                     # print('is_first: {} | {}'.format(is_first, same_test_df.iloc[idx_s]['feature0']))
-                    absent_idx_pair.append(idx_s)
+                    id_ab = same_test_id[idx_s]
+                    test_idx_ab = self.get_test_idx(id_ab)
+                    absent_idx_pair.append(test_idx_ab)
                     if is_first:
                         is_first = False
                     else:
@@ -205,7 +221,7 @@ class GenerateTamperedData(object):
                         absent_idx_pair = []
                         is_first = True
                     code_id_col.append(code_id_ab)
-                    id_col.append(same_test_id[idx_s])
+                    id_col.append(id_ab)
                     if len(absent_idx_pair_list) >= n_pairs:
                         exit_flag = True
                         break
@@ -232,7 +248,10 @@ class GenerateTamperedData(object):
         print('------------------------------------------------------')
         print('Saving absent_same_pairs.csv...')
         absent_idx = np.concatenate(np.array(absent_idx_pair_list)).tolist()
-        df = same_test_df.iloc[absent_idx]
+        test_f = pd.read_csv(test_path, header=0, dtype=np.float64)
+        df = test_f.iloc[absent_idx]
+        cols = ['code_id', *['feature{}'.format(i) for i in range(97)], 'group1', 'group2', 'id']
+        df = df.loc[:, cols]
         df.to_csv(preprocessed_data_path + 'absent_same_pairs.csv', sep=',', index=False)
 
         print('------------------------------------------------------')
@@ -251,8 +270,8 @@ if __name__ == '__main__':
 
     # GTD.generate_single_fake_result(loc=0.1)
     # GTD.generate_all_tampered_results()
-    # GTD.generate_big_weight_tampered_results(300)
-    GTD.generate_absent_tampered_results(300)
+    GTD.generate_big_weight_tampered_results(300)
+    # GTD.generate_absent_tampered_results(300)
 
     print('------------------------------------------------------')
     print('Done!')
