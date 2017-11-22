@@ -6,7 +6,7 @@ rm -rf logs
 rm -rf *outputs
 rm -rf data
 rm -rf checkpoints
-ggpull
+git pull
 mkdir inputs
 cd inputs/
 wget http://static1.challenger.ai/ai_challenger_stock_train_20171117.zip

@@ -6,4 +6,4 @@ rm -rf *outputs
 rm -rf data
 rm -rf checkpoints
 git reset --hard
-ggpull
+git pull
