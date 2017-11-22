@@ -267,7 +267,8 @@ class GenerateTamperedData(object):
                 is_same = False
         return is_same
 
-    def generate_custom_tempered_result(self, tamper_list_path=None, base_result_path=None, check=True):
+    def generate_custom_tempered_result(self, tamper_list_path=None, base_result_path=None,
+                                        append_info=None, check=True):
 
         print('Loading {}...'.format(tamper_list_path))
         tamper_list_df = pd.read_csv(tamper_list_path, header=0, dtype=np.float64)
@@ -311,9 +312,11 @@ class GenerateTamperedData(object):
         print('------------------------------------------------------')
         tampered_pred_path_ = './results/custom_tampered_results/'
         utils.check_dir([tampered_pred_path_])
-        print('Saving {}...'.format(tampered_pred_path_ + 'custom_tampered_result.csv'))
+        if append_info is not None:
+            tampered_pred_path_ += append_info + '_'
+        print('Saving {}...'.format(tampered_pred_path_ + 'tampered_result.csv'))
         df = pd.DataFrame({'id': self.id_test, 'proba': tampered_prob})
-        df.to_csv(tampered_pred_path_ + 'custom_tampered_result.csv', sep=',', index=False)
+        df.to_csv(tampered_pred_path_ + 'tampered_result.csv', sep=',', index=False)
 
 
 if __name__ == '__main__':
@@ -333,7 +336,7 @@ if __name__ == '__main__':
     """Generate Custom Tampered Result"""
     base_result_path_ = './results/fake_results/0.5_fake_result.csv'
     tamper_list_path_ = './tamper_list.csv'
-    GTD.generate_custom_tempered_result(tamper_list_path=tamper_list_path_,
+    GTD.generate_custom_tempered_result(tamper_list_path=tamper_list_path_, append_info='custom',
                                         base_result_path=base_result_path_, check=True)
 
     print('------------------------------------------------------')
