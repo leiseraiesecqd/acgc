@@ -6,7 +6,7 @@ import pandas as pd
 import preprocess
 from models import utils
 
-base_model_path = './results/fake_results/'
+base_fake_result_path = './results/fake_results/'
 tampered_pred_path = './results/tampered_results/'
 preprocessed_data_path = preprocess.preprocessed_path
 test_path = preprocess.test_csv_path
@@ -19,7 +19,7 @@ class GenerateTamperedData(object):
         utils.check_dir([tampered_pred_path])
         np.random.seed(seed)
 
-        base_result = pd.read_csv(base_model_path + '0.5_fake_result.csv', header=0, dtype=np.float64)
+        base_result = pd.read_csv(base_fake_result_path + '0.5_fake_result.csv', header=0, dtype=np.float64)
         self.prob = np.array(base_result['proba'], dtype=np.float64)
         self.id_test = utils.load_pkl_to_data(preprocessed_data_path + 'id_test.p')
         self.same_idx_list = utils.load_pkl_to_data(preprocessed_data_path + 'same_test_idx_pairs.p')
@@ -29,7 +29,7 @@ class GenerateTamperedData(object):
         for idx, id_ in enumerate(self.id_test):
             self.test_id_to_idx_dict[id_] = idx
 
-    def generate_single_fake_result(self, loc):
+    def generate_many_fake_result(self, loc):
 
         tampered_idx_ = np.concatenate(np.array(self.same_idx_list), axis=0).tolist()
 
@@ -259,6 +259,62 @@ class GenerateTamperedData(object):
 
         self.tamper_result(absent_idx_pair_list)
 
+    @staticmethod
+    def compare(x1, x2):
+        is_same = True
+        for i_x1, i_x2 in zip(x1, x2):
+            if i_x1 != i_x2:
+                is_same = False
+        return is_same
+
+    def generate_custom_tempered_result(self, tamper_list_path=None, base_result_path=None, check=True):
+
+        print('Loading {}...'.format(tamper_list_path))
+        tamper_list_df = pd.read_csv(tamper_list_path, header=0, dtype=np.float64)
+        tamper_id = tamper_list_df['id']
+        tamper_prob = tamper_list_df['proba']
+
+        if check:
+            print('Loading {}...'.format(test_path))
+            test_df = pd.read_csv(test_path, header=0, dtype=np.float64)
+
+        if base_result_path is None:
+            tampered_prob = self.prob.copy()
+        else:
+            base_result = pd.read_csv(base_result_path, header=0, dtype=np.float64)
+            tampered_prob = np.array(base_result['proba'], dtype=np.float64)
+
+        print('------------------------------------------------------')
+        print('Generating Custom Tampered Result...')
+        is_first = True
+        check_feature_list = [13, 16, 49]
+        check_list_1 = []
+        check_list_2 = []
+        for i, (id_, prob_) in enumerate(zip(tamper_id, tamper_prob)):
+            test_idx = self.get_test_idx(id_)
+            tampered_prob[test_idx] = prob_
+            if check:
+                if is_first:
+                    is_first = False
+                    for feature_idx in check_feature_list:
+                        check_list_1.append(test_df.loc[test_idx, 'feature'+str(feature_idx)])
+                else:
+                    for feature_idx in check_feature_list:
+                        check_list_2.append(test_df.loc[test_idx, 'feature'+str(feature_idx)])
+                    if not self.compare(check_list_1, check_list_2):
+                        raise ValueError("[E] Not Same! (ID: {}-{})".format(tamper_id[i-1], id_))
+                    else:
+                        is_first = True
+                        check_list_1 = []
+                        check_list_2 = []
+
+        print('------------------------------------------------------')
+        tampered_pred_path_ = tampered_pred_path + 'custom_tampered_results/'
+        print('Saving {}...'.format(tampered_pred_path_ + 'custom_tampered_result.csv'))
+        df = pd.DataFrame({'id': self.id_test, 'proba': tampered_prob})
+        df.to_csv(tampered_pred_path_ + 'custom_tampered_result.csv', sep=',', index=False)
+
+
 if __name__ == '__main__':
 
     start_time = time.time()
@@ -268,10 +324,16 @@ if __name__ == '__main__':
     global_seed = random.randint(0, 500)
     GTD = GenerateTamperedData(global_seed)
 
-    # GTD.generate_single_fake_result(loc=0.1)
+    # GTD.generate_many_fake_result(loc=0.1)
     # GTD.generate_all_tampered_results()
-    GTD.generate_big_weight_tampered_results(300)
+    # GTD.generate_big_weight_tampered_results(300)
     # GTD.generate_absent_tampered_results(300)
+
+    """Generate Custom Tampered Result"""
+    base_result_path_ = './results/fake_results/0.5_fake_result.csv'
+    tamper_list_path_ = './tamper_list.csv'
+    GTD.generate_custom_tempered_result(tamper_list_path=tamper_list_path_,
+                                        base_result_path=base_result_path_, check=True)
 
     print('------------------------------------------------------')
     print('Done!')
