@@ -309,7 +309,7 @@ class GenerateTamperedData(object):
                         check_list_2 = []
 
         print('------------------------------------------------------')
-        tampered_pred_path_ = tampered_pred_path + 'custom_tampered_results/'
+        tampered_pred_path_ = './results/custom_tampered_results/'
         utils.check_dir([tampered_pred_path_])
         print('Saving {}...'.format(tampered_pred_path_ + 'custom_tampered_result.csv'))
         df = pd.DataFrame({'id': self.id_test, 'proba': tampered_prob})
