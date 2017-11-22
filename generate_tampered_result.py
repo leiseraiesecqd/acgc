@@ -102,7 +102,7 @@ class GenerateTamperedData(object):
         print('Calculating Big Weight Same Pairs...')
         print('------------------------------------------------------')
         print('Sorting...')
-        sorted_by_weight_idx = np.argsort(w_train)[:-n_pairs*5:-1]
+        sorted_by_weight_idx = np.argsort(w_train)[:-n_pairs*3:-1]
         sorted_w_train = w_train[sorted_by_weight_idx]
         sorted_code_id_train = self.code_id_train[sorted_by_weight_idx]
 
@@ -172,6 +172,74 @@ class GenerateTamperedData(object):
 
         self.tamper_result(big_weight_idx_pair_list)
 
+    def generate_absent_tampered_results(self, n_pairs):
+
+        diff_code_id_test = utils.load_pkl_to_data(preprocessed_data_path + 'diff_code_id_test.p')
+        same_test_df = pd.read_csv(preprocessed_data_path + 'same_test_pairs.csv', header=0, dtype=np.float64)
+        same_test_code_id = same_test_df['code_id']
+        same_test_id = same_test_df['id']
+
+        print('------------------------------------------------------')
+        print('Calculating Absent Same Pairs...')
+        print('------------------------------------------------------')
+        print('Sorting...')
+        diff_code_id_test = np.sort(diff_code_id_test)
+        absent_code_id = diff_code_id_test[:-n_pairs*3:-1]
+
+        print('Generating Pairs...')
+        code_id_col = []
+        id_col = []
+        absent_idx_pair_list = []
+        exit_flag = False
+        for code_id_ab in absent_code_id:
+            absent_idx_pair = []
+            is_first = True
+            for idx_s, code_id_s in enumerate(same_test_code_id):
+                if code_id_ab == code_id_s:
+                    # print('is_first: {} | {}'.format(is_first, same_test_df.iloc[idx_s]['feature0']))
+                    absent_idx_pair.append(idx_s)
+                    if is_first:
+                        is_first = False
+                    else:
+                        absent_idx_pair_list.append(absent_idx_pair)
+                        absent_idx_pair = []
+                        is_first = True
+                    code_id_col.append(code_id_ab)
+                    id_col.append(same_test_id[idx_s])
+                    if len(absent_idx_pair_list) >= n_pairs:
+                        exit_flag = True
+                        break
+            if exit_flag:
+                break
+
+        print('------------------------------------------------------')
+        print('Number of Absent Same Pairs: {}'.format(len(absent_idx_pair_list)))
+        print('Saving absent_idx_pairs.p...')
+        utils.save_data_to_pkl(absent_idx_pair_list, preprocessed_data_path + 'absent_idx_pairs.p')
+
+        print('------------------------------------------------------')
+        print('Saving absent_tampered_log.csv...')
+        index = []
+        for i in range(1, len(absent_idx_pair_list)+1):
+            index.extend([i, i])
+        df_log = pd.DataFrame({'index': np.array(index, dtype=int),
+                               'code_id': np.array(code_id_col, dtype=int),
+                               'id': np.array(id_col, dtype=int)})
+        cols = ['index', 'code_id', 'id']
+        df_log = df_log.loc[:, cols]
+        df_log.to_csv(tampered_pred_path + 'absent_tampered_log.csv', sep=',', index=False)
+
+        print('------------------------------------------------------')
+        print('Saving absent_same_pairs.csv...')
+        absent_idx = np.concatenate(np.array(absent_idx_pair_list)).tolist()
+        df = same_test_df.iloc[absent_idx]
+        df.to_csv(preprocessed_data_path + 'absent_same_pairs.csv', sep=',', index=False)
+
+        print('------------------------------------------------------')
+        print('Generating Absent Tampered Results...')
+
+        self.tamper_result(absent_idx_pair_list)
+
 if __name__ == '__main__':
 
     start_time = time.time()
@@ -183,7 +251,8 @@ if __name__ == '__main__':
 
     # GTD.generate_single_fake_result(loc=0.1)
     # GTD.generate_all_tampered_results()
-    GTD.generate_big_weight_tampered_results(300)
+    # GTD.generate_big_weight_tampered_results(300)
+    GTD.generate_absent_tampered_results(300)
 
     print('------------------------------------------------------')
     print('Done!')

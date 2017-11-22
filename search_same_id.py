@@ -36,6 +36,7 @@ class SearchSameID(object):
         diff_code_id_test.reshape(-1, 1)
 
         print('Number of diff_code_id_test: ', diff_code_id_test.shape[0])
+        utils.save_data_to_pkl(diff_code_id_test, preprocess_path + 'diff_code_id_test.p')
         print('Saving {} ...'.format(preprocess_path + 'diff_code_id_test.csv'))
         np.savetxt(preprocess_path + 'diff_code_id_test.csv', diff_code_id_test, delimiter=',', fmt='%d')
 
@@ -156,8 +157,8 @@ if __name__ == "__main__":
     print('======================================================')
 
     SSI = SearchSameID()
-    # SSI.main()
     SSI.search_diff_code_id()
+    SSI.main()
 
     print('------------------------------------------------------')
     print('Done!')
