@@ -24,12 +24,15 @@ class GenerateTamperedData(object):
         self.id_test = utils.load_pkl_to_data(preprocessed_data_path + 'id_test.p')
         self.same_idx_list = utils.load_pkl_to_data(preprocessed_data_path + 'same_test_idx_pairs.p')
         self.code_id_train, self.code_id_test = utils.load_preprocessed_code_id(preprocessed_data_path)
+        same_test_df = pd.read_csv(preprocessed_data_path + 'same_test_pairs.csv', header=0, dtype=np.float64)
+        self.same_test_code_id = same_test_df['code_id']
+        self.same_test_id = same_test_df['id']
 
         self.test_id_to_idx_dict = {}
         for idx, id_ in enumerate(self.id_test):
             self.test_id_to_idx_dict[id_] = idx
 
-    def generate_many_fake_result(self, loc):
+    def generate_fake_results_by_batch(self, loc):
 
         tampered_idx_ = np.concatenate(np.array(self.same_idx_list), axis=0).tolist()
 
@@ -61,51 +64,138 @@ class GenerateTamperedData(object):
 
         utils.save_pred_to_csv(tampered_pred_path + 'tampered_', self.id_test, self.prob)
 
-    def save_tampered_results(self, i, prob, x1, x2, idx1, idx2, id1, id2, data_path):
+    def save_same_pair_tampered_results(self, i, prob, x1, x2, idx1, idx2, data_path, info):
 
         tampered_prob = prob.copy()
         tampered_prob[idx1] = x1
         tampered_prob[idx2] = x2
+        id1, id2 = self.id_test[idx1], self.id_test[idx2]
+        data_path += '{}_tampered_results/'.format(info)
+        utils.check_dir([data_path])
+        data_path += '{}_{}_{}/'.format(i + 1, id1, id2)
+        utils.check_dir([data_path])
 
         df = pd.DataFrame({'id': self.id_test, 'proba': tampered_prob})
-
         df.to_csv(data_path + '{}_{}-{}_{}-{}_result.csv'.format(i+1, id1, x1, id2, x2), sep=',', index=False)
+
+    @staticmethod
+    def save_same_pairs_test_csv(data_path, idx_pair_list):
+
+        print('------------------------------------------------------')
+        print('Saving {} ...'.format(data_path))
+        big_weight_idx = np.concatenate(np.array(idx_pair_list)).tolist()
+        test_f = pd.read_csv(test_path, header=0, dtype=np.float64)
+        df = test_f.iloc[big_weight_idx]
+        cols = ['code_id', *['feature{}'.format(i) for i in range(97)], 'group1', 'group2', 'id']
+        df = df.loc[:, cols]
+        df.to_csv(data_path, sep=',', index=False)
 
     def get_test_idx(self, id_):
 
         return self.test_id_to_idx_dict[id_]
 
-    def tamper_result(self, idx_pair_list):
+    def get_pair_list(self, n_pairs, code_id_list, use_weight=False, w_train_list=None):
+
+        w_train_col = []
+        code_id_col = []
+        id_col = []
+        idx_pair_list = []
+        exit_flag = False
+
+        for i, code_id in enumerate(code_id_list):
+            if use_weight:
+                w_train = w_train_list[i]
+            else:
+                w_train = None
+            idx_pair = []
+            is_first = True
+            for idx_s, code_id_s in enumerate(self.same_test_code_id):
+                if code_id == code_id_s:
+                    # print('is_first: {} | {}'.format(is_first, same_test_df.iloc[idx_s]['feature0']))
+                    id_ = self.same_test_id[idx_s]
+                    test_idx = self.get_test_idx(id_)
+                    idx_pair.append(test_idx)
+                    if is_first:
+                        is_first = False
+                    else:
+                        idx_pair_list.append(idx_pair)
+                        idx_pair = []
+                        is_first = True
+                    if use_weight:
+                        w_train_col.append(w_train)
+                    code_id_col.append(code_id)
+                    id_col.append(id_)
+                    if len(idx_pair_list) >= n_pairs:
+                        exit_flag = True
+                        break
+            if exit_flag:
+                break
+
+        if use_weight:
+            return idx_pair_list, w_train_col, code_id_col, id_col
+        else:
+            return idx_pair_list, code_id_col, id_col
+
+    def tamper_result(self, idx_pair_list, info):
 
         print('------------------------------------------------------')
         print('Generating Tampered Results...')
-        print('------------------------------------------------------')
 
         for i in tqdm.trange(len(idx_pair_list)):
 
             idx1, idx2 = idx_pair_list[i]
-            id1, id2 = self.id_test[idx1], self.id_test[idx2]
+            self.save_same_pair_tampered_results(i, self.prob, 1, 0, idx1, idx2, tampered_pred_path, info)
+            self.save_same_pair_tampered_results(i, self.prob, 0, 1, idx1, idx2, tampered_pred_path, info)
+            self.save_same_pair_tampered_results(i, self.prob, 1, 1, idx1, idx2, tampered_pred_path, info)
 
-            data_path = tampered_pred_path + '{}_{}_{}/'.format(i+1, id1, id2)
-            utils.check_dir([data_path])
-
-            self.save_tampered_results(i, self.prob, 1, 0, idx1, idx2, id1, id2, data_path)
-            self.save_tampered_results(i, self.prob, 0, 1, idx1, idx2, id1, id2, data_path)
-            self.save_tampered_results(i, self.prob, 1, 1, idx1, idx2, id1, id2, data_path)
-
-    def generate_all_tampered_results(self):
+    def generate_all_same_tampered_results(self):
 
         print('------------------------------------------------------')
         print('Generating All Tampered Results...')
 
-        self.tamper_result(self.same_idx_list)
+        self.tamper_result(self.same_idx_list, 'all_same')
 
-    def generate_big_weight_tampered_results(self, n_pairs):
+    def generate_tampered_results_by_range(self, start_code_id, n_pairs, reverse=False):
+
+        print('------------------------------------------------------')
+        print('Generating All Tampered Results...')
+        stop_code_id = start_code_id+(n_pairs*3)
+        range_code_id = range(start_code_id, stop_code_id)
+        if reverse:
+            range_code_id = range_code_id[::-1]
+
+        print('Generating Pairs...')
+        idx_pair_list, code_id_col, id_col = self.get_pair_list(n_pairs, range_code_id,)
+
+        print('------------------------------------------------------')
+        print('Number of Range Same Pairs: {}'.format(len(idx_pair_list)))
+        pickle_path = preprocessed_data_path + 'range-{}-{}_idx_pairs.p'.format(start_code_id, n_pairs)
+        utils.save_data_to_pkl(idx_pair_list, pickle_path)
+
+        index = []
+        for i in range(1, len(idx_pair_list) + 1):
+            index.extend([i, i])
+        df_log = pd.DataFrame({'index': np.array(index, dtype=int),
+                               'code_id': np.array(code_id_col, dtype=int),
+                               'id': np.array(id_col, dtype=int)})
+        cols = ['index', 'code_id', 'id']
+        df_log = df_log.loc[:, cols]
+        tampered_pred_path_ = tampered_pred_path + 'range-{}-{}_tampered_log.csv'.format(start_code_id, n_pairs)
+
+        print('------------------------------------------------------')
+        print('Saving {} ...'.format(tampered_pred_path_))
+        df_log.to_csv(tampered_pred_path_, sep=',', index=False)
+
+        # Save Same Pairs csv file
+        test_csv_path = preprocessed_data_path + 'range-{}-{}_same_pairs.csv'.format(start_code_id, n_pairs)
+        self.save_same_pairs_test_csv(test_csv_path, idx_pair_list)
+
+        # Generate Tampered Results
+        self.tamper_result(idx_pair_list, 'range-{}-{}'.format(start_code_id, n_pairs))
+
+    def generate_tampered_results_by_weight(self, n_pairs):
 
         w_train = utils.load_pkl_to_data(preprocessed_data_path + 'w_train.p')
-        same_test_df = pd.read_csv(preprocessed_data_path + 'same_test_pairs.csv', header=0, dtype=np.float64)
-        same_test_code_id = same_test_df['code_id']
-        same_test_id = same_test_df['id']
 
         print('------------------------------------------------------')
         print('Calculating Big Weight Same Pairs...')
@@ -120,49 +210,20 @@ class GenerateTamperedData(object):
         big_weight_w_train = []
         for idx, code_id in enumerate(sorted_code_id_train):
             if code_id not in big_weight_code_id:
-                if code_id in set(same_test_code_id):
+                if code_id in set(self.same_test_code_id):
                     big_weight_code_id.append(code_id)
                     big_weight_w_train.append(sorted_w_train[idx])
 
         print('Generating Pairs...')
-        w_train_col = []
-        code_id_col = []
-        id_col = []
-        big_weight_idx_pair_list = []
-        exit_flag = False
-        for code_id_bw, w_train_bw in zip(big_weight_code_id, big_weight_w_train):
-            big_weight_idx_pair = []
-            is_first = True
-            for idx_s, code_id_s in enumerate(same_test_code_id):
-                if code_id_bw == code_id_s:
-                    # print('is_first: {} | {}'.format(is_first, same_test_df.iloc[idx_s]['feature0']))
-                    id_bw = same_test_id[idx_s]
-                    test_idx_bw = self.get_test_idx(id_bw)
-                    big_weight_idx_pair.append(test_idx_bw)
-                    if is_first:
-                        is_first = False
-                    else:
-                        big_weight_idx_pair_list.append(big_weight_idx_pair)
-                        big_weight_idx_pair = []
-                        is_first = True
-                    w_train_col.append(w_train_bw)
-                    code_id_col.append(code_id_bw)
-                    id_col.append(id_bw)
-                    if len(big_weight_idx_pair_list) >= n_pairs:
-                        exit_flag = True
-                        break
-            if exit_flag:
-                break
+        idx_pair_list, w_train_col, code_id_col, id_col = \
+            self.get_pair_list(n_pairs, big_weight_code_id, use_weight=True, w_train_list=big_weight_w_train)
 
         print('------------------------------------------------------')
-        print('Number of Big Weight Same Pairs: {}'.format(len(big_weight_idx_pair_list)))
-        print('Saving big_weight_idx_pairs.p...')
-        utils.save_data_to_pkl(big_weight_idx_pair_list, preprocessed_data_path + 'big_weight_idx_pairs.p')
+        print('Number of Big Weight Same Pairs: {}'.format(len(idx_pair_list)))
+        utils.save_data_to_pkl(idx_pair_list, preprocessed_data_path + 'big_weight_idx_pairs.p')
 
-        print('------------------------------------------------------')
-        print('Saving big_weight_tampered_log.csv...')
         index = []
-        for i in range(1, len(big_weight_idx_pair_list)+1):
+        for i in range(1, len(idx_pair_list)+1):
             index.extend([i, i])
         df_log = pd.DataFrame({'index': np.array(index, dtype=int),
                                'weight': np.array(w_train_col),
@@ -170,28 +231,21 @@ class GenerateTamperedData(object):
                                'id': np.array(id_col, dtype=int)})
         cols = ['index', 'weight', 'code_id', 'id']
         df_log = df_log.loc[:, cols]
-        df_log.to_csv(tampered_pred_path + 'big_weight_tampered_log.csv', sep=',', index=False)
+        tampered_pred_path_ = tampered_pred_path + 'big_weight_tampered_log.csv'
 
         print('------------------------------------------------------')
-        print('Saving big_weight_same_pairs.csv...')
-        big_weight_idx = np.concatenate(np.array(big_weight_idx_pair_list)).tolist()
-        test_f = pd.read_csv(test_path, header=0, dtype=np.float64)
-        df = test_f.iloc[big_weight_idx]
-        cols = ['code_id', *['feature{}'.format(i) for i in range(97)], 'group1', 'group2', 'id']
-        df = df.loc[:, cols]
-        df.to_csv(preprocessed_data_path + 'big_weight_same_pairs.csv', sep=',', index=False)
+        print('Saving {} ...'.format(tampered_pred_path_))
+        df_log.to_csv(tampered_pred_path_, sep=',', index=False)
 
-        print('------------------------------------------------------')
-        print('Generating Big Weight Tampered Results...')
+        # Save Same Pairs csv file
+        self.save_same_pairs_test_csv(preprocessed_data_path + 'big_weight_same_pairs.csv', idx_pair_list)
 
-        self.tamper_result(big_weight_idx_pair_list)
+        # Generate Tampered Results
+        self.tamper_result(idx_pair_list, 'big_weight')
 
-    def generate_absent_tampered_results(self, n_pairs):
+    def generate_tampered_results_by_absence(self, n_pairs):
 
         diff_code_id_test = utils.load_pkl_to_data(preprocessed_data_path + 'diff_code_id_test.p')
-        same_test_df = pd.read_csv(preprocessed_data_path + 'same_test_pairs.csv', header=0, dtype=np.float64)
-        same_test_code_id = same_test_df['code_id']
-        same_test_id = same_test_df['id']
 
         print('------------------------------------------------------')
         print('Calculating Absent Same Pairs...')
@@ -201,63 +255,31 @@ class GenerateTamperedData(object):
         absent_code_id = diff_code_id_test[:-n_pairs*3:-1]
 
         print('Generating Pairs...')
-        code_id_col = []
-        id_col = []
-        absent_idx_pair_list = []
-        exit_flag = False
-        for code_id_ab in absent_code_id:
-            absent_idx_pair = []
-            is_first = True
-            for idx_s, code_id_s in enumerate(same_test_code_id):
-                if code_id_ab == code_id_s:
-                    # print('is_first: {} | {}'.format(is_first, same_test_df.iloc[idx_s]['feature0']))
-                    id_ab = same_test_id[idx_s]
-                    test_idx_ab = self.get_test_idx(id_ab)
-                    absent_idx_pair.append(test_idx_ab)
-                    if is_first:
-                        is_first = False
-                    else:
-                        absent_idx_pair_list.append(absent_idx_pair)
-                        absent_idx_pair = []
-                        is_first = True
-                    code_id_col.append(code_id_ab)
-                    id_col.append(id_ab)
-                    if len(absent_idx_pair_list) >= n_pairs:
-                        exit_flag = True
-                        break
-            if exit_flag:
-                break
+        idx_pair_list, code_id_col, id_col = self.get_pair_list(n_pairs, absent_code_id)
 
         print('------------------------------------------------------')
-        print('Number of Absent Same Pairs: {}'.format(len(absent_idx_pair_list)))
-        print('Saving absent_idx_pairs.p...')
-        utils.save_data_to_pkl(absent_idx_pair_list, preprocessed_data_path + 'absent_idx_pairs.p')
+        print('Number of Absent Same Pairs: {}'.format(len(idx_pair_list)))
+        utils.save_data_to_pkl(idx_pair_list, preprocessed_data_path + 'absent_idx_pairs.p')
 
-        print('------------------------------------------------------')
-        print('Saving absent_tampered_log.csv...')
         index = []
-        for i in range(1, len(absent_idx_pair_list)+1):
+        for i in range(1, len(idx_pair_list)+1):
             index.extend([i, i])
         df_log = pd.DataFrame({'index': np.array(index, dtype=int),
                                'code_id': np.array(code_id_col, dtype=int),
                                'id': np.array(id_col, dtype=int)})
         cols = ['index', 'code_id', 'id']
         df_log = df_log.loc[:, cols]
-        df_log.to_csv(tampered_pred_path + 'absent_tampered_log.csv', sep=',', index=False)
+        tampered_pred_path_ = tampered_pred_path + 'absent_tampered_log.csv'
 
         print('------------------------------------------------------')
-        print('Saving absent_same_pairs.csv...')
-        absent_idx = np.concatenate(np.array(absent_idx_pair_list)).tolist()
-        test_f = pd.read_csv(test_path, header=0, dtype=np.float64)
-        df = test_f.iloc[absent_idx]
-        cols = ['code_id', *['feature{}'.format(i) for i in range(97)], 'group1', 'group2', 'id']
-        df = df.loc[:, cols]
-        df.to_csv(preprocessed_data_path + 'absent_same_pairs.csv', sep=',', index=False)
+        print('Saving {} ...'.format(tampered_pred_path_))
+        df_log.to_csv(tampered_pred_path_, sep=',', index=False)
 
-        print('------------------------------------------------------')
-        print('Generating Absent Tampered Results...')
+        # Save Same Pairs csv file
+        self.save_same_pairs_test_csv(preprocessed_data_path + 'absent_same_pairs.csv', idx_pair_list)
 
-        self.tamper_result(absent_idx_pair_list)
+        # Generate Tampered Results
+        self.tamper_result(idx_pair_list, 'absent')
 
     @staticmethod
     def compare(x1, x2):
@@ -328,16 +350,26 @@ if __name__ == '__main__':
     global_seed = random.randint(0, 500)
     GTD = GenerateTamperedData(global_seed)
 
-    # GTD.generate_many_fake_result(loc=0.1)
-    # GTD.generate_all_tampered_results()
-    # GTD.generate_big_weight_tampered_results(300)
-    # GTD.generate_absent_tampered_results(300)
+    """Generate Tampered Result by Batch"""
+    # GTD.generate_fake_results_by_batch(loc=0.1)
+
+    """Generate Tampered Result by All Same List"""
+    # GTD.generate_all_same_tampered_results()
+
+    """Generate Tampered Result by Range"""
+    GTD.generate_tampered_results_by_range(1000, 300, reverse=False)
+
+    """Generate Tampered Result by Weight"""
+    # GTD.generate_tampered_results_by_weight(300)
+
+    """Generate Tampered Result by Absence"""
+    # GTD.generate_tampered_results_by_absence(300)
 
     """Generate Custom Tampered Result"""
-    base_result_path_ = './results/fake_results/0.5_fake_result.csv'
-    tamper_list_path_ = './tamper_list.csv'
-    GTD.generate_custom_tempered_result(tamper_list_path=tamper_list_path_, append_info='custom',
-                                        base_result_path=base_result_path_, check=True)
+    # base_result_path_ = './results/fake_results/0.5_fake_result.csv'
+    # tamper_list_path_ = './tamper_list.csv'
+    # GTD.generate_custom_tempered_result(tamper_list_path=tamper_list_path_, append_info='custom',
+    #                                     base_result_path=base_result_path_, check=True)
 
     print('------------------------------------------------------')
     print('Done!')
