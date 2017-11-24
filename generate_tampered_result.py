@@ -313,19 +313,24 @@ class GenerateTamperedData(object):
         check_feature_list = [13, 16, 49]
         check_list_1 = []
         check_list_2 = []
+        prob1 = 0
         for i, (id_, prob_) in enumerate(zip(tamper_id, tamper_prob)):
             test_idx = self.get_test_idx(id_)
             tampered_prob[test_idx] = prob_
             if check:
                 if is_first:
+                    prob1 = prob_
                     is_first = False
                     for feature_idx in check_feature_list:
                         check_list_1.append(test_df.loc[test_idx, 'feature'+str(feature_idx)])
                 else:
+                    prob2 = prob_
                     for feature_idx in check_feature_list:
                         check_list_2.append(test_df.loc[test_idx, 'feature'+str(feature_idx)])
                     if not self.compare(check_list_1, check_list_2):
-                        raise ValueError("[E] Not Same! (ID: {}-{})".format(tamper_id[i-1], id_))
+                        raise ValueError("[E] Test Sample Not Same! (ID: {}-{})".format(tamper_id[i-1], id_))
+                    if prob1 != prob2:
+                        raise ValueError("[E] Tampered Prob Value Not Same! (ID: {}-{})".format(tamper_id[i - 1], id_))
                     else:
                         is_first = True
                         check_list_1 = []
