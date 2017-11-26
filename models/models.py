@@ -746,7 +746,7 @@ class ModelBase(object):
         # Cross Validation
         for x_train, y_train, w_train, \
             x_valid, y_valid, w_valid in cv_generator(x=self.x_train, y=self.y_train, w=self.w_train,
-                                                      n_splits=n_splits, n_cv=n_cv, seed=cv_seed):
+                                                      n_splits=n_splits, n_cv=n_cv, cv_seed=cv_seed):
 
             count += 1
 
@@ -1425,7 +1425,7 @@ class LightGBM(ModelBase):
         # Cross Validation
         for x_train, y_train, w_train, \
             x_valid, y_valid, w_valid in cv_generator(x=self.x_train, y=self.y_train, w=self.w_train,
-                                                      n_splits=n_splits, n_cv=n_cv, seed=cv_seed):
+                                                      n_splits=n_splits, n_cv=n_cv, cv_seed=cv_seed):
 
             cv_counter += 1
 
