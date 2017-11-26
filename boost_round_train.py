@@ -261,7 +261,7 @@ class Training:
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': 'forward_window_postscale_sub'}
+                      'append_info': 'forward_window_postscale_cv'}
 
         """
             Cross Validation Arguments
