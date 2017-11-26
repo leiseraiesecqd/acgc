@@ -7,7 +7,7 @@ from models import utils
 
 preprocess_path = preprocess.preprocessed_path
 test_path = preprocess.test_csv_path
-feature_list = [47, 57, 82]
+feature_list = [1, 47, 57, 82]
 
 
 class SearchSameID(object):
@@ -157,7 +157,7 @@ if __name__ == "__main__":
     print('======================================================')
 
     SSI = SearchSameID()
-    SSI.search_diff_code_id()
+    # SSI.search_diff_code_id()
     SSI.main()
 
     print('------------------------------------------------------')

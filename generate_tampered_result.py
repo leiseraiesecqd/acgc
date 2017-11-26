@@ -327,7 +327,7 @@ class GenerateTamperedData(object):
         print('------------------------------------------------------')
         print('Generating Custom Tampered Result...')
         is_first = True
-        check_feature_list = [47, 57, 82]
+        check_feature_list = [1, 47, 57, 82]
         check_list_1 = []
         check_list_2 = []
         prob1 = 0
