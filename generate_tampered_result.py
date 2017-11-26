@@ -290,7 +290,7 @@ class GenerateTamperedData(object):
         return is_same
 
     @staticmethod
-    def tamper_prob_is_right(tamper_prob, leaderboard):
+    def value_is_right(tamper_prob, leaderboard):
         is_right = True
         if leaderboard > 0.69315:
             if tamper_prob != 0:
@@ -346,7 +346,7 @@ class GenerateTamperedData(object):
                         check_list_1.append(test_df.loc[test_idx, 'feature'+str(feature_idx)])
                 if check_value:
                     leaderboard_score = tamper_lb[i]
-                    if not self.tamper_prob_is_right(prob_, leaderboard_score):
+                    if not self.value_is_right(prob_, leaderboard_score):
                         raise ValueError("[E] Tampered Prob Value is Wrong! (ID: {})".format(id_))
 
             else:
@@ -360,7 +360,7 @@ class GenerateTamperedData(object):
                     if prob1 != prob2:
                         raise ValueError("[E] Tampered Prob Value Not Same! (ID: {}-{})".format(tamper_id[i - 1], id_))
                 if check_value:
-                    if not self.tamper_prob_is_right(prob_, leaderboard_score):
+                    if not self.value_is_right(prob_, leaderboard_score):
                         raise ValueError("[E] Tampered Prob Value is Wrong! (ID: {})".format(id_))
                 check_list_1 = []
                 check_list_2 = []
