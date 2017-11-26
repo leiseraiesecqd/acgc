@@ -282,22 +282,39 @@ class GenerateTamperedData(object):
         self.tamper_result(idx_pair_list, 'absent')
 
     @staticmethod
-    def compare(x1, x2):
+    def compare_is_same(x1, x2):
         is_same = True
         for i_x1, i_x2 in zip(x1, x2):
             if i_x1 != i_x2:
                 is_same = False
         return is_same
 
+    @staticmethod
+    def tamper_prob_is_right(tamper_prob, leaderboard):
+        is_right = True
+        if leaderboard > 0.69315:
+            if tamper_prob != 0:
+                is_right = False
+        else:
+            if tamper_prob != 1:
+                is_right = False
+        return is_right
+
     def generate_custom_tempered_result(self, tamper_list_path=None, base_result_path=None,
-                                        append_info=None, check=True):
+                                        append_info=None, check_same=False, check_value=False):
 
         print('Loading {}...'.format(tamper_list_path))
         tamper_list_df = pd.read_csv(tamper_list_path, header=0, dtype=np.float64)
         tamper_id = tamper_list_df['id']
         tamper_prob = tamper_list_df['proba']
+        tamper_lb = None
+        if check_value:
+            if 'leaderboard' not in tamper_list_df.keys():
+                raise ValueError("Header of 'tamper_list' must have column: 'leaderboard'!")
+            else:
+                tamper_lb = tamper_list_df['leaderboard']
 
-        if check:
+        if check_same:
             print('Loading {}...'.format(test_path))
             test_df = pd.read_csv(test_path, header=0, dtype=np.float64)
 
@@ -314,27 +331,39 @@ class GenerateTamperedData(object):
         check_list_1 = []
         check_list_2 = []
         prob1 = 0
+        leaderboard_score = 0
+
         for i, (id_, prob_) in enumerate(zip(tamper_id, tamper_prob)):
+
             test_idx = self.get_test_idx(id_)
             tampered_prob[test_idx] = prob_
-            if check:
-                if is_first:
-                    prob1 = prob_
-                    is_first = False
+
+            if is_first:
+                prob1 = prob_
+                is_first = False
+                if check_same:
                     for feature_idx in check_feature_list:
                         check_list_1.append(test_df.loc[test_idx, 'feature'+str(feature_idx)])
-                else:
-                    prob2 = prob_
+                if check_value:
+                    leaderboard_score = tamper_lb[i]
+                    if not self.tamper_prob_is_right(prob_, leaderboard_score):
+                        raise ValueError("[E] Tampered Prob Value is Wrong! (ID: {})".format(id_))
+
+            else:
+                prob2 = prob_
+                is_first = True
+                if check_same:
                     for feature_idx in check_feature_list:
                         check_list_2.append(test_df.loc[test_idx, 'feature'+str(feature_idx)])
-                    if not self.compare(check_list_1, check_list_2):
+                    if not self.compare_is_same(check_list_1, check_list_2):
                         raise ValueError("[E] Test Sample Not Same! (ID: {}-{})".format(tamper_id[i-1], id_))
                     if prob1 != prob2:
                         raise ValueError("[E] Tampered Prob Value Not Same! (ID: {}-{})".format(tamper_id[i - 1], id_))
-                    else:
-                        is_first = True
-                        check_list_1 = []
-                        check_list_2 = []
+                if check_value:
+                    if not self.tamper_prob_is_right(prob_, leaderboard_score):
+                        raise ValueError("[E] Tampered Prob Value is Wrong! (ID: {})".format(id_))
+                check_list_1 = []
+                check_list_2 = []
 
         print('------------------------------------------------------')
         tampered_pred_path_ = './results/custom_tampered_results/'
@@ -362,7 +391,7 @@ if __name__ == '__main__':
     # GTD.generate_all_same_tampered_results()
 
     """Generate Tampered Result by Range"""
-    GTD.generate_tampered_results_by_range(2000, 300, reverse=False)
+    # GTD.generate_tampered_results_by_range(2000, 300, reverse=False)
 
     """Generate Tampered Result by Weight"""
     # GTD.generate_tampered_results_by_weight(300)
@@ -371,10 +400,10 @@ if __name__ == '__main__':
     # GTD.generate_tampered_results_by_absence(300)
 
     """Generate Custom Tampered Result"""
-    # base_result_path_ = './results/fake_results/0.5_fake_result.csv'
-    # tamper_list_path_ = './tamper_list.csv'
-    # GTD.generate_custom_tempered_result(tamper_list_path=tamper_list_path_, append_info='custom',
-    #                                     base_result_path=base_result_path_, check=True)
+    base_result_path_ = './results/fake_results/0.5_fake_result.csv'
+    tamper_list_path_ = './tamper_list.csv'
+    GTD.generate_custom_tempered_result(tamper_list_path=tamper_list_path_, append_info='custom',
+                                        base_result_path=base_result_path_, check_same=True, check_value=True)
 
     print('------------------------------------------------------')
     print('Done!')
