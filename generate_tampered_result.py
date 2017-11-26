@@ -327,7 +327,7 @@ class GenerateTamperedData(object):
         print('------------------------------------------------------')
         print('Generating Custom Tampered Result...')
         is_first = True
-        check_feature_list = [13, 16, 49]
+        check_feature_list = [47, 57, 82]
         check_list_1 = []
         check_list_2 = []
         prob1 = 0
@@ -391,7 +391,7 @@ if __name__ == '__main__':
     # GTD.generate_all_same_tampered_results()
 
     """Generate Tampered Result by Range"""
-    # GTD.generate_tampered_results_by_range(2000, 300, reverse=False)
+    GTD.generate_tampered_results_by_range(0, 300, reverse=False)
 
     """Generate Tampered Result by Weight"""
     # GTD.generate_tampered_results_by_weight(300)
@@ -400,10 +400,10 @@ if __name__ == '__main__':
     # GTD.generate_tampered_results_by_absence(300)
 
     """Generate Custom Tampered Result"""
-    base_result_path_ = './results/fake_results/0.5_fake_result.csv'
-    tamper_list_path_ = './tamper_list.csv'
-    GTD.generate_custom_tempered_result(tamper_list_path=tamper_list_path_, append_info='custom',
-                                        base_result_path=base_result_path_, check_same=True, check_value=True)
+    # base_result_path_ = './results/fake_results/0.5_fake_result.csv'
+    # tamper_list_path_ = './tamper_list.csv'
+    # GTD.generate_custom_tempered_result(tamper_list_path=tamper_list_path_, append_info='custom',
+    #                                     base_result_path=base_result_path_, check_same=True, check_value=True)
 
     print('------------------------------------------------------')
     print('Done!')
