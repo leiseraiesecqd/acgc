@@ -134,11 +134,11 @@ class Training:
             """
             base_parameters = {'learning_rate': 0.003,
                                'gamma': 0.001,
-                               'max_depth': 10,
+                               'max_depth': 9,
                                'min_child_weight': 2,
-                               'subsample': 0.88,
-                               'colsample_bytree': 0.88,
-                               'colsample_bylevel': 0.8,
+                               'subsample': 0.9,
+                               'colsample_bytree': 0.9,
+                               'colsample_bylevel': 0.7,
                                'lambda': 0,
                                'alpha': 0,
                                'early_stopping_rounds': 10000,
@@ -256,12 +256,12 @@ class Training:
                       'use_custom_obj': False,
                       'show_importance': False,
                       'show_accuracy': False,
-                      'save_final_pred': True,
+                      'save_final_pred': False,
                       'save_final_prob_train': False,
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': 'forward_window_postscale'}
+                      'append_info': 'forward_window_postscale_cv_mdp9'}
 
         """
             Cross Validation Arguments
@@ -294,13 +294,13 @@ class Training:
         # valid_rate_list = np.array([[i]*6 for i in [0.075, 0.1, 0.125, 0.15, 0.175, 0.2]]).reshape(-1,).tolist()
         # cv_weights_list = cv_weights_log*6
         pg_list = [
-                   # [['n_cv', (7, 8, 9, 10, 11, 12, 13, 15, 18, 20)],
-                   #  ['valid_rate', (0.05, 0.075, 0.1, 0.125, 0.15, 0.166, 0.175, 0.2)],
-                   #  ['window_size', (32, 34, 36, 40, 42, 44, 46, 48)]]
+                   [['n_cv', (8, 9, 10), (11, 12, 13), [15], (18, 20)],
+                    ['valid_rate', (0.075, 0.1, 0.125, 0.15, 0.166, 0.175, 0.2)],
+                    ['window_size', (32, 34, 36, 40, 42, 44, 46, 48)]]
                    # [['n_cv', n_cv_list],
                    #  ['valid_rate', valid_rate_list],
                    #  ['cv_weights', cv_weights_list]]
-                   [['learning_rate', [0.003]]]
+                   # [['learning_rate', [0.003]]]
                    # [
                    #  ['max_depth', [9, 10]],
                    #  ['min_child_weight', (1, 2, 3, 5, 7, 9)],
@@ -315,9 +315,9 @@ class Training:
         cv_seed_list = [95]
         # train_seed_list = Non
         # cv_seed_list = None
-        TM.auto_train_boost_round('xgb', num_boost_round=80, n_epoch=1, full_grid_search=True,
+        TM.auto_train_boost_round('xgb', num_boost_round=150, n_epoch=1, full_grid_search=True,
                                   use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
-                                  base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
+                                  base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=False,
                                   reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
 
 
