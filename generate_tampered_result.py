@@ -391,7 +391,7 @@ if __name__ == '__main__':
     # GTD.generate_all_same_tampered_results()
 
     """Generate Tampered Result by Range"""
-    GTD.generate_tampered_results_by_range(0, 300, reverse=False)
+    GTD.generate_tampered_results_by_range(2000, 300, reverse=False)
 
     """Generate Tampered Result by Weight"""
     # GTD.generate_tampered_results_by_weight(300)
