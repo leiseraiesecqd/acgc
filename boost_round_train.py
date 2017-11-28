@@ -319,6 +319,22 @@ class Training:
                                   use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
                                   base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
+        TM.auto_train_boost_round('xgb', num_boost_round=130, n_epoch=1, full_grid_search=True,
+                                  use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
+                                  base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
+                                  reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
+        TM.auto_train_boost_round('xgb', num_boost_round=140, n_epoch=1, full_grid_search=True,
+                                  use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
+                                  base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
+                                  reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
+        TM.auto_train_boost_round('xgb', num_boost_round=150, n_epoch=1, full_grid_search=True,
+                                  use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
+                                  base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
+                                  reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
+        TM.auto_train_boost_round('xgb', num_boost_round=160, n_epoch=1, full_grid_search=True,
+                                  use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
+                                  base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
+                                  reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
 
 
 if __name__ == "__main__":
