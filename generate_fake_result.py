@@ -43,10 +43,10 @@ def generate_fake_result(seed, fake_std, label_std):
     # prob = [0.999 if ii > loc else ii for ii in prob]
     print(utils.log_loss(prob, label))
 
-    utils.save_pred_to_csv(fake_pred_path + str(fake_std) + '_fake_', index, prob)
+    # utils.save_pred_to_csv(fake_pred_path + str(fake_std) + '_fake_', index, prob)
 
 if __name__ == '__main__':
 
     global_seed = random.randint(500, 1000)
 
-    generate_fake_result(global_seed, fake_std=0.5, label_std=0.5)
+    generate_fake_result(global_seed, fake_std=0.55, label_std=0.59858)
