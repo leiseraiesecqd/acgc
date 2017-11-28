@@ -209,6 +209,20 @@ class Training:
         return cv_args
 
     @staticmethod
+    def train_diff_round(model_name, TM, num_boost_round_list=None, n_epoch=1, full_grid_search=False, use_multi_group=False,
+                         train_seed_list=None, cv_seed_list=None, base_parameters=None, parameter_grid_list=None,
+                         save_final_pred=True, reduced_feature_list=None, train_args=None, cv_args=None):
+
+        for num_boost_round in num_boost_round_list:
+            train_args['append_info'] += '_' + str(num_boost_round)
+            TM.auto_train_boost_round(model_name=model_name, num_boost_round=num_boost_round, n_epoch=n_epoch,
+                                      full_grid_search=full_grid_search, use_multi_group=use_multi_group,
+                                      train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
+                                      base_parameters=base_parameters, parameter_grid_list=parameter_grid_list,
+                                      save_final_pred=save_final_pred, reduced_feature_list=reduced_feature_list,
+                                      train_args=train_args, cv_args=cv_args)
+
+    @staticmethod
     def get_cv_weight(mode, start, stop):
 
         from math import log
@@ -313,29 +327,17 @@ class Training:
                    ]
         train_seed_list = [999]
         cv_seed_list = [95]
-        # train_seed_list = Non
-        # cv_seed_list = None
-        TM.auto_train_boost_round('xgb', num_boost_round=120, n_epoch=1, full_grid_search=True,
-                                  use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
-                                  base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
-                                  reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
-        TM.auto_train_boost_round('xgb', num_boost_round=130, n_epoch=1, full_grid_search=True,
-                                  use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
-                                  base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
-                                  reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
-        TM.auto_train_boost_round('xgb', num_boost_round=140, n_epoch=1, full_grid_search=True,
-                                  use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
-                                  base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
-                                  reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
-        TM.auto_train_boost_round('xgb', num_boost_round=150, n_epoch=1, full_grid_search=True,
-                                  use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
-                                  base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
-                                  reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
-        TM.auto_train_boost_round('xgb', num_boost_round=160, n_epoch=1, full_grid_search=True,
-                                  use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
-                                  base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
-                                  reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
+        # TM.auto_train_boost_round('xgb', num_boost_round=130, n_epoch=1, full_grid_search=True,
+        #                           use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
+        #                           base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
+        #                           reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
 
+        """Train Different Rounds"""
+        num_boost_round_list = list(range(120, 161, 10))
+        self.train_diff_round('xgb', TM, num_boost_round_list=num_boost_round_list, n_epoch=1, full_grid_search=True,
+                              use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
+                              base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
+                              reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
 
 if __name__ == "__main__":
 
