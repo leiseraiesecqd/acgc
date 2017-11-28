@@ -194,10 +194,10 @@ class Training:
                 XGB Forward Window
             """
             cv_args = {'valid_rate': 0.166,
-                       'n_cv': 8,
+                       'n_cv': 13,
                        'n_era': 119,
                        'cv_generator': CrossValidation.forward_window,
-                       'window_size': 42}
+                       'window_size': 48}
 
         else:
             cv_args = {'n_valid': 27,
@@ -277,7 +277,7 @@ class Training:
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': 'forward_window_postscale_321'}
+                      'append_info': 'forward_window_postscale_536'}
 
         """
             Cross Validation Arguments
@@ -335,7 +335,7 @@ class Training:
         #                           reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
 
         """Train Different Rounds"""
-        num_boost_round_list = list(range(120, 161, 10))
+        num_boost_round_list = list(range(70, 91, 5))
         self.train_diff_round('xgb', TM, num_boost_round_list=num_boost_round_list, n_epoch=1, full_grid_search=True,
                               use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
                               base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
