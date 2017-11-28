@@ -214,13 +214,15 @@ class Training:
                          save_final_pred=True, reduced_feature_list=None, train_args=None, cv_args=None):
 
         for num_boost_round in num_boost_round_list:
-            train_args['append_info'] += '_' + str(num_boost_round)
+            append_info = train_args['append_info']
+            train_args['append_info'] = append_info + '_' + str(num_boost_round)
             TM.auto_train_boost_round(model_name=model_name, num_boost_round=num_boost_round, n_epoch=n_epoch,
                                       full_grid_search=full_grid_search, use_multi_group=use_multi_group,
                                       train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
                                       base_parameters=base_parameters, parameter_grid_list=parameter_grid_list,
                                       save_final_pred=save_final_pred, reduced_feature_list=reduced_feature_list,
                                       train_args=train_args, cv_args=cv_args)
+            train_args['append_info'] = append_info
 
     @staticmethod
     def get_cv_weight(mode, start, stop):
