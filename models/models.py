@@ -620,7 +620,7 @@ class ModelBase(object):
             if use_global_valid:
                 train_loss_round_mean, valid_loss_round_mean, global_valid_loss_round_mean = \
                     utils.calculate_boost_round_means(train_loss_round_total, valid_loss_round_total, weights=cv_weights,
-                                                      global_valid_loss_round_total=loss_global_valid_w_total)
+                                                      global_valid_loss_round_total=global_valid_loss_round_total)
                 self.save_boost_round_log(boost_round_log_path, idx_round, train_loss_round_mean,
                                           valid_loss_round_mean, train_seed, cv_seed, csv_idx,
                                           parameters, param_name_list, param_value_list, append_info=append_info,
