@@ -25,7 +25,8 @@ class DataPreProcess:
     def __init__(self, train_path, test_path, preprocess_path, use_group_list=None, add_train_dummies=False,
                  merge_eras=False, use_global_valid=False, global_valid_rate=None, drop_outliers_by_value=False,
                  drop_outliers_by_quantile=False, standard_scale=False, min_max_scale=False,
-                 add_polynomial_features=False, split_data_by_gan=False, split_data_by_era=False):
+                 add_polynomial_features=False, generate_valid_for_fw=False,
+                 split_data_by_gan=False, split_data_by_era=False):
 
         self.train_path = train_path
         self.test_path = test_path
@@ -77,6 +78,7 @@ class DataPreProcess:
         self.standard_scale_ = standard_scale
         self.min_max_scale_ = min_max_scale
         self.add_polynomial_features_ = add_polynomial_features
+        self.generate_valid_for_fw_ = generate_valid_for_fw
         self.split_data_by_gan_ = split_data_by_gan
         self.split_data_by_era_ = split_data_by_era
 
@@ -661,6 +663,46 @@ class DataPreProcess:
         self.w_train_n = self.w_train[negative_index]
         self.e_train_n = self.e_train[negative_index]
 
+    # Generate Validation Set for Forward Window
+    def generate_valid_for_forward_window(self, n_valid_per_window=None, valid_rate=None, n_cv=None, window_size=None, n_era=None):
+
+        print('======================================================')
+        print('Splitting Validation Set by Valid Rate: {}'.format(valid_rate))
+
+        n_step = (n_era - window_size) // n_cv
+        n_valid = ceil(window_size * valid_rate)
+        if n_valid_per_window > n_valid:
+            raise ValueError("'n_valid_per_window' should be smaller than 'n_valid'({})".format(n_valid))
+
+        train_start = 0
+        valid_era = []
+        valid_index = []
+
+        for i in range(n_cv):
+            if i == (n_cv - 1):
+                train_start = n_era - window_size
+                train_end = n_era - n_valid
+            else:
+                train_end = train_start + window_size - n_valid
+            train_start += n_step
+            valid_stop = train_end + n_valid_per_window
+            valid_era.extend(list(range(train_end, valid_stop)))
+
+        print('======================================================')
+        print('Valid Era: {}'.format(valid_era))
+
+        for ii, ele in enumerate(self.e_train):
+            if ele in valid_era:
+                valid_index.append(ii)
+
+        # Validation Set
+        self.x_valid = self.x_train[valid_index]
+        self.x_g_valid = self.x_g_train[valid_index]
+        self.y_valid = self.y_train[valid_index]
+        self.w_valid = self.w_train[valid_index]
+        self.e_valid = self.e_train[valid_index]
+        self.code_id_valid = self.code_id_train[valid_index]
+
     # Save Data
     def save_data(self):
 
@@ -751,6 +793,13 @@ class DataPreProcess:
         # Spilt Validation Set by valid_rate
         if self.use_global_valid_:
             self.split_validation_set(valid_rate=self.global_valid_rate)
+            self.save_global_valid_set()
+
+        # Spilt Validation Set by valid_rate
+        if self.generate_valid_for_fw_:
+            self.generate_valid_for_forward_window(n_valid_per_window=2, valid_rate=0.166,
+                                                   n_cv=12, window_size=48, n_era=119)
+            self.save_global_valid_set()
 
         # Split Adversarial Validation Set by GAN
         if self.split_data_by_gan_:
@@ -759,17 +808,10 @@ class DataPreProcess:
         # Split Positive and Negative Era Set
         if self.split_data_by_era_:
             self.split_data_by_era_distribution()
+            self.save_data_by_era_distribution_pd()
 
         # Save Data to pickle files
         self.save_data()
-
-        # Save Validation Set
-        if self.use_global_valid_:
-            self.save_global_valid_set()
-
-        # Save Data Split by Era Distribution
-        if self.split_data_by_era_:
-            self.save_data_by_era_distribution_pd()
 
         end_time = time.time()
 
@@ -793,6 +835,7 @@ if __name__ == '__main__':
                        'standard_scale': False,
                        'min_max_scale': False,
                        'add_polynomial_features': False,
+                       'generate_valid_for_fw': True,
                        'split_data_by_gan': False,
                        'split_data_by_era': False}
 

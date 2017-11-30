@@ -200,7 +200,7 @@ class Training:
                        'window_size': 48}
 
         else:
-            cv_args = {'n_valid': 27,
+            cv_args = {'n_valid': 24,
                        'n_cv': 20,
                        'n_era': 119}
             print('------------------------------------------------------')
@@ -268,16 +268,16 @@ class Training:
         train_args = {'prescale': False,
                       'postscale': True,
                       'use_scale_pos_weight': False,
-                      'use_global_valid': False,
+                      'use_global_valid': True,
                       'use_custom_obj': False,
                       'show_importance': False,
                       'show_accuracy': False,
-                      'save_final_pred': False,
+                      'save_final_pred': True,
                       'save_final_prob_train': False,
-                      'save_cv_pred': False,
+                      'save_cv_pred': True,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': 'forward_window_postscale_params'}
+                      'append_info': 'forward_window_postscale'}
 
         """
             Cross Validation Arguments
@@ -316,20 +316,20 @@ class Training:
                    # [['n_cv', n_cv_list],
                    #  ['valid_rate', valid_rate_list],
                    #  ['cv_weights', cv_weights_list]]
-                   [
-                    ['max_depth', (9, 10)],
-                    ['min_child_weight', (2, 3, 4)],
-                    ['subsample', (0.86, 0.87, 0.88, 0.9, 0.91)],
-                    ['colsample_bytree', (0.86, 0.87, 0.88, 0.89, 0.9)],
-                    ['colsample_bylevel', (0.69, 0.7), (0.72, 0.74), (0.76, 0.78, 0.8), [0.81]]
-                    ]
-                   # [['learning_rate', [0.003]]]
+                   # [
+                   #  ['max_depth', (9, 10)],
+                   #  ['min_child_weight', (2, 3, 4)],
+                   #  ['subsample', (0.86, 0.87, 0.88, 0.9, 0.91)],
+                   #  ['colsample_bytree', (0.86, 0.87, 0.88, 0.89, 0.9)],
+                   #  ['colsample_bylevel', (0.69, 0.7), (0.72, 0.74), (0.76, 0.78, 0.8), [0.81]]
+                   #  ]
+                   [['learning_rate', [0.003]]]
                    ]
         train_seed_list = [999]
         cv_seed_list = [95]
         TM.auto_train_boost_round('xgb', num_boost_round=125, n_epoch=1, full_grid_search=True,
                                   use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
-                                  base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=False,
+                                  base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
 
         """Train Different Rounds"""
