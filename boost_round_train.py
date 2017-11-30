@@ -317,11 +317,11 @@ class Training:
                    #  ['valid_rate', valid_rate_list],
                    #  ['cv_weights', cv_weights_list]]
                    [
-                    ['max_depth', (9, 10)],
-                    ['min_child_weight', (2, 3, 4)],
+                    ['max_depth', [10]],
+                    ['min_child_weight', [4]],
                     ['subsample', (0.86, 0.87, 0.88, 0.9, 0.91)],
                     ['colsample_bytree', (0.86, 0.87, 0.88, 0.89, 0.9)],
-                    ['colsample_bylevel', (0.69, 0.7), (0.72, 0.74), (0.76, 0.78, 0.8), [0.81]]
+                    ['colsample_bylevel', (0.76, 0.78, 0.8)]
                     ]
                    # [['learning_rate', [0.003]]]
                    ]
