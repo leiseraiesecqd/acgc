@@ -135,10 +135,10 @@ class Training:
             base_parameters = {'learning_rate': 0.003,
                                'gamma': 0.001,
                                'max_depth': 10,
-                               'min_child_weight': 2,
-                               'subsample': 0.88,
-                               'colsample_bytree': 0.88,
-                               'colsample_bylevel': 0.8,
+                               'min_child_weight': 4,
+                               'subsample': 0.86,
+                               'colsample_bytree': 0.9,
+                               'colsample_bylevel': 0.69,
                                'lambda': 0,
                                'alpha': 0,
                                'early_stopping_rounds': 10000,
@@ -268,7 +268,7 @@ class Training:
         train_args = {'prescale': False,
                       'postscale': True,
                       'use_scale_pos_weight': False,
-                      'use_global_valid': True,
+                      'use_global_valid': False,
                       'use_custom_obj': False,
                       'show_importance': False,
                       'show_accuracy': False,
@@ -327,7 +327,7 @@ class Training:
                    ]
         train_seed_list = [999]
         cv_seed_list = [95]
-        TM.auto_train_boost_round('xgb', num_boost_round=125, n_epoch=1, full_grid_search=True,
+        TM.auto_train_boost_round('xgb', num_boost_round=90, n_epoch=1, full_grid_search=True,
                                   use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
                                   base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)

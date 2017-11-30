@@ -829,13 +829,13 @@ if __name__ == '__main__':
                        'use_group_list': [1],
                        'add_train_dummies': False,
                        'use_global_valid': False,
+                       'generate_valid_for_fw': False,
                        'global_valid_rate': 0.1,
                        'drop_outliers_by_value': False,
                        'drop_outliers_by_quantile': False,
                        'standard_scale': False,
                        'min_max_scale': False,
                        'add_polynomial_features': False,
-                       'generate_valid_for_fw': True,
                        'split_data_by_gan': False,
                        'split_data_by_era': False}
 
