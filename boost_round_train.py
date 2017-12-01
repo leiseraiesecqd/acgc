@@ -135,10 +135,10 @@ class Training:
             base_parameters = {'learning_rate': 0.003,
                                'gamma': 0.001,
                                'max_depth': 10,
-                               'min_child_weight': 4,
+                               'min_child_weight': 9,
                                'subsample': 0.86,
                                'colsample_bytree': 0.9,
-                               'colsample_bylevel': 0.69,
+                               'colsample_bylevel': 0.68,
                                'lambda': 0,
                                'alpha': 0,
                                'early_stopping_rounds': 10000,
@@ -272,12 +272,12 @@ class Training:
                       'use_custom_obj': False,
                       'show_importance': False,
                       'show_accuracy': False,
-                      'save_final_pred': False,
+                      'save_final_pred': True,
                       'save_final_prob_train': False,
                       'save_cv_pred': False,
                       'save_cv_prob_train': False,
                       'save_csv_log': True,
-                      'append_info': 'forward_window_postscale_params'}
+                      'append_info': 'forward_window_postscale_sub'}
 
         """
             Cross Validation Arguments
@@ -316,27 +316,20 @@ class Training:
                    # [['n_cv', n_cv_list],
                    #  ['valid_rate', valid_rate_list],
                    #  ['cv_weights', cv_weights_list]]
-                   [
-                    ['max_depth', [10]],
-                    ['min_child_weight', (5, 6, 7, 8, 9, 10, 11, 12)],
-                    ['subsample', (0.86, 0.87, 0.88, 0.90)],
-                    ['colsample_bytree', [0.9]],
-                    ['colsample_bylevel', (0.68, 0.7, 0.72, 0.74)]
-                    ]
-                   [
-                    ['max_depth', [9]],
-                    ['min_child_weight', (5, 6, 7, 8, 9, 10, 11, 12)],
-                    ['subsample', (0.87, 0.88, 0.89, 0.90, 0.91)],
-                    ['colsample_bytree', [0.9]],
-                    ['colsample_bylevel', (0.7, 0.73, 0.76, 0.79)]
-                   ]
-                   # [['learning_rate', [0.003]]]
+                   # [
+                   #  ['max_depth', [10]],
+                   #  ['min_child_weight', (5, 6, 7, 8, 9, 10, 11, 12)],
+                   #  ['subsample', (0.86, 0.87, 0.88, 0.90)],
+                   #  ['colsample_bytree', [0.9]],
+                   #  ['colsample_bylevel', (0.68, 0.7, 0.72, 0.74)]
+                   #  ]
+                   [['learning_rate', [0.003]]]
                    ]
         train_seed_list = [999]
         cv_seed_list = [95]
-        TM.auto_train_boost_round('xgb', num_boost_round=100, n_epoch=1, full_grid_search=True,
+        TM.auto_train_boost_round('xgb', num_boost_round=78, n_epoch=1, full_grid_search=False,
                                   use_multi_group=False, train_seed_list=train_seed_list, cv_seed_list=cv_seed_list,
-                                  base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=False,
+                                  base_parameters=base_parameters, parameter_grid_list=pg_list, save_final_pred=True,
                                   reduced_feature_list=reduced_feature_list, train_args=train_args, cv_args=cv_args)
 
         """Train Different Rounds"""
